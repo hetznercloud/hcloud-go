@@ -264,3 +264,18 @@ func TestServersCreate(t *testing.T) {
 		t.Errorf("unexpected server ID: %v", server.ID)
 	}
 }
+
+func TestServersDelete(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {
+		return
+	})
+
+	ctx := context.Background()
+	_, err := env.Client.Server.Delete(ctx, 1)
+	if err != nil {
+		t.Fatalf("Server.Delete failed: %s", err)
+	}
+}

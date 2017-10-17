@@ -260,3 +260,11 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (*Serv
 	}
 	return respBody.Server, resp, nil
 }
+
+func (c *ServerClient) Delete(ctx context.Context, id int) (*Response, error) {
+	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/servers/%d", id), nil)
+	if err != nil {
+		return nil, err
+	}
+	return c.client.Do(req, nil)
+}
