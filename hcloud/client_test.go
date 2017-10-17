@@ -59,7 +59,7 @@ func TestClientError(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	req, err := env.Client.NewRequest(ctx, "GET", "/error")
+	req, err := env.Client.NewRequest(ctx, "GET", "/error", nil)
 	if err != nil {
 		t.Fatalf("error creating request: %s", err)
 	}

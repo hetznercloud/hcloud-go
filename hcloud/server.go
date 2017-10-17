@@ -1,8 +1,10 @@
 package hcloud
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"time"
 )
@@ -168,7 +170,7 @@ type ServerClient struct {
 }
 
 func (c *ServerClient) Get(ctx context.Context, id int) (*Server, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/servers/%d", id))
+	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/servers/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -184,7 +186,7 @@ func (c *ServerClient) Get(ctx context.Context, id int) (*Server, *Response, err
 }
 
 func (c *ServerClient) List(ctx context.Context) ([]*Server, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", "/servers")
+	req, err := c.client.NewRequest(ctx, "GET", "/servers", nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -197,4 +199,64 @@ func (c *ServerClient) List(ctx context.Context) ([]*Server, *Response, error) {
 		return nil, nil, err
 	}
 	return body.Servers, resp, nil
+}
+
+type ServerCreateOpts struct {
+	Name       string
+	ServerType ServerType
+	Image      Image
+}
+
+func (o ServerCreateOpts) Validate() error {
+	if o.Name == "" {
+		return errors.New("missing name")
+	}
+	if o.ServerType.ID == 0 && o.ServerType.Name == "" {
+		return errors.New("missing server type")
+	}
+	if o.Image.ID == 0 && o.Image.Name == "" {
+		return errors.New("missing image")
+	}
+	return nil
+}
+
+func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (*Server, *Response, error) {
+	if err := opts.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	var reqBody struct {
+		Name       string      `json:"name"`
+		ServerType interface{} `json:"server_type"`
+		Image      interface{} `json:"image"`
+	}
+	reqBody.Name = opts.Name
+	if opts.ServerType.ID != 0 {
+		reqBody.ServerType = opts.ServerType.ID
+	} else if opts.ServerType.Name != "" {
+		reqBody.ServerType = opts.ServerType.Name
+	}
+	if opts.Image.ID != 0 {
+		reqBody.Image = opts.Image.ID
+	} else if opts.Image.Name != "" {
+		reqBody.Image = opts.Image.Name
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := c.client.NewRequest(ctx, "POST", "/servers", bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var respBody struct {
+		Server *Server `json:"server"`
+	}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return respBody.Server, resp, nil
 }

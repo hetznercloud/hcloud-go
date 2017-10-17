@@ -235,3 +235,32 @@ func TestServersGet(t *testing.T) {
 		t.Errorf("unexpected server ID: %v", server.ID)
 	}
 }
+
+func TestServersCreate(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprint(w, `{
+			"server": {
+				"id": 1
+			}
+		}`)
+	})
+
+	ctx := context.Background()
+	server, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+		Name:       "test",
+		ServerType: ServerType{ID: 1},
+		Image:      Image{ID: 2},
+	})
+	if err != nil {
+		t.Fatalf("Server.Create failed: %s", err)
+	}
+	if server == nil {
+		t.Fatal("no server")
+	}
+	if server.ID != 1 {
+		t.Errorf("unexpected server ID: %v", server.ID)
+	}
+}

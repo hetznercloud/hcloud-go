@@ -67,14 +67,17 @@ func NewClient(options ...ClientOption) *Client {
 
 // NewRequest creates an HTTP request against the API. The returned request
 // is assigned with ctx and has all necessary headers set (auth, user agent, etc.).
-func (c *Client) NewRequest(ctx context.Context, method, path string) (*http.Request, error) {
+func (c *Client) NewRequest(ctx context.Context, method, path string, body io.Reader) (*http.Request, error) {
 	url := c.endpoint + path
-	req, err := http.NewRequest(method, url, nil)
+	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
 	}
 	req.Header.Set("User-Agent", "hcloud-go/1.0.0")
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
 	req = req.WithContext(ctx)
 	return req, nil
 }
