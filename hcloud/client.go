@@ -34,6 +34,7 @@ type Client struct {
 	token      string
 	httpClient *http.Client
 
+	Action ActionClient
 	Server ServerClient
 }
 
@@ -61,6 +62,7 @@ func NewClient(options ...ClientOption) *Client {
 		option(client)
 	}
 
+	client.Action = ActionClient{client: client}
 	client.Server = ServerClient{client: client}
 	return client
 }

@@ -220,9 +220,14 @@ func (o ServerCreateOpts) Validate() error {
 	return nil
 }
 
-func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (*Server, *Response, error) {
+type ServerCreateResult struct {
+	Server *Server
+	Action *Action
+}
+
+func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (ServerCreateResult, *Response, error) {
 	if err := opts.Validate(); err != nil {
-		return nil, nil, err
+		return ServerCreateResult{}, nil, err
 	}
 
 	var reqBody struct {
@@ -243,22 +248,27 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (*Serv
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
-		return nil, nil, err
+		return ServerCreateResult{}, nil, err
 	}
 
 	req, err := c.client.NewRequest(ctx, "POST", "/servers", bytes.NewReader(reqBodyData))
 	if err != nil {
-		return nil, nil, err
+		return ServerCreateResult{}, nil, err
 	}
 
 	var respBody struct {
 		Server *Server `json:"server"`
+		Action *Action `json:"action"`
 	}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
-		return nil, resp, err
+		return ServerCreateResult{}, resp, err
 	}
-	return respBody.Server, resp, nil
+	result := ServerCreateResult{
+		Server: respBody.Server,
+		Action: respBody.Action,
+	}
+	return result, resp, nil
 }
 
 func (c *ServerClient) Delete(ctx context.Context, id int) (*Response, error) {

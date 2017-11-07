@@ -249,7 +249,7 @@ func TestServersCreate(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	server, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
 		Name:       "test",
 		ServerType: ServerType{ID: 1},
 		Image:      Image{ID: 2},
@@ -257,11 +257,11 @@ func TestServersCreate(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Server.Create failed: %s", err)
 	}
-	if server == nil {
+	if result.Server == nil {
 		t.Fatal("no server")
 	}
-	if server.ID != 1 {
-		t.Errorf("unexpected server ID: %v", server.ID)
+	if result.Server.ID != 1 {
+		t.Errorf("unexpected server ID: %v", result.Server.ID)
 	}
 }
 
