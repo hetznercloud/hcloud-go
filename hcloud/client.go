@@ -36,6 +36,7 @@ type Client struct {
 
 	Action ActionClient
 	Server ServerClient
+	SSHKey SSHKeyClient
 }
 
 type ClientOption func(*Client)
@@ -64,6 +65,8 @@ func NewClient(options ...ClientOption) *Client {
 
 	client.Action = ActionClient{client: client}
 	client.Server = ServerClient{client: client}
+	client.SSHKey = SSHKeyClient{client: client}
+
 	return client
 }
 
