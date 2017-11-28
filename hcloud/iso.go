@@ -12,13 +12,15 @@ type ISO struct {
 	Type        ISOType
 }
 
+// ISOType specifies the type of an ISO image.
 type ISOType string
 
 const (
-	ISOTypePublic  ISOType = "public"
-	ISOTypePrivate         = "private"
+	ISOTypePublic  ISOType = "public"  // A public ISO image
+	ISOTypePrivate         = "private" // A private ISO image
 )
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (i *ISO) UnmarshalJSON(data []byte) error {
 	var v struct {
 		ID          int     `json:"id"`

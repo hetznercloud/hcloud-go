@@ -8,7 +8,7 @@ import (
 	"fmt"
 )
 
-// SSHKey is a SSH key in the Hetzner Cloud.
+// SSHKey represents a SSH key in the Hetzner Cloud.
 type SSHKey struct {
 	ID          int
 	Name        string
@@ -16,6 +16,7 @@ type SSHKey struct {
 	PublicKey   string
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (s *SSHKey) UnmarshalJSON(data []byte) error {
 	var v struct {
 		ID          int    `json:"id"`
@@ -36,10 +37,12 @@ func (s *SSHKey) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// SSHKeyClient is a client for the SSH keys API.
 type SSHKeyClient struct {
 	client *Client
 }
 
+// Get retrieves a SSH key.
 func (c *SSHKeyClient) Get(ctx context.Context, id int) (*SSHKey, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/ssh_keys/%d", id), nil)
 	if err != nil {
@@ -56,6 +59,7 @@ func (c *SSHKeyClient) Get(ctx context.Context, id int) (*SSHKey, *Response, err
 	return body.SSHKey, resp, nil
 }
 
+// List lists all SSH keys.
 func (c *SSHKeyClient) List(ctx context.Context) ([]*SSHKey, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", "/ssh_keys", nil)
 	if err != nil {
@@ -72,11 +76,13 @@ func (c *SSHKeyClient) List(ctx context.Context) ([]*SSHKey, *Response, error) {
 	return body.SSHKeys, resp, nil
 }
 
+// SSHKeyCreateOpts specifies parameters for creating a SSH key.
 type SSHKeyCreateOpts struct {
 	Name      string
 	PublicKey string
 }
 
+// Validate checks if options are valid.
 func (o SSHKeyCreateOpts) Validate() error {
 	if o.Name == "" {
 		return errors.New("missing name")
@@ -87,6 +93,7 @@ func (o SSHKeyCreateOpts) Validate() error {
 	return nil
 }
 
+// Create creates a new SSH key with the given options.
 func (c *SSHKeyClient) Create(ctx context.Context, opts SSHKeyCreateOpts) (*SSHKey, *Response, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, nil, err
@@ -119,6 +126,7 @@ func (c *SSHKeyClient) Create(ctx context.Context, opts SSHKeyCreateOpts) (*SSHK
 	return respBody.SSHKey, resp, nil
 }
 
+// Delete deletes a SSH key.
 func (c *SSHKeyClient) Delete(ctx context.Context, id int) (*Response, error) {
 	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/ssh_keys/%d", id), nil)
 	if err != nil {

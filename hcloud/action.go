@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-// Actions represents an action in the Hetzner Cloud.
+// Action represents an action in the Hetzner Cloud.
 type Action struct {
 	ID           int
 	Status       string
@@ -19,6 +19,7 @@ type Action struct {
 	ErrorMessage string
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (a *Action) UnmarshalJSON(data []byte) error {
 	var v struct {
 		ID       int       `json:"id"`
@@ -49,10 +50,12 @@ func (a *Action) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// ActionClient is a client for the actions API.
 type ActionClient struct {
 	client *Client
 }
 
+// Get retrieves an action.
 func (c *ActionClient) Get(ctx context.Context, id int) (*Action, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/actions/%d", id), nil)
 	if err != nil {

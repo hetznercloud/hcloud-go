@@ -25,6 +25,7 @@ type Server struct {
 	ISO             *ISO
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (s *Server) UnmarshalJSON(data []byte) error {
 	var v struct {
 		ID              int             `json:"id"`
@@ -61,20 +62,23 @@ func (s *Server) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// ServerStatus specifies a server's status.
 type ServerStatus string
 
 const (
-	ServerStatusInitializing ServerStatus = "initializing"
-	ServerStatusOff                       = "off"
-	ServerStatusRunning                   = "running"
+	ServerStatusInitializing ServerStatus = "initializing" // Server is initializing
+	ServerStatusOff                       = "off"          // Server is off
+	ServerStatusRunning                   = "running"      // Server is running
 )
 
+// ServerPublicNet represents a server's public network.
 type ServerPublicNet struct {
 	IPv4        ServerPublicNetIPv4
 	IPv6        ServerPublicNetIPv6
 	FloatingIPs []*FloatingIP
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (s *ServerPublicNet) UnmarshalJSON(data []byte) error {
 	var v struct {
 		IPv4        ServerPublicNetIPv4 `json:"ipv4"`
@@ -96,12 +100,14 @@ func (s *ServerPublicNet) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// ServerPublicNetIPv4 represents a server's public IPv4 network.
 type ServerPublicNetIPv4 struct {
 	IP      string
 	Blocked bool
 	DNSPtr  string
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (s *ServerPublicNetIPv4) UnmarshalJSON(data []byte) error {
 	var v struct {
 		IP      string `json:"ip"`
@@ -120,12 +126,14 @@ func (s *ServerPublicNetIPv4) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// ServerPublicNetIPv6 represents a server's public IPv6 network.
 type ServerPublicNetIPv6 struct {
 	IP      string
 	Blocked bool
 	DNSPtr  []ServerPublicNetIPv6DNSPtr
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (s *ServerPublicNetIPv6) UnmarshalJSON(data []byte) error {
 	var v struct {
 		IP      string                      `json:"ip"`
@@ -144,11 +152,13 @@ func (s *ServerPublicNetIPv6) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// ServerPublicNetIPv6DNSPtr represents a server's public IPv6 reverse DNS.
 type ServerPublicNetIPv6DNSPtr struct {
 	IP     string
 	DNSPtr string
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (s *ServerPublicNetIPv6DNSPtr) UnmarshalJSON(data []byte) error {
 	var v struct {
 		IP     string `json:"ip"`
@@ -165,10 +175,12 @@ func (s *ServerPublicNetIPv6DNSPtr) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// ServerClient is a client for the servers API.
 type ServerClient struct {
 	client *Client
 }
 
+// Get retrieves a server.
 func (c *ServerClient) Get(ctx context.Context, id int) (*Server, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/servers/%d", id), nil)
 	if err != nil {
@@ -185,6 +197,7 @@ func (c *ServerClient) Get(ctx context.Context, id int) (*Server, *Response, err
 	return body.Server, resp, nil
 }
 
+// List lists all servers.
 func (c *ServerClient) List(ctx context.Context) ([]*Server, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", "/servers", nil)
 	if err != nil {
@@ -201,12 +214,14 @@ func (c *ServerClient) List(ctx context.Context) ([]*Server, *Response, error) {
 	return body.Servers, resp, nil
 }
 
+// ServerCreateOpts specifies options for creating a new server.
 type ServerCreateOpts struct {
 	Name       string
 	ServerType ServerType
 	Image      Image
 }
 
+// Validate checks if options are valid.
 func (o ServerCreateOpts) Validate() error {
 	if o.Name == "" {
 		return errors.New("missing name")
@@ -220,11 +235,13 @@ func (o ServerCreateOpts) Validate() error {
 	return nil
 }
 
+// ServerCreateResult is the result of a create server call.
 type ServerCreateResult struct {
 	Server *Server
 	Action *Action
 }
 
+// Create creates a new server.
 func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (ServerCreateResult, *Response, error) {
 	if err := opts.Validate(); err != nil {
 		return ServerCreateResult{}, nil, err
@@ -271,6 +288,7 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	return result, resp, nil
 }
 
+// Delete deletes a server.
 func (c *ServerClient) Delete(ctx context.Context, id int) (*Response, error) {
 	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/servers/%d", id), nil)
 	if err != nil {

@@ -2,6 +2,7 @@ package hcloud
 
 import "encoding/json"
 
+// ServerType represents a server type in the Hetzner Cloud.
 type ServerType struct {
 	ID          int
 	Name        string
@@ -12,6 +13,7 @@ type ServerType struct {
 	StorageType StorageType
 }
 
+// UnmarshalJSON implements json.Unmarshaler.
 func (s *ServerType) UnmarshalJSON(data []byte) error {
 	var serverType struct {
 		ID          int     `json:"id"`
@@ -38,9 +40,10 @@ func (s *ServerType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// StorageType specifies the type of storage.
 type StorageType string
 
 const (
-	StorageTypeLocal StorageType = "local"
-	StorageTypeCeph              = "ceph"
+	StorageTypeLocal StorageType = "local" // Local storage
+	StorageTypeCeph              = "ceph"  // Remote storage
 )

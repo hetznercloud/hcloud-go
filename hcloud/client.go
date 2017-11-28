@@ -11,11 +11,12 @@ import (
 	"strings"
 )
 
+// ErrorCode represents an error code returned from the API.
 type ErrorCode string
 
 const (
-	ErrorCodeServiceError ErrorCode = "service_error"
-	ErrorCodeUnknownError           = "unknown_error"
+	ErrorCodeServiceError ErrorCode = "service_error" // Generic service error
+	ErrorCodeUnknownError           = "unknown_error" // Unknown error
 )
 
 // Error is an error returned from the API.
@@ -39,21 +40,24 @@ type Client struct {
 	SSHKey SSHKeyClient
 }
 
+// A ClientOption is used to configure a Client.
 type ClientOption func(*Client)
 
+// WithEndpoint configures a Client to use the specified API endpoint.
 func WithEndpoint(endpoint string) ClientOption {
 	return func(client *Client) {
 		client.endpoint = strings.TrimRight(endpoint, "/")
 	}
 }
 
+// WithToken configures a Client to use the specified token for authentication.
 func WithToken(token string) ClientOption {
 	return func(client *Client) {
 		client.token = token
 	}
 }
 
-// NewClient creates a new client using token for authentication.
+// NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
 		httpClient: &http.Client{},
@@ -85,19 +89,6 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, body io.Re
 	}
 	req = req.WithContext(ctx)
 	return req, nil
-}
-
-type Response struct {
-	*http.Response
-}
-
-func (r *Response) ReadBody() ([]byte, error) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
-	}
-	r.Body = ioutil.NopCloser(bytes.NewReader(body))
-	return body, err
 }
 
 // Do performs an HTTP request against the API.
@@ -158,4 +149,22 @@ func errorFromResponse(resp *http.Response, body []byte) error {
 		Code:    ErrorCode(apiError.Error.Code),
 		Message: apiError.Error.Message,
 	}
+}
+
+// Response represents a response from the API. It embeds http.Response.
+type Response struct {
+	*http.Response
+}
+
+// ReadBody reads and returns the response's body. After reading the response's body
+// is recovered so it can be read again.
+//
+// TODO(thcyron): Does this method really need to be exported?
+func (r *Response) ReadBody() ([]byte, error) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+	r.Body = ioutil.NopCloser(bytes.NewReader(body))
+	return body, err
 }
