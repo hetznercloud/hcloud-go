@@ -1,4 +1,4 @@
-package hcloud
+package hcloud // import "hetzner.cloud/hcloud"
 
 import "encoding/json"
 
