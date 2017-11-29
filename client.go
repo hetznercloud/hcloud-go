@@ -8,7 +8,9 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"strings"
+	"time"
 )
 
 // ErrorCode represents an error code returned from the API.
@@ -105,6 +107,10 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 	}
 	resp.Body = ioutil.NopCloser(bytes.NewReader(body))
 
+	if err := response.readMeta(body); err != nil {
+		return response, fmt.Errorf("hcloud: error reading response meta data: %s", err)
+	}
+
 	switch resp.StatusCode {
 	case http.StatusUnauthorized, http.StatusForbidden, http.StatusUnprocessableEntity,
 		http.StatusInternalServerError:
@@ -154,6 +160,7 @@ func errorFromResponse(resp *http.Response, body []byte) error {
 // Response represents a response from the API. It embeds http.Response.
 type Response struct {
 	*http.Response
+	Meta ResponseMeta
 }
 
 // ReadBody reads and returns the response's body. After reading the response's body
@@ -167,4 +174,80 @@ func (r *Response) ReadBody() ([]byte, error) {
 	}
 	r.Body = ioutil.NopCloser(bytes.NewReader(body))
 	return body, err
+}
+
+func (r *Response) readMeta(body []byte) error {
+	if h := r.Header.Get("RateLimit-Limit"); h != "" {
+		r.Meta.Ratelimit.Limit, _ = strconv.Atoi(h)
+	}
+	if h := r.Header.Get("RateLimit-Remaining"); h != "" {
+		r.Meta.Ratelimit.Remaining, _ = strconv.Atoi(h)
+	}
+	if h := r.Header.Get("RateLimit-Reset"); h != "" {
+		if ts, err := strconv.ParseInt(h, 10, 64); err == nil {
+			r.Meta.Ratelimit.Reset = time.Unix(ts, 0)
+		}
+	}
+
+	if strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
+		var m struct {
+			Meta struct {
+				Pagination ResponseMetaPagination `json:"pagination"`
+			} `json:"meta"`
+		}
+		if err := json.Unmarshal(body, &m); err != nil {
+			return err
+		}
+		r.Meta.Pagination = &m.Meta.Pagination
+	}
+
+	return nil
+}
+
+// ResponseMeta represents meta information included in an API response.
+type ResponseMeta struct {
+	Pagination *ResponseMetaPagination
+	Ratelimit  ResponseMetaRatelimit
+}
+
+// ResponseMetaPagination represents pagination meta data.
+type ResponseMetaPagination struct {
+	Page         int
+	PerPage      int
+	PreviousPage int
+	NextPage     int
+	LastPage     int
+	TotalEntries int
+}
+
+// UnmarshalJSON implements json.Unmarshaler.
+func (p *ResponseMetaPagination) UnmarshalJSON(data []byte) error {
+	var v struct {
+		Page         int `json:"page"`
+		PerPage      int `json:"per_page"`
+		PreviousPage int `json:"previous_page"`
+		NextPage     int `json:"next_page"`
+		LastPage     int `json:"last_page"`
+		TotalEntries int `json:"total_entries"`
+	}
+
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+
+	p.Page = v.Page
+	p.PerPage = v.PerPage
+	p.PreviousPage = v.PreviousPage
+	p.NextPage = v.NextPage
+	p.LastPage = v.LastPage
+	p.TotalEntries = v.TotalEntries
+
+	return nil
+}
+
+// ResponseMetaRatelimit represents ratelimit information.
+type ResponseMetaRatelimit struct {
+	Limit     int
+	Remaining int
+	Reset     time.Time
 }
