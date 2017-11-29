@@ -30,6 +30,7 @@ func newTestEnv() testEnv {
 	client := NewClient(
 		WithEndpoint(server.URL),
 		WithToken("token"),
+		WithBackoffFunc(func(_ int) time.Duration { return 0 }),
 	)
 	return testEnv{
 		Server: server,

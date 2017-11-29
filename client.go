@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"net/http"
 	"strconv"
 	"strings"
@@ -31,11 +32,33 @@ func (e Error) Error() string {
 	return fmt.Sprintf("%s (%s)", e.Message, e.Code)
 }
 
+// A BackoffFunc returns the duration to wait before performing the
+// next retry. The retries argument specifies how many retries have
+// already been performed. When called for the first time, retries is 0.
+type BackoffFunc func(retries int) time.Duration
+
+// ConstantBackoff returns a BackoffFunc which backs off for
+// constant duration d.
+func ConstantBackoff(d time.Duration) BackoffFunc {
+	return func(_ int) time.Duration {
+		return d
+	}
+}
+
+// ExponentialBackoff returns a BackoffFunc which implements an exponential
+// backoff using the formula: b^retries * d
+func ExponentialBackoff(b float64, d time.Duration) BackoffFunc {
+	return func(retries int) time.Duration {
+		return time.Duration(math.Pow(b, float64(retries))) * d
+	}
+}
+
 // Client is a client for the Hetzner Cloud API.
 type Client struct {
-	endpoint   string
-	token      string
-	httpClient *http.Client
+	endpoint    string
+	token       string
+	backoffFunc BackoffFunc
+	httpClient  *http.Client
 
 	Action ActionClient
 	Server ServerClient
@@ -59,10 +82,18 @@ func WithToken(token string) ClientOption {
 	}
 }
 
+// WithBackoffFunc configures a Client to use the specified backoff function.
+func WithBackoffFunc(f BackoffFunc) ClientOption {
+	return func(client *Client) {
+		client.backoffFunc = f
+	}
+}
+
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
-		httpClient: &http.Client{},
+		httpClient:  &http.Client{},
+		backoffFunc: ExponentialBackoff(2, 500*time.Millisecond),
 	}
 
 	for _, option := range options {
@@ -132,6 +163,10 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 	}
 
 	return response, err
+}
+
+func (c *Client) backoff(retries int) {
+	time.Sleep(c.backoffFunc(retries))
 }
 
 func errorFromResponse(resp *http.Response, body []byte) error {
