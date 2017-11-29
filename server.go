@@ -240,7 +240,7 @@ func (c *ServerClient) ListAll(ctx context.Context) ([]*Server, error) {
 	)
 
 	opts.Page = 1
-	opts.PerPage = 1
+	opts.PerPage = 50
 
 	for {
 		servers, resp, err := c.List(ctx, opts)
