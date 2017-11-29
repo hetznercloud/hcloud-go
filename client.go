@@ -251,3 +251,9 @@ type ResponseMetaRatelimit struct {
 	Remaining int
 	Reset     time.Time
 }
+
+// ListOpts specifies options for listing resources.
+type ListOpts struct {
+	Page    int // Page (starting at 1)
+	PerPage int // Items per page (0 means default)
+}

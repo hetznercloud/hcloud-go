@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
+	"strconv"
 	"time"
 )
 
@@ -197,9 +199,24 @@ func (c *ServerClient) Get(ctx context.Context, id int) (*Server, *Response, err
 	return body.Server, resp, nil
 }
 
-// List lists all servers.
-func (c *ServerClient) List(ctx context.Context) ([]*Server, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", "/servers", nil)
+// ServerListOpts specifies options for listing servers.
+type ServerListOpts struct {
+	ListOpts
+}
+
+// List returns a list of servers for a specific page.
+func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server, *Response, error) {
+	path := "/servers"
+	vals := url.Values{}
+	if opts.Page > 0 {
+		vals.Add("page", strconv.Itoa(opts.Page))
+	}
+	if opts.PerPage > 0 {
+		vals.Add("per_page", strconv.Itoa(opts.PerPage))
+	}
+	path += "?" + vals.Encode()
+
+	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -212,6 +229,32 @@ func (c *ServerClient) List(ctx context.Context) ([]*Server, *Response, error) {
 		return nil, nil, err
 	}
 	return body.Servers, resp, nil
+}
+
+// ListAll returns all servers by going through all pages.
+func (c *ServerClient) ListAll(ctx context.Context) ([]*Server, error) {
+	var (
+		allServers []*Server
+		opts       ServerListOpts
+	)
+
+	opts.Page = 1
+	opts.PerPage = 1
+
+	for {
+		servers, resp, err := c.List(ctx, opts)
+		if err != nil {
+			return nil, err
+		}
+		allServers = append(allServers, servers...)
+		if resp.Meta.Pagination != nil && resp.Meta.Pagination.NextPage != 0 {
+			opts.Page = resp.Meta.Pagination.NextPage
+		} else {
+			break
+		}
+	}
+
+	return allServers, nil
 }
 
 // ServerCreateOpts specifies options for creating a new server.

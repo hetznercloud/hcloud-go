@@ -236,6 +236,123 @@ func TestServersGet(t *testing.T) {
 	}
 }
 
+func TestServersList(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		if page := r.URL.Query().Get("page"); page != "2" {
+			t.Errorf("expected page 2; got %q", page)
+		}
+		if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
+			t.Errorf("expected per_page 50; got %q", perPage)
+		}
+		fmt.Fprint(w, `{
+			"servers": [
+				{
+					"id": 1
+				},
+				{
+					"id": 2
+				}
+			]
+		}`)
+	})
+
+	opts := ServerListOpts{}
+	opts.Page = 2
+	opts.PerPage = 50
+
+	ctx := context.Background()
+	servers, _, err := env.Client.Server.List(ctx, opts)
+	if err != nil {
+		t.Fatalf("Servers.List failed: %s", err)
+	}
+	if len(servers) != 2 {
+		t.Fatal("expected 2 servers")
+	}
+}
+
+func TestServersListAll(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		switch page := r.URL.Query().Get("page"); page {
+		case "", "1":
+			fmt.Fprint(w, `{
+				"servers": [
+					{
+						"id": 1
+					}
+				],
+				"meta": {
+					"pagination": {
+						"page": 1,
+						"per_page": 1,
+						"previous_page": null,
+						"next_page": 2,
+						"last_page": 3,
+						"total_entries": 3
+					}
+				}
+			}`)
+		case "2":
+			fmt.Fprint(w, `{
+				"servers": [
+					{
+						"id": 2
+					}
+				],
+				"meta": {
+					"pagination": {
+						"page": 2,
+						"per_page": 1,
+						"previous_page": 1,
+						"next_page": 3,
+						"last_page": 3,
+						"total_entries": 3
+					}
+				}
+			}`)
+		case "3":
+			fmt.Fprint(w, `{
+				"servers": [
+					{
+						"id": 3
+					}
+				],
+				"meta": {
+					"pagination": {
+						"page": 3,
+						"per_page": 1,
+						"previous_page": 2,
+						"next_page": null,
+						"last_page": 3,
+						"total_entries": 3
+					}
+				}
+			}`)
+		default:
+			panic("bad page")
+		}
+	})
+
+	ctx := context.Background()
+	servers, err := env.Client.Server.ListAll(ctx)
+	if err != nil {
+		t.Fatalf("Servers.List failed: %s", err)
+	}
+	if len(servers) != 3 {
+		t.Fatalf("expected 3 servers; got %d", len(servers))
+	}
+	if servers[0].ID != 1 {
+		t.Errorf("")
+	}
+}
+
 func TestServersCreate(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
