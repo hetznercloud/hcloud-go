@@ -236,6 +236,7 @@ func (c *ServerClient) ListAll(ctx context.Context) ([]*Server, error) {
 	var (
 		allServers []*Server
 		opts       ServerListOpts
+		retries    int
 	)
 
 	opts.Page = 1
@@ -244,8 +245,16 @@ func (c *ServerClient) ListAll(ctx context.Context) ([]*Server, error) {
 	for {
 		servers, resp, err := c.List(ctx, opts)
 		if err != nil {
+			if err, ok := err.(Error); ok {
+				if err.Code == ErrorCodeLimitReached {
+					c.client.backoff(retries)
+					retries++
+					continue
+				}
+			}
 			return nil, err
 		}
+		retries = 0
 		allServers = append(allServers, servers...)
 		if resp.Meta.Pagination != nil && resp.Meta.Pagination.NextPage != 0 {
 			opts.Page = resp.Meta.Pagination.NextPage

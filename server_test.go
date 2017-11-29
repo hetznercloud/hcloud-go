@@ -277,8 +277,20 @@ func TestServersListAll(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
+	firstRequest := true
 	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+		if firstRequest {
+			firstRequest = false
+			w.WriteHeader(http.StatusTooManyRequests)
+			fmt.Fprint(w, `{
+				"error": {
+					"code": "limit_reached",
+					"message": "ratelimited"
+				}
+			}`)
+			return
+		}
 
 		switch page := r.URL.Query().Get("page"); page {
 		case "", "1":

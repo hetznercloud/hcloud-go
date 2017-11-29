@@ -19,6 +19,7 @@ type ErrorCode string
 
 const (
 	ErrorCodeServiceError ErrorCode = "service_error" // Generic service error
+	ErrorCodeLimitReached           = "limit_reached" // Ratelimit reached
 	ErrorCodeUnknownError           = "unknown_error" // Unknown error
 )
 
@@ -142,16 +143,12 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 		return response, fmt.Errorf("hcloud: error reading response meta data: %s", err)
 	}
 
-	switch resp.StatusCode {
-	case http.StatusUnauthorized, http.StatusForbidden, http.StatusUnprocessableEntity,
-		http.StatusInternalServerError:
-		if err := errorFromResponse(resp, body); err != nil {
-			return response, err
+	if resp.StatusCode >= 400 && resp.StatusCode <= 599 {
+		err := errorFromResponse(resp, body)
+		if err == nil {
+			err = fmt.Errorf("hcloud: server responded with status code %d", resp.StatusCode)
 		}
-		return response, fmt.Errorf("hcloud: server responded with status code %d",
-			resp.StatusCode)
-	default:
-		break
+		return response, err
 	}
 
 	if v != nil {
