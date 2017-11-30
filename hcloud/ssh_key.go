@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/url"
-	"strconv"
 )
 
 // SSHKey represents a SSH key in the Hetzner Cloud.
@@ -68,16 +66,7 @@ type SSHKeyListOpts struct {
 
 // List returns a list of SSH keys for a specific page.
 func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey, *Response, error) {
-	path := "/ssh_keys"
-	vals := url.Values{}
-	if opts.Page > 0 {
-		vals.Add("page", strconv.Itoa(opts.Page))
-	}
-	if opts.PerPage > 0 {
-		vals.Add("per_page", strconv.Itoa(opts.PerPage))
-	}
-	path += "?" + vals.Encode()
-
+	path := "/ssh_keys?" + valuesForListOpts(opts.ListOpts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

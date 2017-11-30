@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/url"
-	"strconv"
 	"time"
 )
 
@@ -206,16 +204,7 @@ type ServerListOpts struct {
 
 // List returns a list of servers for a specific page.
 func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server, *Response, error) {
-	path := "/servers"
-	vals := url.Values{}
-	if opts.Page > 0 {
-		vals.Add("page", strconv.Itoa(opts.Page))
-	}
-	if opts.PerPage > 0 {
-		vals.Add("per_page", strconv.Itoa(opts.PerPage))
-	}
-	path += "?" + vals.Encode()
-
+	path := "/servers?" + valuesForListOpts(opts.ListOpts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

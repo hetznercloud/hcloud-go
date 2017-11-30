@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"math"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -313,4 +314,15 @@ type ResponseMetaRatelimit struct {
 type ListOpts struct {
 	Page    int // Page (starting at 1)
 	PerPage int // Items per page (0 means default)
+}
+
+func valuesForListOpts(opts ListOpts) url.Values {
+	vals := url.Values{}
+	if opts.Page > 0 {
+		vals.Add("page", strconv.Itoa(opts.Page))
+	}
+	if opts.PerPage > 0 {
+		vals.Add("per_page", strconv.Itoa(opts.PerPage))
+	}
+	return vals
 }
