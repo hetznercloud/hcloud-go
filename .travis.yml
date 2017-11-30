@@ -3,3 +3,6 @@ go:
   - 1.8
   - 1.9
   - master
+before_script:
+  - diff -u <(echo -n) <(gofmt -d -s .)
+  - go vet ./...
