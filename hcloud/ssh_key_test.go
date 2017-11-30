@@ -109,6 +109,86 @@ func TestSSHKeyClientList(t *testing.T) {
 	}
 }
 
+func TestSSHKeyListAll(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/ssh_keys", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		switch page := r.URL.Query().Get("page"); page {
+		case "", "1":
+			fmt.Fprint(w, `{
+				"ssh_keys": [
+					{
+						"id": 1
+					}
+				],
+				"meta": {
+					"pagination": {
+						"page": 1,
+						"per_page": 1,
+						"previous_page": null,
+						"next_page": 2,
+						"last_page": 3,
+						"total_entries": 3
+					}
+				}
+			}`)
+		case "2":
+			fmt.Fprint(w, `{
+				"ssh_keys": [
+					{
+						"id": 2
+					}
+				],
+				"meta": {
+					"pagination": {
+						"page": 2,
+						"per_page": 1,
+						"previous_page": 1,
+						"next_page": 3,
+						"last_page": 3,
+						"total_entries": 3
+					}
+				}
+			}`)
+		case "3":
+			fmt.Fprint(w, `{
+				"ssh_keys": [
+					{
+						"id": 3
+					}
+				],
+				"meta": {
+					"pagination": {
+						"page": 3,
+						"per_page": 1,
+						"previous_page": 2,
+						"next_page": null,
+						"last_page": 3,
+						"total_entries": 3
+					}
+				}
+			}`)
+		default:
+			panic("bad page")
+		}
+	})
+
+	ctx := context.Background()
+	sshKeys, err := env.Client.SSHKey.ListAll(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(sshKeys) != 3 {
+		t.Fatalf("expected 3 SSH keys; got %d", len(sshKeys))
+	}
+	if sshKeys[0].ID != 1 || sshKeys[1].ID != 2 || sshKeys[2].ID != 3 {
+		t.Error("got wrong SSH keys")
+	}
+}
+
 func TestSSHKeyClientDelete(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

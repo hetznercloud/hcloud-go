@@ -93,6 +93,29 @@ func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey
 	return body.SSHKeys, resp, nil
 }
 
+// ListAll returns all SSH keys by going through all pages.
+func (c *SSHKeyClient) ListAll(ctx context.Context) ([]*SSHKey, error) {
+	allSSHKeys := []*SSHKey{}
+
+	opts := SSHKeyListOpts{}
+	opts.PerPage = 50
+
+	_, err := c.client.all(func(page int) (*Response, error) {
+		opts.Page = page
+		sshKeys, resp, err := c.List(ctx, opts)
+		if err != nil {
+			return resp, err
+		}
+		allSSHKeys = append(allSSHKeys, sshKeys...)
+		return resp, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return allSSHKeys, nil
+}
+
 // SSHKeyCreateOpts specifies parameters for creating a SSH key.
 type SSHKeyCreateOpts struct {
 	Name      string
