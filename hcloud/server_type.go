@@ -44,6 +44,9 @@ func (s *ServerType) UnmarshalJSON(data []byte) error {
 type StorageType string
 
 const (
-	StorageTypeLocal StorageType = "local" // Local storage
-	StorageTypeCeph              = "ceph"  // Remote storage
+	// StorageTypeLocal is the type for local storage.
+	StorageTypeLocal StorageType = "local"
+
+	// StorageTypeCeph is the type for remote storage.
+	StorageTypeCeph = "ceph"
 )

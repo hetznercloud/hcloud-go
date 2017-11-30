@@ -66,9 +66,14 @@ func (s *Server) UnmarshalJSON(data []byte) error {
 type ServerStatus string
 
 const (
-	ServerStatusInitializing ServerStatus = "initializing" // Server is initializing
-	ServerStatusOff                       = "off"          // Server is off
-	ServerStatusRunning                   = "running"      // Server is running
+	// ServerStatusInitializing is the status when a server is initializing.
+	ServerStatusInitializing ServerStatus = "initializing"
+
+	// ServerStatusOff is the status when a server is off.
+	ServerStatusOff = "off"
+
+	// ServerStatusRunning is the status when a server is running.
+	ServerStatusRunning = "running"
 )
 
 // ServerPublicNet represents a server's public network.

@@ -22,9 +22,14 @@ const UserAgent = "hcloud-go/" + Version
 type ErrorCode string
 
 const (
-	ErrorCodeServiceError ErrorCode = "service_error" // Generic service error
-	ErrorCodeLimitReached           = "limit_reached" // Ratelimit reached
-	ErrorCodeUnknownError           = "unknown_error" // Unknown error
+	// ErrorCodeServiceError is the code for a generic service error.
+	ErrorCodeServiceError ErrorCode = "service_error"
+
+	// ErrorCodeLimitReached is the code when rate limit is reached.
+	ErrorCodeLimitReached = "limit_reached"
+
+	// ErrorCodeUnknownError is the code for an unknown error.
+	ErrorCodeUnknownError = "unknown_error"
 )
 
 // Error is an error returned from the API.

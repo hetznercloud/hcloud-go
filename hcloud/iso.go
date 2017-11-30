@@ -16,8 +16,11 @@ type ISO struct {
 type ISOType string
 
 const (
-	ISOTypePublic  ISOType = "public"  // A public ISO image
-	ISOTypePrivate         = "private" // A private ISO image
+	// ISOTypePublic is the type of a public ISO image.
+	ISOTypePublic ISOType = "public"
+
+	// ISOTypePrivate is the type of a private ISO image.
+	ISOTypePrivate = "private"
 )
 
 // UnmarshalJSON implements json.Unmarshaler.
