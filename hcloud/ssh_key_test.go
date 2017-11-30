@@ -109,7 +109,7 @@ func TestSSHKeyClientList(t *testing.T) {
 	}
 }
 
-func TestSSHKeyListAll(t *testing.T) {
+func TestSSHKeyAll(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -177,7 +177,7 @@ func TestSSHKeyListAll(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	sshKeys, err := env.Client.SSHKey.ListAll(ctx)
+	sshKeys, err := env.Client.SSHKey.All(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

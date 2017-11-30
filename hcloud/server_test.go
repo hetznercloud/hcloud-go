@@ -273,7 +273,7 @@ func TestServersList(t *testing.T) {
 	}
 }
 
-func TestServersListAll(t *testing.T) {
+func TestServersAll(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -353,7 +353,7 @@ func TestServersListAll(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	servers, err := env.Client.Server.ListAll(ctx)
+	servers, err := env.Client.Server.All(ctx)
 	if err != nil {
 		t.Fatalf("Servers.List failed: %s", err)
 	}

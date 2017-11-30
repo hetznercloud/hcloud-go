@@ -231,8 +231,8 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server
 	return body.Servers, resp, nil
 }
 
-// ListAll returns all servers by going through all pages.
-func (c *ServerClient) ListAll(ctx context.Context) ([]*Server, error) {
+// All returns all servers.
+func (c *ServerClient) All(ctx context.Context) ([]*Server, error) {
 	allServers := []*Server{}
 
 	opts := ServerListOpts{}

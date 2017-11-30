@@ -93,8 +93,8 @@ func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey
 	return body.SSHKeys, resp, nil
 }
 
-// ListAll returns all SSH keys by going through all pages.
-func (c *SSHKeyClient) ListAll(ctx context.Context) ([]*SSHKey, error) {
+// All returns all SSH keys.
+func (c *SSHKeyClient) All(ctx context.Context) ([]*SSHKey, error) {
 	allSSHKeys := []*SSHKey{}
 
 	opts := SSHKeyListOpts{}
