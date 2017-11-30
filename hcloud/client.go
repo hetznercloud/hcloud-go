@@ -18,30 +18,6 @@ import (
 // UserAgent is the value for the User-Agent header sent with each request.
 const UserAgent = "hcloud-go/" + Version
 
-// ErrorCode represents an error code returned from the API.
-type ErrorCode string
-
-const (
-	// ErrorCodeServiceError is the code for a generic service error.
-	ErrorCodeServiceError ErrorCode = "service_error"
-
-	// ErrorCodeLimitReached is the code when rate limit is reached.
-	ErrorCodeLimitReached = "limit_reached"
-
-	// ErrorCodeUnknownError is the code for an unknown error.
-	ErrorCodeUnknownError = "unknown_error"
-)
-
-// Error is an error returned from the API.
-type Error struct {
-	Code    ErrorCode
-	Message string
-}
-
-func (e Error) Error() string {
-	return fmt.Sprintf("%s (%s)", e.Message, e.Code)
-}
-
 // A BackoffFunc returns the duration to wait before performing the
 // next retry. The retries argument specifies how many retries have
 // already been performed. When called for the first time, retries is 0.
