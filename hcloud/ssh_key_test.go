@@ -68,6 +68,12 @@ func TestSSHKeyClientList(t *testing.T) {
 	defer env.Teardown()
 
 	env.Mux.HandleFunc("/ssh_keys", func(w http.ResponseWriter, r *http.Request) {
+		if page := r.URL.Query().Get("page"); page != "2" {
+			t.Errorf("expected page 2; got %q", page)
+		}
+		if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
+			t.Errorf("expected per_page 50; got %q", perPage)
+		}
 		fmt.Fprint(w, `{
 			"ssh_keys": [
 				{
@@ -86,8 +92,12 @@ func TestSSHKeyClientList(t *testing.T) {
 		}`)
 	})
 
+	opts := SSHKeyListOpts{}
+	opts.Page = 2
+	opts.PerPage = 50
+
 	ctx := context.Background()
-	sshKeys, _, err := env.Client.SSHKey.List(ctx)
+	sshKeys, _, err := env.Client.SSHKey.List(ctx, opts)
 	if err != nil {
 		t.Fatalf("SSHKey.List failed: %s", err)
 	}
