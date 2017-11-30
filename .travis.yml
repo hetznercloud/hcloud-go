@@ -3,4 +3,3 @@ go:
   - 1.8
   - 1.9
   - master
-go_import_path: hetzner.cloud/hcloud

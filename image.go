@@ -1,4 +1,4 @@
-package hcloud // import "hetzner.cloud/hcloud"
+package hcloud
 
 // Image represents an Image in the Hetzner Cloud.
 type Image struct {
