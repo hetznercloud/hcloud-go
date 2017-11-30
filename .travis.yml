@@ -4,5 +4,9 @@ go:
   - 1.9
   - master
 before_script:
+  - go get github.com/golang/lint/golint
+script:
   - diff -u <(echo -n) <(gofmt -d -s .)
   - go vet ./...
+  - golint -set_exit_status ./...
+  - go test ./...
