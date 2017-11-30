@@ -15,6 +15,9 @@ import (
 	"time"
 )
 
+// UserAgent is the value for the User-Agent header sent with each request.
+const UserAgent = "hcloud-go/" + Version
+
 // ErrorCode represents an error code returned from the API.
 type ErrorCode string
 
@@ -117,7 +120,7 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, body io.Re
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("User-Agent", "hcloud-go/1.0.0")
+	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
