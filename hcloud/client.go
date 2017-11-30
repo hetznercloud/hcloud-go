@@ -166,6 +166,31 @@ func (c *Client) backoff(retries int) {
 	time.Sleep(c.backoffFunc(retries))
 }
 
+func (c *Client) all(f func(int) (*Response, error)) (*Response, error) {
+	var (
+		retries = 0
+		page    = 1
+	)
+	for {
+		resp, err := f(page)
+		if err != nil {
+			if err, ok := err.(Error); ok {
+				if err.Code == ErrorCodeLimitReached {
+					c.backoff(retries)
+					retries++
+					continue
+				}
+			}
+			return nil, err
+		}
+		retries = 0
+		if resp.Meta.Pagination == nil || resp.Meta.Pagination.NextPage == 0 {
+			return resp, nil
+		}
+		page = resp.Meta.Pagination.NextPage
+	}
+}
+
 func errorFromResponse(resp *http.Response, body []byte) error {
 	if !strings.HasPrefix(resp.Header.Get("Content-Type"), "application/json") {
 		return nil

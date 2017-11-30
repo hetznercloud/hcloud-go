@@ -233,34 +233,22 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server
 
 // ListAll returns all servers by going through all pages.
 func (c *ServerClient) ListAll(ctx context.Context) ([]*Server, error) {
-	var (
-		allServers []*Server
-		opts       ServerListOpts
-		retries    int
-	)
+	allServers := []*Server{}
 
-	opts.Page = 1
+	opts := ServerListOpts{}
 	opts.PerPage = 50
 
-	for {
+	_, err := c.client.all(func(page int) (*Response, error) {
+		opts.Page = page
 		servers, resp, err := c.List(ctx, opts)
 		if err != nil {
-			if err, ok := err.(Error); ok {
-				if err.Code == ErrorCodeLimitReached {
-					c.client.backoff(retries)
-					retries++
-					continue
-				}
-			}
-			return nil, err
+			return resp, err
 		}
-		retries = 0
 		allServers = append(allServers, servers...)
-		if resp.Meta.Pagination != nil && resp.Meta.Pagination.NextPage != 0 {
-			opts.Page = resp.Meta.Pagination.NextPage
-		} else {
-			break
-		}
+		return resp, nil
+	})
+	if err != nil {
+		return nil, err
 	}
 
 	return allServers, nil
