@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestServerUnmarshalJSON(t *testing.T) {
+func TestServerFromSchema(t *testing.T) {
 	data := []byte(`{
 		"id": 1,
 		"name": "server.example.com",
@@ -48,69 +50,71 @@ func TestServerUnmarshalJSON(t *testing.T) {
 		}
 	}`)
 
-	var v Server
-	if err := json.Unmarshal(data, &v); err != nil {
+	var s schema.Server
+	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
+	server := ServerFromSchema(s)
 
-	if v.ID != 1 {
-		t.Errorf("unexpected ID: %v", v.ID)
+	if server.ID != 1 {
+		t.Errorf("unexpected ID: %v", server.ID)
 	}
-	if v.Name != "server.example.com" {
-		t.Errorf("unexpected name: %v", v.Name)
+	if server.Name != "server.example.com" {
+		t.Errorf("unexpected name: %v", server.Name)
 	}
-	if v.Status != ServerStatusRunning {
-		t.Errorf("unexpected status: %v", v.Status)
+	if server.Status != ServerStatusRunning {
+		t.Errorf("unexpected status: %v", server.Status)
 	}
-	if !v.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
-		t.Errorf("unexpected created date: %v", v.Created)
+	if !server.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
+		t.Errorf("unexpected created date: %v", server.Created)
 	}
-	if v.PublicNet.IPv4.IP != "1.2.3.4" {
-		t.Errorf("unexpected public net IPv4 IP: %v", v.PublicNet.IPv4.IP)
+	if server.PublicNet.IPv4.IP != "1.2.3.4" {
+		t.Errorf("unexpected public net IPv4 IP: %v", server.PublicNet.IPv4.IP)
 	}
-	if v.ServerType.ID != 2 {
-		t.Errorf("unexpected server type ID: %v", v.ServerType.ID)
+	if server.ServerType.ID != 2 {
+		t.Errorf("unexpected server type ID: %v", server.ServerType.ID)
 	}
-	if v.IncludedTraffic != 654321 {
-		t.Errorf("unexpected included traffic: %v", v.IncludedTraffic)
+	if server.IncludedTraffic != 654321 {
+		t.Errorf("unexpected included traffic: %v", server.IncludedTraffic)
 	}
-	if v.OutgoingTraffic != 123456 {
-		t.Errorf("unexpected outgoing traffic: %v", v.OutgoingTraffic)
+	if server.OutgoingTraffic != 123456 {
+		t.Errorf("unexpected outgoing traffic: %v", server.OutgoingTraffic)
 	}
-	if v.IngoingTraffic != 7891011 {
-		t.Errorf("unexpected ingoing traffic: %v", v.IngoingTraffic)
+	if server.IngoingTraffic != 7891011 {
+		t.Errorf("unexpected ingoing traffic: %v", server.IngoingTraffic)
 	}
-	if v.BackupWindow != "22-02" {
-		t.Errorf("unexpected backup window: %v", v.BackupWindow)
+	if server.BackupWindow != "22-02" {
+		t.Errorf("unexpected backup window: %v", server.BackupWindow)
 	}
-	if !v.RescueEnabled {
-		t.Errorf("unexpected rescue enabled state: %v", v.RescueEnabled)
+	if !server.RescueEnabled {
+		t.Errorf("unexpected rescue enabled state: %v", server.RescueEnabled)
 	}
-	if v.ISO == nil || v.ISO.ID != 4711 {
-		t.Errorf("unexpected ISO: %v", v.ISO)
+	if server.ISO == nil || server.ISO.ID != 4711 {
+		t.Errorf("unexpected ISO: %v", server.ISO)
 	}
 }
 
-func TestServerUnmarshalJSONNoTraffic(t *testing.T) {
+func TestServerFromSchemaNoTraffic(t *testing.T) {
 	data := []byte(`{
 		"outgoing_traffic": null,
 		"ingoing_traffic": null
 	}`)
 
-	var v Server
-	if err := json.Unmarshal(data, &v); err != nil {
+	var s schema.Server
+	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
+	server := ServerFromSchema(s)
 
-	if v.OutgoingTraffic != 0 {
-		t.Errorf("unexpected outgoing traffic: %v", v.OutgoingTraffic)
+	if server.OutgoingTraffic != 0 {
+		t.Errorf("unexpected outgoing traffic: %v", server.OutgoingTraffic)
 	}
-	if v.IngoingTraffic != 0 {
-		t.Errorf("unexpected ingoing traffic: %v", v.IngoingTraffic)
+	if server.IngoingTraffic != 0 {
+		t.Errorf("unexpected ingoing traffic: %v", server.IngoingTraffic)
 	}
 }
 
-func TestServerPublicNetUnmarshalJSON(t *testing.T) {
+func TestServerPublicNetFromSchema(t *testing.T) {
 	data := []byte(`{
 		"ipv4": {
 			"ip": "1.2.3.4",
@@ -125,46 +129,48 @@ func TestServerPublicNetUnmarshalJSON(t *testing.T) {
       		"floating_ips": [4]
 	}`)
 
-	var v ServerPublicNet
-	if err := json.Unmarshal(data, &v); err != nil {
+	var s schema.ServerPublicNet
+	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
+	publicNet := ServerPublicNetFromSchema(s)
 
-	if v.IPv4.IP != "1.2.3.4" {
-		t.Errorf("unexpected IPv4 IP: %v", v.IPv4.IP)
+	if publicNet.IPv4.IP != "1.2.3.4" {
+		t.Errorf("unexpected IPv4 IP: %v", publicNet.IPv4.IP)
 	}
-	if v.IPv6.IP != "2a01:4f8:1c19:1403::/64" {
-		t.Errorf("unexpected IPv6 IP: %v", v.IPv6.IP)
+	if publicNet.IPv6.IP != "2a01:4f8:1c19:1403::/64" {
+		t.Errorf("unexpected IPv6 IP: %v", publicNet.IPv6.IP)
 	}
-	if len(v.FloatingIPs) != 1 || v.FloatingIPs[0].ID != 4 {
-		t.Errorf("unexpected Floating IPs: %v", v.FloatingIPs)
+	if len(publicNet.FloatingIPs) != 1 || publicNet.FloatingIPs[0].ID != 4 {
+		t.Errorf("unexpected Floating IPs: %v", publicNet.FloatingIPs)
 	}
 }
 
-func TestServerPublicNetIPv4UnmarshalJSON(t *testing.T) {
+func TestServerPublicNetIPv4FromSchema(t *testing.T) {
 	data := []byte(`{
 		"ip": "1.2.3.4",
 		"blocked": true,
 		"dns_ptr": "server.example.com"
 	}`)
 
-	var v ServerPublicNetIPv4
-	if err := json.Unmarshal(data, &v); err != nil {
+	var s schema.ServerPublicNetIPv4
+	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
+	ipv4 := ServerPublicNetIPv4FromSchema(s)
 
-	if v.IP != "1.2.3.4" {
-		t.Errorf("unexpected IP: %v", v.IP)
+	if ipv4.IP != "1.2.3.4" {
+		t.Errorf("unexpected IP: %v", ipv4.IP)
 	}
-	if !v.Blocked {
-		t.Errorf("unexpected blocked state: %v", v.Blocked)
+	if !ipv4.Blocked {
+		t.Errorf("unexpected blocked state: %v", ipv4.Blocked)
 	}
-	if v.DNSPtr != "server.example.com" {
-		t.Errorf("unexpected DNS ptr: %v", v.DNSPtr)
+	if ipv4.DNSPtr != "server.example.com" {
+		t.Errorf("unexpected DNS ptr: %v", ipv4.DNSPtr)
 	}
 }
 
-func TestServerPublicNetIPv6UnmarshalJSON(t *testing.T) {
+func TestServerPublicNetIPv6FromSchema(t *testing.T) {
 	data := []byte(`{
 		"ip": "2a01:4f8:1c11:3400::/64",
 		"blocked": true,
@@ -176,38 +182,40 @@ func TestServerPublicNetIPv6UnmarshalJSON(t *testing.T) {
 		]
 	}`)
 
-	var v ServerPublicNetIPv6
-	if err := json.Unmarshal(data, &v); err != nil {
+	var s schema.ServerPublicNetIPv6
+	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
+	ipv6 := ServerPublicNetIPv6FromSchema(s)
 
-	if v.IP != "2a01:4f8:1c11:3400::/64" {
-		t.Errorf("unexpected IP: %v", v.IP)
+	if ipv6.IP != "2a01:4f8:1c11:3400::/64" {
+		t.Errorf("unexpected IP: %v", ipv6.IP)
 	}
-	if !v.Blocked {
-		t.Errorf("unexpected blocked state: %v", v.Blocked)
+	if !ipv6.Blocked {
+		t.Errorf("unexpected blocked state: %v", ipv6.Blocked)
 	}
-	if len(v.DNSPtr) != 1 {
-		t.Errorf("unexpected DNS ptr: %v", v.DNSPtr)
+	if len(ipv6.DNSPtr) != 1 {
+		t.Errorf("unexpected DNS ptr: %v", ipv6.DNSPtr)
 	}
 }
 
-func TestServerPublicNetIPv6DNSPtrUnmarshalJSON(t *testing.T) {
+func TestServerPublicNetIPv6DNSPtrFromSchema(t *testing.T) {
 	data := []byte(`{
 		"ip": "2a01:4f8:1c11:3400::1/64",
 		"dns_ptr": "server01.example.com"
 	}`)
 
-	var v ServerPublicNetIPv6DNSPtr
-	if err := json.Unmarshal(data, &v); err != nil {
+	var s schema.ServerPublicNetIPv6DNSPtr
+	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
+	dnsPtr := ServerPublicNetIPv6DNSPtrFromSchema(s)
 
-	if v.IP != "2a01:4f8:1c11:3400::1/64" {
-		t.Errorf("unexpected IP: %v", v.IP)
+	if dnsPtr.IP != "2a01:4f8:1c11:3400::1/64" {
+		t.Errorf("unexpected IP: %v", dnsPtr.IP)
 	}
-	if v.DNSPtr != "server01.example.com" {
-		t.Errorf("unexpected DNS ptr: %v", v.DNSPtr)
+	if dnsPtr.DNSPtr != "server01.example.com" {
+		t.Errorf("unexpected DNS ptr: %v", dnsPtr.DNSPtr)
 	}
 }
 

@@ -2,9 +2,10 @@ package hcloud
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 // Action represents an action in the Hetzner Cloud.
@@ -19,35 +20,21 @@ type Action struct {
 	ErrorMessage string
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (a *Action) UnmarshalJSON(data []byte) error {
-	var v struct {
-		ID       int       `json:"id"`
-		Status   string    `json:"status"`
-		Command  string    `json:"command"`
-		Progress int       `json:"progress"`
-		Started  time.Time `json:"started"`
-		Finished time.Time `json:"finished"`
-		Error    struct {
-			Code    string `json:"code"`
-			Message string `json:"message"`
-		} `json:"error"`
+// ActionFromSchema converts a schema.Action to an Action.
+func ActionFromSchema(s schema.Action) Action {
+	action := Action{
+		ID:       s.ID,
+		Status:   s.Status,
+		Command:  s.Command,
+		Progress: s.Progress,
+		Started:  s.Started,
+		Finished: s.Finished,
 	}
-
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
+	if s.Error != nil {
+		action.ErrorCode = s.Error.Code
+		action.ErrorMessage = s.Error.Message
 	}
-
-	a.ID = v.ID
-	a.Status = v.Status
-	a.Command = v.Command
-	a.Progress = v.Progress
-	a.Started = v.Started
-	a.Finished = v.Finished
-	a.ErrorCode = v.Error.Code
-	a.ErrorMessage = v.Error.Message
-
-	return nil
+	return action
 }
 
 // ActionClient is a client for the actions API.
@@ -63,11 +50,12 @@ func (c *ActionClient) Get(ctx context.Context, id int) (*Action, *Response, err
 	}
 
 	var body struct {
-		Action *Action `json:"action"`
+		Action schema.Action `json:"action"`
 	}
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err
 	}
-	return body.Action, resp, nil
+	action := ActionFromSchema(body.Action)
+	return &action, resp, nil
 }

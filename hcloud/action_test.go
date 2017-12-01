@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"testing"
 	"time"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestActionUnmarshalJSON(t *testing.T) {
+func TestActionFromSchema(t *testing.T) {
 	data := []byte(`{
 		"id": 1,
 		"command": "create_server",
@@ -26,33 +28,34 @@ func TestActionUnmarshalJSON(t *testing.T) {
 		}
 	}`)
 
-	var v Action
-	if err := json.Unmarshal(data, &v); err != nil {
+	var s schema.Action
+	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
+	action := ActionFromSchema(s)
 
-	if v.ID != 1 {
-		t.Errorf("unexpected ID: %v", v.ID)
+	if action.ID != 1 {
+		t.Errorf("unexpected ID: %v", action.ID)
 	}
-	if v.Command != "create_server" {
-		t.Errorf("unexpected command: %v", v.Command)
+	if action.Command != "create_server" {
+		t.Errorf("unexpected command: %v", action.Command)
 	}
-	if v.Status != "success" {
-		t.Errorf("unexpected status: %v", v.Status)
+	if action.Status != "success" {
+		t.Errorf("unexpected status: %v", action.Status)
 	}
-	if v.Progress != 100 {
-		t.Errorf("unexpected progress: %d", v.Progress)
+	if action.Progress != 100 {
+		t.Errorf("unexpected progress: %d", action.Progress)
 	}
-	if !v.Started.Equal(time.Date(2016, 1, 30, 23, 55, 0, 0, time.UTC)) {
-		t.Errorf("unexpected started: %v", v.Started)
+	if !action.Started.Equal(time.Date(2016, 1, 30, 23, 55, 0, 0, time.UTC)) {
+		t.Errorf("unexpected started: %v", action.Started)
 	}
-	if !v.Finished.Equal(time.Date(2016, 1, 30, 23, 56, 13, 0, time.UTC)) {
-		t.Errorf("unexpected finished: %v", v.Started)
+	if !action.Finished.Equal(time.Date(2016, 1, 30, 23, 56, 13, 0, time.UTC)) {
+		t.Errorf("unexpected finished: %v", action.Started)
 	}
-	if v.ErrorCode != "action_failed" {
-		t.Errorf("unexpected error code: %v", v.ErrorCode)
+	if action.ErrorCode != "action_failed" {
+		t.Errorf("unexpected error code: %v", action.ErrorCode)
 	}
-	if v.ErrorMessage != "Action failed" {
-		t.Errorf("unexpected error message: %v", v.ErrorMessage)
+	if action.ErrorMessage != "Action failed" {
+		t.Errorf("unexpected error message: %v", action.ErrorMessage)
 	}
 }
