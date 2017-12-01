@@ -1,6 +1,6 @@
 package hcloud
 
-import "encoding/json"
+import "github.com/hetznercloud/hcloud-go/hcloud/schema"
 
 // ServerType represents a server type in the Hetzner Cloud.
 type ServerType struct {
@@ -13,31 +13,17 @@ type ServerType struct {
 	StorageType StorageType
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (s *ServerType) UnmarshalJSON(data []byte) error {
-	var serverType struct {
-		ID          int     `json:"id"`
-		Name        string  `json:"name"`
-		Description string  `json:"description"`
-		Cores       int     `json:"cores"`
-		Memory      float32 `json:"memory"`
-		Disk        int     `json:"disk"`
-		StorageType string  `json:"storage_type"`
+// ServerTypeFromSchema converts a schema.ServerType to a ServerType.
+func ServerTypeFromSchema(s schema.ServerType) ServerType {
+	return ServerType{
+		ID:          s.ID,
+		Name:        s.Name,
+		Description: s.Description,
+		Cores:       s.Cores,
+		Memory:      s.Memory,
+		Disk:        s.Disk,
+		StorageType: StorageType(s.StorageType),
 	}
-
-	if err := json.Unmarshal(data, &serverType); err != nil {
-		return err
-	}
-
-	s.ID = serverType.ID
-	s.Name = serverType.Name
-	s.Description = serverType.Description
-	s.Cores = serverType.Cores
-	s.Memory = serverType.Memory
-	s.Disk = serverType.Disk
-	s.StorageType = StorageType(serverType.StorageType)
-
-	return nil
 }
 
 // StorageType specifies the type of storage.

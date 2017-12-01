@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 // SSHKey represents a SSH key in the Hetzner Cloud.
@@ -16,25 +18,14 @@ type SSHKey struct {
 	PublicKey   string
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (s *SSHKey) UnmarshalJSON(data []byte) error {
-	var v struct {
-		ID          int    `json:"id"`
-		Name        string `json:"name"`
-		Fingerprint string `json:"fingerprint"`
-		PublicKey   string `json:"public_key"`
+// SSHKeyFromSchema converts a schema.SSHKey to a SSHKey.
+func SSHKeyFromSchema(s schema.SSHKey) SSHKey {
+	return SSHKey{
+		ID:          s.ID,
+		Name:        s.Name,
+		Fingerprint: s.Fingerprint,
+		PublicKey:   s.PublicKey,
 	}
-
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-
-	s.ID = v.ID
-	s.Name = v.Name
-	s.Fingerprint = v.Fingerprint
-	s.PublicKey = v.PublicKey
-
-	return nil
 }
 
 // SSHKeyClient is a client for the SSH keys API.
@@ -50,13 +41,14 @@ func (c *SSHKeyClient) Get(ctx context.Context, id int) (*SSHKey, *Response, err
 	}
 
 	var body struct {
-		SSHKey *SSHKey `json:"ssh_key"`
+		SSHKey schema.SSHKey `json:"ssh_key"`
 	}
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err
 	}
-	return body.SSHKey, resp, nil
+	sshKey := SSHKeyFromSchema(body.SSHKey)
+	return &sshKey, resp, nil
 }
 
 // SSHKeyListOpts specifies options for listing SSH keys.
@@ -73,13 +65,18 @@ func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey
 	}
 
 	var body struct {
-		SSHKeys []*SSHKey `json:"ssh_keys"`
+		SSHKeys []schema.SSHKey `json:"ssh_keys"`
 	}
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err
 	}
-	return body.SSHKeys, resp, nil
+	sshKeys := make([]*SSHKey, 0, len(body.SSHKeys))
+	for _, s := range body.SSHKeys {
+		sshKey := SSHKeyFromSchema(s)
+		sshKeys = append(sshKeys, &sshKey)
+	}
+	return sshKeys, resp, nil
 }
 
 // All returns all SSH keys.
@@ -146,13 +143,14 @@ func (c *SSHKeyClient) Create(ctx context.Context, opts SSHKeyCreateOpts) (*SSHK
 	}
 
 	var respBody struct {
-		SSHKey *SSHKey `json:"ssh_key"`
+		SSHKey schema.SSHKey `json:"ssh_key"`
 	}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return respBody.SSHKey, resp, nil
+	sshKey := SSHKeyFromSchema(respBody.SSHKey)
+	return &sshKey, resp, nil
 }
 
 // Delete deletes a SSH key.

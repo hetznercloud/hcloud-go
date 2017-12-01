@@ -7,6 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 // Server represents a server in the Hetzner Cloud.
@@ -25,41 +27,26 @@ type Server struct {
 	ISO             *ISO
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (s *Server) UnmarshalJSON(data []byte) error {
-	var v struct {
-		ID              int             `json:"id"`
-		Name            string          `json:"name"`
-		Status          string          `json:"status"`
-		Created         time.Time       `json:"created"`
-		PublicNet       ServerPublicNet `json:"public_net"`
-		ServerType      ServerType      `json:"server_type"`
-		IncludedTraffic uint64          `json:"included_traffic"`
-		OutgoingTraffic uint64          `json:"outgoing_traffic"`
-		IngoingTraffic  uint64          `json:"ingoing_traffic"`
-		BackupWindow    string          `json:"backup_window"`
-		RescueEnabled   bool            `json:"rescue_enabled"`
-		ISO             *ISO            `json:"iso"`
+// ServerFromSchema converts a schema.Server to a Server.
+func ServerFromSchema(s schema.Server) Server {
+	server := Server{
+		ID:              s.ID,
+		Name:            s.Name,
+		Status:          ServerStatus(s.Status),
+		Created:         s.Created,
+		PublicNet:       ServerPublicNetFromSchema(s.PublicNet),
+		ServerType:      ServerTypeFromSchema(s.ServerType),
+		IncludedTraffic: s.IncludedTraffic,
+		OutgoingTraffic: s.OutgoingTraffic,
+		IngoingTraffic:  s.IngoingTraffic,
+		BackupWindow:    s.BackupWindow,
+		RescueEnabled:   s.RescueEnabled,
 	}
-
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
+	if s.ISO != nil {
+		iso := ISOFromSchema(*s.ISO)
+		server.ISO = &iso
 	}
-
-	s.ID = v.ID
-	s.Name = v.Name
-	s.Status = ServerStatus(v.Status)
-	s.Created = v.Created
-	s.PublicNet = v.PublicNet
-	s.ServerType = v.ServerType
-	s.IncludedTraffic = v.IncludedTraffic
-	s.OutgoingTraffic = v.OutgoingTraffic
-	s.IngoingTraffic = v.IngoingTraffic
-	s.BackupWindow = v.BackupWindow
-	s.RescueEnabled = v.RescueEnabled
-	s.ISO = v.ISO
-
-	return nil
+	return server
 }
 
 // ServerStatus specifies a server's status.
@@ -83,26 +70,16 @@ type ServerPublicNet struct {
 	FloatingIPs []*FloatingIP
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (s *ServerPublicNet) UnmarshalJSON(data []byte) error {
-	var v struct {
-		IPv4        ServerPublicNetIPv4 `json:"ipv4"`
-		IPv6        ServerPublicNetIPv6 `json:"ipv6"`
-		FloatingIPs []int               `json:"floating_ips"`
+// ServerPublicNetFromSchema converts a schema.ServerPublicNet to a ServerPublicNet.
+func ServerPublicNetFromSchema(s schema.ServerPublicNet) ServerPublicNet {
+	publicNet := ServerPublicNet{
+		IPv4: ServerPublicNetIPv4FromSchema(s.IPv4),
+		IPv6: ServerPublicNetIPv6FromSchema(s.IPv6),
 	}
-
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
+	for _, id := range s.FloatingIPs {
+		publicNet.FloatingIPs = append(publicNet.FloatingIPs, &FloatingIP{ID: id})
 	}
-
-	s.IPv4 = v.IPv4
-	s.IPv6 = v.IPv6
-
-	for _, f := range v.FloatingIPs {
-		s.FloatingIPs = append(s.FloatingIPs, &FloatingIP{ID: f})
-	}
-
-	return nil
+	return publicNet
 }
 
 // ServerPublicNetIPv4 represents a server's public IPv4 network.
@@ -112,23 +89,14 @@ type ServerPublicNetIPv4 struct {
 	DNSPtr  string
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (s *ServerPublicNetIPv4) UnmarshalJSON(data []byte) error {
-	var v struct {
-		IP      string `json:"ip"`
-		Blocked bool   `json:"blocked"`
-		DNSPtr  string `json:"dns_ptr"`
+// ServerPublicNetIPv4FromSchema converts a schema.ServerPublicNetIPv4 to
+// a ServerPublicNetIPv4.
+func ServerPublicNetIPv4FromSchema(s schema.ServerPublicNetIPv4) ServerPublicNetIPv4 {
+	return ServerPublicNetIPv4{
+		IP:      s.IP,
+		Blocked: s.Blocked,
+		DNSPtr:  s.DNSPtr,
 	}
-
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-
-	s.IP = v.IP
-	s.Blocked = v.Blocked
-	s.DNSPtr = v.DNSPtr
-
-	return nil
 }
 
 // ServerPublicNetIPv6 represents a server's public IPv6 network.
@@ -138,23 +106,17 @@ type ServerPublicNetIPv6 struct {
 	DNSPtr  []ServerPublicNetIPv6DNSPtr
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (s *ServerPublicNetIPv6) UnmarshalJSON(data []byte) error {
-	var v struct {
-		IP      string                      `json:"ip"`
-		Blocked bool                        `json:"blocked"`
-		DNSPtr  []ServerPublicNetIPv6DNSPtr `json:"dns_ptr"`
+// ServerPublicNetIPv6FromSchema converts a schema.ServerPublicNetIPv6 to
+// a ServerPublicNetIPv6.
+func ServerPublicNetIPv6FromSchema(s schema.ServerPublicNetIPv6) ServerPublicNetIPv6 {
+	ipv6 := ServerPublicNetIPv6{
+		IP:      s.IP,
+		Blocked: s.Blocked,
 	}
-
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
+	for _, dnsPtr := range s.DNSPtr {
+		ipv6.DNSPtr = append(ipv6.DNSPtr, ServerPublicNetIPv6DNSPtrFromSchema(dnsPtr))
 	}
-
-	s.IP = v.IP
-	s.Blocked = v.Blocked
-	s.DNSPtr = v.DNSPtr
-
-	return nil
+	return ipv6
 }
 
 // ServerPublicNetIPv6DNSPtr represents a server's public IPv6 reverse DNS.
@@ -163,21 +125,13 @@ type ServerPublicNetIPv6DNSPtr struct {
 	DNSPtr string
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (s *ServerPublicNetIPv6DNSPtr) UnmarshalJSON(data []byte) error {
-	var v struct {
-		IP     string `json:"ip"`
-		DNSPtr string `json:"dns_ptr"`
+// ServerPublicNetIPv6DNSPtrFromSchema converts a schema.ServerPublicNetIPv6DNSPtr
+// to a ServerPublicNetIPv6DNSPtr.
+func ServerPublicNetIPv6DNSPtrFromSchema(s schema.ServerPublicNetIPv6DNSPtr) ServerPublicNetIPv6DNSPtr {
+	return ServerPublicNetIPv6DNSPtr{
+		IP:     s.IP,
+		DNSPtr: s.DNSPtr,
 	}
-
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-
-	s.IP = v.IP
-	s.DNSPtr = v.DNSPtr
-
-	return nil
 }
 
 // ServerClient is a client for the servers API.
@@ -193,13 +147,14 @@ func (c *ServerClient) Get(ctx context.Context, id int) (*Server, *Response, err
 	}
 
 	var body struct {
-		Server *Server `json:"server"`
+		Server schema.Server `json:"server"`
 	}
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err
 	}
-	return body.Server, resp, nil
+	server := ServerFromSchema(body.Server)
+	return &server, resp, nil
 }
 
 // ServerListOpts specifies options for listing servers.
@@ -216,13 +171,18 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server
 	}
 
 	var body struct {
-		Servers []*Server `json:"servers"`
+		Servers []schema.Server `json:"servers"`
 	}
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err
 	}
-	return body.Servers, resp, nil
+	servers := make([]*Server, 0, len(body.Servers))
+	for _, s := range body.Servers {
+		server := ServerFromSchema(s)
+		servers = append(servers, &server)
+	}
+	return servers, resp, nil
 }
 
 // All returns all servers.
@@ -307,17 +267,22 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		return ServerCreateResult{}, nil, err
 	}
 
-	var respBody struct {
-		Server *Server `json:"server"`
-		Action *Action `json:"action"`
-	}
+	var (
+		respBody struct {
+			Server schema.Server  `json:"server"`
+			Action *schema.Action `json:"action"`
+		}
+		result ServerCreateResult
+	)
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return ServerCreateResult{}, resp, err
 	}
-	result := ServerCreateResult{
-		Server: respBody.Server,
-		Action: respBody.Action,
+	server := ServerFromSchema(respBody.Server)
+	result.Server = &server
+	if respBody.Action != nil {
+		action := ActionFromSchema(*respBody.Action)
+		result.Action = &action
 	}
 	return result, resp, nil
 }

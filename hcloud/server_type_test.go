@@ -3,9 +3,11 @@ package hcloud
 import (
 	"encoding/json"
 	"testing"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestServerTypeUnmarshalJSON(t *testing.T) {
+func TestServerTypeFromSchema(t *testing.T) {
 	data := []byte(`{
 		"id": 1,
 		"name": "cx10",
@@ -16,10 +18,11 @@ func TestServerTypeUnmarshalJSON(t *testing.T) {
 		"storage_type": "local"
 	}`)
 
-	var serverType ServerType
-	if err := json.Unmarshal(data, &serverType); err != nil {
+	var s schema.ServerType
+	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
+	serverType := ServerTypeFromSchema(s)
 
 	if serverType.ID != 1 {
 		t.Errorf("unexpected ID: %v", serverType.ID)
