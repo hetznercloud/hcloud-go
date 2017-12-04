@@ -219,22 +219,22 @@ func TestServerPublicNetIPv6DNSPtrFromSchema(t *testing.T) {
 	}
 }
 
-func TestServersGet(t *testing.T) {
+func TestServerClientGet(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
 	env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `{
-			"server": {
-				"id": 1
-			}
-		}`)
+		json.NewEncoder(w).Encode(schema.ServerGetResponse{
+			Server: schema.Server{
+				ID: 1,
+			},
+		})
 	})
 
 	ctx := context.Background()
 	server, _, err := env.Client.Server.Get(ctx, 1)
 	if err != nil {
-		t.Fatalf("Servers.Get failed: %s", err)
+		t.Fatal(err)
 	}
 	if server == nil {
 		t.Fatal("no server")
@@ -255,16 +255,12 @@ func TestServersList(t *testing.T) {
 		if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
 			t.Errorf("expected per_page 50; got %q", perPage)
 		}
-		fmt.Fprint(w, `{
-			"servers": [
-				{
-					"id": 1
-				},
-				{
-					"id": 2
-				}
-			]
-		}`)
+		json.NewEncoder(w).Encode(schema.ServerListResponse{
+			Servers: []schema.Server{
+				{ID: 1},
+				{ID: 2},
+			},
+		})
 	})
 
 	opts := ServerListOpts{}
@@ -274,7 +270,7 @@ func TestServersList(t *testing.T) {
 	ctx := context.Background()
 	servers, _, err := env.Client.Server.List(ctx, opts)
 	if err != nil {
-		t.Fatalf("Servers.List failed: %s", err)
+		t.Fatal(err)
 	}
 	if len(servers) != 2 {
 		t.Fatal("expected 2 servers")
