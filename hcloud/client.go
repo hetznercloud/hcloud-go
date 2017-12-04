@@ -48,9 +48,10 @@ type Client struct {
 	backoffFunc BackoffFunc
 	httpClient  *http.Client
 
-	Action ActionClient
-	Server ServerClient
-	SSHKey SSHKeyClient
+	Action     ActionClient
+	FloatingIP FloatingIPClient
+	Server     ServerClient
+	SSHKey     SSHKeyClient
 }
 
 // A ClientOption is used to configure a Client.
@@ -89,6 +90,7 @@ func NewClient(options ...ClientOption) *Client {
 	}
 
 	client.Action = ActionClient{client: client}
+	client.FloatingIP = FloatingIPClient{client: client}
 	client.Server = ServerClient{client: client}
 	client.SSHKey = SSHKeyClient{client: client}
 
