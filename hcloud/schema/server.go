@@ -1,6 +1,10 @@
 package schema
 
-import "time"
+import (
+	"time"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/api/v1"
+)
 
 // Server defines the schema of a server.
 type Server struct {
@@ -72,6 +76,6 @@ type ServerCreateRequest struct {
 // ServerCreateResponse defines the schema of the response when
 // creating a server.
 type ServerCreateResponse struct {
-	Server Server `json:"server"`
-	Action Action `json:"action"`
+	Server Server    `json:"server"`
+	Action v1.Action `json:"action"`
 }

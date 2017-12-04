@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/hcloud/api"
+	"github.com/hetznercloud/hcloud-go/hcloud/api/v1"
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
@@ -225,7 +227,7 @@ func (o ServerCreateOpts) Validate() error {
 // ServerCreateResult is the result of a create server call.
 type ServerCreateResult struct {
 	Server *Server
-	Action *Action
+	Action *api.Action
 }
 
 // Create creates a new server.
@@ -261,9 +263,15 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	if err != nil {
 		return ServerCreateResult{}, resp, err
 	}
+
+	action := &api.Action{}
+	if err := v1.Scheme.Convert(&respBody.Action, action); err != nil {
+		return ServerCreateResult{}, resp, err
+	}
+
 	return ServerCreateResult{
 		Server: ServerFromSchema(respBody.Server),
-		Action: ActionFromSchema(respBody.Action),
+		Action: action,
 	}, resp, nil
 }
 
