@@ -1,7 +1,10 @@
 package hcloud
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
@@ -120,4 +123,73 @@ func (c *FloatingIPClient) All(ctx context.Context) ([]*FloatingIP, error) {
 	}
 
 	return allFloatingIPs, nil
+}
+
+// FloatingIPCreateOpts specifies options for creating a Floating IP.
+type FloatingIPCreateOpts struct {
+	Type         FloatingIPType
+	HomeLocation *Location
+	Server       *Server
+	Description  *string
+}
+
+// Validate checks if options are valid.
+func (o FloatingIPCreateOpts) Validate() error {
+	switch o.Type {
+	case FloatingIPTypeIPv4, FloatingIPTypeIPv6:
+		break
+	default:
+		return errors.New("missing or invalid type")
+	}
+	if o.HomeLocation == nil && o.Server == nil {
+		return errors.New("one of home location or server is required")
+	}
+	return nil
+}
+
+// FloatingIPCreateResult is the result of creating a Floating IP.
+type FloatingIPCreateResult struct {
+	FloatingIP *FloatingIP
+	Action     *Action
+}
+
+// Create creates a Floating IP.
+func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts) (FloatingIPCreateResult, *Response, error) {
+	if err := opts.Validate(); err != nil {
+		return FloatingIPCreateResult{}, nil, err
+	}
+
+	reqBody := schema.FloatingIPCreateRequest{
+		Type:        string(opts.Type),
+		Description: opts.Description,
+	}
+	if opts.HomeLocation != nil {
+		reqBody.HomeLocation = String(opts.HomeLocation.Name)
+	}
+	if opts.Server != nil {
+		reqBody.Server = Int(opts.Server.ID)
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return FloatingIPCreateResult{}, nil, err
+	}
+
+	req, err := c.client.NewRequest(ctx, "POST", "/floating_ips", bytes.NewReader(reqBodyData))
+	if err != nil {
+		return FloatingIPCreateResult{}, nil, err
+	}
+
+	var respBody schema.FloatingIPCreateResponse
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return FloatingIPCreateResult{}, resp, err
+	}
+	var action *Action
+	if respBody.Action != nil {
+		action = ActionFromSchema(*respBody.Action)
+	}
+	return FloatingIPCreateResult{
+		FloatingIP: FloatingIPFromSchema(respBody.FloatingIP),
+		Action:     action,
+	}, resp, nil
 }

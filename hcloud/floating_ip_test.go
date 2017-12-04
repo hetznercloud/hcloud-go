@@ -114,3 +114,42 @@ func TestFloatingIPClientList(t *testing.T) {
 		t.Fatal("expected 2 Floating IPs")
 	}
 }
+
+func TestFloatingIPClientCreate(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/floating_ips", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		json.NewEncoder(w).Encode(schema.FloatingIPCreateResponse{
+			FloatingIP: schema.FloatingIP{
+				ID: 1,
+			},
+			Action: &schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	opts := FloatingIPCreateOpts{
+		Type:         FloatingIPTypeIPv4,
+		Description:  String("test"),
+		HomeLocation: &Location{Name: "test"},
+		Server:       &Server{ID: 1},
+	}
+
+	ctx := context.Background()
+	result, _, err := env.Client.FloatingIP.Create(ctx, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.FloatingIP.ID != 1 {
+		t.Errorf("unexpected Floating IP ID: %d", result.FloatingIP.ID)
+	}
+	if result.Action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", result.Action.ID)
+	}
+}
