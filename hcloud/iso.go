@@ -22,8 +22,8 @@ const (
 )
 
 // ISOFromSchema converts a schema.ISO to an ISO.
-func ISOFromSchema(s schema.ISO) ISO {
-	return ISO{
+func ISOFromSchema(s schema.ISO) *ISO {
+	return &ISO{
 		ID:          s.ID,
 		Name:        s.Name,
 		Description: s.Description,

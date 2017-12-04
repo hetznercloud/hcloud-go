@@ -14,8 +14,8 @@ type ServerType struct {
 }
 
 // ServerTypeFromSchema converts a schema.ServerType to a ServerType.
-func ServerTypeFromSchema(s schema.ServerType) ServerType {
-	return ServerType{
+func ServerTypeFromSchema(s schema.ServerType) *ServerType {
+	return &ServerType{
 		ID:          s.ID,
 		Name:        s.Name,
 		Description: s.Description,

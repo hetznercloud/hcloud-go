@@ -18,7 +18,7 @@ type Server struct {
 	Status          ServerStatus
 	Created         time.Time
 	PublicNet       ServerPublicNet
-	ServerType      ServerType
+	ServerType      *ServerType
 	IncludedTraffic uint64
 	OutgoingTraffic uint64
 	IngoingTraffic  uint64
@@ -28,8 +28,8 @@ type Server struct {
 }
 
 // ServerFromSchema converts a schema.Server to a Server.
-func ServerFromSchema(s schema.Server) Server {
-	server := Server{
+func ServerFromSchema(s schema.Server) *Server {
+	server := &Server{
 		ID:              s.ID,
 		Name:            s.Name,
 		Status:          ServerStatus(s.Status),
@@ -43,8 +43,7 @@ func ServerFromSchema(s schema.Server) Server {
 		RescueEnabled:   s.RescueEnabled,
 	}
 	if s.ISO != nil {
-		iso := ISOFromSchema(*s.ISO)
-		server.ISO = &iso
+		server.ISO = ISOFromSchema(*s.ISO)
 	}
 	return server
 }
@@ -151,8 +150,7 @@ func (c *ServerClient) Get(ctx context.Context, id int) (*Server, *Response, err
 	if err != nil {
 		return nil, nil, err
 	}
-	server := ServerFromSchema(body.Server)
-	return &server, resp, nil
+	return ServerFromSchema(body.Server), resp, nil
 }
 
 // ServerListOpts specifies options for listing servers.
@@ -175,8 +173,7 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server
 	}
 	servers := make([]*Server, 0, len(body.Servers))
 	for _, s := range body.Servers {
-		server := ServerFromSchema(s)
-		servers = append(servers, &server)
+		servers = append(servers, ServerFromSchema(s))
 	}
 	return servers, resp, nil
 }
@@ -264,13 +261,9 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	if err != nil {
 		return ServerCreateResult{}, resp, err
 	}
-	var (
-		server = ServerFromSchema(respBody.Server)
-		action = ActionFromSchema(respBody.Action)
-	)
 	return ServerCreateResult{
-		Server: &server,
-		Action: &action,
+		Server: ServerFromSchema(respBody.Server),
+		Action: ActionFromSchema(respBody.Action),
 	}, resp, nil
 }
 

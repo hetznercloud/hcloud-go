@@ -21,8 +21,8 @@ type Action struct {
 }
 
 // ActionFromSchema converts a schema.Action to an Action.
-func ActionFromSchema(s schema.Action) Action {
-	action := Action{
+func ActionFromSchema(s schema.Action) *Action {
+	action := &Action{
 		ID:       s.ID,
 		Status:   s.Status,
 		Command:  s.Command,
@@ -54,6 +54,5 @@ func (c *ActionClient) Get(ctx context.Context, id int) (*Action, *Response, err
 	if err != nil {
 		return nil, nil, err
 	}
-	action := ActionFromSchema(body.Action)
-	return &action, resp, nil
+	return ActionFromSchema(body.Action), resp, nil
 }
