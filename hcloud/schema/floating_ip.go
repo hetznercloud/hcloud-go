@@ -69,3 +69,19 @@ type FloatingIPGetResponse struct {
 type FloatingIPListResponse struct {
 	FloatingIPs []FloatingIP `json:"floating_ips"`
 }
+
+// FloatingIPCreateRequest defines the schema of the request to
+// create a Floating IP.
+type FloatingIPCreateRequest struct {
+	Type         string  `json:"type"`
+	HomeLocation *string `json:"home_location,omitempty"`
+	Server       *int    `json:"server,omitempty"`
+	Description  *string `json:"description,omitempty"`
+}
+
+// FloatingIPCreateResponse defines the schema of the response
+// when creating a Floating IP.
+type FloatingIPCreateResponse struct {
+	FloatingIP FloatingIP `json:"floating_ip"`
+	Action     *Action    `json:"action"`
+}
