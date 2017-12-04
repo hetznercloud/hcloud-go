@@ -19,8 +19,8 @@ type SSHKey struct {
 }
 
 // SSHKeyFromSchema converts a schema.SSHKey to a SSHKey.
-func SSHKeyFromSchema(s schema.SSHKey) SSHKey {
-	return SSHKey{
+func SSHKeyFromSchema(s schema.SSHKey) *SSHKey {
+	return &SSHKey{
 		ID:          s.ID,
 		Name:        s.Name,
 		Fingerprint: s.Fingerprint,
@@ -45,8 +45,7 @@ func (c *SSHKeyClient) Get(ctx context.Context, id int) (*SSHKey, *Response, err
 	if err != nil {
 		return nil, nil, err
 	}
-	sshKey := SSHKeyFromSchema(body.SSHKey)
-	return &sshKey, resp, nil
+	return SSHKeyFromSchema(body.SSHKey), resp, nil
 }
 
 // SSHKeyListOpts specifies options for listing SSH keys.
@@ -69,8 +68,7 @@ func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey
 	}
 	sshKeys := make([]*SSHKey, 0, len(body.SSHKeys))
 	for _, s := range body.SSHKeys {
-		sshKey := SSHKeyFromSchema(s)
-		sshKeys = append(sshKeys, &sshKey)
+		sshKeys = append(sshKeys, SSHKeyFromSchema(s))
 	}
 	return sshKeys, resp, nil
 }
@@ -139,8 +137,7 @@ func (c *SSHKeyClient) Create(ctx context.Context, opts SSHKeyCreateOpts) (*SSHK
 	if err != nil {
 		return nil, resp, err
 	}
-	sshKey := SSHKeyFromSchema(respBody.SSHKey)
-	return &sshKey, resp, nil
+	return SSHKeyFromSchema(respBody.SSHKey), resp, nil
 }
 
 // Delete deletes a SSH key.
