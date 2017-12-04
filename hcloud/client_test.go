@@ -9,6 +9,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 type testEnv struct {
@@ -154,73 +156,38 @@ func TestClientMetaNonJSON(t *testing.T) {
 	}
 }
 
-func TestResponseMetaPaginationUnmarshalJSON(t *testing.T) {
-	testCases := []struct {
-		Data       []byte
-		Pagination ResponseMetaPagination
-	}{
-		{
-			Data: []byte(`{
-				"page": 1,
-				"per_page": 25,
-				"previous_page": null,
-				"next_page": null,
-				"last_page": 1,
-				"total_entries": 5
-		        }`),
-			Pagination: ResponseMetaPagination{
-				Page:         1,
-				PerPage:      25,
-				PreviousPage: 0,
-				NextPage:     0,
-				LastPage:     1,
-				TotalEntries: 5,
-			},
-		},
-		{
-			Data: []byte(`{
-				"page": 2,
-				"per_page": 25,
-				"previous_page": 1,
-				"next_page": 3,
-				"last_page": 13,
-				"total_entries": 322
-		        }`),
-			Pagination: ResponseMetaPagination{
-				Page:         2,
-				PerPage:      25,
-				PreviousPage: 1,
-				NextPage:     3,
-				LastPage:     13,
-				TotalEntries: 322,
-			},
-		},
-	}
+func TestPaginationFromSchema(t *testing.T) {
+	data := []byte(`{
+		"page": 2,
+		"per_page": 25,
+		"previous_page": 1,
+		"next_page": 3,
+		"last_page": 13,
+		"total_entries": 322
+	}`)
 
-	for i, testCase := range testCases {
-		t.Run(fmt.Sprintf("test case %d", i+1), func(t *testing.T) {
-			var p ResponseMetaPagination
-			if err := json.Unmarshal(testCase.Data, &p); err != nil {
-				t.Fatal(err)
-			}
-			if p.Page != testCase.Pagination.Page {
-				t.Errorf("unexpected page: %v", p.Page)
-			}
-			if p.PerPage != testCase.Pagination.PerPage {
-				t.Errorf("unexpected per page: %v", p.PerPage)
-			}
-			if p.PreviousPage != testCase.Pagination.PreviousPage {
-				t.Errorf("unexpected previous page: %v", p.PreviousPage)
-			}
-			if p.NextPage != testCase.Pagination.NextPage {
-				t.Errorf("unexpected next page: %d", p.NextPage)
-			}
-			if p.LastPage != testCase.Pagination.LastPage {
-				t.Errorf("unexpected last page: %d", p.LastPage)
-			}
-			if p.TotalEntries != testCase.Pagination.TotalEntries {
-				t.Errorf("unexpected total entries: %d", p.TotalEntries)
-			}
-		})
+	var s schema.MetaPagination
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	p := PaginationFromSchema(s)
+
+	if p.Page != 2 {
+		t.Errorf("unexpected page: %v", p.Page)
+	}
+	if p.PerPage != 25 {
+		t.Errorf("unexpected per page: %v", p.PerPage)
+	}
+	if p.PreviousPage != 1 {
+		t.Errorf("unexpected previous page: %v", p.PreviousPage)
+	}
+	if p.NextPage != 3 {
+		t.Errorf("unexpected next page: %d", p.NextPage)
+	}
+	if p.LastPage != 13 {
+		t.Errorf("unexpected last page: %d", p.LastPage)
+	}
+	if p.TotalEntries != 322 {
+		t.Errorf("unexpected total entries: %d", p.TotalEntries)
 	}
 }

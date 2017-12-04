@@ -13,6 +13,8 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 // UserAgent is the value for the User-Agent header sent with each request.
@@ -202,7 +204,7 @@ func errorFromResponse(resp *http.Response, body []byte) error {
 // Response represents a response from the API. It embeds http.Response.
 type Response struct {
 	*http.Response
-	Meta ResponseMeta
+	Meta Meta
 }
 
 // ReadBody reads and returns the response's body. After reading the response's body
@@ -232,28 +234,27 @@ func (r *Response) readMeta(body []byte) error {
 	}
 
 	if strings.HasPrefix(r.Header.Get("Content-Type"), "application/json") {
-		var m struct {
-			Meta struct {
-				Pagination ResponseMetaPagination `json:"pagination"`
-			} `json:"meta"`
-		}
-		if err := json.Unmarshal(body, &m); err != nil {
+		var s schema.MetaResponse
+		if err := json.Unmarshal(body, &s); err != nil {
 			return err
 		}
-		r.Meta.Pagination = &m.Meta.Pagination
+		if s.Meta.Pagination != nil {
+			p := PaginationFromSchema(*s.Meta.Pagination)
+			r.Meta.Pagination = &p
+		}
 	}
 
 	return nil
 }
 
-// ResponseMeta represents meta information included in an API response.
-type ResponseMeta struct {
-	Pagination *ResponseMetaPagination
-	Ratelimit  ResponseMetaRatelimit
+// Meta represents meta information included in an API response.
+type Meta struct {
+	Pagination *Pagination
+	Ratelimit  Ratelimit
 }
 
-// ResponseMetaPagination represents pagination meta data.
-type ResponseMetaPagination struct {
+// Pagination represents pagination meta information.
+type Pagination struct {
 	Page         int
 	PerPage      int
 	PreviousPage int
@@ -262,33 +263,20 @@ type ResponseMetaPagination struct {
 	TotalEntries int
 }
 
-// UnmarshalJSON implements json.Unmarshaler.
-func (p *ResponseMetaPagination) UnmarshalJSON(data []byte) error {
-	var v struct {
-		Page         int `json:"page"`
-		PerPage      int `json:"per_page"`
-		PreviousPage int `json:"previous_page"`
-		NextPage     int `json:"next_page"`
-		LastPage     int `json:"last_page"`
-		TotalEntries int `json:"total_entries"`
+// PaginationFromSchema converts a schema.MetaPagination to a Pagination.
+func PaginationFromSchema(s schema.MetaPagination) Pagination {
+	return Pagination{
+		Page:         s.Page,
+		PerPage:      s.PerPage,
+		PreviousPage: s.PreviousPage,
+		NextPage:     s.NextPage,
+		LastPage:     s.LastPage,
+		TotalEntries: s.TotalEntries,
 	}
-
-	if err := json.Unmarshal(data, &v); err != nil {
-		return err
-	}
-
-	p.Page = v.Page
-	p.PerPage = v.PerPage
-	p.PreviousPage = v.PreviousPage
-	p.NextPage = v.NextPage
-	p.LastPage = v.LastPage
-	p.TotalEntries = v.TotalEntries
-
-	return nil
 }
 
-// ResponseMetaRatelimit represents ratelimit information.
-type ResponseMetaRatelimit struct {
+// Ratelimit represents ratelimit information.
+type Ratelimit struct {
 	Limit     int
 	Remaining int
 	Reset     time.Time
