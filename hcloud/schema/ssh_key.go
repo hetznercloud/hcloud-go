@@ -7,3 +7,28 @@ type SSHKey struct {
 	Fingerprint string `json:"fingerprint"`
 	PublicKey   string `json:"public_key"`
 }
+
+// SSHKeyCreateRequest defines the schema of the request
+// to create a SSH key.
+type SSHKeyCreateRequest struct {
+	Name      string `json:"name"`
+	PublicKey string `json:"public_key"`
+}
+
+// SSHKeyCreateResponse defines the schema of the response
+// when creating a SSH key.
+type SSHKeyCreateResponse struct {
+	SSHKey SSHKey `json:"ssh_key"`
+}
+
+// SSHKeyListResponse defines the schema of the response
+// when listing SSH keys.
+type SSHKeyListResponse struct {
+	SSHKeys []SSHKey `json:"ssh_keys"`
+}
+
+// SSHKeyGetResponse defines the schema of the response
+// when retrieving a single SSH key.
+type SSHKeyGetResponse struct {
+	SSHKey SSHKey `json:"ssh_key"`
+}

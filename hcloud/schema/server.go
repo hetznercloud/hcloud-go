@@ -48,3 +48,30 @@ type ServerPublicNetIPv6DNSPtr struct {
 	IP     string `json:"ip"`
 	DNSPtr string `json:"dns_ptr"`
 }
+
+// ServerGetResponse defines the schema of the response when
+// retrieving a single server.
+type ServerGetResponse struct {
+	Server Server `json:"server"`
+}
+
+// ServerListResponse defines the schema of the response when
+// listing servers.
+type ServerListResponse struct {
+	Servers []Server `json:"servers"`
+}
+
+// ServerCreateRequest defines the schema for the request to
+// create a server.
+type ServerCreateRequest struct {
+	Name       string      `json:"name"`
+	ServerType interface{} `json:"server_type"` // int or string
+	Image      interface{} `json:"image"`       // int or string
+}
+
+// ServerCreateResponse defines the schema of the response when
+// creating a server.
+type ServerCreateResponse struct {
+	Server Server `json:"server"`
+	Action Action `json:"action"`
+}

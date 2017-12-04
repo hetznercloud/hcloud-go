@@ -40,9 +40,7 @@ func (c *SSHKeyClient) Get(ctx context.Context, id int) (*SSHKey, *Response, err
 		return nil, nil, err
 	}
 
-	var body struct {
-		SSHKey schema.SSHKey `json:"ssh_key"`
-	}
+	var body schema.SSHKeyGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err
@@ -64,9 +62,7 @@ func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey
 		return nil, nil, err
 	}
 
-	var body struct {
-		SSHKeys []schema.SSHKey `json:"ssh_keys"`
-	}
+	var body schema.SSHKeyListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err
@@ -125,14 +121,10 @@ func (c *SSHKeyClient) Create(ctx context.Context, opts SSHKeyCreateOpts) (*SSHK
 		return nil, nil, err
 	}
 
-	reqBody := struct {
-		Name      string `json:"name"`
-		PublicKey string `json:"public_key"`
-	}{
+	reqBodyData, err := json.Marshal(schema.SSHKeyCreateRequest{
 		Name:      opts.Name,
 		PublicKey: opts.PublicKey,
-	}
-	reqBodyData, err := json.Marshal(reqBody)
+	})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -142,9 +134,7 @@ func (c *SSHKeyClient) Create(ctx context.Context, opts SSHKeyCreateOpts) (*SSHK
 		return nil, nil, err
 	}
 
-	var respBody struct {
-		SSHKey schema.SSHKey `json:"ssh_key"`
-	}
+	var respBody schema.SSHKeyCreateResponse
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
