@@ -146,9 +146,7 @@ func (c *ServerClient) Get(ctx context.Context, id int) (*Server, *Response, err
 		return nil, nil, err
 	}
 
-	var body struct {
-		Server schema.Server `json:"server"`
-	}
+	var body schema.ServerGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err
@@ -170,9 +168,7 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server
 		return nil, nil, err
 	}
 
-	var body struct {
-		Servers []schema.Server `json:"servers"`
-	}
+	var body schema.ServerListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err
@@ -241,11 +237,7 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		return ServerCreateResult{}, nil, err
 	}
 
-	var reqBody struct {
-		Name       string      `json:"name"`
-		ServerType interface{} `json:"server_type"`
-		Image      interface{} `json:"image"`
-	}
+	var reqBody schema.ServerCreateRequest
 	reqBody.Name = opts.Name
 	if opts.ServerType.ID != 0 {
 		reqBody.ServerType = opts.ServerType.ID
@@ -267,24 +259,19 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		return ServerCreateResult{}, nil, err
 	}
 
-	var (
-		respBody struct {
-			Server schema.Server  `json:"server"`
-			Action *schema.Action `json:"action"`
-		}
-		result ServerCreateResult
-	)
+	var respBody schema.ServerCreateResponse
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return ServerCreateResult{}, resp, err
 	}
-	server := ServerFromSchema(respBody.Server)
-	result.Server = &server
-	if respBody.Action != nil {
-		action := ActionFromSchema(*respBody.Action)
-		result.Action = &action
-	}
-	return result, resp, nil
+	var (
+		server = ServerFromSchema(respBody.Server)
+		action = ActionFromSchema(respBody.Action)
+	)
+	return ServerCreateResult{
+		Server: &server,
+		Action: &action,
+	}, resp, nil
 }
 
 // Delete deletes a server.

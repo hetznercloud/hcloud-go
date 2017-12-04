@@ -49,9 +49,7 @@ func (c *ActionClient) Get(ctx context.Context, id int) (*Action, *Response, err
 		return nil, nil, err
 	}
 
-	var body struct {
-		Action schema.Action `json:"action"`
-	}
+	var body schema.ActionGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
 		return nil, nil, err

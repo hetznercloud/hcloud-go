@@ -19,3 +19,9 @@ type ActionError struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
 }
+
+// ActionGetResponse is the schema of the response when
+// retrieving a single action.
+type ActionGetResponse struct {
+	Action Action `json:"action"`
+}
