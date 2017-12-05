@@ -17,6 +17,9 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
+// Endpoint is the base URL of the API.
+const Endpoint = "https://api.hetzner.cloud/v1"
+
 // UserAgent is the value for the User-Agent header sent with each request.
 const UserAgent = "hcloud-go/" + Version
 
@@ -81,6 +84,7 @@ func WithBackoffFunc(f BackoffFunc) ClientOption {
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
+		endpoint:    Endpoint,
 		httpClient:  &http.Client{},
 		backoffFunc: ExponentialBackoff(2, 500*time.Millisecond),
 	}
