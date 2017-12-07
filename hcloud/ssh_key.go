@@ -18,16 +18,6 @@ type SSHKey struct {
 	PublicKey   string
 }
 
-// SSHKeyFromSchema converts a schema.SSHKey to a SSHKey.
-func SSHKeyFromSchema(s schema.SSHKey) *SSHKey {
-	return &SSHKey{
-		ID:          s.ID,
-		Name:        s.Name,
-		Fingerprint: s.Fingerprint,
-		PublicKey:   s.PublicKey,
-	}
-}
-
 // SSHKeyClient is a client for the SSH keys API.
 type SSHKeyClient struct {
 	client *Client

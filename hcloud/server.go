@@ -27,27 +27,6 @@ type Server struct {
 	ISO             *ISO
 }
 
-// ServerFromSchema converts a schema.Server to a Server.
-func ServerFromSchema(s schema.Server) *Server {
-	server := &Server{
-		ID:              s.ID,
-		Name:            s.Name,
-		Status:          ServerStatus(s.Status),
-		Created:         s.Created,
-		PublicNet:       ServerPublicNetFromSchema(s.PublicNet),
-		ServerType:      ServerTypeFromSchema(s.ServerType),
-		IncludedTraffic: s.IncludedTraffic,
-		OutgoingTraffic: s.OutgoingTraffic,
-		IngoingTraffic:  s.IngoingTraffic,
-		BackupWindow:    s.BackupWindow,
-		RescueEnabled:   s.RescueEnabled,
-	}
-	if s.ISO != nil {
-		server.ISO = ISOFromSchema(*s.ISO)
-	}
-	return server
-}
-
 // ServerStatus specifies a server's status.
 type ServerStatus string
 
@@ -69,33 +48,11 @@ type ServerPublicNet struct {
 	FloatingIPs []*FloatingIP
 }
 
-// ServerPublicNetFromSchema converts a schema.ServerPublicNet to a ServerPublicNet.
-func ServerPublicNetFromSchema(s schema.ServerPublicNet) ServerPublicNet {
-	publicNet := ServerPublicNet{
-		IPv4: ServerPublicNetIPv4FromSchema(s.IPv4),
-		IPv6: ServerPublicNetIPv6FromSchema(s.IPv6),
-	}
-	for _, id := range s.FloatingIPs {
-		publicNet.FloatingIPs = append(publicNet.FloatingIPs, &FloatingIP{ID: id})
-	}
-	return publicNet
-}
-
 // ServerPublicNetIPv4 represents a server's public IPv4 network.
 type ServerPublicNetIPv4 struct {
 	IP      string
 	Blocked bool
 	DNSPtr  string
-}
-
-// ServerPublicNetIPv4FromSchema converts a schema.ServerPublicNetIPv4 to
-// a ServerPublicNetIPv4.
-func ServerPublicNetIPv4FromSchema(s schema.ServerPublicNetIPv4) ServerPublicNetIPv4 {
-	return ServerPublicNetIPv4{
-		IP:      s.IP,
-		Blocked: s.Blocked,
-		DNSPtr:  s.DNSPtr,
-	}
 }
 
 // ServerPublicNetIPv6 represents a server's public IPv6 network.
@@ -105,32 +62,10 @@ type ServerPublicNetIPv6 struct {
 	DNSPtr  []ServerPublicNetIPv6DNSPtr
 }
 
-// ServerPublicNetIPv6FromSchema converts a schema.ServerPublicNetIPv6 to
-// a ServerPublicNetIPv6.
-func ServerPublicNetIPv6FromSchema(s schema.ServerPublicNetIPv6) ServerPublicNetIPv6 {
-	ipv6 := ServerPublicNetIPv6{
-		IP:      s.IP,
-		Blocked: s.Blocked,
-	}
-	for _, dnsPtr := range s.DNSPtr {
-		ipv6.DNSPtr = append(ipv6.DNSPtr, ServerPublicNetIPv6DNSPtrFromSchema(dnsPtr))
-	}
-	return ipv6
-}
-
 // ServerPublicNetIPv6DNSPtr represents a server's public IPv6 reverse DNS.
 type ServerPublicNetIPv6DNSPtr struct {
 	IP     string
 	DNSPtr string
-}
-
-// ServerPublicNetIPv6DNSPtrFromSchema converts a schema.ServerPublicNetIPv6DNSPtr
-// to a ServerPublicNetIPv6DNSPtr.
-func ServerPublicNetIPv6DNSPtrFromSchema(s schema.ServerPublicNetIPv6DNSPtr) ServerPublicNetIPv6DNSPtr {
-	return ServerPublicNetIPv6DNSPtr{
-		IP:     s.IP,
-		DNSPtr: s.DNSPtr,
-	}
 }
 
 // ServerClient is a client for the servers API.
