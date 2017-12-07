@@ -412,3 +412,139 @@ func TestServersDelete(t *testing.T) {
 		t.Fatalf("Server.Delete failed: %s", err)
 	}
 }
+
+func TestServerClientPoweron(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/poweron", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionPoweronResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	action, _, err := env.Client.Server.Poweron(ctx, &Server{ID: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
+
+func TestServerClientReboot(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/reboot", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionRebootResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	action, _, err := env.Client.Server.Reboot(ctx, &Server{ID: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
+
+func TestServerClientReset(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/reset", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionResetResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	action, _, err := env.Client.Server.Reset(ctx, &Server{ID: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
+
+func TestServerClientShutdown(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/shutdown", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionShutdownResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	action, _, err := env.Client.Server.Shutdown(ctx, &Server{ID: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
+
+func TestServerClientPoweroff(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/poweroff", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionPoweroffResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	action, _, err := env.Client.Server.Poweroff(ctx, &Server{ID: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
+
+func TestServerClientResetPassword(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/reset_password", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionResetPasswordResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+			RootPassword: "secret",
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.ResetPassword(ctx, &Server{ID: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", result.Action.ID)
+	}
+	if result.RootPassword != "secret" {
+		t.Errorf("unexpected root password: %v", result.RootPassword)
+	}
+}

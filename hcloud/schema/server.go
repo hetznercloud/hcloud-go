@@ -75,3 +75,64 @@ type ServerCreateResponse struct {
 	Server Server `json:"server"`
 	Action Action `json:"action"`
 }
+
+// ServerActionPoweronRequest defines the schema for the request to
+// create a poweron server action.
+type ServerActionPoweronRequest struct{}
+
+// ServerActionPoweronResponse defines the schema of the response when
+// creating a poweron server action.
+type ServerActionPoweronResponse struct {
+	Action Action `json:"action"`
+}
+
+// ServerActionPoweroffRequest defines the schema for the request to
+// create a poweroff server action.
+type ServerActionPoweroffRequest struct{}
+
+// ServerActionPoweroffResponse defines the schema of the response when
+// creating a poweroff server action.
+type ServerActionPoweroffResponse struct {
+	Action Action `json:"action"`
+}
+
+// ServerActionRebootRequest defines the schema for the request to
+// create a reboot server action.
+type ServerActionRebootRequest struct{}
+
+// ServerActionRebootResponse defines the schema of the response when
+// creating a reboot server action.
+type ServerActionRebootResponse struct {
+	Action Action `json:"action"`
+}
+
+// ServerActionResetRequest defines the schema for the request to
+// create a reset server action.
+type ServerActionResetRequest struct{}
+
+// ServerActionResetResponse defines the schema of the response when
+// creating a reset server action.
+type ServerActionResetResponse struct {
+	Action Action `json:"action"`
+}
+
+// ServerActionShutdownRequest defines the schema for the request to
+// create a shutdown server action.
+type ServerActionShutdownRequest struct{}
+
+// ServerActionShutdownResponse defines the schema of the response when
+// creating a shutdown server action.
+type ServerActionShutdownResponse struct {
+	Action Action `json:"action"`
+}
+
+// ServerActionResetPasswordRequest defines the schema for the request to
+// create a reset_password server action.
+type ServerActionResetPasswordRequest struct{}
+
+// ServerActionResetPasswordResponse defines the schema of the response when
+// creating a reset_password server action.
+type ServerActionResetPasswordResponse struct {
+	Action       Action `json:"action"`
+	RootPassword string `json:"root_password"`
+}
