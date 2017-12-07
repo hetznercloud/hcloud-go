@@ -20,23 +20,6 @@ type Action struct {
 	ErrorMessage string
 }
 
-// ActionFromSchema converts a schema.Action to an Action.
-func ActionFromSchema(s schema.Action) *Action {
-	action := &Action{
-		ID:       s.ID,
-		Status:   s.Status,
-		Command:  s.Command,
-		Progress: s.Progress,
-		Started:  s.Started,
-		Finished: s.Finished,
-	}
-	if s.Error != nil {
-		action.ErrorCode = s.Error.Code
-		action.ErrorMessage = s.Error.Message
-	}
-	return action
-}
-
 // ActionClient is a client for the actions API.
 type ActionClient struct {
 	client *Client

@@ -2,41 +2,10 @@ package hcloud
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
-
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
-
-func TestSSHKeyFromSchema(t *testing.T) {
-	data := []byte(`{
-		"id": 2323,
-		"name": "My key",
-		"fingerprint": "b7:2f:30:a0:2f:6c:58:6c:21:04:58:61:ba:06:3b:2c",
-		"public_key": "ssh-rsa AAAjjk76kgf...Xt"
-	}`)
-
-	var s schema.SSHKey
-	if err := json.Unmarshal(data, &s); err != nil {
-		t.Fatal(err)
-	}
-	sshKey := SSHKeyFromSchema(s)
-
-	if sshKey.ID != 2323 {
-		t.Errorf("unexpected ID: %v", sshKey.ID)
-	}
-	if sshKey.Name != "My key" {
-		t.Errorf("unexpected name: %v", sshKey.Name)
-	}
-	if sshKey.Fingerprint != "b7:2f:30:a0:2f:6c:58:6c:21:04:58:61:ba:06:3b:2c" {
-		t.Errorf("unexpected fingerprint: %v", sshKey.Fingerprint)
-	}
-	if sshKey.PublicKey != "ssh-rsa AAAjjk76kgf...Xt" {
-		t.Errorf("unexpected public key: %v", sshKey.PublicKey)
-	}
-}
 
 func TestSSHKeyClientGet(t *testing.T) {
 	env := newTestEnv()

@@ -30,33 +30,6 @@ const (
 	FloatingIPTypeIPv6                = "ipv6"
 )
 
-// FloatingIPFromSchema converts a schema.FloatingIP to a FloatingIP.
-func FloatingIPFromSchema(s schema.FloatingIP) *FloatingIP {
-	f := &FloatingIP{
-		ID:           s.ID,
-		IP:           s.IP,
-		Type:         FloatingIPType(s.Type),
-		HomeLocation: LocationFromSchema(s.HomeLocation),
-	}
-	if s.Description != nil {
-		f.Description = *s.Description
-	}
-	if s.Server != nil {
-		f.Server = &Server{ID: *s.Server}
-	}
-	if s.DNSPtr.IPv4 != nil {
-		f.DNSPtr = map[string]string{
-			s.IP: *s.DNSPtr.IPv4,
-		}
-	} else if s.DNSPtr.IPv6 != nil {
-		f.DNSPtr = map[string]string{}
-		for _, entry := range s.DNSPtr.IPv6 {
-			f.DNSPtr[entry.IP] = entry.DNSPtr
-		}
-	}
-	return f
-}
-
 // FloatingIPClient is a client for the Floating IP API.
 type FloatingIPClient struct {
 	client *Client

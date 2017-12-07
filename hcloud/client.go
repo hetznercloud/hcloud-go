@@ -269,18 +269,6 @@ type Pagination struct {
 	TotalEntries int
 }
 
-// PaginationFromSchema converts a schema.MetaPagination to a Pagination.
-func PaginationFromSchema(s schema.MetaPagination) Pagination {
-	return Pagination{
-		Page:         s.Page,
-		PerPage:      s.PerPage,
-		PreviousPage: s.PreviousPage,
-		NextPage:     s.NextPage,
-		LastPage:     s.LastPage,
-		TotalEntries: s.TotalEntries,
-	}
-}
-
 // Ratelimit represents ratelimit information.
 type Ratelimit struct {
 	Limit     int
