@@ -275,3 +275,108 @@ func (c *ServerClient) Delete(ctx context.Context, id int) (*Response, error) {
 	}
 	return c.client.Do(req, nil)
 }
+
+// Poweron starts a server.
+func (c *ServerClient) Poweron(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/poweron", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionPoweronResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// Reboot reboots a server.
+func (c *ServerClient) Reboot(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/reboot", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionRebootResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// Reset resets a server.
+func (c *ServerClient) Reset(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/reset", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionResetResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// Shutdown shuts down a server.
+func (c *ServerClient) Shutdown(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/shutdown", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionShutdownResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// Poweroff stops a server.
+func (c *ServerClient) Poweroff(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/poweroff", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionPoweroffResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// ServerResetPasswordResult is the result of resetting a server's password.
+type ServerResetPasswordResult struct {
+	Action       *Action
+	RootPassword string
+}
+
+// ResetPassword resets a server's password.
+func (c *ServerClient) ResetPassword(ctx context.Context, server *Server) (ServerResetPasswordResult, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/reset_password", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return ServerResetPasswordResult{}, nil, err
+	}
+
+	respBody := schema.ServerActionResetPasswordResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return ServerResetPasswordResult{}, resp, err
+	}
+	return ServerResetPasswordResult{
+		Action:       ActionFromSchema(respBody.Action),
+		RootPassword: respBody.RootPassword,
+	}, resp, nil
+}
