@@ -16,6 +16,13 @@ type ServerType struct {
 	Memory      float32
 	Disk        int
 	StorageType StorageType
+	Prices      map[string]ServerTypePrice
+}
+
+// ServerTypePrice represents the price of a server type in a datacenter
+type ServerTypePrice struct {
+	Net   float32 `json:"net"`
+	Gross float32 `json:"gross"`
 }
 
 // StorageType specifies the type of storage.

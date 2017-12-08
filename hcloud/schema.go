@@ -139,7 +139,7 @@ func ServerPublicNetIPv6DNSPtrFromSchema(s schema.ServerPublicNetIPv6DNSPtr) Ser
 
 // ServerTypeFromSchema converts a schema.ServerType to a ServerType.
 func ServerTypeFromSchema(s schema.ServerType) *ServerType {
-	return &ServerType{
+	st := &ServerType{
 		ID:          s.ID,
 		Name:        s.Name,
 		Description: s.Description,
@@ -148,6 +148,8 @@ func ServerTypeFromSchema(s schema.ServerType) *ServerType {
 		Disk:        s.Disk,
 		StorageType: StorageType(s.StorageType),
 	}
+
+	return st
 }
 
 // SSHKeyFromSchema converts a schema.SSHKey to a SSHKey.
