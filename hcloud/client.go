@@ -55,6 +55,7 @@ type Client struct {
 	FloatingIP FloatingIPClient
 	Server     ServerClient
 	SSHKey     SSHKeyClient
+	ServerType ServerTypeClient
 }
 
 // A ClientOption is used to configure a Client.
@@ -97,6 +98,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.FloatingIP = FloatingIPClient{client: client}
 	client.Server = ServerClient{client: client}
 	client.SSHKey = SSHKeyClient{client: client}
+	client.ServerType = ServerTypeClient{client: client}
 
 	return client
 }
