@@ -10,3 +10,15 @@ type ServerType struct {
 	Disk        int     `json:"disk"`
 	StorageType string  `json:"storage_type"`
 }
+
+// ServerTypeListResponse defines the schema of the response when
+// listing server types.
+type ServerTypeListResponse struct {
+	ServerTypes []ServerType `json:"server_types"`
+}
+
+// ServerTypeGetResponse defines the schema of the response when
+// retrieving a single server type.
+type ServerTypeGetResponse struct {
+	ServerType ServerType `json:"server_type"`
+}
