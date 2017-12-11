@@ -162,6 +162,25 @@ func SSHKeyFromSchema(s schema.SSHKey) *SSHKey {
 	}
 }
 
+// ImageFromSchema converts a schema.Image to an Image.
+func ImageFromSchema(s schema.Image) *Image {
+	return &Image{
+		ID:          s.ID,
+		Name:        s.Name,
+		Type:        ImageType(s.Type),
+		Status:      ImageStatus(s.Status),
+		Description: s.Description,
+		ImageSize:   s.ImageSize,
+		DiskSize:    s.DiskSize,
+		Created:     s.Created,
+		RapidDeploy: s.RapidDeploy,
+
+		Version:   s.Version,
+		OSFlavor:  s.OSFlavor,
+		OSVersion: s.OSVersion,
+	}
+}
+
 // PaginationFromSchema converts a schema.MetaPagination to a Pagination.
 func PaginationFromSchema(s schema.MetaPagination) Pagination {
 	return Pagination{
