@@ -54,8 +54,8 @@ type Client struct {
 	Action     ActionClient
 	FloatingIP FloatingIPClient
 	Server     ServerClient
-	SSHKey     SSHKeyClient
 	ServerType ServerTypeClient
+	SSHKey     SSHKeyClient
 }
 
 // A ClientOption is used to configure a Client.

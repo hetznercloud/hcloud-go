@@ -16,13 +16,6 @@ type ServerType struct {
 	Memory      float32
 	Disk        int
 	StorageType StorageType
-	Prices      map[string]ServerTypePrice
-}
-
-// ServerTypePrice represents the price of a server type in a datacenter
-type ServerTypePrice struct {
-	Net   float32 `json:"net"`
-	Gross float32 `json:"gross"`
 }
 
 // StorageType specifies the type of storage.
@@ -81,7 +74,7 @@ func (c *ServerTypeClient) List(ctx context.Context, opts ServerTypeListOpts) ([
 	return serverTypes, resp, nil
 }
 
-// All returns all servers.
+// All returns all server types.
 func (c *ServerTypeClient) All(ctx context.Context) ([]*ServerType, error) {
 	allServerTypes := []*ServerType{}
 
