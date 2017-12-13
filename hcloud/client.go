@@ -207,19 +207,6 @@ type Response struct {
 	Meta Meta
 }
 
-// ReadBody reads and returns the response's body. After reading the response's body
-// is recovered so it can be read again.
-//
-// TODO(thcyron): Does this method really need to be exported?
-func (r *Response) ReadBody() ([]byte, error) {
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		return nil, err
-	}
-	r.Body = ioutil.NopCloser(bytes.NewReader(body))
-	return body, err
-}
-
 func (r *Response) readMeta(body []byte) error {
 	if h := r.Header.Get("RateLimit-Limit"); h != "" {
 		r.Meta.Ratelimit.Limit, _ = strconv.Atoi(h)
