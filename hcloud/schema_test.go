@@ -411,3 +411,23 @@ func TestSSHKeyFromSchema(t *testing.T) {
 		t.Errorf("unexpected public key: %v", sshKey.PublicKey)
 	}
 }
+
+func TestErrorFromSchema(t *testing.T) {
+	data := []byte(`{
+		"code": "service_error",
+		"message": "An error occured"
+	}`)
+
+	var s schema.Error
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	err := ErrorFromSchema(s)
+
+	if err.Code != "service_error" {
+		t.Errorf("unexpected code: %v", err.Code)
+	}
+	if err.Message != "An error occured" {
+		t.Errorf("unexpected message: %v", err.Message)
+	}
+}

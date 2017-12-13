@@ -78,12 +78,12 @@ func TestServersAll(t *testing.T) {
 		if firstRequest {
 			firstRequest = false
 			w.WriteHeader(http.StatusTooManyRequests)
-			fmt.Fprint(w, `{
-				"error": {
-					"code": "limit_reached",
-					"message": "ratelimited"
-				}
-			}`)
+			json.NewEncoder(w).Encode(schema.ErrorResponse{
+				Error: schema.Error{
+					Code:    "limit_reached",
+					Message: "ratelimited",
+				},
+			})
 			return
 		}
 
