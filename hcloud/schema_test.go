@@ -431,3 +431,39 @@ func TestErrorFromSchema(t *testing.T) {
 		t.Errorf("unexpected message: %v", err.Message)
 	}
 }
+
+func TestPaginationFromSchema(t *testing.T) {
+	data := []byte(`{
+		"page": 2,
+		"per_page": 25,
+		"previous_page": 1,
+		"next_page": 3,
+		"last_page": 13,
+		"total_entries": 322
+	}`)
+
+	var s schema.MetaPagination
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	p := PaginationFromSchema(s)
+
+	if p.Page != 2 {
+		t.Errorf("unexpected page: %v", p.Page)
+	}
+	if p.PerPage != 25 {
+		t.Errorf("unexpected per page: %v", p.PerPage)
+	}
+	if p.PreviousPage != 1 {
+		t.Errorf("unexpected previous page: %v", p.PreviousPage)
+	}
+	if p.NextPage != 3 {
+		t.Errorf("unexpected next page: %d", p.NextPage)
+	}
+	if p.LastPage != 13 {
+		t.Errorf("unexpected last page: %d", p.LastPage)
+	}
+	if p.TotalEntries != 322 {
+		t.Errorf("unexpected total entries: %d", p.TotalEntries)
+	}
+}
