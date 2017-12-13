@@ -191,22 +191,14 @@ func errorFromResponse(resp *http.Response, body []byte) error {
 		return nil
 	}
 
-	var apiError struct {
-		Error struct {
-			Code    string `json:"code"`
-			Message string `json:"message"`
-		} `json:"error"`
-	}
-	if err := json.Unmarshal(body, &apiError); err != nil {
+	var respBody schema.ErrorResponse
+	if err := json.Unmarshal(body, &respBody); err != nil {
 		return nil
 	}
-	if apiError.Error.Code == "" && apiError.Error.Message == "" {
+	if respBody.Error.Code == "" && respBody.Error.Message == "" {
 		return nil
 	}
-	return Error{
-		Code:    ErrorCode(apiError.Error.Code),
-		Message: apiError.Error.Message,
-	}
+	return ErrorFromSchema(respBody.Error)
 }
 
 // Response represents a response from the API. It embeds http.Response.

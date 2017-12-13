@@ -55,12 +55,12 @@ func TestClientError(t *testing.T) {
 	env.Mux.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		fmt.Fprint(w, `{
-			"error": {
-				"code": "service_error",
-				"message": "An error occured"
-			}
-		}`)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code:    "service_error",
+				Message: "An error occured",
+			},
+		})
 	})
 
 	ctx := context.Background()

@@ -173,3 +173,11 @@ func PaginationFromSchema(s schema.MetaPagination) Pagination {
 		TotalEntries: s.TotalEntries,
 	}
 }
+
+// ErrorFromSchema converts a schema.Error to an Error.
+func ErrorFromSchema(s schema.Error) Error {
+	return Error{
+		Code:    ErrorCode(s.Code),
+		Message: s.Message,
+	}
+}
