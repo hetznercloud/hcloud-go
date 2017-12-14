@@ -72,79 +72,26 @@ func TestServersAll(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	firstRequest := true
 	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		if firstRequest {
-			firstRequest = false
-			w.WriteHeader(http.StatusTooManyRequests)
-			json.NewEncoder(w).Encode(schema.ErrorResponse{
-				Error: schema.Error{
-					Code:    "limit_reached",
-					Message: "ratelimited",
+		json.NewEncoder(w).Encode(struct {
+			Servers []schema.Server `json:"servers"`
+			Meta    schema.Meta     `json:"meta"`
+		}{
+			Servers: []schema.Server{
+				{ID: 1},
+				{ID: 2},
+				{ID: 3},
+			},
+			Meta: schema.Meta{
+				Pagination: &schema.MetaPagination{
+					Page:         1,
+					LastPage:     1,
+					PerPage:      3,
+					TotalEntries: 3,
 				},
-			})
-			return
-		}
-
-		switch page := r.URL.Query().Get("page"); page {
-		case "", "1":
-			fmt.Fprint(w, `{
-				"servers": [
-					{
-						"id": 1
-					}
-				],
-				"meta": {
-					"pagination": {
-						"page": 1,
-						"per_page": 1,
-						"previous_page": null,
-						"next_page": 2,
-						"last_page": 3,
-						"total_entries": 3
-					}
-				}
-			}`)
-		case "2":
-			fmt.Fprint(w, `{
-				"servers": [
-					{
-						"id": 2
-					}
-				],
-				"meta": {
-					"pagination": {
-						"page": 2,
-						"per_page": 1,
-						"previous_page": 1,
-						"next_page": 3,
-						"last_page": 3,
-						"total_entries": 3
-					}
-				}
-			}`)
-		case "3":
-			fmt.Fprint(w, `{
-				"servers": [
-					{
-						"id": 3
-					}
-				],
-				"meta": {
-					"pagination": {
-						"page": 3,
-						"per_page": 1,
-						"previous_page": 2,
-						"next_page": null,
-						"last_page": 3,
-						"total_entries": 3
-					}
-				}
-			}`)
-		default:
-			panic("bad page")
-		}
+			},
+		})
 	})
 
 	ctx := context.Background()
@@ -155,8 +102,8 @@ func TestServersAll(t *testing.T) {
 	if len(servers) != 3 {
 		t.Fatalf("expected 3 servers; got %d", len(servers))
 	}
-	if servers[0].ID != 1 {
-		t.Errorf("")
+	if servers[0].ID != 1 || servers[1].ID != 2 || servers[2].ID != 3 {
+		t.Errorf("unexpected servers")
 	}
 }
 
