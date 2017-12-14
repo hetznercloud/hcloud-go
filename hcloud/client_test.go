@@ -155,3 +155,78 @@ func TestClientMetaNonJSON(t *testing.T) {
 		t.Fatal("pagination should not be present")
 	}
 }
+
+func TestClientAll(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	var (
+		ctx          = context.Background()
+		ratelimited  bool
+		expectedPage = 1
+	)
+
+	env.Mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+
+		respBody := schema.MetaResponse{
+			Meta: schema.Meta{
+				Pagination: &schema.MetaPagination{
+					LastPage:     3,
+					PerPage:      1,
+					TotalEntries: 3,
+				},
+			},
+		}
+
+		switch page := r.URL.Query().Get("page"); page {
+		case "", "1":
+			respBody.Meta.Pagination.Page = 1
+			respBody.Meta.Pagination.NextPage = 2
+		case "2":
+			if !ratelimited {
+				ratelimited = true
+				w.WriteHeader(http.StatusTooManyRequests)
+				json.NewEncoder(w).Encode(schema.ErrorResponse{
+					Error: schema.Error{
+						Code:    "limit_reached",
+						Message: "ratelimited",
+					},
+				})
+				return
+			}
+			respBody.Meta.Pagination.Page = 2
+			respBody.Meta.Pagination.PreviousPage = 1
+			respBody.Meta.Pagination.NextPage = 3
+		case "3":
+			respBody.Meta.Pagination.Page = 3
+			respBody.Meta.Pagination.PreviousPage = 2
+		default:
+			t.Errorf("bad page: %q", page)
+		}
+
+		json.NewEncoder(w).Encode(respBody)
+	})
+
+	env.Client.all(func(page int) (*Response, error) {
+		if page != expectedPage {
+			t.Fatalf("expected page %d, but called for %d", expectedPage, page)
+		}
+
+		path := fmt.Sprintf("/?page=%d&per_page=1", page)
+		req, err := env.Client.NewRequest(ctx, "GET", path, nil)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := env.Client.Do(req, nil)
+		if err != nil {
+			return resp, err
+		}
+		expectedPage++
+		return resp, err
+	})
+
+	if expectedPage != 4 {
+		t.Errorf("expected to have walked through 3 pages, but walked through %d pages", expectedPage-1)
+	}
+}

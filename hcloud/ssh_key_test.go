@@ -2,9 +2,12 @@ package hcloud
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"testing"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 func TestSSHKeyClientGet(t *testing.T) {
@@ -87,65 +90,33 @@ func TestSSHKeyAll(t *testing.T) {
 
 	env.Mux.HandleFunc("/ssh_keys", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-
-		switch page := r.URL.Query().Get("page"); page {
-		case "", "1":
-			fmt.Fprint(w, `{
-				"ssh_keys": [
-					{
-						"id": 1
-					}
-				],
-				"meta": {
-					"pagination": {
-						"page": 1,
-						"per_page": 1,
-						"previous_page": null,
-						"next_page": 2,
-						"last_page": 3,
-						"total_entries": 3
-					}
-				}
-			}`)
-		case "2":
-			fmt.Fprint(w, `{
-				"ssh_keys": [
-					{
-						"id": 2
-					}
-				],
-				"meta": {
-					"pagination": {
-						"page": 2,
-						"per_page": 1,
-						"previous_page": 1,
-						"next_page": 3,
-						"last_page": 3,
-						"total_entries": 3
-					}
-				}
-			}`)
-		case "3":
-			fmt.Fprint(w, `{
-				"ssh_keys": [
-					{
-						"id": 3
-					}
-				],
-				"meta": {
-					"pagination": {
-						"page": 3,
-						"per_page": 1,
-						"previous_page": 2,
-						"next_page": null,
-						"last_page": 3,
-						"total_entries": 3
-					}
-				}
-			}`)
-		default:
-			panic("bad page")
-		}
+		json.NewEncoder(w).Encode(struct {
+			SSHKeys []schema.SSHKey `json:"ssh_keys"`
+			Meta    schema.Meta     `json:"meta"`
+		}{
+			SSHKeys: []schema.SSHKey{
+				{
+					ID:          1,
+					Name:        "My key",
+					Fingerprint: "b7:2f:30:a0:2f:6c:58:6c:21:04:58:61:ba:06:3b:2c",
+					PublicKey:   "ssh-rsa AAAjjk76kgf...Xt",
+				},
+				{
+					ID:          2,
+					Name:        "Another key",
+					Fingerprint: "c7:2f:30:a0:2f:6c:58:6c:21:04:58:61:ba:06:3b:2c",
+					PublicKey:   "ssh-rsa AAAjjk76kgf...XX",
+				},
+			},
+			Meta: schema.Meta{
+				Pagination: &schema.MetaPagination{
+					Page:         1,
+					LastPage:     1,
+					PerPage:      2,
+					TotalEntries: 2,
+				},
+			},
+		})
 	})
 
 	ctx := context.Background()
@@ -153,10 +124,10 @@ func TestSSHKeyAll(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(sshKeys) != 3 {
-		t.Fatalf("expected 3 SSH keys; got %d", len(sshKeys))
+	if len(sshKeys) != 2 {
+		t.Fatalf("expected 2 SSH keys; got %d", len(sshKeys))
 	}
-	if sshKeys[0].ID != 1 || sshKeys[1].ID != 2 || sshKeys[2].ID != 3 {
+	if sshKeys[0].ID != 1 || sshKeys[1].ID != 2 {
 		t.Error("got wrong SSH keys")
 	}
 }
