@@ -9,7 +9,7 @@ type Action struct {
 	Command  string       `json:"command"`
 	Progress int          `json:"progress"`
 	Started  time.Time    `json:"started"`
-	Finished time.Time    `json:"finished"`
+	Finished *time.Time   `json:"finished"`
 	Error    *ActionError `json:"error"`
 }
 
