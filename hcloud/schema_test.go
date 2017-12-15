@@ -481,7 +481,6 @@ func TestImageFromSchema(t *testing.T) {
 		"created_from": "my_server1",
 		"created_from_id": 1,
 		"bound_to": 1,
-		"version": "16.04-standard-x64",
 		"os_flavor": "ubuntu",
 		"os_version": "16.04",
 		"rapid_deploy": false
@@ -516,9 +515,6 @@ func TestImageFromSchema(t *testing.T) {
 	}
 	if !image.Created.Equal(time.Date(2016, 1, 30, 23, 55, 1, 0, time.UTC)) {
 		t.Errorf("unexpected Created: %v", image.Created)
-	}
-	if image.Version != "16.04-standard-x64" {
-		t.Errorf("unexpected Version: %v", image.Version)
 	}
 	if image.OSVersion != "16.04" {
 		t.Errorf("unexpected OSVersion: %v", image.OSVersion)

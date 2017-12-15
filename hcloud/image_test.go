@@ -79,12 +79,12 @@ func TestImageClient(t *testing.T) {
 			if firstRequest {
 				firstRequest = false
 				w.WriteHeader(http.StatusTooManyRequests)
-				fmt.Fprint(w, `{
-					"error": {
-						"code": "limit_reached",
-						"message": "ratelimited"
-					}
-				}`)
+				json.NewEncoder(w).Encode(schema.ErrorResponse{
+					Error: schema.Error{
+						Code:    "limit_reached",
+						Message: "ratelimited",
+					},
+				})
 				return
 			}
 
@@ -157,7 +157,7 @@ func TestImageClient(t *testing.T) {
 			t.Fatalf("expected 3 images; got %d", len(images))
 		}
 		if images[0].ID != 1 {
-			t.Errorf("")
+			t.Errorf("Expected first image to have an id of 1; got %d", images[0].ID)
 		}
 	})
 

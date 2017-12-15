@@ -175,7 +175,6 @@ func ImageFromSchema(s schema.Image) *Image {
 		Created:     s.Created,
 		RapidDeploy: s.RapidDeploy,
 
-		Version:   s.Version,
 		OSFlavor:  s.OSFlavor,
 		OSVersion: s.OSVersion,
 	}

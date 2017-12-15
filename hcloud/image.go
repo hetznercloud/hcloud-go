@@ -20,31 +20,29 @@ type Image struct {
 	Created     time.Time
 	RapidDeploy bool
 
-	// only set when type == ImageTypeSystem
-	Version   string
 	OSFlavor  string
 	OSVersion string
 }
 
-// ImageType specifies the type of an image
+// ImageType specifies the type of an image.
 type ImageType string
 
 const (
-	// ImageTypeSnapshot is the status when the image type is snapshot
+	// ImageTypeSnapshot represents a snapshot image.
 	ImageTypeSnapshot = "snapshot"
-	// ImageTypeBackup is the status when the image type is backup
+	// ImageTypeBackup represents a backup image.
 	ImageTypeBackup = "backup"
-	// ImageTypeSystem is the status when the image type is system
+	// ImageTypeSystem represents a system image.
 	ImageTypeSystem = "system"
 )
 
-// ImageStatus specifies the status of an image
+// ImageStatus specifies the status of an image.
 type ImageStatus string
 
 const (
-	// ImageStatusCreating is the status when the image is created
+	// ImageStatusCreating is the status when an image is being created.
 	ImageStatusCreating = "creating"
-	// ImageStatusAvailable is the stats when the image is available
+	// ImageStatusAvailable is the stats when an image is available.
 	ImageStatusAvailable = "available"
 )
 

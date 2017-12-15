@@ -7,14 +7,13 @@ type Image struct {
 	ID          int       `json:"id"`
 	Status      string    `json:"status"`
 	Type        string    `json:"type"`
-	Name        string    `json:"name,omitempty"`
+	Name        string    `json:"name"`
 	Description string    `json:"description"`
 	ImageSize   float32   `json:"image_size"`
 	DiskSize    float32   `json:"disk_size"`
 	Created     time.Time `json:"created"`
-	Version     string    `json:"version,omitempty"`
-	OSFlavor    string    `json:"os_flavor,omitempty"`
-	OSVersion   string    `json:"os_version,omitempty"`
+	OSFlavor    string    `json:"os_flavor"`
+	OSVersion   string    `json:"os_version"`
 	RapidDeploy bool      `json:"rapid_deploy"`
 }
 
