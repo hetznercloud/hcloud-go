@@ -13,7 +13,7 @@ type Server struct {
 	IncludedTraffic uint64          `json:"included_traffic"`
 	OutgoingTraffic *uint64         `json:"outgoing_traffic"`
 	IngoingTraffic  *uint64         `json:"ingoing_traffic"`
-	BackupWindow    string          `json:"backup_window"`
+	BackupWindow    *string         `json:"backup_window"`
 	RescueEnabled   bool            `json:"rescue_enabled"`
 	ISO             *ISO            `json:"iso"`
 }

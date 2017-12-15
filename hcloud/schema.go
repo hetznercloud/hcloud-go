@@ -84,8 +84,10 @@ func ServerFromSchema(s schema.Server) *Server {
 		PublicNet:       ServerPublicNetFromSchema(s.PublicNet),
 		ServerType:      ServerTypeFromSchema(s.ServerType),
 		IncludedTraffic: s.IncludedTraffic,
-		BackupWindow:    s.BackupWindow,
 		RescueEnabled:   s.RescueEnabled,
+	}
+	if s.BackupWindow != nil {
+		server.BackupWindow = *s.BackupWindow
 	}
 	if s.OutgoingTraffic != nil {
 		server.OutgoingTraffic = *s.OutgoingTraffic
