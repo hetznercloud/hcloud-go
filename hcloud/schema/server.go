@@ -11,8 +11,8 @@ type Server struct {
 	PublicNet       ServerPublicNet `json:"public_net"`
 	ServerType      ServerType      `json:"server_type"`
 	IncludedTraffic uint64          `json:"included_traffic"`
-	OutgoingTraffic uint64          `json:"outgoing_traffic"`
-	IngoingTraffic  uint64          `json:"ingoing_traffic"`
+	OutgoingTraffic *uint64         `json:"outgoing_traffic"`
+	IngoingTraffic  *uint64         `json:"ingoing_traffic"`
 	BackupWindow    string          `json:"backup_window"`
 	RescueEnabled   bool            `json:"rescue_enabled"`
 	ISO             *ISO            `json:"iso"`

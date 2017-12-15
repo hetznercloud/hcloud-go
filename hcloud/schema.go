@@ -13,7 +13,9 @@ func ActionFromSchema(s schema.Action) *Action {
 		Command:  s.Command,
 		Progress: s.Progress,
 		Started:  s.Started,
-		Finished: s.Finished,
+	}
+	if s.Finished != nil {
+		action.Finished = *s.Finished
 	}
 	if s.Error != nil {
 		action.ErrorCode = s.Error.Code
@@ -82,10 +84,14 @@ func ServerFromSchema(s schema.Server) *Server {
 		PublicNet:       ServerPublicNetFromSchema(s.PublicNet),
 		ServerType:      ServerTypeFromSchema(s.ServerType),
 		IncludedTraffic: s.IncludedTraffic,
-		OutgoingTraffic: s.OutgoingTraffic,
-		IngoingTraffic:  s.IngoingTraffic,
 		BackupWindow:    s.BackupWindow,
 		RescueEnabled:   s.RescueEnabled,
+	}
+	if s.OutgoingTraffic != nil {
+		server.OutgoingTraffic = *s.OutgoingTraffic
+	}
+	if s.IngoingTraffic != nil {
+		server.IngoingTraffic = *s.IngoingTraffic
 	}
 	if s.ISO != nil {
 		server.ISO = ISOFromSchema(*s.ISO)
@@ -164,20 +170,27 @@ func SSHKeyFromSchema(s schema.SSHKey) *SSHKey {
 
 // ImageFromSchema converts a schema.Image to an Image.
 func ImageFromSchema(s schema.Image) *Image {
-	return &Image{
+	i := &Image{
 		ID:          s.ID,
-		Name:        s.Name,
 		Type:        ImageType(s.Type),
 		Status:      ImageStatus(s.Status),
 		Description: s.Description,
-		ImageSize:   s.ImageSize,
 		DiskSize:    s.DiskSize,
 		Created:     s.Created,
 		RapidDeploy: s.RapidDeploy,
-
-		OSFlavor:  s.OSFlavor,
-		OSVersion: s.OSVersion,
+		OSFlavor:    s.OSFlavor,
 	}
+	if s.Name != nil {
+		i.Name = *s.Name
+	}
+	if s.ImageSize != nil {
+		i.ImageSize = *s.ImageSize
+	}
+	if s.OSVersion != nil {
+		i.OSVersion = *s.OSVersion
+	}
+
+	return i
 }
 
 // PaginationFromSchema converts a schema.MetaPagination to a Pagination.
