@@ -3,7 +3,6 @@ package hcloud
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"testing"
 
@@ -73,79 +72,26 @@ func TestImageClient(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
 
-		firstRequest := true
 		env.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
-			if firstRequest {
-				firstRequest = false
-				w.WriteHeader(http.StatusTooManyRequests)
-				json.NewEncoder(w).Encode(schema.ErrorResponse{
-					Error: schema.Error{
-						Code:    "limit_reached",
-						Message: "ratelimited",
+			json.NewEncoder(w).Encode(struct {
+				Images []schema.Image `json:"images"`
+				Meta   schema.Meta    `json:"meta"`
+			}{
+				Images: []schema.Image{
+					{ID: 1},
+					{ID: 2},
+					{ID: 3},
+				},
+				Meta: schema.Meta{
+					Pagination: &schema.MetaPagination{
+						Page:         1,
+						LastPage:     1,
+						PerPage:      3,
+						TotalEntries: 3,
 					},
-				})
-				return
-			}
-
-			switch page := r.URL.Query().Get("page"); page {
-			case "", "1":
-				fmt.Fprint(w, `{
-					"images": [
-						{
-							"id": 1
-						}
-					],
-					"meta": {
-						"pagination": {
-							"page": 1,
-							"per_page": 1,
-							"previous_page": null,
-							"next_page": 2,
-							"last_page": 3,
-							"total_entries": 3
-						}
-					}
-				}`)
-			case "2":
-				fmt.Fprint(w, `{
-					"images": [
-						{
-							"id": 2
-						}
-					],
-					"meta": {
-						"pagination": {
-							"page": 2,
-							"per_page": 1,
-							"previous_page": 1,
-							"next_page": 3,
-							"last_page": 3,
-							"total_entries": 3
-						}
-					}
-				}`)
-			case "3":
-				fmt.Fprint(w, `{
-					"images": [
-						{
-							"id": 3
-						}
-					],
-					"meta": {
-						"pagination": {
-							"page": 3,
-							"per_page": 1,
-							"previous_page": 2,
-							"next_page": null,
-							"last_page": 3,
-							"total_entries": 3
-						}
-					}
-				}`)
-			default:
-				panic("bad page")
-			}
+				},
+			})
 		})
 
 		ctx := context.Background()
@@ -156,8 +102,8 @@ func TestImageClient(t *testing.T) {
 		if len(images) != 3 {
 			t.Fatalf("expected 3 images; got %d", len(images))
 		}
-		if images[0].ID != 1 {
-			t.Errorf("Expected first image to have an id of 1; got %d", images[0].ID)
+		if images[0].ID != 1 || images[1].ID != 2 || images[2].ID != 3 {
+			t.Errorf("unexpected images")
 		}
 	})
 
