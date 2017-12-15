@@ -467,3 +467,62 @@ func TestPaginationFromSchema(t *testing.T) {
 		t.Errorf("unexpected total entries: %d", p.TotalEntries)
 	}
 }
+
+func TestImageFromSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 4711,
+		"type": "system",
+		"status": "available",
+		"name": "ubuntu16.04-standard-x64",
+		"description": "Ubuntu 16.04 Standard 64 bit",
+		"image_size": 2.3,
+		"disk_size": 10,
+		"created": "2016-01-30T23:55:01Z",
+		"created_from": "my_server1",
+		"created_from_id": 1,
+		"bound_to": 1,
+		"os_flavor": "ubuntu",
+		"os_version": "16.04",
+		"rapid_deploy": false
+	}`)
+
+	var s schema.Image
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	image := ImageFromSchema(s)
+
+	if image.ID != 4711 {
+		t.Errorf("unexpected ID: %v", image.ID)
+	}
+	if image.Type != ImageTypeSystem {
+		t.Errorf("unexpected Type: %v", image.Type)
+	}
+	if image.Status != ImageStatusAvailable {
+		t.Errorf("unexpected Status: %v", image.Status)
+	}
+	if image.Name != "ubuntu16.04-standard-x64" {
+		t.Errorf("unexpected Name: %v", image.Name)
+	}
+	if image.Description != "Ubuntu 16.04 Standard 64 bit" {
+		t.Errorf("unexpected Description: %v", image.Description)
+	}
+	if image.ImageSize != 2.3 {
+		t.Errorf("unexpected ImageSize: %v", image.ImageSize)
+	}
+	if image.DiskSize != 10 {
+		t.Errorf("unexpected DiskSize: %v", image.DiskSize)
+	}
+	if !image.Created.Equal(time.Date(2016, 1, 30, 23, 55, 1, 0, time.UTC)) {
+		t.Errorf("unexpected Created: %v", image.Created)
+	}
+	if image.OSVersion != "16.04" {
+		t.Errorf("unexpected OSVersion: %v", image.OSVersion)
+	}
+	if image.OSFlavor != "ubuntu" {
+		t.Errorf("unexpected OSFlavor: %v", image.OSFlavor)
+	}
+	if image.RapidDeploy {
+		t.Errorf("unexpected RapidDeploy: %v", image.RapidDeploy)
+	}
+}
