@@ -145,7 +145,7 @@ type ServerActionCreateImageRequest struct {
 }
 
 // ServerActionCreateImageResponse defines the schema of the response when
-// creating a reset_password server action.
+// creating a create_image server action.
 type ServerActionCreateImageResponse struct {
 	Action Action `json:"action"`
 	Image  Image  `json:"image"`
