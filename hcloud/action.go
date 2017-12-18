@@ -11,7 +11,7 @@ import (
 // Action represents an action in the Hetzner Cloud.
 type Action struct {
 	ID           int
-	Status       string
+	Status       ActionStatus
 	Command      string
 	Progress     int
 	Started      time.Time
@@ -19,6 +19,16 @@ type Action struct {
 	ErrorCode    string
 	ErrorMessage string
 }
+
+// ActionStatus represents an action's status.
+type ActionStatus string
+
+// List of action statuses.
+const (
+	ActionStatusRunning ActionStatus = "running"
+	ActionStatusSuccess              = "success"
+	ActionStatusError                = "error"
+)
 
 func (a *Action) Error() error {
 	if a.ErrorCode != "" && a.ErrorMessage != "" {

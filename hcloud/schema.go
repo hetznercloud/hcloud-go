@@ -9,7 +9,7 @@ import "github.com/hetznercloud/hcloud-go/hcloud/schema"
 func ActionFromSchema(s schema.Action) *Action {
 	action := &Action{
 		ID:       s.ID,
-		Status:   s.Status,
+		Status:   ActionStatus(s.Status),
 		Command:  s.Command,
 		Progress: s.Progress,
 		Started:  s.Started,
