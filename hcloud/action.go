@@ -20,6 +20,13 @@ type Action struct {
 	ErrorMessage string
 }
 
+func (a *Action) Error() error {
+	if a.ErrorCode != "" && a.ErrorMessage != "" {
+		return fmt.Errorf("%s (%s)", a.ErrorMessage, a.ErrorCode)
+	}
+	return nil
+}
+
 // ActionClient is a client for the actions API.
 type ActionClient struct {
 	client *Client
