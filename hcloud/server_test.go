@@ -310,3 +310,73 @@ func TestServerClientResetPassword(t *testing.T) {
 		t.Errorf("unexpected root password: %v", result.RootPassword)
 	}
 }
+
+func TestServerClientCreateImageNoOptions(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/create_image", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionCreateImageResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+			Image: schema.Image{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.CreateImage(ctx, &Server{ID: 1}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", result.Action.ID)
+	}
+	if result.Image.ID != 1 {
+		t.Errorf("unexpected image ID: %d", result.Image.ID)
+	}
+}
+
+func TestServerClientCreateImageWithOptions(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/create_image", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.ServerActionCreateImageRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.Type == nil || *reqBody.Type != "backup" {
+			t.Errorf("unexpected type: %v", reqBody.Type)
+		}
+		if reqBody.Description == nil || *reqBody.Description != "my backup" {
+			t.Errorf("unexpected description: %v", reqBody.Description)
+		}
+		json.NewEncoder(w).Encode(schema.ServerActionCreateImageResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+			Image: schema.Image{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	opts := &ServerCreateImageOpts{
+		Type:        ImageTypeBackup,
+		Description: String("my backup"),
+	}
+	result, _, err := env.Client.Server.CreateImage(ctx, &Server{ID: 1}, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", result.Action.ID)
+	}
+	if result.Image.ID != 1 {
+		t.Errorf("unexpected image ID: %d", result.Image.ID)
+	}
+}

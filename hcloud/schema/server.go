@@ -136,3 +136,17 @@ type ServerActionResetPasswordResponse struct {
 	Action       Action `json:"action"`
 	RootPassword string `json:"root_password"`
 }
+
+// ServerActionCreateImageRequest defines the schema for the request to
+// create a create_image server action.
+type ServerActionCreateImageRequest struct {
+	Type        *string `json:"type"`
+	Description *string `json:"description"`
+}
+
+// ServerActionCreateImageResponse defines the schema of the response when
+// creating a reset_password server action.
+type ServerActionCreateImageResponse struct {
+	Action Action `json:"action"`
+	Image  Image  `json:"image"`
+}

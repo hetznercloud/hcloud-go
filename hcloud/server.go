@@ -318,3 +318,65 @@ func (c *ServerClient) ResetPassword(ctx context.Context, server *Server) (Serve
 		RootPassword: respBody.RootPassword,
 	}, resp, nil
 }
+
+// ServerCreateImageOpts specifies options for creating an image from a server.
+type ServerCreateImageOpts struct {
+	Type        ImageType
+	Description *string
+}
+
+// Validate checks if options are valid.
+func (o ServerCreateImageOpts) Validate() error {
+	switch o.Type {
+	case ImageTypeSnapshot, ImageTypeBackup:
+		break
+	case "":
+		break
+	default:
+		return errors.New("invalid type")
+	}
+
+	return nil
+}
+
+// ServerCreateImageResult is the result of creating an image from a server.
+type ServerCreateImageResult struct {
+	Action *Action
+	Image  *Image
+}
+
+// CreateImage creates an image from a server.
+func (c *ServerClient) CreateImage(ctx context.Context, server *Server, opts *ServerCreateImageOpts) (ServerCreateImageResult, *Response, error) {
+	var reqBody schema.ServerActionCreateImageRequest
+	if opts != nil {
+		if err := opts.Validate(); err != nil {
+			return ServerCreateImageResult{}, nil, fmt.Errorf("invalid options: %s", err)
+		}
+		if opts.Description != nil {
+			reqBody.Description = opts.Description
+		}
+		if opts.Type != "" {
+			reqBody.Type = String(string(opts.Type))
+		}
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return ServerCreateImageResult{}, nil, err
+	}
+
+	path := fmt.Sprintf("/servers/%d/actions/create_image", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return ServerCreateImageResult{}, nil, err
+	}
+
+	respBody := schema.ServerActionCreateImageResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return ServerCreateImageResult{}, resp, err
+	}
+	return ServerCreateImageResult{
+		Action: ActionFromSchema(respBody.Action),
+		Image:  ImageFromSchema(respBody.Image),
+	}, resp, nil
+}
