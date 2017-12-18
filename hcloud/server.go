@@ -68,6 +68,16 @@ type ServerPublicNetIPv6DNSPtr struct {
 	DNSPtr string
 }
 
+// ServerRescueType represents rescue types.
+type ServerRescueType string
+
+// List of rescue types.
+const (
+	ServerRescueTypeLinux32   ServerRescueType = "linux32"
+	ServerRescueTypeLinux64                    = "linux64"
+	ServerRescueTypeFreeBSD64                  = "freebsd64"
+)
+
 // ServerClient is a client for the servers API.
 type ServerClient struct {
 	client *Client
@@ -379,4 +389,65 @@ func (c *ServerClient) CreateImage(ctx context.Context, server *Server, opts *Se
 		Action: ActionFromSchema(respBody.Action),
 		Image:  ImageFromSchema(respBody.Image),
 	}, resp, nil
+}
+
+// ServerEnableRescueOpts specifies options for enabling rescue mode for a server.
+type ServerEnableRescueOpts struct {
+	Type    ServerRescueType
+	SSHKeys []*SSHKey
+}
+
+// ServerEnableRescueResult is the result of enabling rescue mode for a server.
+type ServerEnableRescueResult struct {
+	Action       *Action
+	RootPassword string
+}
+
+// EnableRescue enables rescue mode for a server.
+func (c *ServerClient) EnableRescue(ctx context.Context, server *Server, opts ServerEnableRescueOpts) (ServerEnableRescueResult, *Response, error) {
+	reqBody := schema.ServerActionEnableRescueRequest{
+		Type: String(string(opts.Type)),
+	}
+	for _, sshKey := range opts.SSHKeys {
+		reqBody.SSHKeys = append(reqBody.SSHKeys, sshKey.ID)
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return ServerEnableRescueResult{}, nil, err
+	}
+
+	path := fmt.Sprintf("/servers/%d/actions/enable_rescue", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return ServerEnableRescueResult{}, nil, err
+	}
+
+	respBody := schema.ServerActionEnableRescueResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return ServerEnableRescueResult{}, resp, err
+	}
+	result := ServerEnableRescueResult{
+		Action: ActionFromSchema(respBody.Action),
+	}
+	if respBody.RootPassword != nil {
+		result.RootPassword = *respBody.RootPassword
+	}
+	return result, resp, nil
+}
+
+// DisableRescue disables rescue mode for a server.
+func (c *ServerClient) DisableRescue(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/disable_rescue", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionDisableRescueResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
 }

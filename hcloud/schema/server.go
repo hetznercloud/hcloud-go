@@ -150,3 +150,27 @@ type ServerActionCreateImageResponse struct {
 	Action Action `json:"action"`
 	Image  Image  `json:"image"`
 }
+
+// ServerActionEnableRescueRequest defines the schema for the request to
+// create a enable_rescue server action.
+type ServerActionEnableRescueRequest struct {
+	Type    *string `json:"type,omitempty"`
+	SSHKeys []int   `json:"ssh_keys,omitempty"`
+}
+
+// ServerActionEnableRescueResponse defines the schema of the response when
+// creating a enable_rescue server action.
+type ServerActionEnableRescueResponse struct {
+	Action       Action  `json:"action"`
+	RootPassword *string `json:"root_password"`
+}
+
+// ServerActionDisableRescueRequest defines the schema for the request to
+// create a disable_rescue server action.
+type ServerActionDisableRescueRequest struct{}
+
+// ServerActionDisableRescueResponse defines the schema of the response when
+// creating a disable_rescue server action.
+type ServerActionDisableRescueResponse struct {
+	Action Action `json:"action"`
+}

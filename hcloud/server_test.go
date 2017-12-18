@@ -380,3 +380,68 @@ func TestServerClientCreateImageWithOptions(t *testing.T) {
 		t.Errorf("unexpected image ID: %d", result.Image.ID)
 	}
 }
+
+func TestServerClientEnableRescue(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/enable_rescue", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.ServerActionEnableRescueRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.Type == nil || *reqBody.Type != "linux64" {
+			t.Errorf("unexpected type: %v", reqBody.Type)
+		}
+		if len(reqBody.SSHKeys) != 2 || reqBody.SSHKeys[0] != 1 || reqBody.SSHKeys[1] != 2 {
+			t.Errorf("unexpected SSH keys: %v", reqBody.SSHKeys)
+		}
+		json.NewEncoder(w).Encode(schema.ServerActionEnableRescueResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+			RootPassword: String("test"),
+		})
+	})
+
+	ctx := context.Background()
+	opts := ServerEnableRescueOpts{
+		Type: ServerRescueTypeLinux64,
+		SSHKeys: []*SSHKey{
+			{ID: 1},
+			{ID: 2},
+		},
+	}
+	result, _, err := env.Client.Server.EnableRescue(ctx, &Server{ID: 1}, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", result.Action.ID)
+	}
+	if result.RootPassword != "test" {
+		t.Errorf("unexpected root password: %s", result.RootPassword)
+	}
+}
+
+func TestServerClientDisableRescue(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/disable_rescue", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionDisableRescueResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	action, _, err := env.Client.Server.DisableRescue(ctx, &Server{ID: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
