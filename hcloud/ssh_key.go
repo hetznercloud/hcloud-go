@@ -33,6 +33,9 @@ func (c *SSHKeyClient) Get(ctx context.Context, id int) (*SSHKey, *Response, err
 	var body schema.SSHKeyGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
+		if IsError(err, ErrorCodeNotFound) {
+			return nil, resp, nil
+		}
 		return nil, nil, err
 	}
 	return SSHKeyFromSchema(body.SSHKey), resp, nil

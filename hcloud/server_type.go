@@ -44,6 +44,9 @@ func (c *ServerTypeClient) Get(ctx context.Context, id int) (*ServerType, *Respo
 	var body schema.ServerTypeGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
+		if IsError(err, ErrorCodeNotFound) {
+			return nil, resp, nil
+		}
 		return nil, nil, err
 	}
 	return ServerTypeFromSchema(body.ServerType), resp, nil

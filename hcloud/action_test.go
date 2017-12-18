@@ -38,3 +38,27 @@ func TestActionClientGet(t *testing.T) {
 		t.Errorf("unexpected action ID: %v", action.ID)
 	}
 }
+
+func TestActionClientGetNotFound(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/actions/1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: ErrorCodeNotFound,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	action, _, err := env.Client.Action.Get(ctx, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action != nil {
+		t.Fatal("expected no action")
+	}
+}

@@ -34,6 +34,30 @@ func TestFloatingIPClientGet(t *testing.T) {
 	}
 }
 
+func TestFloatingIPClientGetNotFound(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/floating_ips/1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: ErrorCodeNotFound,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	floatingIP, _, err := env.Client.FloatingIP.Get(ctx, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if floatingIP != nil {
+		t.Fatal("expected no Floating IP")
+	}
+}
+
 func TestFloatingIPClientList(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

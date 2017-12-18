@@ -45,6 +45,9 @@ func (c *FloatingIPClient) Get(ctx context.Context, id int) (*FloatingIP, *Respo
 	var body schema.FloatingIPGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
+		if IsError(err, ErrorCodeNotFound) {
+			return nil, resp, nil
+		}
 		return nil, resp, err
 	}
 	return FloatingIPFromSchema(body.FloatingIP), resp, nil

@@ -61,6 +61,9 @@ func (c *ImageClient) Get(ctx context.Context, id int) (*Image, *Response, error
 	var body schema.ImageGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
+		if IsError(err, ErrorCodeNotFound) {
+			return nil, resp, nil
+		}
 		return nil, nil, err
 	}
 	return ImageFromSchema(body.Image), resp, nil

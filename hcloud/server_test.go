@@ -35,6 +35,30 @@ func TestServerClientGet(t *testing.T) {
 	}
 }
 
+func TestServerClientGetNotFound(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: ErrorCodeNotFound,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	server, _, err := env.Client.Server.Get(ctx, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if server != nil {
+		t.Fatal("expected no server")
+	}
+}
+
 func TestServersList(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

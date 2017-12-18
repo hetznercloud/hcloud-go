@@ -35,6 +35,9 @@ func (c *ActionClient) Get(ctx context.Context, id int) (*Action, *Response, err
 	var body schema.ActionGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
+		if IsError(err, ErrorCodeNotFound) {
+			return nil, resp, nil
+		}
 		return nil, nil, err
 	}
 	return ActionFromSchema(body.Action), resp, nil
