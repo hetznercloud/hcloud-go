@@ -161,8 +161,8 @@ type ServerActionEnableRescueRequest struct {
 // ServerActionEnableRescueResponse defines the schema of the response when
 // creating a enable_rescue server action.
 type ServerActionEnableRescueResponse struct {
-	Action       Action  `json:"action"`
-	RootPassword *string `json:"root_password"`
+	Action       Action `json:"action"`
+	RootPassword string `json:"root_password"`
 }
 
 // ServerActionDisableRescueRequest defines the schema for the request to

@@ -400,7 +400,7 @@ func TestServerClientEnableRescue(t *testing.T) {
 			Action: schema.Action{
 				ID: 1,
 			},
-			RootPassword: String("test"),
+			RootPassword: "test",
 		})
 	})
 

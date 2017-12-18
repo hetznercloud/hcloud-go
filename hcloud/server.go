@@ -428,10 +428,8 @@ func (c *ServerClient) EnableRescue(ctx context.Context, server *Server, opts Se
 		return ServerEnableRescueResult{}, resp, err
 	}
 	result := ServerEnableRescueResult{
-		Action: ActionFromSchema(respBody.Action),
-	}
-	if respBody.RootPassword != nil {
-		result.RootPassword = *respBody.RootPassword
+		Action:       ActionFromSchema(respBody.Action),
+		RootPassword: respBody.RootPassword,
 	}
 	return result, resp, nil
 }
