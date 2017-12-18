@@ -154,6 +154,7 @@ type ServerCreateOpts struct {
 	Name       string
 	ServerType ServerType
 	Image      Image
+	SSHKeys    []*SSHKey
 }
 
 // Validate checks if options are valid.
@@ -172,8 +173,9 @@ func (o ServerCreateOpts) Validate() error {
 
 // ServerCreateResult is the result of a create server call.
 type ServerCreateResult struct {
-	Server *Server
-	Action *Action
+	Server       *Server
+	Action       *Action
+	RootPassword string
 }
 
 // Create creates a new server.
@@ -194,6 +196,9 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	} else if opts.Image.Name != "" {
 		reqBody.Image = opts.Image.Name
 	}
+	for _, sshKey := range opts.SSHKeys {
+		reqBody.SSHKeys = append(reqBody.SSHKeys, sshKey.ID)
+	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
 		return ServerCreateResult{}, nil, err
@@ -209,10 +214,14 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	if err != nil {
 		return ServerCreateResult{}, resp, err
 	}
-	return ServerCreateResult{
+	result := ServerCreateResult{
 		Server: ServerFromSchema(respBody.Server),
 		Action: ActionFromSchema(respBody.Action),
-	}, resp, nil
+	}
+	if respBody.RootPassword != nil {
+		result.RootPassword = *respBody.RootPassword
+	}
+	return result, resp, nil
 }
 
 // Delete deletes a server.

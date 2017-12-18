@@ -67,13 +67,15 @@ type ServerCreateRequest struct {
 	Name       string      `json:"name"`
 	ServerType interface{} `json:"server_type"` // int or string
 	Image      interface{} `json:"image"`       // int or string
+	SSHKeys    []int       `json:"ssh_keys,omitempty"`
 }
 
 // ServerCreateResponse defines the schema of the response when
 // creating a server.
 type ServerCreateResponse struct {
-	Server Server `json:"server"`
-	Action Action `json:"action"`
+	Server       Server  `json:"server"`
+	Action       Action  `json:"action"`
+	RootPassword *string `json:"root_password"`
 }
 
 // ServerActionPoweronRequest defines the schema for the request to
