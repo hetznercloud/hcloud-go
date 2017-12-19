@@ -169,3 +169,49 @@ func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts
 		Action:     action,
 	}, resp, nil
 }
+
+// Assign assigns a Floating IP to a server.
+func (c *FloatingIPClient) Assign(ctx context.Context, floatingIP *FloatingIP, server *Server) (*Action, *Response, error) {
+	reqBody := schema.FloatingIPActionAssignRequest{
+		Server: server.ID,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/floating_ips/%d/actions/assign", floatingIP.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var respBody schema.FloatingIPActionAssignResponse
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// Unassign unassigns a Floating IP from the currently assigned server.
+func (c *FloatingIPClient) Unassign(ctx context.Context, floatingIP *FloatingIP) (*Action, *Response, error) {
+	var reqBody schema.FloatingIPActionUnassignRequest
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/floating_ips/%d/actions/unassign", floatingIP.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var respBody schema.FloatingIPActionUnassignResponse
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}

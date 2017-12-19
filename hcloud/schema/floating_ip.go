@@ -85,3 +85,25 @@ type FloatingIPCreateResponse struct {
 	FloatingIP FloatingIP `json:"floating_ip"`
 	Action     *Action    `json:"action"`
 }
+
+// FloatingIPActionAssignRequest defines the schema of the request to
+// create an assign Floating IP action.
+type FloatingIPActionAssignRequest struct {
+	Server int `json:"server"`
+}
+
+// FloatingIPActionAssignResponse defines the schema of the response when
+// creating an assign action.
+type FloatingIPActionAssignResponse struct {
+	Action Action `json:"action"`
+}
+
+// FloatingIPActionUnassignRequest defines the schema of the request to
+// create an unassign Floating IP action.
+type FloatingIPActionUnassignRequest struct{}
+
+// FloatingIPActionUnassignResponse defines the schema of the response when
+// creating an unassign action.
+type FloatingIPActionUnassignResponse struct {
+	Action Action `json:"action"`
+}

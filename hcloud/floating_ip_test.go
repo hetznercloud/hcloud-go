@@ -129,3 +129,61 @@ func TestFloatingIPClientCreate(t *testing.T) {
 		t.Errorf("unexpected action ID: %d", result.Action.ID)
 	}
 }
+
+func TestFloatingIPClientAssign(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/floating_ips/1/actions/assign", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.FloatingIPActionAssignRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.Server != 1 {
+			t.Errorf("unexpected server ID: %d", reqBody.Server)
+		}
+		json.NewEncoder(w).Encode(schema.FloatingIPActionAssignResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	var (
+		ctx        = context.Background()
+		floatingIP = &FloatingIP{ID: 1}
+		server     = &Server{ID: 1}
+	)
+	action, _, err := env.Client.FloatingIP.Assign(ctx, floatingIP, server)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
+
+func TestFloatingIPClientUnassign(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/floating_ips/1/actions/unassign", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.FloatingIPActionAssignResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	var (
+		ctx        = context.Background()
+		floatingIP = &FloatingIP{ID: 1}
+	)
+	action, _, err := env.Client.FloatingIP.Unassign(ctx, floatingIP)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
