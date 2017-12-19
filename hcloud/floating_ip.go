@@ -170,6 +170,15 @@ func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts
 	}, resp, nil
 }
 
+// Delete deletes a Floating IP.
+func (c *FloatingIPClient) Delete(ctx context.Context, id int) (*Response, error) {
+	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/floating_ips/%d", id), nil)
+	if err != nil {
+		return nil, err
+	}
+	return c.client.Do(req, nil)
+}
+
 // Assign assigns a Floating IP to a server.
 func (c *FloatingIPClient) Assign(ctx context.Context, floatingIP *FloatingIP, server *Server) (*Action, *Response, error) {
 	reqBody := schema.FloatingIPActionAssignRequest{

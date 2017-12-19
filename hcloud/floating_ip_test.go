@@ -130,6 +130,21 @@ func TestFloatingIPClientCreate(t *testing.T) {
 	}
 }
 
+func TestFloatingIPClientDelete(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/floating_ips/1", func(w http.ResponseWriter, r *http.Request) {
+		return
+	})
+
+	ctx := context.Background()
+	_, err := env.Client.FloatingIP.Delete(ctx, 1)
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestFloatingIPClientAssign(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
