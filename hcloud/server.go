@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
@@ -155,6 +156,8 @@ type ServerCreateOpts struct {
 	ServerType ServerType
 	Image      Image
 	SSHKeys    []*SSHKey
+	Location   *Location
+	Datacenter *Datacenter
 }
 
 // Validate checks if options are valid.
@@ -167,6 +170,9 @@ func (o ServerCreateOpts) Validate() error {
 	}
 	if o.Image.ID == 0 && o.Image.Name == "" {
 		return errors.New("missing image")
+	}
+	if o.Location != nil && o.Datacenter != nil {
+		return errors.New("location and datacenter are mutually exclusive")
 	}
 	return nil
 }
@@ -198,6 +204,20 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	}
 	for _, sshKey := range opts.SSHKeys {
 		reqBody.SSHKeys = append(reqBody.SSHKeys, sshKey.ID)
+	}
+	if opts.Location != nil {
+		if opts.Location.ID != 0 {
+			reqBody.Location = strconv.Itoa(opts.Location.ID)
+		} else {
+			reqBody.Location = opts.Location.Name
+		}
+	}
+	if opts.Datacenter != nil {
+		if opts.Datacenter.ID != 0 {
+			reqBody.Datacenter = strconv.Itoa(opts.Datacenter.ID)
+		} else {
+			reqBody.Datacenter = opts.Datacenter.Name
+		}
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {

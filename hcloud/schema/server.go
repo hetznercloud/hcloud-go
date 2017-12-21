@@ -68,6 +68,8 @@ type ServerCreateRequest struct {
 	ServerType interface{} `json:"server_type"` // int or string
 	Image      interface{} `json:"image"`       // int or string
 	SSHKeys    []int       `json:"ssh_keys,omitempty"`
+	Location   string      `json:"location,omitempty"`
+	Datacenter string      `json:"datacenter,omitempty"`
 }
 
 // ServerCreateResponse defines the schema of the response when
