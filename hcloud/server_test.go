@@ -357,8 +357,11 @@ func TestServersDelete(t *testing.T) {
 		return
 	})
 
-	ctx := context.Background()
-	_, err := env.Client.Server.Delete(ctx, 1)
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+	_, err := env.Client.Server.Delete(ctx, server)
 	if err != nil {
 		t.Fatalf("Server.Delete failed: %s", err)
 	}

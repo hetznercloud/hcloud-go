@@ -138,8 +138,11 @@ func TestFloatingIPClientDelete(t *testing.T) {
 		return
 	})
 
-	ctx := context.Background()
-	_, err := env.Client.FloatingIP.Delete(ctx, 1)
+	var (
+		ctx        = context.Background()
+		floatingIP = &FloatingIP{ID: 1}
+	)
+	_, err := env.Client.FloatingIP.Delete(ctx, floatingIP)
 	if err != nil {
 		t.Fatal(err)
 	}

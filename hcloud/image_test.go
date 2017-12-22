@@ -139,8 +139,11 @@ func TestImageClient(t *testing.T) {
 			return
 		})
 
-		ctx := context.Background()
-		_, err := env.Client.Image.Delete(ctx, 1)
+		var (
+			ctx   = context.Background()
+			image = &Image{ID: 1}
+		)
+		_, err := env.Client.Image.Delete(ctx, image)
 		if err != nil {
 			t.Fatalf("Image.Delete failed: %s", err)
 		}

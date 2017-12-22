@@ -245,8 +245,8 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 }
 
 // Delete deletes a server.
-func (c *ServerClient) Delete(ctx context.Context, id int) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/servers/%d", id), nil)
+func (c *ServerClient) Delete(ctx context.Context, server *Server) (*Response, error) {
+	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/servers/%d", server.ID), nil)
 	if err != nil {
 		return nil, err
 	}

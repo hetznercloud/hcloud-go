@@ -162,8 +162,11 @@ func TestSSHKeyClientDelete(t *testing.T) {
 
 	env.Mux.HandleFunc("/ssh_keys/1", func(w http.ResponseWriter, r *http.Request) {})
 
-	ctx := context.Background()
-	_, err := env.Client.SSHKey.Delete(ctx, 1)
+	var (
+		ctx    = context.Background()
+		sshKey = &SSHKey{ID: 1}
+	)
+	_, err := env.Client.SSHKey.Delete(ctx, sshKey)
 	if err != nil {
 		t.Fatalf("SSHKey.Delete failed: %s", err)
 	}

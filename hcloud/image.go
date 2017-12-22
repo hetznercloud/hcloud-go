@@ -118,8 +118,8 @@ func (c *ImageClient) All(ctx context.Context) ([]*Image, error) {
 }
 
 // Delete deletes an image.
-func (c *ImageClient) Delete(ctx context.Context, id int) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/images/%d", id), nil)
+func (c *ImageClient) Delete(ctx context.Context, image *Image) (*Response, error) {
+	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/images/%d", image.ID), nil)
 	if err != nil {
 		return nil, err
 	}
