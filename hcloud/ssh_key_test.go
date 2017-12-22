@@ -10,7 +10,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestSSHKeyClientGet(t *testing.T) {
+func TestSSHKeyClientGetByID(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -26,7 +26,7 @@ func TestSSHKeyClientGet(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	sshKey, _, err := env.Client.SSHKey.Get(ctx, 1)
+	sshKey, _, err := env.Client.SSHKey.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatalf("SSHKey.Get failed: %s", err)
 	}
@@ -38,7 +38,7 @@ func TestSSHKeyClientGet(t *testing.T) {
 	}
 }
 
-func TestSSHKeyClientGetNotFound(t *testing.T) {
+func TestSSHKeyClientGetByIDNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -53,7 +53,7 @@ func TestSSHKeyClientGetNotFound(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	sshKey, _, err := env.Client.SSHKey.Get(ctx, 1)
+	sshKey, _, err := env.Client.SSHKey.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatalf("SSHKey.Get failed: %s", err)
 	}

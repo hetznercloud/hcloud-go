@@ -51,8 +51,8 @@ type ImageClient struct {
 	client *Client
 }
 
-// Get retrieves an image.
-func (c *ImageClient) Get(ctx context.Context, id int) (*Image, *Response, error) {
+// GetByID retrieves an image by its ID.
+func (c *ImageClient) GetByID(ctx context.Context, id int) (*Image, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/images/%d", id), nil)
 	if err != nil {
 		return nil, nil, err

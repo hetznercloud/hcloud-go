@@ -84,8 +84,8 @@ type ServerClient struct {
 	client *Client
 }
 
-// Get retrieves a server.
-func (c *ServerClient) Get(ctx context.Context, id int) (*Server, *Response, error) {
+// GetByID retrieves a server by its ID.
+func (c *ServerClient) GetByID(ctx context.Context, id int) (*Server, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/servers/%d", id), nil)
 	if err != nil {
 		return nil, nil, err

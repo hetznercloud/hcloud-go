@@ -9,7 +9,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestServerClientGet(t *testing.T) {
+func TestServerClientGetByID(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -22,7 +22,7 @@ func TestServerClientGet(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	server, _, err := env.Client.Server.Get(ctx, 1)
+	server, _, err := env.Client.Server.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func TestServerClientGet(t *testing.T) {
 	}
 }
 
-func TestServerClientGetNotFound(t *testing.T) {
+func TestServerClientGetByIDNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -49,7 +49,7 @@ func TestServerClientGetNotFound(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	server, _, err := env.Client.Server.Get(ctx, 1)
+	server, _, err := env.Client.Server.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -23,8 +23,8 @@ type SSHKeyClient struct {
 	client *Client
 }
 
-// Get retrieves a SSH key.
-func (c *SSHKeyClient) Get(ctx context.Context, id int) (*SSHKey, *Response, error) {
+// GetByID retrieves a SSH key by its ID.
+func (c *SSHKeyClient) GetByID(ctx context.Context, id int) (*SSHKey, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/ssh_keys/%d", id), nil)
 	if err != nil {
 		return nil, nil, err

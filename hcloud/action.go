@@ -42,8 +42,8 @@ type ActionClient struct {
 	client *Client
 }
 
-// Get retrieves an action.
-func (c *ActionClient) Get(ctx context.Context, id int) (*Action, *Response, error) {
+// GetByID retrieves an action by its ID.
+func (c *ActionClient) GetByID(ctx context.Context, id int) (*Action, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/actions/%d", id), nil)
 	if err != nil {
 		return nil, nil, err

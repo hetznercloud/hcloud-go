@@ -10,7 +10,7 @@ import (
 )
 
 func TestImageClient(t *testing.T) {
-	t.Run("Get", func(t *testing.T) {
+	t.Run("GetByID", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
 
@@ -23,7 +23,7 @@ func TestImageClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
-		image, _, err := env.Client.Image.Get(ctx, 1)
+		image, _, err := env.Client.Image.GetByID(ctx, 1)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -35,7 +35,7 @@ func TestImageClient(t *testing.T) {
 		}
 	})
 
-	t.Run("Get (not found)", func(t *testing.T) {
+	t.Run("GetByID (not found)", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
 
@@ -50,7 +50,7 @@ func TestImageClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
-		image, _, err := env.Client.Image.Get(ctx, 1)
+		image, _, err := env.Client.Image.GetByID(ctx, 1)
 		if err != nil {
 			t.Fatal(err)
 		}

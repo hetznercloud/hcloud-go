@@ -35,8 +35,8 @@ type FloatingIPClient struct {
 	client *Client
 }
 
-// Get retrieves a Floating IP.
-func (c *FloatingIPClient) Get(ctx context.Context, id int) (*FloatingIP, *Response, error) {
+// GetByID retrieves a Floating IP by its ID.
+func (c *FloatingIPClient) GetByID(ctx context.Context, id int) (*FloatingIP, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/floating_ips/%d", id), nil)
 	if err != nil {
 		return nil, nil, err

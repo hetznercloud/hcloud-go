@@ -10,7 +10,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestActionClientGet(t *testing.T) {
+func TestActionClientGetByID(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -27,7 +27,7 @@ func TestActionClientGet(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	action, _, err := env.Client.Action.Get(ctx, 1)
+	action, _, err := env.Client.Action.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,7 +39,7 @@ func TestActionClientGet(t *testing.T) {
 	}
 }
 
-func TestActionClientGetNotFound(t *testing.T) {
+func TestActionClientGetByIDNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -54,7 +54,7 @@ func TestActionClientGetNotFound(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	action, _, err := env.Client.Action.Get(ctx, 1)
+	action, _, err := env.Client.Action.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}

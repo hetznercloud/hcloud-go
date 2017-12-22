@@ -9,7 +9,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestFloatingIPClientGet(t *testing.T) {
+func TestFloatingIPClientGetByID(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -22,7 +22,7 @@ func TestFloatingIPClientGet(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	floatingIP, _, err := env.Client.FloatingIP.Get(ctx, 1)
+	floatingIP, _, err := env.Client.FloatingIP.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -34,7 +34,7 @@ func TestFloatingIPClientGet(t *testing.T) {
 	}
 }
 
-func TestFloatingIPClientGetNotFound(t *testing.T) {
+func TestFloatingIPClientGetByIDNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -49,7 +49,7 @@ func TestFloatingIPClientGetNotFound(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	floatingIP, _, err := env.Client.FloatingIP.Get(ctx, 1)
+	floatingIP, _, err := env.Client.FloatingIP.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
