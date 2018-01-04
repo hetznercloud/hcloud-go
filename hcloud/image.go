@@ -3,6 +3,7 @@ package hcloud
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
@@ -67,6 +68,26 @@ func (c *ImageClient) GetByID(ctx context.Context, id int) (*Image, *Response, e
 		return nil, nil, err
 	}
 	return ImageFromSchema(body.Image), resp, nil
+}
+
+// GetByName retrieves an image by its name.
+func (c *ImageClient) GetByName(ctx context.Context, name string) (*Image, *Response, error) {
+	path := "/images?name=" + url.QueryEscape(name)
+	req, err := c.client.NewRequest(ctx, "GET", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var body schema.ImageListResponse
+	resp, err := c.client.Do(req, &body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if len(body.Images) == 0 {
+		return nil, resp, nil
+	}
+	return ImageFromSchema(body.Images[0]), resp, nil
 }
 
 // ImageListOpts specifies options for listing images.

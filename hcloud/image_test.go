@@ -59,6 +59,59 @@ func TestImageClient(t *testing.T) {
 		}
 	})
 
+	t.Run("GetByName", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.RawQuery != "name=my+image" {
+				t.Fatal("missing name query")
+			}
+			json.NewEncoder(w).Encode(schema.ImageListResponse{
+				Images: []schema.Image{
+					{
+						ID: 1,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+		image, _, err := env.Client.Image.GetByName(ctx, "my image")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if image == nil {
+			t.Fatal("no image")
+		}
+		if image.ID != 1 {
+			t.Errorf("unexpected image ID: %v", image.ID)
+		}
+	})
+
+	t.Run("GetByName (not found)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.RawQuery != "name=my+image" {
+				t.Fatal("missing name query")
+			}
+			json.NewEncoder(w).Encode(schema.ImageListResponse{
+				Images: []schema.Image{},
+			})
+		})
+
+		ctx := context.Background()
+		image, _, err := env.Client.Image.GetByName(ctx, "my image")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if image != nil {
+			t.Fatal("unexpected image")
+		}
+	})
+
 	t.Run("List", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

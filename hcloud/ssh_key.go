@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
@@ -39,6 +40,26 @@ func (c *SSHKeyClient) GetByID(ctx context.Context, id int) (*SSHKey, *Response,
 		return nil, nil, err
 	}
 	return SSHKeyFromSchema(body.SSHKey), resp, nil
+}
+
+// GetByName retrieves a SSH key by its name.
+func (c *SSHKeyClient) GetByName(ctx context.Context, name string) (*SSHKey, *Response, error) {
+	path := "/ssh_keys?name=" + url.QueryEscape(name)
+	req, err := c.client.NewRequest(ctx, "GET", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var body schema.SSHKeyListResponse
+	resp, err := c.client.Do(req, &body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if len(body.SSHKeys) == 0 {
+		return nil, resp, nil
+	}
+	return SSHKeyFromSchema(body.SSHKeys[0]), resp, nil
 }
 
 // SSHKeyListOpts specifies options for listing SSH keys.

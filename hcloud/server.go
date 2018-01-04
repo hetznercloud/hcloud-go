@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -100,6 +101,26 @@ func (c *ServerClient) GetByID(ctx context.Context, id int) (*Server, *Response,
 		return nil, nil, err
 	}
 	return ServerFromSchema(body.Server), resp, nil
+}
+
+// GetByName retreives a server by its name.
+func (c *ServerClient) GetByName(ctx context.Context, name string) (*Server, *Response, error) {
+	path := "/servers?name=" + url.QueryEscape(name)
+	req, err := c.client.NewRequest(ctx, "GET", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var body schema.ServerListResponse
+	resp, err := c.client.Do(req, &body)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if len(body.Servers) == 0 {
+		return nil, resp, nil
+	}
+	return ServerFromSchema(body.Servers[0]), resp, nil
 }
 
 // ServerListOpts specifies options for listing servers.
