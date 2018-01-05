@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 	"net/url"
 	"strconv"
 	"time"
@@ -21,11 +22,13 @@ type Server struct {
 	Created         time.Time
 	PublicNet       ServerPublicNet
 	ServerType      *ServerType
+	Datacenter      *Datacenter
 	IncludedTraffic uint64
 	OutgoingTraffic uint64
 	IngoingTraffic  uint64
 	BackupWindow    string
 	RescueEnabled   bool
+	Locked          bool
 	ISO             *ISO
 }
 
@@ -50,24 +53,24 @@ type ServerPublicNet struct {
 	FloatingIPs []*FloatingIP
 }
 
-// ServerPublicNetIPv4 represents a server's public IPv4 network.
+// ServerPublicNetIPv4 represents a server's public IPv4 address.
 type ServerPublicNetIPv4 struct {
-	IP      string
+	IP      net.IP
 	Blocked bool
 	DNSPtr  string
 }
 
-// ServerPublicNetIPv6 represents a server's public IPv6 network.
+// ServerPublicNetIPv6 represents a server's public IPv6 network and address.
 type ServerPublicNetIPv6 struct {
-	IP      string
+	IP      net.IP
+	Network *net.IPNet
 	Blocked bool
-	DNSPtr  []ServerPublicNetIPv6DNSPtr
+	DNSPtr  map[string]string
 }
 
-// ServerPublicNetIPv6DNSPtr represents a server's public IPv6 reverse DNS.
-type ServerPublicNetIPv6DNSPtr struct {
-	IP     string
-	DNSPtr string
+// DNSPtrForIP returns the reverse dns pointer of the ip address.
+func (s *ServerPublicNetIPv6) DNSPtrForIP(ip net.IP) string {
+	return s.DNSPtr[ip.String()]
 }
 
 // ServerRescueType represents rescue types.

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
@@ -14,11 +15,18 @@ import (
 type FloatingIP struct {
 	ID           int
 	Description  string
-	IP           string
+	IP           net.IP
+	Network      *net.IPNet
 	Type         FloatingIPType
 	Server       *Server
 	DNSPtr       map[string]string
 	HomeLocation *Location
+	Blocked      bool
+}
+
+// DNSPtrForIP returns the reverse dns pointer of the ip address.
+func (f *FloatingIP) DNSPtrForIP(ip net.IP) string {
+	return f.DNSPtr[ip.String()]
 }
 
 // FloatingIPType represents the type of a Floating IP.

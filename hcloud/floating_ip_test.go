@@ -16,7 +16,9 @@ func TestFloatingIPClientGetByID(t *testing.T) {
 	env.Mux.HandleFunc("/floating_ips/1", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(schema.FloatingIPGetResponse{
 			FloatingIP: schema.FloatingIP{
-				ID: 1,
+				ID:   1,
+				Type: "ipv4",
+				IP:   "131.232.99.1",
 			},
 		})
 	})
@@ -71,8 +73,8 @@ func TestFloatingIPClientList(t *testing.T) {
 		}
 		json.NewEncoder(w).Encode(schema.FloatingIPListResponse{
 			FloatingIPs: []schema.FloatingIP{
-				{ID: 1},
-				{ID: 2},
+				{ID: 1, Type: "ipv4", IP: "131.232.99.1"},
+				{ID: 2, Type: "ipv4", IP: "131.232.99.1"},
 			},
 		})
 	})
@@ -100,9 +102,7 @@ func TestFloatingIPClientCreate(t *testing.T) {
 			t.Error("expected POST")
 		}
 		json.NewEncoder(w).Encode(schema.FloatingIPCreateResponse{
-			FloatingIP: schema.FloatingIP{
-				ID: 1,
-			},
+			FloatingIP: schema.FloatingIP{ID: 1, Type: "ipv4", IP: "131.232.99.1"},
 			Action: &schema.Action{
 				ID: 1,
 			},

@@ -19,6 +19,8 @@ type Image struct {
 	ImageSize   float32
 	DiskSize    float32
 	Created     time.Time
+	CreatedFrom *Server
+	BoundTo     *Server
 	RapidDeploy bool
 
 	OSFlavor  string

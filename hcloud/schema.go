@@ -1,6 +1,10 @@
 package hcloud
 
-import "github.com/hetznercloud/hcloud-go/hcloud/schema"
+import (
+	"net"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+)
 
 // This file provides converter functions to convert models in the
 // schema package to models in the hcloud package.
@@ -8,11 +12,12 @@ import "github.com/hetznercloud/hcloud-go/hcloud/schema"
 // ActionFromSchema converts a schema.Action to an Action.
 func ActionFromSchema(s schema.Action) *Action {
 	action := &Action{
-		ID:       s.ID,
-		Status:   ActionStatus(s.Status),
-		Command:  s.Command,
-		Progress: s.Progress,
-		Started:  s.Started,
+		ID:        s.ID,
+		Status:    ActionStatus(s.Status),
+		Command:   s.Command,
+		Progress:  s.Progress,
+		Started:   s.Started,
+		Resources: []*ResourceReference{},
 	}
 	if s.Finished != nil {
 		action.Finished = *s.Finished
@@ -21,6 +26,12 @@ func ActionFromSchema(s schema.Action) *Action {
 		action.ErrorCode = s.Error.Code
 		action.ErrorMessage = s.Error.Message
 	}
+	for _, r := range s.Resources {
+		action.Resources = append(action.Resources, &ResourceReference{
+			ID:   r.ID,
+			Type: ResourceReferenceType(r.Type),
+		})
+	}
 	return action
 }
 
@@ -28,15 +39,20 @@ func ActionFromSchema(s schema.Action) *Action {
 func FloatingIPFromSchema(s schema.FloatingIP) *FloatingIP {
 	f := &FloatingIP{
 		ID:           s.ID,
-		IP:           s.IP,
 		Type:         FloatingIPType(s.Type),
 		HomeLocation: LocationFromSchema(s.HomeLocation),
+		Blocked:      s.Blocked,
 	}
 	if s.Description != nil {
 		f.Description = *s.Description
 	}
 	if s.Server != nil {
 		f.Server = &Server{ID: *s.Server}
+	}
+	if s.Type == "ipv4" {
+		f.IP = net.ParseIP(s.IP)
+	} else {
+		f.IP, f.Network, _ = net.ParseCIDR(s.IP)
 	}
 	if s.DNSPtr.IPv4 != nil {
 		f.DNSPtr = map[string]string{
@@ -74,6 +90,16 @@ func LocationFromSchema(s schema.Location) *Location {
 	}
 }
 
+// DatacenterFromSchema converts a schema.Datacenter to a Datacenter.
+func DatacenterFromSchema(s schema.Datacenter) *Datacenter {
+	return &Datacenter{
+		ID:          s.ID,
+		Name:        s.Name,
+		Description: s.Description,
+		Location:    LocationFromSchema(s.Location),
+	}
+}
+
 // ServerFromSchema converts a schema.Server to a Server.
 func ServerFromSchema(s schema.Server) *Server {
 	server := &Server{
@@ -85,6 +111,8 @@ func ServerFromSchema(s schema.Server) *Server {
 		ServerType:      ServerTypeFromSchema(s.ServerType),
 		IncludedTraffic: s.IncludedTraffic,
 		RescueEnabled:   s.RescueEnabled,
+		Datacenter:      DatacenterFromSchema(s.Datacenter),
+		Locked:          s.Locked,
 	}
 	if s.BackupWindow != nil {
 		server.BackupWindow = *s.BackupWindow
@@ -117,7 +145,7 @@ func ServerPublicNetFromSchema(s schema.ServerPublicNet) ServerPublicNet {
 // a ServerPublicNetIPv4.
 func ServerPublicNetIPv4FromSchema(s schema.ServerPublicNetIPv4) ServerPublicNetIPv4 {
 	return ServerPublicNetIPv4{
-		IP:      s.IP,
+		IP:      net.ParseIP(s.IP),
 		Blocked: s.Blocked,
 		DNSPtr:  s.DNSPtr,
 	}
@@ -127,22 +155,15 @@ func ServerPublicNetIPv4FromSchema(s schema.ServerPublicNetIPv4) ServerPublicNet
 // a ServerPublicNetIPv6.
 func ServerPublicNetIPv6FromSchema(s schema.ServerPublicNetIPv6) ServerPublicNetIPv6 {
 	ipv6 := ServerPublicNetIPv6{
-		IP:      s.IP,
 		Blocked: s.Blocked,
+		DNSPtr:  map[string]string{},
 	}
+	ipv6.IP, ipv6.Network, _ = net.ParseCIDR(s.IP)
+
 	for _, dnsPtr := range s.DNSPtr {
-		ipv6.DNSPtr = append(ipv6.DNSPtr, ServerPublicNetIPv6DNSPtrFromSchema(dnsPtr))
+		ipv6.DNSPtr[dnsPtr.IP] = dnsPtr.DNSPtr
 	}
 	return ipv6
-}
-
-// ServerPublicNetIPv6DNSPtrFromSchema converts a schema.ServerPublicNetIPv6DNSPtr
-// to a ServerPublicNetIPv6DNSPtr.
-func ServerPublicNetIPv6DNSPtrFromSchema(s schema.ServerPublicNetIPv6DNSPtr) ServerPublicNetIPv6DNSPtr {
-	return ServerPublicNetIPv6DNSPtr{
-		IP:     s.IP,
-		DNSPtr: s.DNSPtr,
-	}
 }
 
 // ServerTypeFromSchema converts a schema.ServerType to a ServerType.
@@ -191,7 +212,17 @@ func ImageFromSchema(s schema.Image) *Image {
 	if s.OSVersion != nil {
 		i.OSVersion = *s.OSVersion
 	}
-
+	if s.CreatedFrom != nil {
+		i.CreatedFrom = &Server{
+			ID:   s.CreatedFrom.ID,
+			Name: s.CreatedFrom.Name,
+		}
+	}
+	if s.BoundTo != nil {
+		i.BoundTo = &Server{
+			ID: *s.BoundTo,
+		}
+	}
 	return i
 }
 

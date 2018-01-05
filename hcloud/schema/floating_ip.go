@@ -14,6 +14,7 @@ type FloatingIP struct {
 	Server       *int             `json:"server"`
 	DNSPtr       FloatingIPDNSPtr `json:"dns_ptr"`
 	HomeLocation Location         `json:"home_location"`
+	Blocked      bool             `json:"blocked"`
 }
 
 // FloatingIPDNSPtr contains reverse DNS information for a
