@@ -58,6 +58,60 @@ func TestServerClientGetByIDNotFound(t *testing.T) {
 	}
 }
 
+func TestServerClientGetByName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=myserver" {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.ServerListResponse{
+			Servers: []schema.Server{
+				{
+					ID:   1,
+					Name: "myserver",
+				},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	server, _, err := env.Client.Server.GetByName(ctx, "myserver")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if server == nil {
+		t.Fatal("no server")
+	}
+	if server.ID != 1 {
+		t.Errorf("unexpected server ID: %v", server.ID)
+	}
+}
+
+func TestServerClientGetByNameNotFound(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=myserver" {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.ServerListResponse{
+			Servers: []schema.Server{},
+		})
+	})
+
+	ctx := context.Background()
+	server, _, err := env.Client.Server.GetByName(ctx, "myserver")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if server != nil {
+		t.Fatal("unexpected server")
+	}
+}
+
 func TestServersList(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

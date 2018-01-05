@@ -28,7 +28,7 @@ func TestSSHKeyClientGetByID(t *testing.T) {
 	ctx := context.Background()
 	sshKey, _, err := env.Client.SSHKey.GetByID(ctx, 1)
 	if err != nil {
-		t.Fatalf("SSHKey.Get failed: %s", err)
+		t.Fatalf("SSHKey.GetByID failed: %s", err)
 	}
 	if sshKey == nil {
 		t.Fatal("no SSH key")
@@ -55,10 +55,64 @@ func TestSSHKeyClientGetByIDNotFound(t *testing.T) {
 	ctx := context.Background()
 	sshKey, _, err := env.Client.SSHKey.GetByID(ctx, 1)
 	if err != nil {
-		t.Fatalf("SSHKey.Get failed: %s", err)
+		t.Fatalf("SSHKey.GetByID failed: %s", err)
 	}
 	if sshKey != nil {
 		t.Fatal("expected no SSH key")
+	}
+}
+
+func TestSSHKeyClientGetByName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/ssh_keys", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=My+Key" {
+			t.Fatal("missing name query")
+		}
+		fmt.Fprint(w, `{
+			"ssh_keys": [{
+				"id": 1,
+				"name": "My Key",
+				"fingerprint": "b7:2f:30:a0:2f:6c:58:6c:21:04:58:61:ba:06:3b:2c",
+				"public_key": "ssh-rsa AAAjjk76kgf...Xt"
+			}]
+		}`)
+	})
+
+	ctx := context.Background()
+	sshKey, _, err := env.Client.SSHKey.GetByName(ctx, "My Key")
+	if err != nil {
+		t.Fatalf("SSHKey.GetByName failed: %s", err)
+	}
+	if sshKey == nil {
+		t.Fatal("no SSH key")
+	}
+	if sshKey.ID != 1 {
+		t.Errorf("unexpected SSH key ID: %v", sshKey.ID)
+	}
+}
+
+func TestSSHKeyClientGetByNameNotFound(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/ssh_keys", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=My+Key" {
+			t.Fatal("missing name query")
+		}
+		fmt.Fprint(w, `{
+			"ssh_keys": []
+		}`)
+	})
+
+	ctx := context.Background()
+	sshKey, _, err := env.Client.SSHKey.GetByName(ctx, "My Key")
+	if err != nil {
+		t.Fatalf("SSHKey.GetByName failed: %s", err)
+	}
+	if sshKey != nil {
+		t.Fatal("unexpected SSH key")
 	}
 }
 
