@@ -16,6 +16,8 @@ type Server struct {
 	BackupWindow    *string         `json:"backup_window"`
 	RescueEnabled   bool            `json:"rescue_enabled"`
 	ISO             *ISO            `json:"iso"`
+	Locked          bool            `json:"locked"`
+	Datacenter      Datacenter      `json:"datacenter"`
 }
 
 // ServerPublicNet defines the schema of a server's

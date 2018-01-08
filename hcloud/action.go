@@ -18,6 +18,7 @@ type Action struct {
 	Finished     time.Time
 	ErrorCode    string
 	ErrorMessage string
+	Resources    []*ActionResource
 }
 
 // ActionStatus represents an action's status.
@@ -28,6 +29,23 @@ const (
 	ActionStatusRunning ActionStatus = "running"
 	ActionStatusSuccess              = "success"
 	ActionStatusError                = "error"
+)
+
+// ActionResource references other resources from an action.
+type ActionResource struct {
+	ID   int
+	Type ActionResourceType
+}
+
+// ActionResourceType represents an action's resource reference type.
+type ActionResourceType string
+
+// List of action resource reference types.
+const (
+	ActionResourceTypeServer     ActionResourceType = "server"
+	ActionResourceTypeImage                         = "image"
+	ActionResourceTypeISO                           = "iso"
+	ActionResourceTypeFloatingIP                    = "floating_ip"
 )
 
 func (a *Action) Error() error {

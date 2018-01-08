@@ -58,54 +58,125 @@ func TestActionFromSchema(t *testing.T) {
 	if action.ErrorMessage != "Action failed" {
 		t.Errorf("unexpected error message: %v", action.ErrorMessage)
 	}
+	if len(action.Resources) == 1 {
+		if action.Resources[0].ID != 42 {
+			t.Errorf("unexpected id in resources[0].ID: %v", action.Resources[0].ID)
+		}
+		if action.Resources[0].Type != ActionResourceTypeServer {
+			t.Errorf("unexpected type in resources[0].Type: %v", action.Resources[0].Type)
+		}
+	} else {
+		t.Errorf("unexpected number of resources")
+	}
 }
 
 func TestFloatingIPFromSchema(t *testing.T) {
-	data := []byte(`{
-		"id": 4711,
-		"description": "Web Frontend",
-		"ip": "131.232.99.1",
-		"type": "ipv4",
-		"server": 42,
-		"dns_ptr": "fip01.example.com",
-		"home_location": {
-			"id": 1,
-			"name": "fsn1",
-			"description": "Falkenstein DC Park 1",
-			"country": "DE",
-			"city": "Falkenstein",
-			"latitude": 50.47612,
-			"longitude": 12.370071
+	t.Run("IPv6", func(t *testing.T) {
+		data := []byte(`{
+			"id": 4711,
+			"description": "Web Frontend",
+			"ip": "2001:db8::/64",
+			"type": "ipv6",
+			"server": null,
+			"dns_ptr": [],
+			"blocked": true,
+			"home_location": {
+				"id": 1,
+				"name": "fsn1",
+				"description": "Falkenstein DC Park 1",
+				"country": "DE",
+				"city": "Falkenstein",
+				"latitude": 50.47612,
+				"longitude": 12.370071
+			}
+		}`)
+
+		var s schema.FloatingIP
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
 		}
-	}`)
+		floatingIP := FloatingIPFromSchema(s)
 
-	var s schema.FloatingIP
-	if err := json.Unmarshal(data, &s); err != nil {
-		t.Fatal(err)
-	}
-	floatingIP := FloatingIPFromSchema(s)
+		if floatingIP.ID != 4711 {
+			t.Errorf("unexpected ID: %v", floatingIP.ID)
+		}
+		if !floatingIP.Blocked {
+			t.Errorf("unexpected value for Blocked: %v", floatingIP.Blocked)
+		}
+		if floatingIP.Description != "Web Frontend" {
+			t.Errorf("unexpected description: %v", floatingIP.Description)
+		}
+		if floatingIP.IP.String() != "2001:db8::" {
+			t.Errorf("unexpected IP: %v", floatingIP.IP)
+		}
+		if floatingIP.Type != FloatingIPTypeIPv6 {
+			t.Errorf("unexpected Type: %v", floatingIP.Type)
+		}
+		if floatingIP.Server != nil {
+			t.Errorf("unexpected Server: %v", floatingIP.Server)
+		}
+		if floatingIP.DNSPtr == nil || floatingIP.DNSPtrForIP(floatingIP.IP) != "" {
+			t.Errorf("unexpected DNS ptr: %v", floatingIP.DNSPtr)
+		}
+		if floatingIP.HomeLocation == nil || floatingIP.HomeLocation.ID != 1 {
+			t.Errorf("unexpected home location: %v", floatingIP.HomeLocation)
+		}
+	})
 
-	if floatingIP.ID != 4711 {
-		t.Errorf("unexpected ID: %v", floatingIP.ID)
-	}
-	if floatingIP.Description != "Web Frontend" {
-		t.Errorf("unexpected description: %v", floatingIP.Description)
-	}
-	if floatingIP.IP != "131.232.99.1" {
-		t.Errorf("unexpected IP: %v", floatingIP.IP)
-	}
-	if floatingIP.Type != FloatingIPTypeIPv4 {
-		t.Errorf("unexpected type: %v", floatingIP.Type)
-	}
-	if floatingIP.Server == nil || floatingIP.Server.ID != 42 {
-		t.Errorf("unexpected server: %v", floatingIP.Server)
-	}
-	if floatingIP.DNSPtr == nil || floatingIP.DNSPtr[floatingIP.IP] != "fip01.example.com" {
-		t.Errorf("unexpected DNS ptr: %v", floatingIP.DNSPtr)
-	}
-	if floatingIP.HomeLocation == nil || floatingIP.HomeLocation.ID != 1 {
-		t.Errorf("unexpected home location: %v", floatingIP.HomeLocation)
-	}
+	t.Run("IPv4", func(t *testing.T) {
+		data := []byte(`{
+			"id": 4711,
+			"description": "Web Frontend",
+			"ip": "131.232.99.1",
+			"type": "ipv4",
+			"server": 42,
+			"dns_ptr": [{
+				"ip": "131.232.99.1",
+				"dns_ptr": "fip01.example.com"
+			}],
+			"blocked": false,
+			"home_location": {
+				"id": 1,
+				"name": "fsn1",
+				"description": "Falkenstein DC Park 1",
+				"country": "DE",
+				"city": "Falkenstein",
+				"latitude": 50.47612,
+				"longitude": 12.370071
+			}
+		}`)
+
+		var s schema.FloatingIP
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+		floatingIP := FloatingIPFromSchema(s)
+
+		if floatingIP.ID != 4711 {
+			t.Errorf("unexpected ID: %v", floatingIP.ID)
+		}
+		if floatingIP.Blocked {
+			t.Errorf("unexpected value for Blocked: %v", floatingIP.Blocked)
+		}
+		if floatingIP.Description != "Web Frontend" {
+			t.Errorf("unexpected description: %v", floatingIP.Description)
+		}
+		if floatingIP.IP.String() != "131.232.99.1" {
+			t.Errorf("unexpected IP: %v", floatingIP.IP)
+		}
+		if floatingIP.Type != FloatingIPTypeIPv4 {
+			t.Errorf("unexpected type: %v", floatingIP.Type)
+		}
+		if floatingIP.Server == nil || floatingIP.Server.ID != 42 {
+			t.Errorf("unexpected server: %v", floatingIP.Server)
+		}
+		if floatingIP.DNSPtr == nil || floatingIP.DNSPtrForIP(floatingIP.IP) != "fip01.example.com" {
+			t.Errorf("unexpected DNS ptr: %v", floatingIP.DNSPtr)
+		}
+		if floatingIP.HomeLocation == nil || floatingIP.HomeLocation.ID != 1 {
+			t.Errorf("unexpected home location: %v", floatingIP.HomeLocation)
+		}
+	})
 }
 
 func TestISOFromSchema(t *testing.T) {
@@ -133,6 +204,52 @@ func TestISOFromSchema(t *testing.T) {
 	}
 	if iso.Type != ISOTypePublic {
 		t.Errorf("unexpected type: %v", iso.Type)
+	}
+}
+
+func TestDatacenterFromSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 1,
+		"name": "fsn1-dc8",
+		"description": "Falkenstein 1 DC 8",
+		"location": {
+			"id": 1,
+			"name": "fsn1",
+			"description": "Falkenstein DC Park 1",
+			"country": "DE",
+			"city": "Falkenstein",
+			"latitude": 50.47612,
+			"longitude": 12.370071
+		},
+		"server_types": {
+			"supported": [
+				1,
+				1,
+				2,
+				3
+			],
+			"available": [
+				1,
+				1,
+				2,
+				3
+			]
+		}
+	}`)
+
+	var s schema.Datacenter
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	datacenter := DatacenterFromSchema(s)
+	if datacenter.ID != 1 {
+		t.Errorf("unexpected ID: %v", datacenter.ID)
+	}
+	if datacenter.Name != "fsn1-dc8" {
+		t.Errorf("unexpected Name: %v", datacenter.Name)
+	}
+	if datacenter.Location == nil || datacenter.Location.ID != 1 {
+		t.Errorf("unexpected Location: %v", datacenter.Location)
 	}
 }
 
@@ -172,7 +289,22 @@ func TestServerFromSchema(t *testing.T) {
 			"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
 			"description": "FreeBSD 11.0 x64",
 			"type": "public"
-		}
+		},
+		"datacenter": {
+			"id": 1,
+			"name": "fsn1-dc8",
+			"description": "Falkenstein 1 DC 8",
+			"location": {
+				"id": 1,
+				"name": "fsn1",
+				"description": "Falkenstein DC Park 1",
+				"country": "DE",
+				"city": "Falkenstein",
+				"latitude": 50.47612,
+				"longitude": 12.370071
+			}
+		},
+		"locked": true
 	}`)
 
 	var s schema.Server
@@ -193,7 +325,7 @@ func TestServerFromSchema(t *testing.T) {
 	if !server.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
 		t.Errorf("unexpected created date: %v", server.Created)
 	}
-	if server.PublicNet.IPv4.IP != "1.2.3.4" {
+	if server.PublicNet.IPv4.IP.String() != "1.2.3.4" {
 		t.Errorf("unexpected public net IPv4 IP: %v", server.PublicNet.IPv4.IP)
 	}
 	if server.ServerType.ID != 2 {
@@ -217,10 +349,33 @@ func TestServerFromSchema(t *testing.T) {
 	if server.ISO == nil || server.ISO.ID != 4711 {
 		t.Errorf("unexpected ISO: %v", server.ISO)
 	}
+	if server.Datacenter == nil || server.Datacenter.ID != 1 {
+		t.Errorf("unexpected Datacenter: %v", server.Datacenter)
+	}
+	if !server.Locked {
+		t.Errorf("unexpected value for Locked: %v", server.Locked)
+	}
 }
 
 func TestServerFromSchemaNoTraffic(t *testing.T) {
 	data := []byte(`{
+		"public_net": {
+			"ipv4": {
+				"ip": "1.2.3.4",
+				"blocked": false,
+				"dns_ptr": "server01.example.com"
+			},
+			"ipv6": {
+				"ip": "2a01:4f8:1c11:3400::/64",
+				"blocked": false,
+				"dns_ptr": [
+					{
+						"ip": "2a01:4f8:1c11:3400::1/64",
+						"dns_ptr": "server01.example.com"
+					}
+				]
+			}
+		},
 		"outgoing_traffic": null,
 		"ingoing_traffic": null
 	}`)
@@ -247,11 +402,11 @@ func TestServerPublicNetFromSchema(t *testing.T) {
 			"dns_ptr": "server.example.com"
 		},
 		"ipv6": {
-        		"ip": "2a01:4f8:1c19:1403::/64",
-        		"blocked": false,
-        		"dns_ptr": []
-      		},
-      		"floating_ips": [4]
+			"ip": "2a01:4f8:1c19:1403::/64",
+			"blocked": false,
+			"dns_ptr": []
+		},
+		"floating_ips": [4]
 	}`)
 
 	var s schema.ServerPublicNet
@@ -260,10 +415,10 @@ func TestServerPublicNetFromSchema(t *testing.T) {
 	}
 	publicNet := ServerPublicNetFromSchema(s)
 
-	if publicNet.IPv4.IP != "1.2.3.4" {
+	if publicNet.IPv4.IP.String() != "1.2.3.4" {
 		t.Errorf("unexpected IPv4 IP: %v", publicNet.IPv4.IP)
 	}
-	if publicNet.IPv6.IP != "2a01:4f8:1c19:1403::/64" {
+	if publicNet.IPv6.Network.String() != "2a01:4f8:1c19:1403::/64" {
 		t.Errorf("unexpected IPv6 IP: %v", publicNet.IPv6.IP)
 	}
 	if len(publicNet.FloatingIPs) != 1 || publicNet.FloatingIPs[0].ID != 4 {
@@ -284,7 +439,7 @@ func TestServerPublicNetIPv4FromSchema(t *testing.T) {
 	}
 	ipv4 := ServerPublicNetIPv4FromSchema(s)
 
-	if ipv4.IP != "1.2.3.4" {
+	if ipv4.IP.String() != "1.2.3.4" {
 		t.Errorf("unexpected IP: %v", ipv4.IP)
 	}
 	if !ipv4.Blocked {
@@ -313,7 +468,7 @@ func TestServerPublicNetIPv6FromSchema(t *testing.T) {
 	}
 	ipv6 := ServerPublicNetIPv6FromSchema(s)
 
-	if ipv6.IP != "2a01:4f8:1c11:3400::/64" {
+	if ipv6.Network.String() != "2a01:4f8:1c11:3400::/64" {
 		t.Errorf("unexpected IP: %v", ipv6.IP)
 	}
 	if !ipv6.Blocked {
@@ -321,26 +476,6 @@ func TestServerPublicNetIPv6FromSchema(t *testing.T) {
 	}
 	if len(ipv6.DNSPtr) != 1 {
 		t.Errorf("unexpected DNS ptr: %v", ipv6.DNSPtr)
-	}
-}
-
-func TestServerPublicNetIPv6DNSPtrFromSchema(t *testing.T) {
-	data := []byte(`{
-		"ip": "2a01:4f8:1c11:3400::1/64",
-		"dns_ptr": "server01.example.com"
-	}`)
-
-	var s schema.ServerPublicNetIPv6DNSPtr
-	if err := json.Unmarshal(data, &s); err != nil {
-		t.Fatal(err)
-	}
-	dnsPtr := ServerPublicNetIPv6DNSPtrFromSchema(s)
-
-	if dnsPtr.IP != "2a01:4f8:1c11:3400::1/64" {
-		t.Errorf("unexpected IP: %v", dnsPtr.IP)
-	}
-	if dnsPtr.DNSPtr != "server01.example.com" {
-		t.Errorf("unexpected DNS ptr: %v", dnsPtr.DNSPtr)
 	}
 }
 
@@ -478,8 +613,10 @@ func TestImageFromSchema(t *testing.T) {
 		"image_size": 2.3,
 		"disk_size": 10,
 		"created": "2016-01-30T23:55:01Z",
-		"created_from": "my_server1",
-		"created_from_id": 1,
+		"created_from": {
+			"id": 1,
+			"name": "my-server1"
+		},
 		"bound_to": 1,
 		"os_flavor": "ubuntu",
 		"os_version": "16.04",
@@ -515,6 +652,12 @@ func TestImageFromSchema(t *testing.T) {
 	}
 	if !image.Created.Equal(time.Date(2016, 1, 30, 23, 55, 1, 0, time.UTC)) {
 		t.Errorf("unexpected Created: %v", image.Created)
+	}
+	if image.CreatedFrom == nil || image.CreatedFrom.ID != 1 || image.CreatedFrom.Name != "my-server1" {
+		t.Errorf("unexpected CreatedFrom: %v", image.CreatedFrom)
+	}
+	if image.BoundTo == nil || image.BoundTo.ID != 1 {
+		t.Errorf("unexpected BoundTo: %v", image.BoundTo)
 	}
 	if image.OSVersion != "16.04" {
 		t.Errorf("unexpected OSVersion: %v", image.OSVersion)
