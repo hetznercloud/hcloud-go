@@ -58,11 +58,11 @@ func TestActionFromSchema(t *testing.T) {
 	if action.ErrorMessage != "Action failed" {
 		t.Errorf("unexpected error message: %v", action.ErrorMessage)
 	}
-	if len(action.Resources) > 0 {
+	if len(action.Resources) == 1 {
 		if action.Resources[0].ID != 42 {
 			t.Errorf("unexpected id in resources[0].ID: %v", action.Resources[0].ID)
 		}
-		if action.Resources[0].Type != ResourceReferenceTypeServer {
+		if action.Resources[0].Type != ActionResourceTypeServer {
 			t.Errorf("unexpected type in resources[0].Type: %v", action.Resources[0].Type)
 		}
 	} else {
@@ -78,7 +78,7 @@ func TestFloatingIPFromSchema(t *testing.T) {
 			"ip": "2001:db8::/64",
 			"type": "ipv6",
 			"server": null,
-			"dns_ptr": "",
+			"dns_ptr": [],
 			"blocked": true,
 			"home_location": {
 				"id": 1,
@@ -89,7 +89,7 @@ func TestFloatingIPFromSchema(t *testing.T) {
 				"latitude": 50.47612,
 				"longitude": 12.370071
 			}
-			}`)
+		}`)
 
 		var s schema.FloatingIP
 		if err := json.Unmarshal(data, &s); err != nil {
@@ -130,7 +130,10 @@ func TestFloatingIPFromSchema(t *testing.T) {
 			"ip": "131.232.99.1",
 			"type": "ipv4",
 			"server": 42,
-			"dns_ptr": "fip01.example.com",
+			"dns_ptr": [{
+				"ip": "131.232.99.1",
+				"dns_ptr": "fip01.example.com"
+			}],
 			"blocked": false,
 			"home_location": {
 				"id": 1,
@@ -141,7 +144,7 @@ func TestFloatingIPFromSchema(t *testing.T) {
 				"latitude": 50.47612,
 				"longitude": 12.370071
 			}
-			}`)
+		}`)
 
 		var s schema.FloatingIP
 		if err := json.Unmarshal(data, &s); err != nil {
@@ -206,33 +209,33 @@ func TestISOFromSchema(t *testing.T) {
 
 func TestDatacenterFromSchema(t *testing.T) {
 	data := []byte(`{
-    "id": 1,
-    "name": "fsn1-dc8",
-    "description": "Falkenstein 1 DC 8",
-    "location": {
-      "id": 1,
-      "name": "fsn1",
-      "description": "Falkenstein DC Park 1",
-      "country": "DE",
-      "city": "Falkenstein",
-      "latitude": 50.47612,
-      "longitude": 12.370071
-    },
-    "server_types": {
-      "supported": [
-        1,
-        1,
-        2,
-        3
-      ],
-      "available": [
-        1,
-        1,
-        2,
-        3
-      ]
-    }
-  }`)
+		"id": 1,
+		"name": "fsn1-dc8",
+		"description": "Falkenstein 1 DC 8",
+		"location": {
+			"id": 1,
+			"name": "fsn1",
+			"description": "Falkenstein DC Park 1",
+			"country": "DE",
+			"city": "Falkenstein",
+			"latitude": 50.47612,
+			"longitude": 12.370071
+		},
+		"server_types": {
+			"supported": [
+				1,
+				1,
+				2,
+				3
+			],
+			"available": [
+				1,
+				1,
+				2,
+				3
+			]
+		}
+	}`)
 
 	var s schema.Datacenter
 	if err := json.Unmarshal(data, &s); err != nil {
@@ -399,11 +402,11 @@ func TestServerPublicNetFromSchema(t *testing.T) {
 			"dns_ptr": "server.example.com"
 		},
 		"ipv6": {
-        		"ip": "2a01:4f8:1c19:1403::/64",
-        		"blocked": false,
-        		"dns_ptr": []
-      		},
-      		"floating_ips": [4]
+						"ip": "2a01:4f8:1c19:1403::/64",
+						"blocked": false,
+						"dns_ptr": []
+					},
+					"floating_ips": [4]
 	}`)
 
 	var s schema.ServerPublicNet

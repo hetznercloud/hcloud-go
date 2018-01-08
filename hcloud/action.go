@@ -18,7 +18,7 @@ type Action struct {
 	Finished     time.Time
 	ErrorCode    string
 	ErrorMessage string
-	Resources    []*ResourceReference
+	Resources    []*ActionResource
 }
 
 // ActionStatus represents an action's status.
@@ -31,21 +31,21 @@ const (
 	ActionStatusError                = "error"
 )
 
-// ResourceReference references other resources from an action.
-type ResourceReference struct {
+// ActionResource references other resources from an action.
+type ActionResource struct {
 	ID   int
-	Type ResourceReferenceType
+	Type ActionResourceType
 }
 
-// ResourceReferenceType represents an action's resource reference type.
-type ResourceReferenceType string
+// ActionResourceType represents an action's resource reference type.
+type ActionResourceType string
 
 // List of action resource reference types.
 const (
-	ResourceReferenceTypeServer     ResourceReferenceType = "server"
-	ResourceReferenceTypeImage                            = "image"
-	ResourceReferenceTypeSSHKey                           = "ssh_keys"
-	ResourceReferenceTypeFloatingIP                       = "floating_ip"
+	ActionResourceTypeServer     ActionResourceType = "server"
+	ActionResourceTypeImage                         = "image"
+	ActionResourceTypeISO                           = "iso"
+	ActionResourceTypeFloatingIP                    = "floating_ip"
 )
 
 func (a *Action) Error() error {

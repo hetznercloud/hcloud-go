@@ -17,7 +17,7 @@ func ActionFromSchema(s schema.Action) *Action {
 		Command:   s.Command,
 		Progress:  s.Progress,
 		Started:   s.Started,
-		Resources: []*ResourceReference{},
+		Resources: []*ActionResource{},
 	}
 	if s.Finished != nil {
 		action.Finished = *s.Finished
@@ -27,9 +27,9 @@ func ActionFromSchema(s schema.Action) *Action {
 		action.ErrorMessage = s.Error.Message
 	}
 	for _, r := range s.Resources {
-		action.Resources = append(action.Resources, &ResourceReference{
+		action.Resources = append(action.Resources, &ActionResource{
 			ID:   r.ID,
-			Type: ResourceReferenceType(r.Type),
+			Type: ActionResourceType(r.Type),
 		})
 	}
 	return action
@@ -49,20 +49,14 @@ func FloatingIPFromSchema(s schema.FloatingIP) *FloatingIP {
 	if s.Server != nil {
 		f.Server = &Server{ID: *s.Server}
 	}
-	if s.Type == "ipv4" {
+	if f.Type == FloatingIPTypeIPv4 {
 		f.IP = net.ParseIP(s.IP)
 	} else {
 		f.IP, f.Network, _ = net.ParseCIDR(s.IP)
 	}
-	if s.DNSPtr.IPv4 != nil {
-		f.DNSPtr = map[string]string{
-			s.IP: *s.DNSPtr.IPv4,
-		}
-	} else if s.DNSPtr.IPv6 != nil {
-		f.DNSPtr = map[string]string{}
-		for _, entry := range s.DNSPtr.IPv6 {
-			f.DNSPtr[entry.IP] = entry.DNSPtr
-		}
+	f.DNSPtr = map[string]string{}
+	for _, entry := range s.DNSPtr {
+		f.DNSPtr[entry.IP] = entry.DNSPtr
 	}
 	return f
 }
