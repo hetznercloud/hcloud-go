@@ -402,11 +402,11 @@ func TestServerPublicNetFromSchema(t *testing.T) {
 			"dns_ptr": "server.example.com"
 		},
 		"ipv6": {
-						"ip": "2a01:4f8:1c19:1403::/64",
-						"blocked": false,
-						"dns_ptr": []
-					},
-					"floating_ips": [4]
+			"ip": "2a01:4f8:1c19:1403::/64",
+			"blocked": false,
+			"dns_ptr": []
+		},
+		"floating_ips": [4]
 	}`)
 
 	var s schema.ServerPublicNet
