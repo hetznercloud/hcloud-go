@@ -25,15 +25,15 @@ func (e Error) Error() string {
 	return fmt.Sprintf("%s (%s)", e.Message, e.Code)
 }
 
-// ErrorInvalidInputDetails contains the details of an 'invalid_input' error.
-type ErrorInvalidInputDetails struct {
-	Fields []*ErrorInvalidInputDetailsField `json:"fields"`
+// ErrorDetailsInvalidInput contains the details of an 'invalid_input' error.
+type ErrorDetailsInvalidInput struct {
+	Fields []ErrorDetailsInvalidInputField
 }
 
-// ErrorInvalidInputDetailsField contains the validation errors reported on a field.
-type ErrorInvalidInputDetailsField struct {
-	Name     string   `json:"name"`
-	Messages []string `json:"messages"`
+// ErrorDetailsInvalidInputField contains the validation errors reported on a field.
+type ErrorDetailsInvalidInputField struct {
+	Name     string
+	Messages []string
 }
 
 // IsError returns whether err is an API error with the given error code.
@@ -41,6 +41,3 @@ func IsError(err error, code ErrorCode) bool {
 	apiErr, ok := err.(Error)
 	return ok && apiErr.Code == code
 }
-
-// e := err.(hcloud.Error)
-// details := err.details.(hcloud.InvalidInputDetails)

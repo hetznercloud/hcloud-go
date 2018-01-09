@@ -34,21 +34,21 @@ func TestError(t *testing.T) {
 		if e.Details == nil {
 			t.Fatalf("unexpected Details: %v", e.Details)
 		}
-		if d, ok := e.Details.(*ErrorInvalidInputDetails); !ok {
-			t.Fatalf("unexpected Details type (should be *ErrorInvalidInputDetails): %v", e.Details)
-		} else {
-			if len(d.Fields) != 1 {
-				t.Fatalf("unexpected Details.Fields length (should be 1): %v", d.Fields)
-			}
-			if d.Fields[0].Name != "broken_field" {
-				t.Errorf("unexpected Details.Fields[0].Name: %v", d.Fields[0].Name)
-			}
-			if len(d.Fields[0].Messages) != 1 {
-				t.Fatalf("unexpected Details.Fields[0].Messages length (should be 1): %v", d.Fields[0].Messages)
-			}
-			if d.Fields[0].Messages[0] != "is required" {
-				t.Errorf("unexpected Details.Fields[0].Messages[0]: %v", d.Fields[0].Messages[0])
-			}
+		d, ok := e.Details.(*ErrorDetailsInvalidInput)
+		if !ok {
+			t.Fatalf("unexpected Details type (should be *ErrorDetailsInvalidInput): %v", e.Details)
+		}
+		if len(d.Fields) != 1 {
+			t.Fatalf("unexpected Details.Fields length (should be 1): %v", d.Fields)
+		}
+		if d.Fields[0].Name != "broken_field" {
+			t.Errorf("unexpected Details.Fields[0].Name: %v", d.Fields[0].Name)
+		}
+		if len(d.Fields[0].Messages) != 1 {
+			t.Fatalf("unexpected Details.Fields[0].Messages length (should be 1): %v", d.Fields[0].Messages)
+		}
+		if d.Fields[0].Messages[0] != "is required" {
+			t.Errorf("unexpected Details.Fields[0].Messages[0]: %v", d.Fields[0].Messages[0])
 		}
 	})
 }

@@ -19,7 +19,7 @@ func (e *Error) UnmarshalJSON(data []byte) (err error) {
 	}
 	switch e.Code {
 	case "invalid_input":
-		details := &ErrorInvalidInputDetails{}
+		details := &ErrorDetailsInvalidInput{}
 		if err = json.Unmarshal(e.DetailsRaw, details); err != nil {
 			return
 		}
@@ -33,9 +33,9 @@ type ErrorResponse struct {
 	Error Error `json:"error"`
 }
 
-// ErrorInvalidInputDetails defines the schema of the Details field
+// ErrorDetailsInvalidInput defines the schema of the Details field
 // of an error with code 'invalid_input'.
-type ErrorInvalidInputDetails struct {
+type ErrorDetailsInvalidInput struct {
 	Fields []struct {
 		Name     string   `json:"name"`
 		Messages []string `json:"messages"`

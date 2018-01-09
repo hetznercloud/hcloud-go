@@ -595,8 +595,8 @@ func TestErrorFromSchema(t *testing.T) {
 		if err.Message != "invalid input" {
 			t.Errorf("unexpected Message: %v", err.Message)
 		}
-		if d, ok := err.Details.(*ErrorInvalidInputDetails); !ok {
-			t.Fatalf("unexpected Details type (should be *ErrorInvalidInputDetails): %v", err.Details)
+		if d, ok := err.Details.(*ErrorDetailsInvalidInput); !ok {
+			t.Fatalf("unexpected Details type (should be *ErrorDetailsInvalidInput): %v", err.Details)
 		} else {
 			if len(d.Fields) != 1 {
 				t.Fatalf("unexpected Details.Fields length (should be 1): %v", d.Fields)
