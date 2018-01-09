@@ -20,8 +20,8 @@ func TestServerClientGetByID(t *testing.T) {
 			},
 		})
 	})
-
 	ctx := context.Background()
+
 	server, _, err := env.Client.Server.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
@@ -32,6 +32,19 @@ func TestServerClientGetByID(t *testing.T) {
 	if server.ID != 1 {
 		t.Errorf("unexpected server ID: %v", server.ID)
 	}
+
+	t.Run("called via GetByIDOrName", func(t *testing.T) {
+		server, _, err := env.Client.Server.GetByIDOrName(ctx, "1")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if server == nil {
+			t.Fatal("no server")
+		}
+		if server.ID != 1 {
+			t.Errorf("unexpected server ID: %v", server.ID)
+		}
+	})
 }
 
 func TestServerClientGetByIDNotFound(t *testing.T) {
@@ -75,8 +88,8 @@ func TestServerClientGetByName(t *testing.T) {
 			},
 		})
 	})
-
 	ctx := context.Background()
+
 	server, _, err := env.Client.Server.GetByName(ctx, "myserver")
 	if err != nil {
 		t.Fatal(err)
@@ -87,6 +100,19 @@ func TestServerClientGetByName(t *testing.T) {
 	if server.ID != 1 {
 		t.Errorf("unexpected server ID: %v", server.ID)
 	}
+
+	t.Run("via GetByIDOrName", func(t *testing.T) {
+		server, _, err := env.Client.Server.GetByIDOrName(ctx, "myserver")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if server == nil {
+			t.Fatal("no server")
+		}
+		if server.ID != 1 {
+			t.Errorf("unexpected server ID: %v", server.ID)
+		}
+	})
 }
 
 func TestServerClientGetByNameNotFound(t *testing.T) {

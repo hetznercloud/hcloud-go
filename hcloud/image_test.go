@@ -33,6 +33,19 @@ func TestImageClient(t *testing.T) {
 		if image.ID != 1 {
 			t.Errorf("unexpected image ID: %v", image.ID)
 		}
+
+		t.Run("via GetByIDOrName", func(t *testing.T) {
+			image, _, err := env.Client.Image.GetByIDOrName(ctx, "1")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if image == nil {
+				t.Fatal("no image")
+			}
+			if image.ID != 1 {
+				t.Errorf("unexpected image ID: %v", image.ID)
+			}
+		})
 	})
 
 	t.Run("GetByID (not found)", func(t *testing.T) {
@@ -87,6 +100,19 @@ func TestImageClient(t *testing.T) {
 		if image.ID != 1 {
 			t.Errorf("unexpected image ID: %v", image.ID)
 		}
+
+		t.Run("via GetByIDOrName", func(t *testing.T) {
+			image, _, err := env.Client.Image.GetByIDOrName(ctx, "my image")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if image == nil {
+				t.Fatal("no image")
+			}
+			if image.ID != 1 {
+				t.Errorf("unexpected image ID: %v", image.ID)
+			}
+		})
 	})
 
 	t.Run("GetByName (not found)", func(t *testing.T) {
