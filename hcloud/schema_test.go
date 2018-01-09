@@ -548,23 +548,70 @@ func TestSSHKeyFromSchema(t *testing.T) {
 }
 
 func TestErrorFromSchema(t *testing.T) {
-	data := []byte(`{
-		"code": "service_error",
-		"message": "An error occured"
-	}`)
+	t.Run("service_error", func(t *testing.T) {
+		data := []byte(`{
+			"code": "service_error",
+			"message": "An error occured",
+			"details": {}
+		}`)
 
-	var s schema.Error
-	if err := json.Unmarshal(data, &s); err != nil {
-		t.Fatal(err)
-	}
-	err := ErrorFromSchema(s)
+		var s schema.Error
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+		err := ErrorFromSchema(s)
 
-	if err.Code != "service_error" {
-		t.Errorf("unexpected code: %v", err.Code)
-	}
-	if err.Message != "An error occured" {
-		t.Errorf("unexpected message: %v", err.Message)
-	}
+		if err.Code != "service_error" {
+			t.Errorf("unexpected code: %v", err.Code)
+		}
+		if err.Message != "An error occured" {
+			t.Errorf("unexpected message: %v", err.Message)
+		}
+	})
+
+	t.Run("invalid_input", func(t *testing.T) {
+		data := []byte(`{
+			"code": "invalid_input",
+			"message": "invalid input",
+			"details": {
+				"fields": [
+					{
+						"name": "broken_field",
+						"messages": ["is required"]
+					}
+				]
+			}
+		}`)
+
+		var s schema.Error
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+		err := ErrorFromSchema(s)
+
+		if err.Code != "invalid_input" {
+			t.Errorf("unexpected Code: %v", err.Code)
+		}
+		if err.Message != "invalid input" {
+			t.Errorf("unexpected Message: %v", err.Message)
+		}
+		if d, ok := err.Details.(ErrorDetailsInvalidInput); !ok {
+			t.Fatalf("unexpected Details type (should be ErrorDetailsInvalidInput): %v", err.Details)
+		} else {
+			if len(d.Fields) != 1 {
+				t.Fatalf("unexpected Details.Fields length (should be 1): %v", d.Fields)
+			}
+			if d.Fields[0].Name != "broken_field" {
+				t.Errorf("unexpected Details.Fields[0].Name: %v", d.Fields[0].Name)
+			}
+			if len(d.Fields[0].Messages) != 1 {
+				t.Fatalf("unexpected Details.Fields[0].Messages length (should be 1): %v", d.Fields[0].Messages)
+			}
+			if d.Fields[0].Messages[0] != "is required" {
+				t.Errorf("unexpected Details.Fields[0].Messages[0]: %v", d.Fields[0].Messages[0])
+			}
+		}
+	})
 }
 
 func TestPaginationFromSchema(t *testing.T) {
