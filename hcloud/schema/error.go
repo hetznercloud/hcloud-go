@@ -19,8 +19,8 @@ func (e *Error) UnmarshalJSON(data []byte) (err error) {
 	}
 	switch e.Code {
 	case "invalid_input":
-		details := &ErrorDetailsInvalidInput{}
-		if err = json.Unmarshal(e.DetailsRaw, details); err != nil {
+		details := ErrorDetailsInvalidInput{}
+		if err = json.Unmarshal(e.DetailsRaw, &details); err != nil {
 			return
 		}
 		alias.Details = details

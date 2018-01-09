@@ -240,8 +240,8 @@ func ErrorFromSchema(s schema.Error) Error {
 	}
 
 	switch d := s.Details.(type) {
-	case *schema.ErrorDetailsInvalidInput:
-		details := &ErrorDetailsInvalidInput{
+	case schema.ErrorDetailsInvalidInput:
+		details := ErrorDetailsInvalidInput{
 			Fields: []ErrorDetailsInvalidInputField{},
 		}
 		for _, field := range d.Fields {

@@ -34,9 +34,9 @@ func TestError(t *testing.T) {
 		if e.Details == nil {
 			t.Fatalf("unexpected Details: %v", e.Details)
 		}
-		d, ok := e.Details.(*ErrorDetailsInvalidInput)
+		d, ok := e.Details.(ErrorDetailsInvalidInput)
 		if !ok {
-			t.Fatalf("unexpected Details type (should be *ErrorDetailsInvalidInput): %v", e.Details)
+			t.Fatalf("unexpected Details type (should be ErrorDetailsInvalidInput): %v", e.Details)
 		}
 		if len(d.Fields) != 1 {
 			t.Fatalf("unexpected Details.Fields length (should be 1): %v", d.Fields)
