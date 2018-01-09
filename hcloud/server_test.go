@@ -33,8 +33,8 @@ func TestServerClientGetByID(t *testing.T) {
 		t.Errorf("unexpected server ID: %v", server.ID)
 	}
 
-	t.Run("called via GetByIDOrName", func(t *testing.T) {
-		server, _, err := env.Client.Server.GetByIDOrName(ctx, "1")
+	t.Run("called via Get", func(t *testing.T) {
+		server, _, err := env.Client.Server.Get(ctx, "1")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -101,8 +101,8 @@ func TestServerClientGetByName(t *testing.T) {
 		t.Errorf("unexpected server ID: %v", server.ID)
 	}
 
-	t.Run("via GetByIDOrName", func(t *testing.T) {
-		server, _, err := env.Client.Server.GetByIDOrName(ctx, "myserver")
+	t.Run("via Get", func(t *testing.T) {
+		server, _, err := env.Client.Server.Get(ctx, "myserver")
 		if err != nil {
 			t.Fatal(err)
 		}

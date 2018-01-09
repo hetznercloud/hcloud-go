@@ -34,8 +34,8 @@ func TestImageClient(t *testing.T) {
 			t.Errorf("unexpected image ID: %v", image.ID)
 		}
 
-		t.Run("via GetByIDOrName", func(t *testing.T) {
-			image, _, err := env.Client.Image.GetByIDOrName(ctx, "1")
+		t.Run("via Get", func(t *testing.T) {
+			image, _, err := env.Client.Image.Get(ctx, "1")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -101,8 +101,8 @@ func TestImageClient(t *testing.T) {
 			t.Errorf("unexpected image ID: %v", image.ID)
 		}
 
-		t.Run("via GetByIDOrName", func(t *testing.T) {
-			image, _, err := env.Client.Image.GetByIDOrName(ctx, "my image")
+		t.Run("via Get", func(t *testing.T) {
+			image, _, err := env.Client.Image.Get(ctx, "my image")
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -93,8 +93,8 @@ func (c *ImageClient) GetByName(ctx context.Context, name string) (*Image, *Resp
 	return ImageFromSchema(body.Images[0]), resp, nil
 }
 
-// GetByIDOrName retreives an image by its id if the input can be parsed as int or by its name.
-func (c *ImageClient) GetByIDOrName(ctx context.Context, idOrName string) (*Image, *Response, error) {
+// Get retrieves an image by its ID if the input can be parsed as an integer, otherwise it retrieves an image by its name.
+func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Response, error) {
 	if id, err := strconv.Atoi(idOrName); err == nil {
 		return c.GetByID(ctx, int(id))
 	}

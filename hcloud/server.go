@@ -126,8 +126,8 @@ func (c *ServerClient) GetByName(ctx context.Context, name string) (*Server, *Re
 	return ServerFromSchema(body.Servers[0]), resp, nil
 }
 
-// GetByIDOrName retreives a server by its id if the input can be parsed as int or by its name.
-func (c *ServerClient) GetByIDOrName(ctx context.Context, idOrName string) (*Server, *Response, error) {
+// Get retrieves a server by its ID if the input can be parsed as an integer, otherwise it retrieves an server by its name.
+func (c *ServerClient) Get(ctx context.Context, idOrName string) (*Server, *Response, error) {
 	if id, err := strconv.Atoi(idOrName); err == nil {
 		return c.GetByID(ctx, int(id))
 	}
