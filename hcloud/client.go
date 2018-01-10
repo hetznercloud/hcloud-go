@@ -54,6 +54,7 @@ type Client struct {
 	Action     ActionClient
 	FloatingIP FloatingIPClient
 	Image      ImageClient
+	Location   LocationClient
 	Server     ServerClient
 	ServerType ServerTypeClient
 	SSHKey     SSHKeyClient
@@ -98,6 +99,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.Action = ActionClient{client: client}
 	client.FloatingIP = FloatingIPClient{client: client}
 	client.Image = ImageClient{client: client}
+	client.Location = LocationClient{client: client}
 	client.Server = ServerClient{client: client}
 	client.ServerType = ServerTypeClient{client: client}
 	client.SSHKey = SSHKeyClient{client: client}
