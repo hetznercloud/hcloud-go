@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
@@ -90,6 +91,14 @@ func (c *ImageClient) GetByName(ctx context.Context, name string) (*Image, *Resp
 		return nil, resp, nil
 	}
 	return ImageFromSchema(body.Images[0]), resp, nil
+}
+
+// Get retrieves an image by its ID if the input can be parsed as an integer, otherwise it retrieves an image by its name.
+func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Response, error) {
+	if id, err := strconv.Atoi(idOrName); err == nil {
+		return c.GetByID(ctx, int(id))
+	}
+	return c.GetByName(ctx, idOrName)
 }
 
 // ImageListOpts specifies options for listing images.

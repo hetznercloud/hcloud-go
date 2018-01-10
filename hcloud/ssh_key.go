@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
+	"strconv"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
@@ -60,6 +61,14 @@ func (c *SSHKeyClient) GetByName(ctx context.Context, name string) (*SSHKey, *Re
 		return nil, resp, nil
 	}
 	return SSHKeyFromSchema(body.SSHKeys[0]), resp, nil
+}
+
+// Get retrieves a SSH key by its ID if the input can be parsed as an integer, otherwise it retrieves a SSH key by its name.
+func (c *SSHKeyClient) Get(ctx context.Context, idOrName string) (*SSHKey, *Response, error) {
+	if id, err := strconv.Atoi(idOrName); err == nil {
+		return c.GetByID(ctx, int(id))
+	}
+	return c.GetByName(ctx, idOrName)
 }
 
 // SSHKeyListOpts specifies options for listing SSH keys.

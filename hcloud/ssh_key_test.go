@@ -36,6 +36,19 @@ func TestSSHKeyClientGetByID(t *testing.T) {
 	if sshKey.ID != 1 {
 		t.Errorf("unexpected SSH key ID: %v", sshKey.ID)
 	}
+
+	t.Run("via Get", func(t *testing.T) {
+		sshKey, _, err := env.Client.SSHKey.Get(ctx, "1")
+		if err != nil {
+			t.Fatalf("SSHKey.GetByID failed: %s", err)
+		}
+		if sshKey == nil {
+			t.Fatal("no SSH key")
+		}
+		if sshKey.ID != 1 {
+			t.Errorf("unexpected SSH key ID: %v", sshKey.ID)
+		}
+	})
 }
 
 func TestSSHKeyClientGetByIDNotFound(t *testing.T) {
@@ -91,6 +104,19 @@ func TestSSHKeyClientGetByName(t *testing.T) {
 	if sshKey.ID != 1 {
 		t.Errorf("unexpected SSH key ID: %v", sshKey.ID)
 	}
+
+	t.Run("via Get", func(t *testing.T) {
+		sshKey, _, err := env.Client.SSHKey.Get(ctx, "My Key")
+		if err != nil {
+			t.Fatalf("SSHKey.GetByID failed: %s", err)
+		}
+		if sshKey == nil {
+			t.Fatal("no SSH key")
+		}
+		if sshKey.ID != 1 {
+			t.Errorf("unexpected SSH key ID: %v", sshKey.ID)
+		}
+	})
 }
 
 func TestSSHKeyClientGetByNameNotFound(t *testing.T) {
