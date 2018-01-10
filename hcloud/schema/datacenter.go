@@ -12,12 +12,12 @@ type Datacenter struct {
 	} `json:"server_types"`
 }
 
-// DatacenterGetResponse defines the schema of the response when retrieving a single Datacenter.
+// DatacenterGetResponse defines the schema of the response when retrieving a single datacenter.
 type DatacenterGetResponse struct {
 	Datacenter Datacenter `json:"datacenter"`
 }
 
-// DatacenterListResponse defines the schema of the response when listing Datacenters.
+// DatacenterListResponse defines the schema of the response when listing datacenters.
 type DatacenterListResponse struct {
 	Datacenters []Datacenter `json:"datacenters"`
 }

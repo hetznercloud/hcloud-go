@@ -24,7 +24,7 @@ type DatacenterServerTypes struct {
 	Available []*ServerType
 }
 
-// DatacenterClient is a client for the Datacenter API.
+// DatacenterClient is a client for the datacenter API.
 type DatacenterClient struct {
 	client *Client
 }
