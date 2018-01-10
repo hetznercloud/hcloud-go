@@ -9,7 +9,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestDatacenter(t *testing.T) {
+func TestDatacenterClient(t *testing.T) {
 	t.Run("GetByID", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

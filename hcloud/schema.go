@@ -91,7 +91,7 @@ func DatacenterFromSchema(s schema.Datacenter) *Datacenter {
 		Name:        s.Name,
 		Description: s.Description,
 		Location:    LocationFromSchema(s.Location),
-		ServerTypes: &DatacenterServerTypes{
+		ServerTypes: DatacenterServerTypes{
 			Available: []*ServerType{},
 			Supported: []*ServerType{},
 		},

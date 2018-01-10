@@ -15,7 +15,7 @@ type Datacenter struct {
 	Name        string
 	Description string
 	Location    *Location
-	ServerTypes *DatacenterServerTypes
+	ServerTypes DatacenterServerTypes
 }
 
 // DatacenterServerTypes represents the server types available and supported in a datacenter.
