@@ -62,3 +62,75 @@ func TestActionClientGetByIDNotFound(t *testing.T) {
 		t.Fatal("expected no action")
 	}
 }
+
+func TestActionClientList(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/actions", func(w http.ResponseWriter, r *http.Request) {
+		if page := r.URL.Query().Get("page"); page != "2" {
+			t.Errorf("expected page 2; got %q", page)
+		}
+		if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
+			t.Errorf("expected per_page 50; got %q", perPage)
+		}
+		json.NewEncoder(w).Encode(schema.ActionListResponse{
+			Actions: []schema.Action{
+				{ID: 1},
+				{ID: 2},
+			},
+		})
+	})
+
+	opts := ActionListOpts{}
+	opts.Page = 2
+	opts.PerPage = 50
+
+	ctx := context.Background()
+	actions, _, err := env.Client.Action.List(ctx, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(actions) != 2 {
+		t.Fatal("expected 2 actions")
+	}
+}
+
+func TestActionClientAll(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/actions", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(struct {
+			Actions []schema.Action `json:"actions"`
+			Meta    schema.Meta     `json:"meta"`
+		}{
+			Actions: []schema.Action{
+				{ID: 1},
+				{ID: 2},
+				{ID: 3},
+			},
+			Meta: schema.Meta{
+				Pagination: &schema.MetaPagination{
+					Page:         1,
+					LastPage:     1,
+					PerPage:      3,
+					TotalEntries: 3,
+				},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	actions, err := env.Client.Action.All(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(actions) != 3 {
+		t.Fatalf("expected 3 actions; got %d", len(actions))
+	}
+	if actions[0].ID != 1 || actions[1].ID != 2 || actions[2].ID != 3 {
+		t.Errorf("unexpected actions")
+	}
+}

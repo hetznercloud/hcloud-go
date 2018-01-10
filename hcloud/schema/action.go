@@ -32,3 +32,8 @@ type ActionError struct {
 type ActionGetResponse struct {
 	Action Action `json:"action"`
 }
+
+// ActionListResponse defines the schema of the response when listing actions.
+type ActionListResponse struct {
+	Actions []Action `json:"actions"`
+}
