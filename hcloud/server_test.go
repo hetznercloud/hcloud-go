@@ -1041,3 +1041,80 @@ func TestServerClientDisableBackup(t *testing.T) {
 		t.Errorf("unexpected action ID: %d", action.ID)
 	}
 }
+
+func TestServerClientChangeType(t *testing.T) {
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+
+	t.Run("with server type ID", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/change_type", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.ServerActionChangeTypeRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if id, ok := reqBody.ServerType.(float64); !ok || id != 1 {
+				t.Errorf("unexpected server type ID: %v", reqBody.ServerType)
+			}
+			if !reqBody.UpgradeDisk {
+				t.Error("expected to upgrade disk")
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionChangeTypeResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := ServerChangeTypeOpts{
+			ServerType:  &ServerType{ID: 1},
+			UpgradeDisk: true,
+		}
+		action, _, err := env.Client.Server.ChangeType(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
+
+	t.Run("with server type name", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/change_type", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.ServerActionChangeTypeRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if name, ok := reqBody.ServerType.(string); !ok || name != "type" {
+				t.Errorf("unexpected server type name: %v", reqBody.ServerType)
+			}
+			if !reqBody.UpgradeDisk {
+				t.Error("expected to upgrade disk")
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionChangeTypeResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := ServerChangeTypeOpts{
+			ServerType:  &ServerType{Name: "type"},
+			UpgradeDisk: true,
+		}
+		action, _, err := env.Client.Server.ChangeType(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
+}
