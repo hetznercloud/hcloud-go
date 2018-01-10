@@ -10,3 +10,13 @@ type Location struct {
 	Latitude    float64 `json:"latitude"`
 	Longitude   float64 `json:"longitude"`
 }
+
+// LocationGetResponse defines the schema of the response when retrieving a single location.
+type LocationGetResponse struct {
+	Location Location `json:"location"`
+}
+
+// LocationListResponse defines the schema of the response when listing locations.
+type LocationListResponse struct {
+	Locations []Location `json:"locations"`
+}
