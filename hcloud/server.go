@@ -510,3 +510,35 @@ func (c *ServerClient) DisableRescue(ctx context.Context, server *Server) (*Acti
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
 }
+
+// ServerRebuildOpts specifies options for rebuilding a server.
+type ServerRebuildOpts struct {
+	Image *Image
+}
+
+// Rebuild rebuilds a server.
+func (c *ServerClient) Rebuild(ctx context.Context, server *Server, opts ServerRebuildOpts) (*Action, *Response, error) {
+	reqBody := schema.ServerActionRebuildRequest{}
+	if opts.Image.ID != 0 {
+		reqBody.Image = opts.Image.ID
+	} else {
+		reqBody.Image = opts.Image.Name
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/servers/%d/actions/rebuild", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionRebuildResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
