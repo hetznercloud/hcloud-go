@@ -55,6 +55,7 @@ type Client struct {
 	Datacenter DatacenterClient
 	FloatingIP FloatingIPClient
 	Image      ImageClient
+	ISO        ISOClient
 	Location   LocationClient
 	Server     ServerClient
 	ServerType ServerTypeClient
@@ -101,6 +102,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.Datacenter = DatacenterClient{client: client}
 	client.FloatingIP = FloatingIPClient{client: client}
 	client.Image = ImageClient{client: client}
+	client.ISO = ISOClient{client: client}
 	client.Location = LocationClient{client: client}
 	client.Server = ServerClient{client: client}
 	client.ServerType = ServerTypeClient{client: client}
