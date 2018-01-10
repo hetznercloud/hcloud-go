@@ -33,6 +33,19 @@ func TestServerTypeClient(t *testing.T) {
 		if serverType.ID != 1 {
 			t.Errorf("unexpected server type ID: %v", serverType.ID)
 		}
+
+		t.Run("via Get", func(t *testing.T) {
+			serverType, _, err := env.Client.ServerType.Get(ctx, "1")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if serverType == nil {
+				t.Fatal("no server type")
+			}
+			if serverType.ID != 1 {
+				t.Errorf("unexpected server type ID: %v", serverType.ID)
+			}
+		})
 	})
 
 	t.Run("GetByID (not found)", func(t *testing.T) {
@@ -56,6 +69,72 @@ func TestServerTypeClient(t *testing.T) {
 		}
 		if serverType != nil {
 			t.Fatal("expected no server type")
+		}
+	})
+
+	t.Run("GetByName", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/server_types", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.RawQuery != "name=cx10" {
+				t.Fatal("missing name query")
+			}
+			json.NewEncoder(w).Encode(schema.ServerTypeListResponse{
+				ServerTypes: []schema.ServerType{
+					{
+						ID: 1,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+		serverType, _, err := env.Client.ServerType.GetByName(ctx, "cx10")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if serverType == nil {
+			t.Fatal("no server type")
+		}
+		if serverType.ID != 1 {
+			t.Errorf("unexpected server type ID: %v", serverType.ID)
+		}
+
+		t.Run("via Get", func(t *testing.T) {
+			serverType, _, err := env.Client.ServerType.Get(ctx, "cx10")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if serverType == nil {
+				t.Fatal("no serverType")
+			}
+			if serverType.ID != 1 {
+				t.Errorf("unexpected server type ID: %v", serverType.ID)
+			}
+		})
+	})
+
+	t.Run("GetByName (not found)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/server_types", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.RawQuery != "name=cx10" {
+				t.Fatal("missing name query")
+			}
+			json.NewEncoder(w).Encode(schema.ServerTypeListResponse{
+				ServerTypes: []schema.ServerType{},
+			})
+		})
+
+		ctx := context.Background()
+		serverType, _, err := env.Client.ServerType.GetByName(ctx, "cx10")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if serverType != nil {
+			t.Fatal("unexpected server type")
 		}
 	})
 
