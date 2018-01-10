@@ -628,3 +628,38 @@ func (c *ServerClient) DisableBackup(ctx context.Context, server *Server) (*Acti
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
 }
+
+// ServerChangeTypeOpts specifies options for changing a server's type.
+type ServerChangeTypeOpts struct {
+	ServerType  *ServerType // new server type
+	UpgradeDisk bool        // whether disk should be upgraded
+}
+
+// ChangeType changes a server's type.
+func (c *ServerClient) ChangeType(ctx context.Context, server *Server, opts ServerChangeTypeOpts) (*Action, *Response, error) {
+	reqBody := schema.ServerActionChangeTypeRequest{
+		UpgradeDisk: opts.UpgradeDisk,
+	}
+	if opts.ServerType.ID != 0 {
+		reqBody.ServerType = opts.ServerType.ID
+	} else {
+		reqBody.ServerType = opts.ServerType.Name
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/servers/%d/actions/change_type", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionChangeTypeResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}

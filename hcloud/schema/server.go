@@ -236,3 +236,16 @@ type ServerActionDisableBackupRequest struct{}
 type ServerActionDisableBackupResponse struct {
 	Action Action `json:"action"`
 }
+
+// ServerActionChangeTypeRequest defines the schema for the request to
+// change a server's type.
+type ServerActionChangeTypeRequest struct {
+	ServerType  interface{} `json:"server_type"` // int or string
+	UpgradeDisk bool        `json:"upgrade_disk"`
+}
+
+// ServerActionChangeTypeResponse defines the schema of the response when
+// creating a change_type server action.
+type ServerActionChangeTypeResponse struct {
+	Action Action `json:"action"`
+}
