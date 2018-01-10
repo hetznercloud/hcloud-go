@@ -82,6 +82,16 @@ type ServerCreateResponse struct {
 	RootPassword *string `json:"root_password"`
 }
 
+// ServerUpdateRequest defines the schema of the request to update a server.
+type ServerUpdateRequest struct {
+	Name string `json:"name,omitempty"`
+}
+
+// ServerUpdateResponse defines the schema of the response when updating a server.
+type ServerUpdateResponse struct {
+	Server Server `json:"server"`
+}
+
 // ServerActionPoweronRequest defines the schema for the request to
 // create a poweron server action.
 type ServerActionPoweronRequest struct{}

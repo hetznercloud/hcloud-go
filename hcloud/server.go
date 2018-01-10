@@ -285,6 +285,35 @@ func (c *ServerClient) Delete(ctx context.Context, server *Server) (*Response, e
 	return c.client.Do(req, nil)
 }
 
+// ServerUpdateOpts specifies options for updating a server.
+type ServerUpdateOpts struct {
+	Name string
+}
+
+// Update updates a server.
+func (c *ServerClient) Update(ctx context.Context, server *Server, opts ServerUpdateOpts) (*Server, *Response, error) {
+	reqBody := schema.ServerUpdateRequest{
+		Name: opts.Name,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/servers/%d", server.ID)
+	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerUpdateResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ServerFromSchema(respBody.Server), resp, nil
+}
+
 // Poweron starts a server.
 func (c *ServerClient) Poweron(ctx context.Context, server *Server) (*Action, *Response, error) {
 	path := fmt.Sprintf("/servers/%d/actions/poweron", server.ID)
