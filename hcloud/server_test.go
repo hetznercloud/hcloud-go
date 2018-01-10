@@ -786,3 +786,94 @@ func TestServerClientRebuild(t *testing.T) {
 		}
 	})
 }
+
+func TestServerClientAttachISO(t *testing.T) {
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+
+	t.Run("with ISO ID", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/attach_iso", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.ServerActionAttachISORequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if id, ok := reqBody.ISO.(float64); !ok || id != 1 {
+				t.Errorf("unexpected ISO ID: %v", reqBody.ISO)
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionAttachISOResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		iso := &ISO{ID: 1}
+		action, _, err := env.Client.Server.AttachISO(ctx, server, iso)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
+
+	t.Run("with ISO name", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/attach_iso", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.ServerActionAttachISORequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if name, ok := reqBody.ISO.(string); !ok || name != "debian.iso" {
+				t.Errorf("unexpected ISO name: %v", reqBody.ISO)
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionAttachISOResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		iso := &ISO{Name: "debian.iso"}
+		action, _, err := env.Client.Server.AttachISO(ctx, server, iso)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
+}
+
+func TestServerClientDetachISO(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+
+	env.Mux.HandleFunc("/servers/1/actions/detach_iso", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionDetachISOResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	action, _, err := env.Client.Server.DetachISO(ctx, server)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}

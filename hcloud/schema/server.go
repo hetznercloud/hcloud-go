@@ -192,3 +192,25 @@ type ServerActionRebuildRequest struct {
 type ServerActionRebuildResponse struct {
 	Action Action `json:"action"`
 }
+
+// ServerActionAttachISORequest defines the schema for the request to
+// attach an ISO to a server.
+type ServerActionAttachISORequest struct {
+	ISO interface{} `json:"iso"` // int or string
+}
+
+// ServerActionAttachISOResponse defines the schema of the response when
+// creating a attach_iso server action.
+type ServerActionAttachISOResponse struct {
+	Action Action `json:"action"`
+}
+
+// ServerActionDetachISORequest defines the schema for the request to
+// detach an ISO from a server.
+type ServerActionDetachISORequest struct{}
+
+// ServerActionDetachISOResponse defines the schema of the response when
+// creating a detach_iso server action.
+type ServerActionDetachISOResponse struct {
+	Action Action `json:"action"`
+}

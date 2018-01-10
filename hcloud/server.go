@@ -542,3 +542,46 @@ func (c *ServerClient) Rebuild(ctx context.Context, server *Server, opts ServerR
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
 }
+
+// AttachISO attaches an ISO to a server.
+func (c *ServerClient) AttachISO(ctx context.Context, server *Server, iso *ISO) (*Action, *Response, error) {
+	reqBody := schema.ServerActionAttachISORequest{}
+	if iso.ID != 0 {
+		reqBody.ISO = iso.ID
+	} else {
+		reqBody.ISO = iso.Name
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/servers/%d/actions/attach_iso", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionAttachISOResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// DetachISO detaches the currently attached ISO from a server.
+func (c *ServerClient) DetachISO(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/detach_iso", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionDetachISOResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
