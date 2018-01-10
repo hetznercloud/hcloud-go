@@ -86,12 +86,23 @@ func LocationFromSchema(s schema.Location) *Location {
 
 // DatacenterFromSchema converts a schema.Datacenter to a Datacenter.
 func DatacenterFromSchema(s schema.Datacenter) *Datacenter {
-	return &Datacenter{
+	d := &Datacenter{
 		ID:          s.ID,
 		Name:        s.Name,
 		Description: s.Description,
 		Location:    LocationFromSchema(s.Location),
+		ServerTypes: &DatacenterServerTypes{
+			Available: []*ServerType{},
+			Supported: []*ServerType{},
+		},
 	}
+	for _, t := range s.ServerTypes.Available {
+		d.ServerTypes.Available = append(d.ServerTypes.Available, &ServerType{ID: t})
+	}
+	for _, t := range s.ServerTypes.Supported {
+		d.ServerTypes.Supported = append(d.ServerTypes.Supported, &ServerType{ID: t})
+	}
+	return d
 }
 
 // ServerFromSchema converts a schema.Server to a Server.

@@ -52,6 +52,7 @@ type Client struct {
 	httpClient  *http.Client
 
 	Action     ActionClient
+	Datacenter DatacenterClient
 	FloatingIP FloatingIPClient
 	Image      ImageClient
 	Server     ServerClient
@@ -96,6 +97,7 @@ func NewClient(options ...ClientOption) *Client {
 	}
 
 	client.Action = ActionClient{client: client}
+	client.Datacenter = DatacenterClient{client: client}
 	client.FloatingIP = FloatingIPClient{client: client}
 	client.Image = ImageClient{client: client}
 	client.Server = ServerClient{client: client}
