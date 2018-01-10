@@ -180,3 +180,15 @@ type ServerActionDisableRescueRequest struct{}
 type ServerActionDisableRescueResponse struct {
 	Action Action `json:"action"`
 }
+
+// ServerActionRebuildRequest defines the schema for the request to
+// rebuild a server.
+type ServerActionRebuildRequest struct {
+	Image interface{} `json:"image"` // int or string
+}
+
+// ServerActionRebuildResponse defines the schema of the response when
+// creating a rebuild server action.
+type ServerActionRebuildResponse struct {
+	Action Action `json:"action"`
+}

@@ -717,3 +717,72 @@ func TestServerClientDisableRescue(t *testing.T) {
 		t.Errorf("unexpected action ID: %d", action.ID)
 	}
 }
+
+func TestServerClientRebuild(t *testing.T) {
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+
+	t.Run("with image ID", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/rebuild", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.ServerActionRebuildRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if id, ok := reqBody.Image.(float64); !ok || id != 1 {
+				t.Errorf("unexpected image ID: %v", reqBody.Image)
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionRebuildResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := ServerRebuildOpts{
+			Image: &Image{ID: 1},
+		}
+		action, _, err := env.Client.Server.Rebuild(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
+
+	t.Run("with image name", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/rebuild", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.ServerActionRebuildRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if name, ok := reqBody.Image.(string); !ok || name != "debian-9" {
+				t.Errorf("unexpected image name: %v", reqBody.Image)
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionRebuildResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := ServerRebuildOpts{
+			Image: &Image{Name: "debian-9"},
+		}
+		action, _, err := env.Client.Server.Rebuild(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
+}
