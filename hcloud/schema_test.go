@@ -251,6 +251,12 @@ func TestDatacenterFromSchema(t *testing.T) {
 	if datacenter.Location == nil || datacenter.Location.ID != 1 {
 		t.Errorf("unexpected Location: %v", datacenter.Location)
 	}
+	if len(datacenter.ServerTypes.Available) != 4 {
+		t.Errorf("unexpected ServerTypes.Available (should be 4): %v", len(datacenter.ServerTypes.Available))
+	}
+	if len(datacenter.ServerTypes.Supported) != 4 {
+		t.Errorf("unexpected ServerTypes.Supported length (should be 4): %v", len(datacenter.ServerTypes.Supported))
+	}
 }
 
 func TestServerFromSchema(t *testing.T) {
