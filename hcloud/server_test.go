@@ -447,6 +447,81 @@ func TestServersDelete(t *testing.T) {
 	}
 }
 
+func TestServerClientUpdate(t *testing.T) {
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+
+	t.Run("update name", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "PUT" {
+				t.Error("expected PUT")
+			}
+			var reqBody schema.ServerUpdateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Name != "test" {
+				t.Errorf("unexpected name: %v", reqBody.Name)
+			}
+			json.NewEncoder(w).Encode(schema.ServerUpdateResponse{
+				Server: schema.Server{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := ServerUpdateOpts{
+			Name: "test",
+		}
+		updatedServer, _, err := env.Client.Server.Update(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if updatedServer.ID != 1 {
+			t.Errorf("unexpected server ID: %v", updatedServer.ID)
+		}
+	})
+
+	t.Run("no updates", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "PUT" {
+				t.Error("expected PUT")
+			}
+			var reqBody schema.ServerUpdateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Name != "" {
+				t.Errorf("unexpected no name, but got: %v", reqBody.Name)
+			}
+			json.NewEncoder(w).Encode(schema.ServerUpdateResponse{
+				Server: schema.Server{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := ServerUpdateOpts{}
+		updatedServer, _, err := env.Client.Server.Update(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if updatedServer.ID != 1 {
+			t.Errorf("unexpected server ID: %v", updatedServer.ID)
+		}
+	})
+}
+
 func TestServerClientPoweron(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
