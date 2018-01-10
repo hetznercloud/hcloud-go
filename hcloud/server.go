@@ -585,3 +585,46 @@ func (c *ServerClient) DetachISO(ctx context.Context, server *Server) (*Action, 
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
 }
+
+// EnableBackup enables backup for a server. Pass in an empty backup window to let the
+// API pick a window for you. See the API documentation at docs.hetzner.cloud for a list
+// of valid backup windows.
+func (c *ServerClient) EnableBackup(ctx context.Context, server *Server, window string) (*Action, *Response, error) {
+	reqBody := schema.ServerActionEnableBackupRequest{}
+	if window != "" {
+		reqBody.BackupWindow = String(window)
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/servers/%d/actions/enable_backup", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionEnableBackupResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// DisableBackup disables backup for a server.
+func (c *ServerClient) DisableBackup(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/disable_backup", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionDisableBackupResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
