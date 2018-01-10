@@ -7,3 +7,13 @@ type ISO struct {
 	Description string `json:"description"`
 	Type        string `json:"type"`
 }
+
+// ISOGetResponse defines the schema of the response when retrieving a single ISO.
+type ISOGetResponse struct {
+	ISO ISO `json:"iso"`
+}
+
+// ISOListResponse defines the schema of the response when listing ISOs.
+type ISOListResponse struct {
+	ISOs []ISO `json:"isos"`
+}
