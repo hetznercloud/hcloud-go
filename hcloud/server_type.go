@@ -54,7 +54,7 @@ func (c *ServerTypeClient) GetByID(ctx context.Context, id int) (*ServerType, *R
 	return ServerTypeFromSchema(body.ServerType), resp, nil
 }
 
-// GetByName retrieves an server type by its name.
+// GetByName retrieves a server type by its name.
 func (c *ServerTypeClient) GetByName(ctx context.Context, name string) (*ServerType, *Response, error) {
 	path := "/server_types?name=" + url.QueryEscape(name)
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
