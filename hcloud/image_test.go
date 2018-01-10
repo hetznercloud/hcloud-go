@@ -228,3 +228,85 @@ func TestImageClient(t *testing.T) {
 		}
 	})
 }
+
+func TestImageClientUpdate(t *testing.T) {
+	var (
+		ctx   = context.Background()
+		image = &Image{ID: 1}
+	)
+
+	t.Run("description and type", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/images/1", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "PUT" {
+				t.Error("expected PUT")
+			}
+			var reqBody schema.ImageUpdateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Description == nil || *reqBody.Description != "test" {
+				t.Errorf("unexpected description: %v", reqBody.Description)
+			}
+			if reqBody.Type == nil || *reqBody.Type != "snapshot" {
+				t.Errorf("unexpected type: %v", reqBody.Type)
+			}
+			json.NewEncoder(w).Encode(schema.ImageUpdateResponse{
+				Image: schema.Image{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := ImageUpdateOpts{
+			Description: String("test"),
+			Type:        ImageTypeSnapshot,
+		}
+		updatedImage, _, err := env.Client.Image.Update(ctx, image, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if updatedImage.ID != 1 {
+			t.Errorf("unexpected image ID: %v", updatedImage.ID)
+		}
+	})
+
+	t.Run("no updates", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/images/1", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "PUT" {
+				t.Error("expected PUT")
+			}
+			var reqBody schema.ImageUpdateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Description != nil {
+				t.Errorf("unexpected no description, but got: %v", reqBody.Description)
+			}
+			if reqBody.Type != nil {
+				t.Errorf("unexpected no type, but got: %v", reqBody.Type)
+			}
+			json.NewEncoder(w).Encode(schema.ImageUpdateResponse{
+				Image: schema.Image{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := ImageUpdateOpts{}
+		updatedImage, _, err := env.Client.Image.Update(ctx, image, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if updatedImage.ID != 1 {
+			t.Errorf("unexpected image ID: %v", updatedImage.ID)
+		}
+	})
+}

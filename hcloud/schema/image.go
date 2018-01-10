@@ -36,3 +36,14 @@ type ImageGetResponse struct {
 type ImageListResponse struct {
 	Images []Image `json:"images"`
 }
+
+// ImageUpdateRequest defines the schema of the request to update an image.
+type ImageUpdateRequest struct {
+	Description *string `json:"description,omitempty"`
+	Type        *string `json:"type,omitempty"`
+}
+
+// ImageUpdateResponse defines the schema of the response when updating an image.
+type ImageUpdateResponse struct {
+	Image Image `json:"image"`
+}

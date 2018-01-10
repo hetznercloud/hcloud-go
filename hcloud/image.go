@@ -1,7 +1,9 @@
 package hcloud
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -156,4 +158,37 @@ func (c *ImageClient) Delete(ctx context.Context, image *Image) (*Response, erro
 		return nil, err
 	}
 	return c.client.Do(req, nil)
+}
+
+// ImageUpdateOpts specifies options for updating an image.
+type ImageUpdateOpts struct {
+	Description *string
+	Type        ImageType
+}
+
+// Update updates an image.
+func (c *ImageClient) Update(ctx context.Context, image *Image, opts ImageUpdateOpts) (*Image, *Response, error) {
+	reqBody := schema.ImageUpdateRequest{
+		Description: opts.Description,
+	}
+	if opts.Type != "" {
+		reqBody.Type = String(string(opts.Type))
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/images/%d", image.ID)
+	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ImageUpdateResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ImageFromSchema(respBody.Image), resp, nil
 }
