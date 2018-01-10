@@ -28,12 +28,12 @@ const (
 	ISOTypePrivate = "private"
 )
 
-// ISOClient is a client for the iso API.
+// ISOClient is a client for the ISO API.
 type ISOClient struct {
 	client *Client
 }
 
-// GetByID retrieves an iso by its ID.
+// GetByID retrieves an ISO by its ID.
 func (c *ISOClient) GetByID(ctx context.Context, id int) (*ISO, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/isos/%d", id), nil)
 	if err != nil {
@@ -51,7 +51,7 @@ func (c *ISOClient) GetByID(ctx context.Context, id int) (*ISO, *Response, error
 	return ISOFromSchema(body.ISO), resp, nil
 }
 
-// GetByName retrieves an iso by its name.
+// GetByName retrieves an ISO by its name.
 func (c *ISOClient) GetByName(ctx context.Context, name string) (*ISO, *Response, error) {
 	path := "/isos?name=" + url.QueryEscape(name)
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
@@ -71,7 +71,7 @@ func (c *ISOClient) GetByName(ctx context.Context, name string) (*ISO, *Response
 	return ISOFromSchema(body.ISOs[0]), resp, nil
 }
 
-// Get retrieves an iso by its ID if the input can be parsed as an integer, otherwise it retrieves an iso by its name.
+// Get retrieves an ISO by its ID if the input can be parsed as an integer, otherwise it retrieves an ISO by its name.
 func (c *ISOClient) Get(ctx context.Context, idOrName string) (*ISO, *Response, error) {
 	if id, err := strconv.Atoi(idOrName); err == nil {
 		return c.GetByID(ctx, int(id))
@@ -84,7 +84,7 @@ type ISOListOpts struct {
 	ListOpts
 }
 
-// List returns a list of isos for a specific page.
+// List returns a list of ISOs for a specific page.
 func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) ([]*ISO, *Response, error) {
 	path := "/isos?" + valuesForListOpts(opts.ListOpts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
@@ -104,7 +104,7 @@ func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) ([]*ISO, *Respon
 	return isos, resp, nil
 }
 
-// All returns all isos.
+// All returns all ISOs.
 func (c *ISOClient) All(ctx context.Context) ([]*ISO, error) {
 	allISOs := []*ISO{}
 

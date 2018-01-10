@@ -77,7 +77,7 @@ func TestISOClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/isos", func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.RawQuery != "name=fsn1-dc8" {
+			if r.URL.RawQuery != "name=debian-9" {
 				t.Fatal("missing name query")
 			}
 			json.NewEncoder(w).Encode(schema.ISOListResponse{
@@ -90,7 +90,7 @@ func TestISOClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
-		iso, _, err := env.Client.ISO.GetByName(ctx, "fsn1-dc8")
+		iso, _, err := env.Client.ISO.GetByName(ctx, "debian-9")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -102,7 +102,7 @@ func TestISOClient(t *testing.T) {
 		}
 
 		t.Run("via Get", func(t *testing.T) {
-			iso, _, err := env.Client.ISO.Get(ctx, "fsn1-dc8")
+			iso, _, err := env.Client.ISO.Get(ctx, "debian-9")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -120,7 +120,7 @@ func TestISOClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/isos", func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.RawQuery != "name=fsn1-dc8" {
+			if r.URL.RawQuery != "name=debian-9" {
 				t.Fatal("missing name query")
 			}
 			json.NewEncoder(w).Encode(schema.ISOListResponse{
@@ -129,7 +129,7 @@ func TestISOClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
-		iso, _, err := env.Client.ISO.GetByName(ctx, "fsn1-dc8")
+		iso, _, err := env.Client.ISO.GetByName(ctx, "debian-9")
 		if err != nil {
 			t.Fatal(err)
 		}
