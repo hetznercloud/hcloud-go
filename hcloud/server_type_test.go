@@ -123,8 +123,8 @@ func TestServerTypeClient(t *testing.T) {
 			if r.URL.RawQuery != "name=cx10" {
 				t.Fatal("missing name query")
 			}
-			json.NewEncoder(w).Encode(schema.DatacenterListResponse{
-				Datacenters: []schema.Datacenter{},
+			json.NewEncoder(w).Encode(schema.ServerTypeListResponse{
+				ServerTypes: []schema.ServerType{},
 			})
 		})
 
