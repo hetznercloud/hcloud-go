@@ -25,6 +25,16 @@ type FloatingIPGetResponse struct {
 	FloatingIP FloatingIP `json:"floating_ip"`
 }
 
+// FloatingIPUpdateRequest defines the schema of the request to update a Floating IP.
+type FloatingIPUpdateRequest struct {
+	Description string `json:"description,omitempty"`
+}
+
+// FloatingIPUpdateResponse defines the schema of the response when updating a Floating IP.
+type FloatingIPUpdateResponse struct {
+	FloatingIP FloatingIP `json:"floating_ip"`
+}
+
 // FloatingIPListResponse defines the schema of the response when
 // listing Floating IPs.
 type FloatingIPListResponse struct {

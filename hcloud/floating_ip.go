@@ -187,6 +187,35 @@ func (c *FloatingIPClient) Delete(ctx context.Context, floatingIP *FloatingIP) (
 	return c.client.Do(req, nil)
 }
 
+// FloatingIPUpdateOpts specifies options for updating a Floating IP.
+type FloatingIPUpdateOpts struct {
+	Description string
+}
+
+// Update updates a Floating IP.
+func (c *FloatingIPClient) Update(ctx context.Context, floatingIP *FloatingIP, opts FloatingIPUpdateOpts) (*FloatingIP, *Response, error) {
+	reqBody := schema.FloatingIPUpdateRequest{
+		Description: opts.Description,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/floating_ips/%d", floatingIP.ID)
+	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.FloatingIPUpdateResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return FloatingIPFromSchema(respBody.FloatingIP), resp, nil
+}
+
 // Assign assigns a Floating IP to a server.
 func (c *FloatingIPClient) Assign(ctx context.Context, floatingIP *FloatingIP, server *Server) (*Action, *Response, error) {
 	reqBody := schema.FloatingIPActionAssignRequest{
