@@ -18,6 +18,7 @@ type ServerType struct {
 	Memory      float32
 	Disk        int
 	StorageType StorageType
+	Pricings    []ServerTypeLocationPricing
 }
 
 // StorageType specifies the type of storage.

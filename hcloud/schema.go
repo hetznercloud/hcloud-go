@@ -182,7 +182,19 @@ func ServerTypeFromSchema(s schema.ServerType) *ServerType {
 		Disk:        s.Disk,
 		StorageType: StorageType(s.StorageType),
 	}
-
+	for _, price := range s.Prices {
+		st.Pricings = append(st.Pricings, ServerTypeLocationPricing{
+			Location: &Location{Name: price.Location},
+			Hourly: Price{
+				Net:   price.PriceHourly.Net,
+				Gross: price.PriceHourly.Gross,
+			},
+			Monthly: Price{
+				Net:   price.PriceMonthly.Net,
+				Gross: price.PriceMonthly.Gross,
+			},
+		})
+	}
 	return st
 }
 

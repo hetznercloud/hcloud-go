@@ -493,7 +493,20 @@ func TestServerTypeFromSchema(t *testing.T) {
 		"cores": 4,
 		"memory": 1.0,
 		"disk": 20,
-		"storage_type": "local"
+		"storage_type": "local",
+		"prices": [
+			{
+				"location": "fsn1",
+				"price_hourly": {
+					"net": "1",
+					"gross": "1.19"
+				},
+				"price_monthly": {
+					"net": "1",
+					"gross": "1.19"
+				}
+			}
+		]
 	}`)
 
 	var s schema.ServerType
@@ -522,6 +535,25 @@ func TestServerTypeFromSchema(t *testing.T) {
 	}
 	if serverType.StorageType != StorageTypeLocal {
 		t.Errorf("unexpected storage type: %q", serverType.StorageType)
+	}
+	if len(serverType.Pricings) != 1 {
+		t.Errorf("unexpected number of pricings: %d", len(serverType.Pricings))
+	} else {
+		if serverType.Pricings[0].Location.Name != "fsn1" {
+			t.Errorf("unexpected location name: %v", serverType.Pricings[0].Location.Name)
+		}
+		if serverType.Pricings[0].Hourly.Net != "1" {
+			t.Errorf("unexpected hourly net price: %v", serverType.Pricings[0].Hourly.Net)
+		}
+		if serverType.Pricings[0].Hourly.Gross != "1.19" {
+			t.Errorf("unexpected hourly gross price: %v", serverType.Pricings[0].Hourly.Gross)
+		}
+		if serverType.Pricings[0].Monthly.Net != "1" {
+			t.Errorf("unexpected monthly net price: %v", serverType.Pricings[0].Monthly.Net)
+		}
+		if serverType.Pricings[0].Monthly.Gross != "1.19" {
+			t.Errorf("unexpected monthly gross price: %v", serverType.Pricings[0].Monthly.Gross)
+		}
 	}
 }
 
