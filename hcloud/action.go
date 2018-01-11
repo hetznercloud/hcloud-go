@@ -77,3 +77,51 @@ func (c *ActionClient) GetByID(ctx context.Context, id int) (*Action, *Response,
 	}
 	return ActionFromSchema(body.Action), resp, nil
 }
+
+// ActionListOpts specifies options for listing actions.
+type ActionListOpts struct {
+	ListOpts
+}
+
+// List returns a list of actions for a specific page.
+func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
+	path := "/actions?" + valuesForListOpts(opts.ListOpts).Encode()
+	req, err := c.client.NewRequest(ctx, "GET", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var body schema.ActionListResponse
+	resp, err := c.client.Do(req, &body)
+	if err != nil {
+		return nil, nil, err
+	}
+	actions := make([]*Action, 0, len(body.Actions))
+	for _, i := range body.Actions {
+		actions = append(actions, ActionFromSchema(i))
+	}
+	return actions, resp, nil
+}
+
+// All returns all actions.
+func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
+	allActions := []*Action{}
+
+	opts := ActionListOpts{}
+	opts.PerPage = 50
+
+	_, err := c.client.all(func(page int) (*Response, error) {
+		opts.Page = page
+		actions, resp, err := c.List(ctx, opts)
+		if err != nil {
+			return resp, err
+		}
+		allActions = append(allActions, actions...)
+		return resp, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return allActions, nil
+}
