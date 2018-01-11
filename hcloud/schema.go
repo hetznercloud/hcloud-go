@@ -265,3 +265,64 @@ func ErrorFromSchema(s schema.Error) Error {
 	}
 	return e
 }
+
+// PricingFromSchema converts a schema.Pricing to a Pricing.
+func PricingFromSchema(s schema.Pricing) Pricing {
+	p := Pricing{
+		Image: ImagePricing{
+			PerGBMonth: Price{
+				Currency: s.Currency,
+				VATRate:  s.VATRate,
+				Net:      s.Image.PricePerGBMonth.Net,
+				Gross:    s.Image.PricePerGBMonth.Gross,
+			},
+		},
+		FloatingIP: FloatingIPPricing{
+			Monthly: Price{
+				Currency: s.Currency,
+				VATRate:  s.VATRate,
+				Net:      s.FloatingIP.PriceMonthly.Net,
+				Gross:    s.FloatingIP.PriceMonthly.Gross,
+			},
+		},
+		Traffic: TrafficPricing{
+			PerGB: Price{
+				Currency: s.Currency,
+				VATRate:  s.VATRate,
+				Net:      s.Traffic.PricePerGB.Net,
+				Gross:    s.Traffic.PricePerGB.Gross,
+			},
+		},
+		ServerBackup: ServerBackupPricing{
+			Percentage: s.ServerBackup.Percentage,
+		},
+	}
+	for _, serverType := range s.ServerTypes {
+		var pricings []ServerTypeLocationPricing
+		for _, price := range serverType.Prices {
+			pricings = append(pricings, ServerTypeLocationPricing{
+				Location: &Location{Name: price.Location},
+				Hourly: Price{
+					Currency: s.Currency,
+					VATRate:  s.VATRate,
+					Net:      price.PriceHourly.Net,
+					Gross:    price.PriceHourly.Gross,
+				},
+				Monthly: Price{
+					Currency: s.Currency,
+					VATRate:  s.VATRate,
+					Net:      price.PriceMonthly.Net,
+					Gross:    price.PriceMonthly.Gross,
+				},
+			})
+		}
+		p.ServerTypes = append(p.ServerTypes, ServerTypePricing{
+			ServerType: &ServerType{
+				ID:   serverType.ID,
+				Name: serverType.Name,
+			},
+			Pricings: pricings,
+		})
+	}
+	return p
+}

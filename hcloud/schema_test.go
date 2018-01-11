@@ -722,3 +722,146 @@ func TestImageFromSchema(t *testing.T) {
 		t.Errorf("unexpected RapidDeploy: %v", image.RapidDeploy)
 	}
 }
+
+func TestPricingFromSchema(t *testing.T) {
+	data := []byte(`{
+		"currency": "EUR",
+		"vat_rate": "19.00",
+		"image": {
+			"price_per_gb_month": {
+				"net": "1",
+				"gross": "1.19"
+			}
+		},
+		"floating_ip": {
+			"price_monthly": {
+				"net": "1",
+				"gross": "1.19"
+			}
+		},
+		"traffic": {
+			"price_per_gb": {
+				"net": "1",
+				"gross": "1.19"
+			}
+		},
+		"server_backup": {
+			"percentage": "20"
+		},
+		"server_types": [
+			{
+				"id": 4,
+				"name": "CX11",
+				"prices": [
+					{
+						"location": "fsn1",
+						"price_hourly": {
+							"net": "1",
+							"gross": "1.19"
+						},
+						"price_monthly": {
+							"net": "1",
+							"gross": "1.19"
+						}
+					}
+				]
+			}
+		]
+	}`)
+
+	var s schema.Pricing
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	pricing := PricingFromSchema(s)
+
+	if pricing.Image.PerGBMonth.Currency != "EUR" {
+		t.Errorf("unexpected Image.PerGBMonth.Currency: %v", pricing.Image.PerGBMonth.Currency)
+	}
+	if pricing.Image.PerGBMonth.VATRate != "19.00" {
+		t.Errorf("unexpected Image.PerGBMonth.VATRate: %v", pricing.Image.PerGBMonth.VATRate)
+	}
+	if pricing.Image.PerGBMonth.Net != "1" {
+		t.Errorf("unexpected Image.PerGBMonth.Net: %v", pricing.Image.PerGBMonth.Net)
+	}
+	if pricing.Image.PerGBMonth.Gross != "1.19" {
+		t.Errorf("unexpected Image.PerGBMonth.Gross: %v", pricing.Image.PerGBMonth.Gross)
+	}
+
+	if pricing.FloatingIP.Monthly.Currency != "EUR" {
+		t.Errorf("unexpected FloatingIP.Monthly.Currency: %v", pricing.FloatingIP.Monthly.Currency)
+	}
+	if pricing.FloatingIP.Monthly.VATRate != "19.00" {
+		t.Errorf("unexpected FloatingIP.Monthly.VATRate: %v", pricing.FloatingIP.Monthly.VATRate)
+	}
+	if pricing.FloatingIP.Monthly.Net != "1" {
+		t.Errorf("unexpected FloatingIP.Monthly.Net: %v", pricing.FloatingIP.Monthly.Net)
+	}
+	if pricing.FloatingIP.Monthly.Gross != "1.19" {
+		t.Errorf("unexpected FloatingIP.Monthly.Gross: %v", pricing.FloatingIP.Monthly.Gross)
+	}
+
+	if pricing.Traffic.PerGB.Currency != "EUR" {
+		t.Errorf("unexpected Traffic.PerGB.Currency: %v", pricing.Traffic.PerGB.Currency)
+	}
+	if pricing.Traffic.PerGB.VATRate != "19.00" {
+		t.Errorf("unexpected Traffic.PerGB.VATRate: %v", pricing.Traffic.PerGB.VATRate)
+	}
+	if pricing.Traffic.PerGB.Net != "1" {
+		t.Errorf("unexpected Traffic.PerGB.Net: %v", pricing.Traffic.PerGB.Net)
+	}
+	if pricing.Traffic.PerGB.Gross != "1.19" {
+		t.Errorf("unexpected Traffic.PerGB.Gross: %v", pricing.Traffic.PerGB.Gross)
+	}
+
+	if pricing.ServerBackup.Percentage != "20" {
+		t.Errorf("unexpected ServerBackup.Percentage: %v", pricing.ServerBackup.Percentage)
+	}
+
+	if len(pricing.ServerTypes) != 1 {
+		t.Errorf("unexpected number of server types: %d", len(pricing.ServerTypes))
+	} else {
+		p := pricing.ServerTypes[0]
+
+		if p.ServerType.ID != 4 {
+			t.Errorf("unexpected ServerType.ID: %d", p.ServerType.ID)
+		}
+		if p.ServerType.Name != "CX11" {
+			t.Errorf("unexpected ServerType.Name: %v", p.ServerType.Name)
+		}
+
+		if len(p.Pricings) != 1 {
+			t.Errorf("unexpected number of prices: %d", len(p.Pricings))
+		} else {
+			if p.Pricings[0].Location.Name != "fsn1" {
+				t.Errorf("unexpected Location.Name: %v", p.Pricings[0].Location.Name)
+			}
+
+			if p.Pricings[0].Hourly.Currency != "EUR" {
+				t.Errorf("unexpected Hourly.Currency: %v", p.Pricings[0].Hourly.Currency)
+			}
+			if p.Pricings[0].Hourly.VATRate != "19.00" {
+				t.Errorf("unexpected Hourly.VATRate: %v", p.Pricings[0].Hourly.VATRate)
+			}
+			if p.Pricings[0].Hourly.Net != "1" {
+				t.Errorf("unexpected Hourly.Net: %v", p.Pricings[0].Hourly.Net)
+			}
+			if p.Pricings[0].Hourly.Gross != "1.19" {
+				t.Errorf("unexpected Hourly.Gross: %v", p.Pricings[0].Hourly.Gross)
+			}
+
+			if p.Pricings[0].Monthly.Currency != "EUR" {
+				t.Errorf("unexpected Monthly.Currency: %v", p.Pricings[0].Monthly.Currency)
+			}
+			if p.Pricings[0].Monthly.VATRate != "19.00" {
+				t.Errorf("unexpected Monthly.VATRate: %v", p.Pricings[0].Monthly.VATRate)
+			}
+			if p.Pricings[0].Monthly.Net != "1" {
+				t.Errorf("unexpected Monthly.Net: %v", p.Pricings[0].Monthly.Net)
+			}
+			if p.Pricings[0].Monthly.Gross != "1.19" {
+				t.Errorf("unexpected Monthly.Gross: %v", p.Pricings[0].Monthly.Gross)
+			}
+		}
+	}
+}
