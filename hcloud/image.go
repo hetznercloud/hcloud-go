@@ -117,6 +117,7 @@ func (p *ImagePage) Content() []*Image {
 // ImageListOpts specifies options for listing images.
 type ImageListOpts struct {
 	ListOpts
+	SortOpts
 	Types   []ImageType
 	BoundTo []*Server
 }
@@ -124,6 +125,7 @@ type ImageListOpts struct {
 // URLValues returns the list opts as url.Values.
 func (o ImageListOpts) URLValues() url.Values {
 	vals := o.ListOpts.URLValues()
+	vals["sort"] = o.SortOpts.URLValues()["sort"]
 	for _, t := range o.Types {
 		vals.Add("type", string(t))
 	}

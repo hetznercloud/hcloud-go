@@ -159,6 +159,13 @@ func TestImageClient(t *testing.T) {
 			} else if len(boundTo) != 2 || boundTo[0] != "1" || boundTo[1] != "2" {
 				t.Errorf("expected bound_to to be ['1','2']; got %q", boundTo)
 			}
+			if sort, ok := r.URL.Query()["sort"]; !ok {
+				t.Errorf("expected sort to be set; got %q", sort)
+			} else if len(sort) != 2 ||
+				sort[0] != "id:asc" ||
+				sort[1] != "name:desc" {
+				t.Errorf("expected sort to be ['id:asc', 'name:desc']; got %q", sort)
+			}
 			json.NewEncoder(w).Encode(schema.ImageListResponse{
 				Images: []schema.Image{
 					{ID: 1},
@@ -179,6 +186,8 @@ func TestImageClient(t *testing.T) {
 		}
 		opts.Page = 2
 		opts.PerPage = 50
+		opts.SortASC("id")
+		opts.SortDESC("name")
 
 		ctx := context.Background()
 		page := env.Client.Image.List(ctx, opts)

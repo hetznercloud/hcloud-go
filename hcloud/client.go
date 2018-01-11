@@ -142,12 +142,12 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 	}
 	resp.Body = ioutil.NopCloser(bytes.NewReader(body))
 
-	if err := response.readMeta(body); err != nil {
+	if err = response.readMeta(body); err != nil {
 		return response, fmt.Errorf("hcloud: error reading response meta data: %s", err)
 	}
 
 	if resp.StatusCode >= 400 && resp.StatusCode <= 599 {
-		err := errorFromResponse(resp, body)
+		err = errorFromResponse(resp, body)
 		if err == nil {
 			err = fmt.Errorf("hcloud: server responded with status code %d", resp.StatusCode)
 		}
@@ -286,6 +286,34 @@ func (o ListOpts) URLValues() url.Values {
 	}
 	if o.PerPage > 0 {
 		vals.Add("per_page", strconv.Itoa(o.PerPage))
+	}
+	return vals
+}
+
+// SortOpts specifies options for sorting resources.
+type SortOpts struct {
+	ASC  []string
+	DESC []string
+}
+
+// SortASC specifies fields that should be ordered ascending.
+func (o *SortOpts) SortASC(fields ...string) {
+	o.ASC = append(o.ASC, fields...)
+}
+
+// SortDESC specifies fields that should be ordered descending.
+func (o *SortOpts) SortDESC(fields ...string) {
+	o.DESC = append(o.DESC, fields...)
+}
+
+// URLValues returns the sort opts as url.Values.
+func (o SortOpts) URLValues() url.Values {
+	vals := url.Values{}
+	for _, field := range o.ASC {
+		vals.Add("sort", field+":asc")
+	}
+	for _, field := range o.DESC {
+		vals.Add("sort", field+":desc")
 	}
 	return vals
 }

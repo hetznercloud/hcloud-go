@@ -93,6 +93,7 @@ func (p *ActionPage) Content() []*Action {
 // ActionListOpts specifies options for listing actions.
 type ActionListOpts struct {
 	ListOpts
+	SortOpts
 	Status     []ActionStatus
 	Server     *Server
 	FloatingIP *FloatingIP
@@ -101,6 +102,7 @@ type ActionListOpts struct {
 // URLValues returns the list opts as url.Values.
 func (o ActionListOpts) URLValues() url.Values {
 	vals := o.ListOpts.URLValues()
+	vals["sort"] = o.SortOpts.URLValues()["sort"]
 	for _, s := range o.Status {
 		vals.Add("status", string(s))
 	}
