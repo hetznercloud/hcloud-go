@@ -124,7 +124,7 @@ func (c *ServerTypeClient) List(ctx context.Context, opts ServerTypeListOpts) *S
 
 // list returns a list of server types for a specific page.
 func (c *ServerTypeClient) list(ctx context.Context, opts ServerTypeListOpts) ([]*ServerType, *Response, error) {
-	path := "/server_types?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/server_types?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

@@ -113,7 +113,7 @@ func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) *SSHKeyPag
 
 // list returns a list of SSH keys for a specific page.
 func (c *SSHKeyClient) list(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey, *Response, error) {
-	path := "/ssh_keys?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/ssh_keys?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

@@ -117,6 +117,20 @@ func (p *ImagePage) Content() []*Image {
 // ImageListOpts specifies options for listing images.
 type ImageListOpts struct {
 	ListOpts
+	Types   []ImageType
+	BoundTo []*Server
+}
+
+// URLValues returns the list opts as url.Values.
+func (o ImageListOpts) URLValues() url.Values {
+	vals := o.ListOpts.URLValues()
+	for _, t := range o.Types {
+		vals.Add("type", string(t))
+	}
+	for _, bt := range o.BoundTo {
+		vals.Add("bound_to", strconv.Itoa(bt.ID))
+	}
+	return vals
 }
 
 // List returns an accessor to control the images API pagination.
@@ -145,7 +159,7 @@ func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) *ImagePage {
 
 // list returns a list of images for a specific page.
 func (c *ImageClient) list(ctx context.Context, opts ImageListOpts) ([]*Image, *Response, error) {
-	path := "/images?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/images?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

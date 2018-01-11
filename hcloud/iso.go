@@ -121,7 +121,7 @@ func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) *ISOPage {
 
 // list returns a list of ISOs for a specific page.
 func (c *ISOClient) list(ctx context.Context, opts ISOListOpts) ([]*ISO, *Response, error) {
-	path := "/isos?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/isos?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

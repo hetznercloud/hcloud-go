@@ -149,6 +149,16 @@ func TestImageClient(t *testing.T) {
 			if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
 				t.Errorf("expected per_page 50; got %q", perPage)
 			}
+			if types, ok := r.URL.Query()["type"]; !ok {
+				t.Errorf("expected type to be set; got %q", types)
+			} else if len(types) != 2 || types[0] != "snapshot" || types[1] != "system" {
+				t.Errorf("expected type to be ['snapshot','system']; got %q", types)
+			}
+			if boundTo, ok := r.URL.Query()["bound_to"]; !ok {
+				t.Errorf("expected bound_to to be set; got %q", boundTo)
+			} else if len(boundTo) != 2 || boundTo[0] != "1" || boundTo[1] != "2" {
+				t.Errorf("expected bound_to to be ['1','2']; got %q", boundTo)
+			}
 			json.NewEncoder(w).Encode(schema.ImageListResponse{
 				Images: []schema.Image{
 					{ID: 1},
@@ -157,7 +167,16 @@ func TestImageClient(t *testing.T) {
 			})
 		})
 
-		opts := ImageListOpts{}
+		opts := ImageListOpts{
+			Types: []ImageType{
+				ImageTypeSnapshot,
+				ImageTypeSystem,
+			},
+			BoundTo: []*Server{
+				{ID: 1},
+				{ID: 2},
+			},
+		}
 		opts.Page = 2
 		opts.PerPage = 50
 

@@ -113,7 +113,7 @@ func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) *Locat
 
 // list returns a list of locations for a specific page.
 func (c *LocationClient) list(ctx context.Context, opts LocationListOpts) ([]*Location, *Response, error) {
-	path := "/locations?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/locations?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

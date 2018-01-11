@@ -176,7 +176,7 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) *ServerPag
 
 // list returns a list of servers for a specific page.
 func (c *ServerClient) list(ctx context.Context, opts ServerListOpts) ([]*Server, *Response, error) {
-	path := "/servers?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/servers?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

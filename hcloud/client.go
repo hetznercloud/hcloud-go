@@ -278,13 +278,14 @@ type ListOpts struct {
 	PerPage int // Items per page (0 means default)
 }
 
-func valuesForListOpts(opts ListOpts) url.Values {
+// URLValues returns the list opts as url.Values.
+func (o ListOpts) URLValues() url.Values {
 	vals := url.Values{}
-	if opts.Page > 0 {
-		vals.Add("page", strconv.Itoa(opts.Page))
+	if o.Page > 0 {
+		vals.Add("page", strconv.Itoa(o.Page))
 	}
-	if opts.PerPage > 0 {
-		vals.Add("per_page", strconv.Itoa(opts.PerPage))
+	if o.PerPage > 0 {
+		vals.Add("per_page", strconv.Itoa(o.PerPage))
 	}
 	return vals
 }

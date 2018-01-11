@@ -3,6 +3,7 @@ package hcloud
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
@@ -92,6 +93,18 @@ func (p *ActionPage) Content() []*Action {
 // ActionListOpts specifies options for listing actions.
 type ActionListOpts struct {
 	ListOpts
+	Status     []ActionStatus
+	Server     *Server
+	FloatingIP *FloatingIP
+}
+
+// URLValues returns the list opts as url.Values.
+func (o ActionListOpts) URLValues() url.Values {
+	vals := o.ListOpts.URLValues()
+	for _, s := range o.Status {
+		vals.Add("status", string(s))
+	}
+	return vals
 }
 
 // List returns an accessor to control the actions API pagination.
@@ -120,7 +133,14 @@ func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) *ActionPag
 
 // list returns a list of actions for a specific page.
 func (c *ActionClient) list(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
-	path := "/actions?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/actions?"
+	if opts.Server != nil {
+		path = fmt.Sprintf("/servers/%d/actions?", opts.Server.ID)
+	}
+	if opts.FloatingIP != nil {
+		path = fmt.Sprintf("/floating_ips/%d/actions?", opts.FloatingIP.ID)
+	}
+	path = path + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

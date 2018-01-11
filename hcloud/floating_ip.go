@@ -103,7 +103,7 @@ func (c *FloatingIPClient) List(ctx context.Context, opts FloatingIPListOpts) *F
 
 // list returns a list of Floating IPs for a specific page.
 func (c *FloatingIPClient) list(ctx context.Context, opts FloatingIPListOpts) ([]*FloatingIP, *Response, error) {
-	path := "/floating_ips?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/floating_ips?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

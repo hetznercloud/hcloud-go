@@ -117,7 +117,7 @@ func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) *D
 
 // list returns a list of datacenters for a specific page.
 func (c *DatacenterClient) list(ctx context.Context, opts DatacenterListOpts) ([]*Datacenter, *Response, error) {
-	path := "/datacenters?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/datacenters?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
