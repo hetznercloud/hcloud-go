@@ -280,3 +280,78 @@ func TestSSHKeyClientCreate(t *testing.T) {
 		t.Errorf("unexpected SSH key ID: %v", sshKey.ID)
 	}
 }
+
+func TestSSHKeyClientUpdate(t *testing.T) {
+	var (
+		ctx    = context.Background()
+		sshKey = &SSHKey{ID: 1}
+	)
+
+	t.Run("update name", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/ssh_keys/1", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "PUT" {
+				t.Error("expected PUT")
+			}
+			var reqBody schema.SSHKeyUpdateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Name != "test" {
+				t.Errorf("unexpected name: %v", reqBody.Name)
+			}
+			json.NewEncoder(w).Encode(schema.SSHKeyUpdateResponse{
+				SSHKey: schema.SSHKey{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := SSHKeyUpdateOpts{
+			Name: "test",
+		}
+		updatedSSHKey, _, err := env.Client.SSHKey.Update(ctx, sshKey, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if updatedSSHKey.ID != 1 {
+			t.Errorf("unexpected SSH key ID: %v", updatedSSHKey.ID)
+		}
+	})
+
+	t.Run("no updates", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/ssh_keys/1", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "PUT" {
+				t.Error("expected PUT")
+			}
+			var reqBody schema.SSHKeyUpdateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Name != "" {
+				t.Errorf("unexpected no name, but got: %v", reqBody.Name)
+			}
+			json.NewEncoder(w).Encode(schema.SSHKeyUpdateResponse{
+				SSHKey: schema.SSHKey{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := SSHKeyUpdateOpts{}
+		updatedSSHKey, _, err := env.Client.SSHKey.Update(ctx, sshKey, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if updatedSSHKey.ID != 1 {
+			t.Errorf("unexpected SSH key ID: %v", updatedSSHKey.ID)
+		}
+	})
+}

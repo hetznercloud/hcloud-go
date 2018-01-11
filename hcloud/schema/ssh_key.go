@@ -32,3 +32,13 @@ type SSHKeyListResponse struct {
 type SSHKeyGetResponse struct {
 	SSHKey SSHKey `json:"ssh_key"`
 }
+
+// SSHKeyUpdateRequest defines the schema of the request to update a SSH key.
+type SSHKeyUpdateRequest struct {
+	Name string `json:"name,omitempty"`
+}
+
+// SSHKeyUpdateResponse defines the schema of the response when updating a SSH key.
+type SSHKeyUpdateResponse struct {
+	SSHKey SSHKey `json:"ssh_key"`
+}

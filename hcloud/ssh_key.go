@@ -171,3 +171,32 @@ func (c *SSHKeyClient) Delete(ctx context.Context, sshKey *SSHKey) (*Response, e
 	}
 	return c.client.Do(req, nil)
 }
+
+// SSHKeyUpdateOpts specifies options for updating a SSH key.
+type SSHKeyUpdateOpts struct {
+	Name string
+}
+
+// Update updates a SSH key.
+func (c *SSHKeyClient) Update(ctx context.Context, sshKey *SSHKey, opts SSHKeyUpdateOpts) (*SSHKey, *Response, error) {
+	reqBody := schema.SSHKeyUpdateRequest{
+		Name: opts.Name,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/ssh_keys/%d", sshKey.ID)
+	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.SSHKeyUpdateResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return SSHKeyFromSchema(respBody.SSHKey), resp, nil
+}
