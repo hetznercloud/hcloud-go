@@ -134,13 +134,48 @@ func (c *ServerClient) Get(ctx context.Context, idOrName string) (*Server, *Resp
 	return c.GetByName(ctx, idOrName)
 }
 
+// ServerPage serves as accessor of the servers API pagination.
+type ServerPage struct {
+	Page
+	content []*Server
+}
+
+// Content contains the content of the current page.
+func (p *ServerPage) Content() []*Server {
+	return p.content
+}
+
 // ServerListOpts specifies options for listing servers.
 type ServerListOpts struct {
 	ListOpts
 }
 
-// List returns a list of servers for a specific page.
-func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server, *Response, error) {
+// List returns an accessor to control the servers API pagination.
+func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) *ServerPage {
+	page := &ServerPage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allServers := []*Server{}
+		if opts.PerPage == 0 {
+			opts.PerPage = 50
+		}
+
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			servers, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allServers = append(allServers, servers...)
+			return resp, nil
+		}, start, end)
+		page.content = allServers
+		return
+	})
+	return page
+}
+
+// list returns a list of servers for a specific page.
+func (c *ServerClient) list(ctx context.Context, opts ServerListOpts) ([]*Server, *Response, error) {
 	path := "/servers?" + valuesForListOpts(opts.ListOpts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
@@ -161,25 +196,13 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server
 
 // All returns all servers.
 func (c *ServerClient) All(ctx context.Context) ([]*Server, error) {
-	allServers := []*Server{}
-
 	opts := ServerListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		servers, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allServers = append(allServers, servers...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allServers, nil
+	return page.Content(), nil
 }
 
 // ServerCreateOpts specifies options for creating a new server.

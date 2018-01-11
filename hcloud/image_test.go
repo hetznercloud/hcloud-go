@@ -162,11 +162,11 @@ func TestImageClient(t *testing.T) {
 		opts.PerPage = 50
 
 		ctx := context.Background()
-		images, _, err := env.Client.Image.List(ctx, opts)
-		if err != nil {
-			t.Fatal(err)
+		page := env.Client.Image.List(ctx, opts)
+		if page.GoTo(2) || page.Err() != nil {
+			t.Fatalf("unexpected error or resource not exhausted on page.GoTo(2): %v", page.Err())
 		}
-		if len(images) != 2 {
+		if len(page.Content()) != 2 {
 			t.Fatal("expected 2 images")
 		}
 	})

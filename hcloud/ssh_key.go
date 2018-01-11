@@ -71,13 +71,48 @@ func (c *SSHKeyClient) Get(ctx context.Context, idOrName string) (*SSHKey, *Resp
 	return c.GetByName(ctx, idOrName)
 }
 
+// SSHKeyPage serves as accessor of the SSH keys API pagination.
+type SSHKeyPage struct {
+	Page
+	content []*SSHKey
+}
+
+// Content contains the content of the current page.
+func (p *SSHKeyPage) Content() []*SSHKey {
+	return p.content
+}
+
 // SSHKeyListOpts specifies options for listing SSH keys.
 type SSHKeyListOpts struct {
 	ListOpts
 }
 
-// List returns a list of SSH keys for a specific page.
-func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey, *Response, error) {
+// List returns an accessor to control the SSH keys API pagination.
+func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) *SSHKeyPage {
+	page := &SSHKeyPage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allSSHKeys := []*SSHKey{}
+		if opts.PerPage == 0 {
+			opts.PerPage = 50
+		}
+
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			sshKeys, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allSSHKeys = append(allSSHKeys, sshKeys...)
+			return resp, nil
+		}, start, end)
+		page.content = allSSHKeys
+		return
+	})
+	return page
+}
+
+// list returns a list of SSH keys for a specific page.
+func (c *SSHKeyClient) list(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey, *Response, error) {
 	path := "/ssh_keys?" + valuesForListOpts(opts.ListOpts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
@@ -98,25 +133,13 @@ func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey
 
 // All returns all SSH keys.
 func (c *SSHKeyClient) All(ctx context.Context) ([]*SSHKey, error) {
-	allSSHKeys := []*SSHKey{}
-
 	opts := SSHKeyListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		sshKeys, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allSSHKeys = append(allSSHKeys, sshKeys...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allSSHKeys, nil
+	return page.Content(), nil
 }
 
 // SSHKeyCreateOpts specifies parameters for creating a SSH key.

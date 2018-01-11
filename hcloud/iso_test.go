@@ -158,15 +158,14 @@ func TestISOClient(t *testing.T) {
 		})
 
 		opts := ISOListOpts{}
-		opts.Page = 2
 		opts.PerPage = 50
 
 		ctx := context.Background()
-		isos, _, err := env.Client.ISO.List(ctx, opts)
-		if err != nil {
-			t.Fatal(err)
+		page := env.Client.ISO.List(ctx, opts)
+		if page.GoTo(2) || page.Err() != nil {
+			t.Fatalf("unexpected error or resource not exhausted on page.GoTo(2): %v", page.Err())
 		}
-		if len(isos) != 2 {
+		if len(page.Content()) != 2 {
 			t.Fatal("expected 2 isos")
 		}
 	})

@@ -169,13 +169,16 @@ func (c *Client) backoff(retries int) {
 	time.Sleep(c.backoffFunc(retries))
 }
 
-func (c *Client) all(f func(int) (*Response, error)) (*Response, error) {
+func (c *Client) all(f func(int) (*Response, error), start, end int) (resp *Response, exhausted bool, err error) {
 	var (
 		retries = 0
-		page    = 1
+		page    = start
 	)
+	if page == 0 {
+		page = 1
+	}
 	for {
-		resp, err := f(page)
+		resp, err = f(page)
 		if err != nil {
 			if err, ok := err.(Error); ok {
 				if err.Code == ErrorCodeLimitReached {
@@ -184,13 +187,17 @@ func (c *Client) all(f func(int) (*Response, error)) (*Response, error) {
 					continue
 				}
 			}
-			return nil, err
+			return
 		}
 		retries = 0
 		if resp.Meta.Pagination == nil || resp.Meta.Pagination.NextPage == 0 {
-			return resp, nil
+			exhausted = true
+			return
 		}
 		page = resp.Meta.Pagination.NextPage
+		if end != 0 && page >= end {
+			return
+		}
 	}
 }
 

@@ -78,13 +78,48 @@ func (c *ActionClient) GetByID(ctx context.Context, id int) (*Action, *Response,
 	return ActionFromSchema(body.Action), resp, nil
 }
 
+// ActionPage serves as accessor of the actions API pagination.
+type ActionPage struct {
+	Page
+	content []*Action
+}
+
+// Content contains the content of the current page.
+func (p *ActionPage) Content() []*Action {
+	return p.content
+}
+
 // ActionListOpts specifies options for listing actions.
 type ActionListOpts struct {
 	ListOpts
 }
 
-// List returns a list of actions for a specific page.
-func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
+// List returns an accessor to control the actions API pagination.
+func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) *ActionPage {
+	page := &ActionPage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allActions := []*Action{}
+		if opts.PerPage == 0 {
+			opts.PerPage = 50
+		}
+
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			actions, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allActions = append(allActions, actions...)
+			return resp, nil
+		}, start, end)
+		page.content = allActions
+		return
+	})
+	return page
+}
+
+// list returns a list of actions for a specific page.
+func (c *ActionClient) list(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
 	path := "/actions?" + valuesForListOpts(opts.ListOpts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
@@ -105,23 +140,11 @@ func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action
 
 // All returns all actions.
 func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
-	allActions := []*Action{}
-
 	opts := ActionListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		actions, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allActions = append(allActions, actions...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allActions, nil
+	return page.Content(), nil
 }

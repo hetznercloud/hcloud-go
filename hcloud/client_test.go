@@ -224,7 +224,7 @@ func TestClientAll(t *testing.T) {
 		}
 		expectedPage++
 		return resp, err
-	})
+	}, 0, 0)
 
 	if expectedPage != 4 {
 		t.Errorf("expected to have walked through 3 pages, but walked through %d pages", expectedPage-1)

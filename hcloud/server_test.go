@@ -142,12 +142,14 @@ func TestServersList(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
+	serverCalls := 0
 	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
-		if page := r.URL.Query().Get("page"); page != "2" {
+		serverCalls++
+		if page := r.URL.Query().Get("page"); serverCalls == 1 && page != "2" {
 			t.Errorf("expected page 2; got %q", page)
 		}
-		if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
-			t.Errorf("expected per_page 50; got %q", perPage)
+		if perPage := r.URL.Query().Get("per_page"); perPage != "10" {
+			t.Errorf("expected per_page 10; got %q", perPage)
 		}
 		json.NewEncoder(w).Encode(schema.ServerListResponse{
 			Servers: []schema.Server{
@@ -158,16 +160,24 @@ func TestServersList(t *testing.T) {
 	})
 
 	opts := ServerListOpts{}
-	opts.Page = 2
-	opts.PerPage = 50
+	opts.PerPage = 10
 
 	ctx := context.Background()
-	servers, _, err := env.Client.Server.List(ctx, opts)
-	if err != nil {
-		t.Fatal(err)
+	page := env.Client.Server.List(ctx, opts)
+	if page.GoTo(2) || page.Err() != nil {
+		t.Fatalf("unexpected error or resource not exhausted on page.GoTo(2): %v", page.Err())
 	}
-	if len(servers) != 2 {
-		t.Fatal("expected 2 servers")
+	if len(page.Content()) != 2 {
+		t.Error("expected 2 servers")
+	}
+	if page.Current() != 2 {
+		t.Errorf("expected page.Current() to be 2: %v", page.Current())
+	}
+	if page.Response() == nil {
+		t.Errorf("expected page.Response() to not be nil")
+	}
+	if page.Next() || page.Err() != nil {
+		t.Fatalf("unexpected error or resource not exhausted on page.Next(): %v", page.Err())
 	}
 }
 

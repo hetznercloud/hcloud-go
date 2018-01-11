@@ -61,13 +61,48 @@ func (c *FloatingIPClient) GetByID(ctx context.Context, id int) (*FloatingIP, *R
 	return FloatingIPFromSchema(body.FloatingIP), resp, nil
 }
 
+// FloatingIPPage serves as accessor of the Floating IPs API pagination.
+type FloatingIPPage struct {
+	Page
+	content []*FloatingIP
+}
+
+// Content contains the content of the current page.
+func (p *FloatingIPPage) Content() []*FloatingIP {
+	return p.content
+}
+
 // FloatingIPListOpts specifies options for listing Floating IPs.
 type FloatingIPListOpts struct {
 	ListOpts
 }
 
-// List returns a list of Floating IPs for a specific page.
-func (c *FloatingIPClient) List(ctx context.Context, opts FloatingIPListOpts) ([]*FloatingIP, *Response, error) {
+// List returns an accessor to control the Floating IPs API pagination.
+func (c *FloatingIPClient) List(ctx context.Context, opts FloatingIPListOpts) *FloatingIPPage {
+	page := &FloatingIPPage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allFloatingIPs := []*FloatingIP{}
+		if opts.PerPage == 0 {
+			opts.PerPage = 50
+		}
+
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			floatinIPs, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allFloatingIPs = append(allFloatingIPs, floatinIPs...)
+			return resp, nil
+		}, start, end)
+		page.content = allFloatingIPs
+		return
+	})
+	return page
+}
+
+// list returns a list of Floating IPs for a specific page.
+func (c *FloatingIPClient) list(ctx context.Context, opts FloatingIPListOpts) ([]*FloatingIP, *Response, error) {
 	path := "/floating_ips?" + valuesForListOpts(opts.ListOpts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
@@ -88,25 +123,13 @@ func (c *FloatingIPClient) List(ctx context.Context, opts FloatingIPListOpts) ([
 
 // All returns all Floating IPs.
 func (c *FloatingIPClient) All(ctx context.Context) ([]*FloatingIP, error) {
-	allFloatingIPs := []*FloatingIP{}
-
 	opts := FloatingIPListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		floatingIPs, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allFloatingIPs = append(allFloatingIPs, floatingIPs...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allFloatingIPs, nil
+	return page.Content(), nil
 }
 
 // FloatingIPCreateOpts specifies options for creating a Floating IP.
