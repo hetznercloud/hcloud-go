@@ -172,14 +172,14 @@ func TestSSHKeyClientList(t *testing.T) {
 	})
 
 	opts := SSHKeyListOpts{}
-	opts.Page = 2
 	opts.PerPage = 50
 
 	ctx := context.Background()
-	sshKeys, _, err := env.Client.SSHKey.List(ctx, opts)
-	if err != nil {
-		t.Fatalf("SSHKey.List failed: %s", err)
+	page := env.Client.SSHKey.List(ctx, opts)
+	if page.GoTo(2) || page.Err() != nil {
+		t.Fatalf("unexpected error or resource not exhausted on page.GoTo(2): %v", page.Err())
 	}
+	sshKeys := page.Content()
 	if len(sshKeys) != 2 {
 		t.Fatal("unexpected number of SSH keys")
 	}

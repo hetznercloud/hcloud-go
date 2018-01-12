@@ -71,14 +71,55 @@ func (c *LocationClient) Get(ctx context.Context, idOrName string) (*Location, *
 	return c.GetByName(ctx, idOrName)
 }
 
+// LocationPage serves as accessor of the locations API pagination.
+type LocationPage struct {
+	page
+	content []*Location
+}
+
+// Content contains the content of the current page.
+func (p *LocationPage) Content() []*Location {
+	return p.content
+}
+
+// All returns the locations of all pages.
+func (p *LocationPage) All() ([]*Location, error) {
+	p.all()
+	return p.content, p.err
+}
+
 // LocationListOpts specifies options for listing location.
 type LocationListOpts struct {
 	ListOpts
 }
 
-// List returns a list of locations for a specific page.
-func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) ([]*Location, *Response, error) {
-	path := "/locations?" + valuesForListOpts(opts.ListOpts).Encode()
+// List returns an accessor to control the locations API pagination.
+func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) *LocationPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
+	page := &LocationPage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allLocations := []*Location{}
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			locations, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allLocations = append(allLocations, locations...)
+			return resp, nil
+		}, start, end)
+		page.content = allLocations
+		return
+	})
+	return page
+}
+
+// list returns a list of locations for a specific page.
+func (c *LocationClient) list(ctx context.Context, opts LocationListOpts) ([]*Location, *Response, error) {
+	path := "/locations?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
@@ -98,23 +139,11 @@ func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) ([]*Lo
 
 // All returns all locations.
 func (c *LocationClient) All(ctx context.Context) ([]*Location, error) {
-	allLocations := []*Location{}
-
 	opts := LocationListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		locations, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allLocations = append(allLocations, locations...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allLocations, nil
+	return page.Content(), nil
 }

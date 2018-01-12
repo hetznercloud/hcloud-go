@@ -83,14 +83,55 @@ func (c *ServerTypeClient) Get(ctx context.Context, idOrName string) (*ServerTyp
 	return c.GetByName(ctx, idOrName)
 }
 
+// ServerTypePage serves as accessor of the servers API pagination.
+type ServerTypePage struct {
+	page
+	content []*ServerType
+}
+
+// Content contains the content of the current page.
+func (p *ServerTypePage) Content() []*ServerType {
+	return p.content
+}
+
+// All returns the server types of all pages.
+func (p *ServerTypePage) All() ([]*ServerType, error) {
+	p.all()
+	return p.content, p.err
+}
+
 // ServerTypeListOpts specifies options for listing server types.
 type ServerTypeListOpts struct {
 	ListOpts
 }
 
-// List returns a list of server types for a specific page.
-func (c *ServerTypeClient) List(ctx context.Context, opts ServerTypeListOpts) ([]*ServerType, *Response, error) {
-	path := "/server_types?" + valuesForListOpts(opts.ListOpts).Encode()
+// List returns an accessor to control the server types API pagination.
+func (c *ServerTypeClient) List(ctx context.Context, opts ServerTypeListOpts) *ServerTypePage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
+	page := &ServerTypePage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allServerTypes := []*ServerType{}
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			serverTypes, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allServerTypes = append(allServerTypes, serverTypes...)
+			return resp, nil
+		}, start, end)
+		page.content = allServerTypes
+		return
+	})
+	return page
+}
+
+// list returns a list of server types for a specific page.
+func (c *ServerTypeClient) list(ctx context.Context, opts ServerTypeListOpts) ([]*ServerType, *Response, error) {
+	path := "/server_types?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
@@ -110,23 +151,11 @@ func (c *ServerTypeClient) List(ctx context.Context, opts ServerTypeListOpts) ([
 
 // All returns all server types.
 func (c *ServerTypeClient) All(ctx context.Context) ([]*ServerType, error) {
-	allServerTypes := []*ServerType{}
-
 	opts := ServerTypeListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		serverTypes, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allServerTypes = append(allServerTypes, serverTypes...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allServerTypes, nil
+	return page.Content(), nil
 }

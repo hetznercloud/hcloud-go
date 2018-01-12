@@ -144,12 +144,12 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 	}
 	resp.Body = ioutil.NopCloser(bytes.NewReader(body))
 
-	if err := response.readMeta(body); err != nil {
+	if err = response.readMeta(body); err != nil {
 		return response, fmt.Errorf("hcloud: error reading response meta data: %s", err)
 	}
 
 	if resp.StatusCode >= 400 && resp.StatusCode <= 599 {
-		err := errorFromResponse(resp, body)
+		err = errorFromResponse(resp, body)
 		if err == nil {
 			err = fmt.Errorf("hcloud: server responded with status code %d", resp.StatusCode)
 		}
@@ -171,13 +171,13 @@ func (c *Client) backoff(retries int) {
 	time.Sleep(c.backoffFunc(retries))
 }
 
-func (c *Client) all(f func(int) (*Response, error)) (*Response, error) {
+func (c *Client) all(f func(int) (*Response, error), start, end int) (resp *Response, exhausted bool, err error) {
 	var (
 		retries = 0
-		page    = 1
+		page    = start
 	)
 	for {
-		resp, err := f(page)
+		resp, err = f(page)
 		if err != nil {
 			if err, ok := err.(Error); ok {
 				if err.Code == ErrorCodeLimitReached {
@@ -186,13 +186,17 @@ func (c *Client) all(f func(int) (*Response, error)) (*Response, error) {
 					continue
 				}
 			}
-			return nil, err
+			return
 		}
 		retries = 0
 		if resp.Meta.Pagination == nil || resp.Meta.Pagination.NextPage == 0 {
-			return resp, nil
+			exhausted = true
+			return
 		}
 		page = resp.Meta.Pagination.NextPage
+		if end != 0 && page >= end {
+			return
+		}
 	}
 }
 
@@ -273,13 +277,41 @@ type ListOpts struct {
 	PerPage int // Items per page (0 means default)
 }
 
-func valuesForListOpts(opts ListOpts) url.Values {
+// URLValues returns the list opts as url.Values.
+func (o ListOpts) URLValues() url.Values {
 	vals := url.Values{}
-	if opts.Page > 0 {
-		vals.Add("page", strconv.Itoa(opts.Page))
+	if o.Page > 0 {
+		vals.Add("page", strconv.Itoa(o.Page))
 	}
-	if opts.PerPage > 0 {
-		vals.Add("per_page", strconv.Itoa(opts.PerPage))
+	if o.PerPage > 0 {
+		vals.Add("per_page", strconv.Itoa(o.PerPage))
+	}
+	return vals
+}
+
+// SortDirection specifies the sort direction of fields.
+type SortDirection string
+
+// SortDirection values
+const (
+	Asc  = "asc"
+	Desc = "desc"
+)
+
+// SortOpts specifies options for sorting resources.
+type SortOpts []string
+
+// Sort specifies the sort direction of fields.
+func (o *SortOpts) Sort(field string, direction SortDirection) *SortOpts {
+	*o = append(*o, fmt.Sprintf("%s:%s", field, direction))
+	return o
+}
+
+// URLValues returns the sort opts as url.Values.
+func (o SortOpts) URLValues() url.Values {
+	vals := url.Values{}
+	for _, sort := range o {
+		vals.Add("sort", sort)
 	}
 	return vals
 }

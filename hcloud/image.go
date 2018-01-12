@@ -103,14 +103,71 @@ func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Respon
 	return c.GetByName(ctx, idOrName)
 }
 
+// ImagePage serves as accessor of the images API pagination.
+type ImagePage struct {
+	page
+	content []*Image
+}
+
+// Content contains the content of the current page.
+func (p *ImagePage) Content() []*Image {
+	return p.content
+}
+
+// All returns the images of all pages.
+func (p *ImagePage) All() ([]*Image, error) {
+	p.all()
+	return p.content, p.err
+}
+
 // ImageListOpts specifies options for listing images.
 type ImageListOpts struct {
 	ListOpts
+	SortOpts
+	Types   []ImageType
+	BoundTo []*Server
 }
 
-// List returns a list of images for a specific page.
-func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) ([]*Image, *Response, error) {
-	path := "/images?" + valuesForListOpts(opts.ListOpts).Encode()
+// URLValues returns the list opts as url.Values.
+func (o ImageListOpts) URLValues() url.Values {
+	vals := o.ListOpts.URLValues()
+	vals["sort"] = o.SortOpts.URLValues()["sort"]
+	for _, t := range o.Types {
+		vals.Add("type", string(t))
+	}
+	for _, bt := range o.BoundTo {
+		vals.Add("bound_to", strconv.Itoa(bt.ID))
+	}
+	return vals
+}
+
+// List returns an accessor to control the images API pagination.
+func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) *ImagePage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
+	page := &ImagePage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allImages := []*Image{}
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			images, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allImages = append(allImages, images...)
+			return resp, nil
+		}, start, end)
+		page.content = allImages
+		return
+	})
+	return page
+}
+
+// list returns a list of images for a specific page.
+func (c *ImageClient) list(ctx context.Context, opts ImageListOpts) ([]*Image, *Response, error) {
+	path := "/images?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
@@ -130,25 +187,13 @@ func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) ([]*Image, *
 
 // All returns all images.
 func (c *ImageClient) All(ctx context.Context) ([]*Image, error) {
-	allImages := []*Image{}
-
 	opts := ImageListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		images, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allImages = append(allImages, images...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allImages, nil
+	return page.Content(), nil
 }
 
 // Delete deletes an image.

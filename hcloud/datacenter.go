@@ -75,14 +75,55 @@ func (c *DatacenterClient) Get(ctx context.Context, idOrName string) (*Datacente
 	return c.GetByName(ctx, idOrName)
 }
 
+// DatacenterPage serves as accessor of the datacenters API pagination.
+type DatacenterPage struct {
+	page
+	content []*Datacenter
+}
+
+// Content contains the content of the current page.
+func (p *DatacenterPage) Content() []*Datacenter {
+	return p.content
+}
+
+// All returns the datacenters of all pages.
+func (p *DatacenterPage) All() ([]*Datacenter, error) {
+	p.all()
+	return p.content, p.err
+}
+
 // DatacenterListOpts specifies options for listing datacenters.
 type DatacenterListOpts struct {
 	ListOpts
 }
 
-// List returns a list of datacenters for a specific page.
-func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) ([]*Datacenter, *Response, error) {
-	path := "/datacenters?" + valuesForListOpts(opts.ListOpts).Encode()
+// List returns an accessor to control the datacenters API pagination.
+func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) *DatacenterPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
+	page := &DatacenterPage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allDatacenters := []*Datacenter{}
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			datacenters, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allDatacenters = append(allDatacenters, datacenters...)
+			return resp, nil
+		}, start, end)
+		page.content = allDatacenters
+		return
+	})
+	return page
+}
+
+// list returns a list of datacenters for a specific page.
+func (c *DatacenterClient) list(ctx context.Context, opts DatacenterListOpts) ([]*Datacenter, *Response, error) {
+	path := "/datacenters?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
@@ -102,23 +143,11 @@ func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) ([
 
 // All returns all datacenters.
 func (c *DatacenterClient) All(ctx context.Context) ([]*Datacenter, error) {
-	allDatacenters := []*Datacenter{}
-
 	opts := DatacenterListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		datacenters, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allDatacenters = append(allDatacenters, datacenters...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allDatacenters, nil
+	return page.Content(), nil
 }

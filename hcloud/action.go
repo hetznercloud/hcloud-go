@@ -3,6 +3,7 @@ package hcloud
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
@@ -78,14 +79,68 @@ func (c *ActionClient) GetByID(ctx context.Context, id int) (*Action, *Response,
 	return ActionFromSchema(body.Action), resp, nil
 }
 
+// ActionPage serves as accessor of the actions API pagination.
+type ActionPage struct {
+	page
+	content []*Action
+}
+
+// Content contains the content of the current page.
+func (p *ActionPage) Content() []*Action {
+	return p.content
+}
+
+// All returns the actions of all pages.
+func (p *ActionPage) All() ([]*Action, error) {
+	p.all()
+	return p.content, p.err
+}
+
 // ActionListOpts specifies options for listing actions.
 type ActionListOpts struct {
 	ListOpts
+	SortOpts
+	Status []ActionStatus
 }
 
-// List returns a list of actions for a specific page.
-func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
-	path := "/actions?" + valuesForListOpts(opts.ListOpts).Encode()
+// URLValues returns the list opts as url.Values.
+func (o ActionListOpts) URLValues() url.Values {
+	vals := o.ListOpts.URLValues()
+	vals["sort"] = o.SortOpts.URLValues()["sort"]
+	for _, s := range o.Status {
+		vals.Add("status", string(s))
+	}
+	return vals
+}
+
+// List returns an accessor to control the actions API pagination.
+func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) *ActionPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
+	page := &ActionPage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allActions := []*Action{}
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			actions, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allActions = append(allActions, actions...)
+			return resp, nil
+		}, start, end)
+		page.content = allActions
+		return
+	})
+	return page
+}
+
+// list returns a list of actions for a specific page.
+func (c *ActionClient) list(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
+	path := "/actions?"
+	path = path + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
@@ -105,23 +160,11 @@ func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action
 
 // All returns all actions.
 func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
-	allActions := []*Action{}
-
 	opts := ActionListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		actions, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allActions = append(allActions, actions...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allActions, nil
+	return page.Content(), nil
 }

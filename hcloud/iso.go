@@ -79,14 +79,55 @@ func (c *ISOClient) Get(ctx context.Context, idOrName string) (*ISO, *Response, 
 	return c.GetByName(ctx, idOrName)
 }
 
+// ISOPage serves as accessor of the ISOs API pagination.
+type ISOPage struct {
+	page
+	content []*ISO
+}
+
+// Content contains the content of the current page.
+func (p *ISOPage) Content() []*ISO {
+	return p.content
+}
+
+// All returns the ISOs of all pages.
+func (p *ISOPage) All() ([]*ISO, error) {
+	p.all()
+	return p.content, p.err
+}
+
 // ISOListOpts specifies options for listing isos.
 type ISOListOpts struct {
 	ListOpts
 }
 
-// List returns a list of ISOs for a specific page.
-func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) ([]*ISO, *Response, error) {
-	path := "/isos?" + valuesForListOpts(opts.ListOpts).Encode()
+// List returns an accessor to control the ISOs API pagination.
+func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) *ISOPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
+	page := &ISOPage{}
+	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
+		allISOs := []*ISO{}
+		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
+			opts.Page = page
+			isos, resp, err := c.list(ctx, opts)
+			if err != nil {
+				return resp, err
+			}
+			allISOs = append(allISOs, isos...)
+			return resp, nil
+		}, start, end)
+		page.content = allISOs
+		return
+	})
+	return page
+}
+
+// list returns a list of ISOs for a specific page.
+func (c *ISOClient) list(ctx context.Context, opts ISOListOpts) ([]*ISO, *Response, error) {
+	path := "/isos?" + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
@@ -106,23 +147,11 @@ func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) ([]*ISO, *Respon
 
 // All returns all ISOs.
 func (c *ISOClient) All(ctx context.Context) ([]*ISO, error) {
-	allISOs := []*ISO{}
-
 	opts := ISOListOpts{}
 	opts.PerPage = 50
-
-	_, err := c.client.all(func(page int) (*Response, error) {
-		opts.Page = page
-		isos, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allISOs = append(allISOs, isos...)
-		return resp, nil
-	})
-	if err != nil {
-		return nil, err
+	page := c.List(ctx, opts)
+	if page.All(); page.Err() != nil {
+		return nil, page.Err()
 	}
-
-	return allISOs, nil
+	return page.Content(), nil
 }
