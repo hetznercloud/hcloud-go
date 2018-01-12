@@ -83,10 +83,10 @@ func TestActionClientList(t *testing.T) {
 			t.Errorf("expected sort to be set; got %q", sort)
 		} else if len(sort) != 4 ||
 			sort[0] != "status:asc" ||
-			sort[1] != "started:asc" ||
-			sort[2] != "id:desc" ||
+			sort[1] != "id:desc" ||
+			sort[2] != "started:asc" ||
 			sort[3] != "progress:desc" {
-			t.Errorf("expected sort to be ['status:asc', 'started:asc', 'id:desc', 'progress:desc']; got %q", sort)
+			t.Errorf("expected sort to be ['status:asc', 'id:desc', 'started:asc', 'progress:desc']; got %q", sort)
 		}
 		json.NewEncoder(w).Encode(schema.ActionListResponse{
 			Actions: []schema.Action{
@@ -104,75 +104,12 @@ func TestActionClientList(t *testing.T) {
 	}
 	opts.Page = 2
 	opts.PerPage = 50
-	opts.SortASC("status", "started")
-	opts.SortDESC("id", "progress")
+	opts.
+		Sort("status", Asc).
+		Sort("id", Desc).
+		Sort("started", Asc).
+		Sort("progress", Desc)
 
-	ctx := context.Background()
-	page := env.Client.Action.List(ctx, opts)
-	if page.GoTo(2) || page.Err() != nil {
-		t.Fatalf("unexpected error or resource not exhausted on page.GoTo(2): %v", page.Err())
-	}
-	if len(page.Content()) != 2 {
-		t.Fatal("expected 2 actions")
-	}
-}
-
-func TestActionClientListServerFilter(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/servers/1/actions", func(w http.ResponseWriter, r *http.Request) {
-		if page := r.URL.Query().Get("page"); page != "2" {
-			t.Errorf("expected page 2; got %q", page)
-		}
-		if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
-			t.Errorf("expected per_page 50; got %q", perPage)
-		}
-		json.NewEncoder(w).Encode(schema.ActionListResponse{
-			Actions: []schema.Action{
-				{ID: 1},
-				{ID: 2},
-			},
-		})
-	})
-
-	opts := ActionListOpts{
-		Server: &Server{ID: 1},
-	}
-	opts.PerPage = 50
-	ctx := context.Background()
-	page := env.Client.Action.List(ctx, opts)
-	if page.GoTo(2) || page.Err() != nil {
-		t.Fatalf("unexpected error or resource not exhausted on page.GoTo(2): %v", page.Err())
-	}
-	if len(page.Content()) != 2 {
-		t.Fatal("expected 2 actions")
-	}
-}
-
-func TestActionClientListFloatingIPFilter(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/floating_ips/1/actions", func(w http.ResponseWriter, r *http.Request) {
-		if page := r.URL.Query().Get("page"); page != "2" {
-			t.Errorf("expected page 2; got %q", page)
-		}
-		if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
-			t.Errorf("expected per_page 50; got %q", perPage)
-		}
-		json.NewEncoder(w).Encode(schema.ActionListResponse{
-			Actions: []schema.Action{
-				{ID: 1},
-				{ID: 2},
-			},
-		})
-	})
-
-	opts := ActionListOpts{
-		FloatingIP: &FloatingIP{ID: 1},
-	}
-	opts.PerPage = 50
 	ctx := context.Background()
 	page := env.Client.Action.List(ctx, opts)
 	if page.GoTo(2) || page.Err() != nil {

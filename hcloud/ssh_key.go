@@ -73,13 +73,19 @@ func (c *SSHKeyClient) Get(ctx context.Context, idOrName string) (*SSHKey, *Resp
 
 // SSHKeyPage serves as accessor of the SSH keys API pagination.
 type SSHKeyPage struct {
-	Page
+	page
 	content []*SSHKey
 }
 
 // Content contains the content of the current page.
 func (p *SSHKeyPage) Content() []*SSHKey {
 	return p.content
+}
+
+// All returns the SSH keys of all pages.
+func (p *SSHKeyPage) All() ([]*SSHKey, error) {
+	p.all()
+	return p.content, p.err
 }
 
 // SSHKeyListOpts specifies options for listing SSH keys.
@@ -89,13 +95,13 @@ type SSHKeyListOpts struct {
 
 // List returns an accessor to control the SSH keys API pagination.
 func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) *SSHKeyPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
 	page := &SSHKeyPage{}
 	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
 		allSSHKeys := []*SSHKey{}
-		if opts.PerPage == 0 {
-			opts.PerPage = 50
-		}
-
 		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
 			opts.Page = page
 			sshKeys, resp, err := c.list(ctx, opts)

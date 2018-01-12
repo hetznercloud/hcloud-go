@@ -186,8 +186,9 @@ func TestImageClient(t *testing.T) {
 		}
 		opts.Page = 2
 		opts.PerPage = 50
-		opts.SortASC("id")
-		opts.SortDESC("name")
+		opts.
+			Sort("id", Asc).
+			Sort("name", Desc)
 
 		ctx := context.Background()
 		page := env.Client.Image.List(ctx, opts)

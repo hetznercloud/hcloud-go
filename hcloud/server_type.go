@@ -84,13 +84,19 @@ func (c *ServerTypeClient) Get(ctx context.Context, idOrName string) (*ServerTyp
 
 // ServerTypePage serves as accessor of the servers API pagination.
 type ServerTypePage struct {
-	Page
+	page
 	content []*ServerType
 }
 
 // Content contains the content of the current page.
 func (p *ServerTypePage) Content() []*ServerType {
 	return p.content
+}
+
+// All returns the server types of all pages.
+func (p *ServerTypePage) All() ([]*ServerType, error) {
+	p.all()
+	return p.content, p.err
 }
 
 // ServerTypeListOpts specifies options for listing server types.
@@ -100,13 +106,13 @@ type ServerTypeListOpts struct {
 
 // List returns an accessor to control the server types API pagination.
 func (c *ServerTypeClient) List(ctx context.Context, opts ServerTypeListOpts) *ServerTypePage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
 	page := &ServerTypePage{}
 	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
 		allServerTypes := []*ServerType{}
-		if opts.PerPage == 0 {
-			opts.PerPage = 50
-		}
-
 		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
 			opts.Page = page
 			serverTypes, resp, err := c.list(ctx, opts)

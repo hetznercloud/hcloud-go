@@ -174,9 +174,6 @@ func (c *Client) all(f func(int) (*Response, error), start, end int) (resp *Resp
 		retries = 0
 		page    = start
 	)
-	if page == 0 {
-		page = 1
-	}
 	for {
 		resp, err = f(page)
 		if err != nil {
@@ -290,30 +287,29 @@ func (o ListOpts) URLValues() url.Values {
 	return vals
 }
 
+// SortDirection specifies the sort direction of fields.
+type SortDirection string
+
+// SortDirection values
+const (
+	Asc  = "asc"
+	Desc = "desc"
+)
+
 // SortOpts specifies options for sorting resources.
-type SortOpts struct {
-	ASC  []string
-	DESC []string
-}
+type SortOpts []string
 
-// SortASC specifies fields that should be ordered ascending.
-func (o *SortOpts) SortASC(fields ...string) {
-	o.ASC = append(o.ASC, fields...)
-}
-
-// SortDESC specifies fields that should be ordered descending.
-func (o *SortOpts) SortDESC(fields ...string) {
-	o.DESC = append(o.DESC, fields...)
+// Sort specifies the sort direction of fields.
+func (o *SortOpts) Sort(field string, direction SortDirection) *SortOpts {
+	*o = append(*o, fmt.Sprintf("%s:%s", field, direction))
+	return o
 }
 
 // URLValues returns the sort opts as url.Values.
 func (o SortOpts) URLValues() url.Values {
 	vals := url.Values{}
-	for _, field := range o.ASC {
-		vals.Add("sort", field+":asc")
-	}
-	for _, field := range o.DESC {
-		vals.Add("sort", field+":desc")
+	for _, sort := range o {
+		vals.Add("sort", sort)
 	}
 	return vals
 }

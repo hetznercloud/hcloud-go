@@ -81,13 +81,19 @@ func (c *ISOClient) Get(ctx context.Context, idOrName string) (*ISO, *Response, 
 
 // ISOPage serves as accessor of the ISOs API pagination.
 type ISOPage struct {
-	Page
+	page
 	content []*ISO
 }
 
 // Content contains the content of the current page.
 func (p *ISOPage) Content() []*ISO {
 	return p.content
+}
+
+// All returns the ISOs of all pages.
+func (p *ISOPage) All() ([]*ISO, error) {
+	p.all()
+	return p.content, p.err
 }
 
 // ISOListOpts specifies options for listing isos.
@@ -97,13 +103,13 @@ type ISOListOpts struct {
 
 // List returns an accessor to control the ISOs API pagination.
 func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) *ISOPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
 	page := &ISOPage{}
 	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
 		allISOs := []*ISO{}
-		if opts.PerPage == 0 {
-			opts.PerPage = 50
-		}
-
 		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
 			opts.Page = page
 			isos, resp, err := c.list(ctx, opts)

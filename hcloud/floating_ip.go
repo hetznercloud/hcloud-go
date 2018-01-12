@@ -63,13 +63,19 @@ func (c *FloatingIPClient) GetByID(ctx context.Context, id int) (*FloatingIP, *R
 
 // FloatingIPPage serves as accessor of the Floating IPs API pagination.
 type FloatingIPPage struct {
-	Page
+	page
 	content []*FloatingIP
 }
 
 // Content contains the content of the current page.
 func (p *FloatingIPPage) Content() []*FloatingIP {
 	return p.content
+}
+
+// All returns the floating IPs of all pages.
+func (p *FloatingIPPage) All() ([]*FloatingIP, error) {
+	p.all()
+	return p.content, p.err
 }
 
 // FloatingIPListOpts specifies options for listing Floating IPs.
@@ -79,20 +85,20 @@ type FloatingIPListOpts struct {
 
 // List returns an accessor to control the Floating IPs API pagination.
 func (c *FloatingIPClient) List(ctx context.Context, opts FloatingIPListOpts) *FloatingIPPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
 	page := &FloatingIPPage{}
 	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
 		allFloatingIPs := []*FloatingIP{}
-		if opts.PerPage == 0 {
-			opts.PerPage = 50
-		}
-
 		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
 			opts.Page = page
-			floatinIPs, resp, err := c.list(ctx, opts)
+			floatingIPs, resp, err := c.list(ctx, opts)
 			if err != nil {
 				return resp, err
 			}
-			allFloatingIPs = append(allFloatingIPs, floatinIPs...)
+			allFloatingIPs = append(allFloatingIPs, floatingIPs...)
 			return resp, nil
 		}, start, end)
 		page.content = allFloatingIPs

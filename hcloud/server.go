@@ -136,13 +136,19 @@ func (c *ServerClient) Get(ctx context.Context, idOrName string) (*Server, *Resp
 
 // ServerPage serves as accessor of the servers API pagination.
 type ServerPage struct {
-	Page
+	page
 	content []*Server
 }
 
 // Content contains the content of the current page.
 func (p *ServerPage) Content() []*Server {
 	return p.content
+}
+
+// All returns the servers of all pages.
+func (p *ServerPage) All() ([]*Server, error) {
+	p.all()
+	return p.content, p.err
 }
 
 // ServerListOpts specifies options for listing servers.
@@ -152,13 +158,13 @@ type ServerListOpts struct {
 
 // List returns an accessor to control the servers API pagination.
 func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) *ServerPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
 	page := &ServerPage{}
 	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
 		allServers := []*Server{}
-		if opts.PerPage == 0 {
-			opts.PerPage = 50
-		}
-
 		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
 			opts.Page = page
 			servers, resp, err := c.list(ctx, opts)

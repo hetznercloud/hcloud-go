@@ -73,13 +73,19 @@ func (c *LocationClient) Get(ctx context.Context, idOrName string) (*Location, *
 
 // LocationPage serves as accessor of the locations API pagination.
 type LocationPage struct {
-	Page
+	page
 	content []*Location
 }
 
 // Content contains the content of the current page.
 func (p *LocationPage) Content() []*Location {
 	return p.content
+}
+
+// All returns the locations of all pages.
+func (p *LocationPage) All() ([]*Location, error) {
+	p.all()
+	return p.content, p.err
 }
 
 // LocationListOpts specifies options for listing location.
@@ -89,13 +95,13 @@ type LocationListOpts struct {
 
 // List returns an accessor to control the locations API pagination.
 func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) *LocationPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
 	page := &LocationPage{}
 	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
 		allLocations := []*Location{}
-		if opts.PerPage == 0 {
-			opts.PerPage = 50
-		}
-
 		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
 			opts.Page = page
 			locations, resp, err := c.list(ctx, opts)

@@ -105,13 +105,19 @@ func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Respon
 
 // ImagePage serves as accessor of the images API pagination.
 type ImagePage struct {
-	Page
+	page
 	content []*Image
 }
 
 // Content contains the content of the current page.
 func (p *ImagePage) Content() []*Image {
 	return p.content
+}
+
+// All returns the images of all pages.
+func (p *ImagePage) All() ([]*Image, error) {
+	p.all()
+	return p.content, p.err
 }
 
 // ImageListOpts specifies options for listing images.
@@ -137,13 +143,13 @@ func (o ImageListOpts) URLValues() url.Values {
 
 // List returns an accessor to control the images API pagination.
 func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) *ImagePage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
 	page := &ImagePage{}
 	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
 		allImages := []*Image{}
-		if opts.PerPage == 0 {
-			opts.PerPage = 50
-		}
-
 		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
 			opts.Page = page
 			images, resp, err := c.list(ctx, opts)

@@ -77,13 +77,19 @@ func (c *DatacenterClient) Get(ctx context.Context, idOrName string) (*Datacente
 
 // DatacenterPage serves as accessor of the datacenters API pagination.
 type DatacenterPage struct {
-	Page
+	page
 	content []*Datacenter
 }
 
 // Content contains the content of the current page.
 func (p *DatacenterPage) Content() []*Datacenter {
 	return p.content
+}
+
+// All returns the datacenters of all pages.
+func (p *DatacenterPage) All() ([]*Datacenter, error) {
+	p.all()
+	return p.content, p.err
 }
 
 // DatacenterListOpts specifies options for listing datacenters.
@@ -93,13 +99,13 @@ type DatacenterListOpts struct {
 
 // List returns an accessor to control the datacenters API pagination.
 func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) *DatacenterPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
 	page := &DatacenterPage{}
 	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
 		allDatacenters := []*Datacenter{}
-		if opts.PerPage == 0 {
-			opts.PerPage = 50
-		}
-
 		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
 			opts.Page = page
 			datacenters, resp, err := c.list(ctx, opts)

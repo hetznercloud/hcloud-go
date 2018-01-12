@@ -81,7 +81,7 @@ func (c *ActionClient) GetByID(ctx context.Context, id int) (*Action, *Response,
 
 // ActionPage serves as accessor of the actions API pagination.
 type ActionPage struct {
-	Page
+	page
 	content []*Action
 }
 
@@ -90,13 +90,17 @@ func (p *ActionPage) Content() []*Action {
 	return p.content
 }
 
+// All returns the actions of all pages.
+func (p *ActionPage) All() ([]*Action, error) {
+	p.all()
+	return p.content, p.err
+}
+
 // ActionListOpts specifies options for listing actions.
 type ActionListOpts struct {
 	ListOpts
 	SortOpts
-	Status     []ActionStatus
-	Server     *Server
-	FloatingIP *FloatingIP
+	Status []ActionStatus
 }
 
 // URLValues returns the list opts as url.Values.
@@ -111,13 +115,13 @@ func (o ActionListOpts) URLValues() url.Values {
 
 // List returns an accessor to control the actions API pagination.
 func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) *ActionPage {
+	if opts.PerPage == 0 {
+		opts.PerPage = 50
+	}
+
 	page := &ActionPage{}
 	page.pageGetter = pageGetter(func(start, end int) (resp *Response, exhausted bool, err error) {
 		allActions := []*Action{}
-		if opts.PerPage == 0 {
-			opts.PerPage = 50
-		}
-
 		resp, exhausted, err = c.client.all(func(page int) (*Response, error) {
 			opts.Page = page
 			actions, resp, err := c.list(ctx, opts)
@@ -136,12 +140,6 @@ func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) *ActionPag
 // list returns a list of actions for a specific page.
 func (c *ActionClient) list(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
 	path := "/actions?"
-	if opts.Server != nil {
-		path = fmt.Sprintf("/servers/%d/actions?", opts.Server.ID)
-	}
-	if opts.FloatingIP != nil {
-		path = fmt.Sprintf("/floating_ips/%d/actions?", opts.FloatingIP.ID)
-	}
 	path = path + opts.URLValues().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
