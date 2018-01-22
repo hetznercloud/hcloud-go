@@ -117,8 +117,10 @@ func ServerFromSchema(s schema.Server) *Server {
 		IncludedTraffic: s.IncludedTraffic,
 		RescueEnabled:   s.RescueEnabled,
 		Datacenter:      DatacenterFromSchema(s.Datacenter),
-		Image:           ImageFromSchema(s.Image),
 		Locked:          s.Locked,
+	}
+	if s.Image != nil {
+		server.Image = ImageFromSchema(*s.Image)
 	}
 	if s.BackupWindow != nil {
 		server.BackupWindow = *s.BackupWindow
