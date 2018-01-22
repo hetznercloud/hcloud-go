@@ -125,3 +125,62 @@ func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
 
 	return allActions, nil
 }
+
+// Wait watches the action state until it completes with success or error.
+// Also provides progress updates on the first channel.
+func (c *ActionClient) Wait(ctx context.Context, action *Action) (<-chan int, <-chan error) {
+	errCh := make(chan error, 1)
+	progressCh := make(chan int)
+
+	go func() {
+		defer close(errCh)
+		defer close(progressCh)
+
+		ticker := time.NewTicker(100 * time.Millisecond)
+		sendProgress := func(p int) {
+			select {
+			case progressCh <- p:
+				break
+			default:
+				break
+			}
+		}
+
+		var retries = 0
+		for {
+			select {
+			case <-ctx.Done():
+				errCh <- ctx.Err()
+				return
+			case <-ticker.C:
+				break
+			}
+
+			action, _, err := c.GetByID(ctx, action.ID)
+			if err != nil {
+				if err, ok := err.(Error); ok && err.Code == ErrorCodeLimitReached {
+					c.client.backoff(retries)
+					retries++
+					continue
+				}
+				errCh <- ctx.Err()
+				return
+			}
+
+			switch action.Status {
+			case ActionStatusRunning:
+				sendProgress(action.Progress)
+				break
+			case ActionStatusSuccess:
+				sendProgress(100)
+				errCh <- nil
+				return
+			case ActionStatusError:
+				errCh <- action.Error()
+				return
+			}
+		}
+	}()
+
+	return progressCh, errCh
+}
