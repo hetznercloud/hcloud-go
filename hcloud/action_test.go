@@ -135,7 +135,7 @@ func TestActionClientAll(t *testing.T) {
 	}
 }
 
-func TestActionClientWait(t *testing.T) {
+func TestActionClientWatchProgress(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -184,7 +184,7 @@ func TestActionClientWait(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	progressCh, errCh := env.Client.Action.Wait(ctx, action)
+	progressCh, errCh := env.Client.Action.WatchProgress(ctx, action)
 	var (
 		progressUpdates []int
 		err             error
@@ -203,7 +203,10 @@ loop:
 	if err == nil {
 		t.Fatalf("error expected %v", err)
 	}
-	if len(progressUpdates) != 1 && progressUpdates[0] != 50 {
+	if e, ok := err.(ActionError); !ok || e.Code != "action_failed" {
+		t.Fatalf("expected hcloud.Error, got: %#v", err)
+	}
+	if len(progressUpdates) != 1 || progressUpdates[0] != 50 {
 		t.Fatalf("unexpected progress updates %v", progressUpdates)
 	}
 }

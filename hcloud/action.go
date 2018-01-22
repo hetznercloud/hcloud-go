@@ -48,9 +48,22 @@ const (
 	ActionResourceTypeFloatingIP                    = "floating_ip"
 )
 
+// ActionError is the error of an action.
+type ActionError struct {
+	Code    string
+	Message string
+}
+
+func (e ActionError) Error() string {
+	return fmt.Sprintf("%s (%s)", e.Message, e.Code)
+}
+
 func (a *Action) Error() error {
 	if a.ErrorCode != "" && a.ErrorMessage != "" {
-		return fmt.Errorf("%s (%s)", a.ErrorMessage, a.ErrorCode)
+		return ActionError{
+			Code:    a.ErrorCode,
+			Message: a.ErrorMessage,
+		}
 	}
 	return nil
 }
@@ -126,9 +139,8 @@ func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
 	return allActions, nil
 }
 
-// Wait watches the action state until it completes with success or error.
-// Also provides progress updates on the first channel.
-func (c *ActionClient) Wait(ctx context.Context, action *Action) (<-chan int, <-chan error) {
+// WatchProgress watches the actions progress until it completes with success or error.
+func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-chan int, <-chan error) {
 	errCh := make(chan error, 1)
 	progressCh := make(chan int)
 
@@ -166,6 +178,7 @@ func (c *ActionClient) Wait(ctx context.Context, action *Action) (<-chan int, <-
 				errCh <- ctx.Err()
 				return
 			}
+			retries = 0
 
 			switch action.Status {
 			case ActionStatusRunning:
