@@ -201,12 +201,12 @@ loop:
 	}
 
 	if err == nil {
-		t.Fatalf("error expected %v", err)
+		t.Fatal("expected an error")
 	}
 	if e, ok := err.(ActionError); !ok || e.Code != "action_failed" {
-		t.Fatalf("expected hcloud.Error, got: %#v", err)
+		t.Fatalf("expected hcloud.Error, but got: %#v", err)
 	}
 	if len(progressUpdates) != 1 || progressUpdates[0] != 50 {
-		t.Fatalf("unexpected progress updates %v", progressUpdates)
+		t.Fatalf("unexpected progress updates: %v", progressUpdates)
 	}
 }
