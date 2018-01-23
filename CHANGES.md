@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Fix leaking response body by not closing it
+
 ## v1.2.0
 
 * Add `WatchProgress()` to action client
