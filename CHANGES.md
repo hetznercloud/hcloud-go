@@ -1,8 +1,10 @@
 # Changes
 
-## master
+## v1.2.0
 
-No changes yet.
+* Add `WatchProgress()` to action client
+* Use correct error code for ratelimit error (deprecated
+  `ErrorCodeLimitReached`, added `ErrorCodeRateLimitExceeded`)
 
 ## v1.1.0
 
