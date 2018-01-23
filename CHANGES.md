@@ -2,7 +2,7 @@
 
 ## master
 
-* Fix leaking response body by not closing it
+* Fix leaking response body by not closing it ([issue #68](https://github.com/hetznercloud/hcloud-go/issues/68))
 
 ## v1.2.0
 
