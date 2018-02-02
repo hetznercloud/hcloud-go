@@ -21,4 +21,3 @@ func Example() {
 		fmt.Println("server 1 not found")
 	}
 }
-
