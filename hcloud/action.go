@@ -170,7 +170,7 @@ func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-cha
 
 			action, _, err := c.GetByID(ctx, action.ID)
 			if err != nil {
-				if err, ok := err.(Error); ok && err.Code == ErrorCodeLimitReached {
+				if err, ok := err.(Error); ok && err.Code == ErrorCodeRateLimitExceeded {
 					c.client.backoff(retries)
 					retries++
 					continue
