@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.3.1
 
 * Make clients using the old error code for ratelimiting work as expected
   ([issue #73](https://github.com/hetznercloud/hcloud-go/issues/73))
