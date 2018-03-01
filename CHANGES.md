@@ -1,9 +1,9 @@
 # Changes
 
-## master
+## v1.4.0
 
-* Retry all calls that triggered the API ratelimit with exponential backoff
-* Slowed down `WatchProgress()` in action client from 100ms polling intervall to 500ms
+* Retry all calls that triggered the API ratelimit
+* Slow down `WatchProgress()` in action client from 100ms polling interval to 500ms
 
 ## v1.3.1
 
