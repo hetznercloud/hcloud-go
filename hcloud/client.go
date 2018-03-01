@@ -183,20 +183,13 @@ func (c *Client) backoff(retries int) {
 
 func (c *Client) all(f func(int) (*Response, error)) (*Response, error) {
 	var (
-		retries = 0
-		page    = 1
+		page = 1
 	)
 	for {
 		resp, err := f(page)
 		if err != nil {
-			if err, ok := err.(Error); ok && err.Code == ErrorCodeRateLimitExceeded {
-				c.backoff(retries)
-				retries++
-				continue
-			}
 			return nil, err
 		}
-		retries = 0
 		if resp.Meta.Pagination == nil || resp.Meta.Pagination.NextPage == 0 {
 			return resp, nil
 		}
