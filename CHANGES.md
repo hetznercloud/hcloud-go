@@ -1,5 +1,10 @@
 # Changes
 
+## master
+
+* Retry all calls that triggered the API ratelimit with exponential backoff
+* Slowed down `WatchProgress()` in action client from 100ms polling intervall to 500ms
+
 ## v1.3.1
 
 * Make clients using the old error code for ratelimiting work as expected
