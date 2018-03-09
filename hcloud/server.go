@@ -238,7 +238,11 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		reqBody.Image = opts.Image.Name
 	}
 	for _, sshKey := range opts.SSHKeys {
-		reqBody.SSHKeys = append(reqBody.SSHKeys, sshKey.ID)
+		if sshKey.Fingerprint != "" {
+			reqBody.SSHKeys = append(reqBody.SSHKeys, sshKey.Fingerprint)
+		} else {
+			reqBody.SSHKeys = append(reqBody.SSHKeys, sshKey.ID)
+		}
 	}
 	if opts.Location != nil {
 		if opts.Location.ID != 0 {

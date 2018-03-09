@@ -219,8 +219,14 @@ func TestServersCreateWithSSHKeys(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if len(reqBody.SSHKeys) != 2 || reqBody.SSHKeys[0] != 1 || reqBody.SSHKeys[1] != 2 {
+		if len(reqBody.SSHKeys) != 2 {
 			t.Errorf("unexpected SSH keys: %v", reqBody.SSHKeys)
+		}
+		if id, ok := reqBody.SSHKeys[0].(float64); !ok || id != 1 {
+			t.Errorf("unexpected SSH key at index 0: %v", reqBody.SSHKeys[0])
+		}
+		if fingerprint, ok := reqBody.SSHKeys[1].(string); !ok || fingerprint != "de:ad:be:ef" {
+			t.Errorf("unexpected SSH key at index 1: %v", reqBody.SSHKeys[1])
 		}
 		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
 			Server: schema.Server{
@@ -236,7 +242,7 @@ func TestServersCreateWithSSHKeys(t *testing.T) {
 		Image:      &Image{ID: 2},
 		SSHKeys: []*SSHKey{
 			{ID: 1},
-			{ID: 2},
+			{Fingerprint: "de:ad:be:ef"},
 		},
 	})
 	if err != nil {
