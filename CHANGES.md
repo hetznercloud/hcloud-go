@@ -1,5 +1,10 @@
 # Changes
 
+## master
+
+* Allow specifying SSH key via fingerprint when creating a server
+  ([issue #77](https://github.com/hetznercloud/hcloud-go/issues/77))
+
 ## v1.4.0
 
 * Retry all calls that triggered the API ratelimit
