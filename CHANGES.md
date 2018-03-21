@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.5.0
 
 * Add `GetByFingerprint()` to SSH key client
 
