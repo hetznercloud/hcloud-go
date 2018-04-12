@@ -91,3 +91,13 @@ type FloatingIPActionChangeDNSPtrRequest struct {
 type FloatingIPActionChangeDNSPtrResponse struct {
 	Action Action `json:"action"`
 }
+
+// FloatingIPChangeProtectionRequest defines the schema of the request to change the resource protection of a Floating IP.
+type FloatingIPChangeProtectionRequest struct {
+	Delete *bool `json:"delete"`
+}
+
+// FloatingIPChangeProtectionResponse defines the schema of the response when changing the resource protection of a Floating IP.
+type FloatingIPChangeProtectionResponse struct {
+	Action Action `json:"action"`
+}

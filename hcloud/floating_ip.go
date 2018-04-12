@@ -287,3 +287,32 @@ func (c *FloatingIPClient) ChangeDNSPtr(ctx context.Context, floatingIP *Floatin
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
 }
+
+// FloatingIPChangeProtectionOpts specifies options for changing the resource protection level of a Floating IP.
+type FloatingIPChangeProtectionOpts struct {
+	Delete *bool
+}
+
+// ChangeProtection changes the resource protection level of a Floating IP.
+func (c *FloatingIPClient) ChangeProtection(ctx context.Context, floatingIP *FloatingIP, opts FloatingIPChangeProtectionOpts) (*Action, *Response, error) {
+	reqBody := schema.FloatingIPChangeProtectionRequest{
+		Delete: opts.Delete,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/floating_ips/%d/actions/change_protection", floatingIP.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.FloatingIPChangeProtectionResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
+}

@@ -274,3 +274,14 @@ type ServerActionChangeDNSPtrRequest struct {
 type ServerActionChangeDNSPtrResponse struct {
 	Action Action `json:"action"`
 }
+
+// ServerChangeProtectionRequest defines the schema of the request to change the resource protection of a server.
+type ServerChangeProtectionRequest struct {
+	Rebuild *bool `json:"rebuild"`
+	Delete  *bool `json:"delete"`
+}
+
+// ServerChangeProtectionResponse defines the schema of the response when changing the resource protection of a server.
+type ServerChangeProtectionResponse struct {
+	Action Action `json:"action"`
+}

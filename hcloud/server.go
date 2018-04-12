@@ -721,3 +721,34 @@ func (c *ServerClient) ChangeDNSPtr(ctx context.Context, server *Server, ip stri
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
 }
+
+// ServerChangeProtectionOpts specifies options for changing the resource protection level of a server.
+type ServerChangeProtectionOpts struct {
+	Rebuild *bool
+	Delete  *bool
+}
+
+// ChangeProtection changes the resource protection level of a server.
+func (c *ServerClient) ChangeProtection(ctx context.Context, image *Server, opts ServerChangeProtectionOpts) (*Action, *Response, error) {
+	reqBody := schema.ServerChangeProtectionRequest{
+		Rebuild: opts.Rebuild,
+		Delete:  opts.Delete,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/servers/%d/actions/change_protection", image.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerChangeProtectionResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
+}
