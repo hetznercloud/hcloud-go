@@ -28,6 +28,13 @@ type Image struct {
 
 	OSFlavor  string
 	OSVersion string
+
+	Protection ImageProtection
+}
+
+// ImageProtection represents the protection level of an image.
+type ImageProtection struct {
+	Delete bool
 }
 
 // ImageType specifies the type of an image.

@@ -22,11 +22,17 @@ type FloatingIP struct {
 	DNSPtr       map[string]string
 	HomeLocation *Location
 	Blocked      bool
+	Protection   FloatingIPProtection
 }
 
 // DNSPtrForIP returns the reverse DNS pointer of the IP address.
 func (f *FloatingIP) DNSPtrForIP(ip net.IP) string {
 	return f.DNSPtr[ip.String()]
+}
+
+// FloatingIPProtection represents the protection level of a Floating IP.
+type FloatingIPProtection struct {
+	Delete bool
 }
 
 // FloatingIPType represents the type of a Floating IP.

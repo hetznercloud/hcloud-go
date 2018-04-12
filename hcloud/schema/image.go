@@ -17,6 +17,12 @@ type Image struct {
 	OSFlavor    string            `json:"os_flavor"`
 	OSVersion   *string           `json:"os_version"`
 	RapidDeploy bool              `json:"rapid_deploy"`
+	Protection  ImageProtection   `json:"protection"`
+}
+
+// ImageProtection represents the protection level of a image.
+type ImageProtection struct {
+	Delete bool `json:"delete"`
 }
 
 // ImageCreatedFrom defines the schema of the images created from reference.

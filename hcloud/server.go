@@ -31,6 +31,12 @@ type Server struct {
 	Locked          bool
 	ISO             *ISO
 	Image           *Image
+	Protection      ServerProtection
+}
+
+// ServerProtection represents the protection level of a server.
+type ServerProtection struct {
+	Delete, Rebuild bool
 }
 
 // ServerStatus specifies a server's status.
