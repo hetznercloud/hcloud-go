@@ -22,7 +22,7 @@ type Server struct {
 	Protection      ServerProtection `json:"protection"`
 }
 
-// ServerProtection defines the schema of a server's resource protection
+// ServerProtection defines the schema of a server's resource protection.
 type ServerProtection struct {
 	Delete  bool `json:"delete"`
 	Rebuild bool `json:"rebuild"`
@@ -282,13 +282,13 @@ type ServerActionChangeDNSPtrResponse struct {
 	Action Action `json:"action"`
 }
 
-// ServerChangeProtectionRequest defines the schema of the request to change the resource protection of a server.
-type ServerChangeProtectionRequest struct {
-	Rebuild *bool `json:"rebuild"`
-	Delete  *bool `json:"delete"`
+// ServerActionChangeProtectionRequest defines the schema of the request to change the resource protection of a server.
+type ServerActionChangeProtectionRequest struct {
+	Rebuild *bool `json:"rebuild,omitempty"`
+	Delete  *bool `json:"delete,omitempty"`
 }
 
-// ServerChangeProtectionResponse defines the schema of the response when changing the resource protection of a server.
-type ServerChangeProtectionResponse struct {
+// ServerActionChangeProtectionResponse defines the schema of the response when changing the resource protection of a server.
+type ServerActionChangeProtectionResponse struct {
 	Action Action `json:"action"`
 }

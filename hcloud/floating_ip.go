@@ -301,7 +301,7 @@ type FloatingIPChangeProtectionOpts struct {
 
 // ChangeProtection changes the resource protection level of a Floating IP.
 func (c *FloatingIPClient) ChangeProtection(ctx context.Context, floatingIP *FloatingIP, opts FloatingIPChangeProtectionOpts) (*Action, *Response, error) {
-	reqBody := schema.FloatingIPChangeProtectionRequest{
+	reqBody := schema.FloatingIPActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
 	reqBodyData, err := json.Marshal(reqBody)
@@ -315,7 +315,7 @@ func (c *FloatingIPClient) ChangeProtection(ctx context.Context, floatingIP *Flo
 		return nil, nil, err
 	}
 
-	respBody := schema.FloatingIPChangeProtectionResponse{}
+	respBody := schema.FloatingIPActionChangeProtectionResponse{}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err

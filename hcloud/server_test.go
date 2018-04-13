@@ -1236,7 +1236,7 @@ func TestServerClientChangeProtection(t *testing.T) {
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
-			var reqBody schema.ServerChangeProtectionRequest
+			var reqBody schema.ServerActionChangeProtectionRequest
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
@@ -1246,7 +1246,7 @@ func TestServerClientChangeProtection(t *testing.T) {
 			if reqBody.Rebuild == nil || *reqBody.Rebuild != true {
 				t.Errorf("unexpected rebuild: %v", reqBody.Rebuild)
 			}
-			json.NewEncoder(w).Encode(schema.ImageChangeProtectionResponse{
+			json.NewEncoder(w).Encode(schema.ImageActionChangeProtectionResponse{
 				Action: schema.Action{
 					ID: 1,
 				},

@@ -207,7 +207,7 @@ type ImageChangeProtectionOpts struct {
 
 // ChangeProtection changes the resource protection level of an image.
 func (c *ImageClient) ChangeProtection(ctx context.Context, image *Image, opts ImageChangeProtectionOpts) (*Action, *Response, error) {
-	reqBody := schema.ImageChangeProtectionRequest{
+	reqBody := schema.ImageActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
 	reqBodyData, err := json.Marshal(reqBody)
@@ -221,7 +221,7 @@ func (c *ImageClient) ChangeProtection(ctx context.Context, image *Image, opts I
 		return nil, nil, err
 	}
 
-	respBody := schema.ImageChangeProtectionResponse{}
+	respBody := schema.ImageActionChangeProtectionResponse{}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err

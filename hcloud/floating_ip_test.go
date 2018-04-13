@@ -364,14 +364,14 @@ func TestFloatingIPClientChangeProtection(t *testing.T) {
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
-			var reqBody schema.FloatingIPChangeProtectionRequest
+			var reqBody schema.FloatingIPActionChangeProtectionRequest
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
 			if reqBody.Delete == nil || *reqBody.Delete != true {
 				t.Errorf("unexpected delete: %v", reqBody.Delete)
 			}
-			json.NewEncoder(w).Encode(schema.FloatingIPChangeProtectionResponse{
+			json.NewEncoder(w).Encode(schema.FloatingIPActionChangeProtectionResponse{
 				Action: schema.Action{
 					ID: 1,
 				},

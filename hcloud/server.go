@@ -736,7 +736,7 @@ type ServerChangeProtectionOpts struct {
 
 // ChangeProtection changes the resource protection level of a server.
 func (c *ServerClient) ChangeProtection(ctx context.Context, image *Server, opts ServerChangeProtectionOpts) (*Action, *Response, error) {
-	reqBody := schema.ServerChangeProtectionRequest{
+	reqBody := schema.ServerActionChangeProtectionRequest{
 		Rebuild: opts.Rebuild,
 		Delete:  opts.Delete,
 	}
@@ -751,7 +751,7 @@ func (c *ServerClient) ChangeProtection(ctx context.Context, image *Server, opts
 		return nil, nil, err
 	}
 
-	respBody := schema.ServerChangeProtectionResponse{}
+	respBody := schema.ServerActionChangeProtectionResponse{}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err

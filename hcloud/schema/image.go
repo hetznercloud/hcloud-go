@@ -54,12 +54,12 @@ type ImageUpdateResponse struct {
 	Image Image `json:"image"`
 }
 
-// ImageChangeProtectionRequest defines the schema of the request to change the resource protection of an image.
-type ImageChangeProtectionRequest struct {
-	Delete *bool `json:"delete"`
+// ImageActionChangeProtectionRequest defines the schema of the request to change the resource protection of an image.
+type ImageActionChangeProtectionRequest struct {
+	Delete *bool `json:"delete,omitempty"`
 }
 
-// ImageChangeProtectionResponse defines the schema of the response when changing the resource protection of an image.
-type ImageChangeProtectionResponse struct {
+// ImageActionChangeProtectionResponse defines the schema of the response when changing the resource protection of an image.
+type ImageActionChangeProtectionResponse struct {
 	Action Action `json:"action"`
 }
