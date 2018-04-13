@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.6.0
 
 * Add `ChangeProtection()` to server, Floating IP, and image client
 * Expose protection of servers, Floating IPs, and images
