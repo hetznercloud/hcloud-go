@@ -1,5 +1,10 @@
 # Changes
 
+## master
+
+* Add `ChangeProtection()` to Server, Floating IP and Image clients
+* Expose resource protection flags on Server, Floating IP and Image objects
+
 ## v1.5.0
 
 * Add `GetByFingerprint()` to SSH key client
