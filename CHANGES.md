@@ -2,8 +2,8 @@
 
 ## master
 
-* Add `ChangeProtection()` to Server, Floating IP and Image clients
-* Expose resource protection flags on Server, Floating IP and Image objects
+* Add `ChangeProtection()` to server, Floating IP, and image client
+* Expose protection of servers, Floating IPs, and images
 
 ## v1.5.0
 
