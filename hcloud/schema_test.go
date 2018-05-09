@@ -190,7 +190,8 @@ func TestISOFromSchema(t *testing.T) {
 		"id": 4711,
 		"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
 		"description": "FreeBSD 11.0 x64",
-		"type": "public"
+		"type": "public",
+		"deprecated": "2018-02-28T00:00:00+00:00"
 	}`)
 
 	var s schema.ISO
@@ -198,7 +199,6 @@ func TestISOFromSchema(t *testing.T) {
 		t.Fatal(err)
 	}
 	iso := ISOFromSchema(s)
-
 	if iso.ID != 4711 {
 		t.Errorf("unexpected ID: %v", iso.ID)
 	}
@@ -210,6 +210,9 @@ func TestISOFromSchema(t *testing.T) {
 	}
 	if iso.Type != ISOTypePublic {
 		t.Errorf("unexpected type: %v", iso.Type)
+	}
+	if iso.Deprecated.IsZero() {
+		t.Errorf("unexpected value for deprecated: %v", iso.Deprecated)
 	}
 }
 

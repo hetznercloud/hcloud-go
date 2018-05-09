@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"strconv"
+	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
@@ -15,6 +16,7 @@ type ISO struct {
 	Name        string
 	Description string
 	Type        ISOType
+	Deprecated  time.Time
 }
 
 // ISOType specifies the type of an ISO image.

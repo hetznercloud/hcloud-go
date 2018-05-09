@@ -71,6 +71,7 @@ func ISOFromSchema(s schema.ISO) *ISO {
 		Name:        s.Name,
 		Description: s.Description,
 		Type:        ISOType(s.Type),
+		Deprecated:  s.Deprecated,
 	}
 }
 
