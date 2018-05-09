@@ -748,7 +748,8 @@ func TestImageFromSchema(t *testing.T) {
 		"rapid_deploy": false,
 		"protection": {
 			"delete": true
-		}
+		},
+		"deprecated": "2018-02-28T00:00:00+00:00"
 	}`)
 
 	var s schema.Image
@@ -798,6 +799,9 @@ func TestImageFromSchema(t *testing.T) {
 	}
 	if !image.Protection.Delete {
 		t.Errorf("unexpected Protection.Delete: %v", image.Protection.Delete)
+	}
+	if image.Deprecated.IsZero() {
+		t.Errorf("unexpected value for Deprecated: %v", image.Deprecated)
 	}
 }
 

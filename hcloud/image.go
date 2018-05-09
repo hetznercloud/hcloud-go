@@ -30,6 +30,7 @@ type Image struct {
 	OSVersion string
 
 	Protection ImageProtection
+	Deprecated time.Time
 }
 
 // ImageProtection represents the protection level of an image.

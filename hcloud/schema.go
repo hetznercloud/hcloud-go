@@ -233,6 +233,7 @@ func ImageFromSchema(s schema.Image) *Image {
 		Protection: ImageProtection{
 			Delete: s.Protection.Delete,
 		},
+		Deprecated: s.Deprecated,
 	}
 	if s.Name != nil {
 		i.Name = *s.Name
