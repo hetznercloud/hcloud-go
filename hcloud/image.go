@@ -30,6 +30,12 @@ type Image struct {
 	OSVersion string
 
 	Protection ImageProtection
+	Deprecated time.Time // The zero values denotes the image is not deprecated.
+}
+
+// IsDeprecated returns whether the image is deprecated.
+func (image *Image) IsDeprecated() bool {
+	return !image.Deprecated.IsZero()
 }
 
 // ImageProtection represents the protection level of an image.

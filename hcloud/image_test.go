@@ -5,9 +5,28 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
+
+func TestImageIsDeprecated(t *testing.T) {
+	t.Run("not deprecated", func(t *testing.T) {
+		image := &Image{}
+		if image.IsDeprecated() {
+			t.Errorf("unexpected value for IsDeprecated: %v", image.IsDeprecated())
+		}
+	})
+
+	t.Run("deprecated", func(t *testing.T) {
+		image := &Image{
+			Deprecated: time.Now(),
+		}
+		if !image.IsDeprecated() {
+			t.Errorf("unexpected value for IsDeprecated: %v", image.IsDeprecated())
+		}
+	})
+}
 
 func TestImageClient(t *testing.T) {
 	t.Run("GetByID", func(t *testing.T) {
