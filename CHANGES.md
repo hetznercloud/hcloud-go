@@ -1,5 +1,11 @@
 # Changes
 
+## master
+
+* Add `Deprecated ` field to `Image` ([issue #88](https://github.com/hetznercloud/hcloud-go/issues/88))
+* Add `StartAfterCreate` flag to `ServerCreateOpts` ([issue #87](https://github.com/hetznercloud/hcloud-go/issues/87))
+* Fix enum types ([issue #89](https://github.com/hetznercloud/hcloud-go/issues/89))
+
 ## v1.6.0
 
 * Add `ChangeProtection()` to server, Floating IP, and image client
