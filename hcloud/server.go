@@ -191,13 +191,14 @@ func (c *ServerClient) All(ctx context.Context) ([]*Server, error) {
 
 // ServerCreateOpts specifies options for creating a new server.
 type ServerCreateOpts struct {
-	Name       string
-	ServerType *ServerType
-	Image      *Image
-	SSHKeys    []*SSHKey
-	Location   *Location
-	Datacenter *Datacenter
-	UserData   string
+	Name             string
+	ServerType       *ServerType
+	Image            *Image
+	SSHKeys          []*SSHKey
+	Location         *Location
+	Datacenter       *Datacenter
+	UserData         string
+	StartAfterCreate *bool
 }
 
 // Validate checks if options are valid.
@@ -233,6 +234,7 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	var reqBody schema.ServerCreateRequest
 	reqBody.UserData = opts.UserData
 	reqBody.Name = opts.Name
+	reqBody.StartAfterCreate = opts.StartAfterCreate
 	if opts.ServerType.ID != 0 {
 		reqBody.ServerType = opts.ServerType.ID
 	} else if opts.ServerType.Name != "" {
