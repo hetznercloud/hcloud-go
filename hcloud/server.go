@@ -47,10 +47,10 @@ const (
 	ServerStatusInitializing ServerStatus = "initializing"
 
 	// ServerStatusOff is the status when a server is off.
-	ServerStatusOff = "off"
+	ServerStatusOff ServerStatus = "off"
 
 	// ServerStatusRunning is the status when a server is running.
-	ServerStatusRunning = "running"
+	ServerStatusRunning ServerStatus = "running"
 )
 
 // ServerPublicNet represents a server's public network.
@@ -86,8 +86,8 @@ type ServerRescueType string
 // List of rescue types.
 const (
 	ServerRescueTypeLinux32   ServerRescueType = "linux32"
-	ServerRescueTypeLinux64                    = "linux64"
-	ServerRescueTypeFreeBSD64                  = "freebsd64"
+	ServerRescueTypeLinux64   ServerRescueType = "linux64"
+	ServerRescueTypeFreeBSD64 ServerRescueType = "freebsd64"
 )
 
 // ServerClient is a client for the servers API.

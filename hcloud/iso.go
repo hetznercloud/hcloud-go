@@ -25,7 +25,7 @@ const (
 	ISOTypePublic ISOType = "public"
 
 	// ISOTypePrivate is the type of a private ISO image.
-	ISOTypePrivate = "private"
+	ISOTypePrivate ISOType = "private"
 )
 
 // ISOClient is a client for the ISO API.
