@@ -19,6 +19,11 @@ type ISO struct {
 	Deprecated  time.Time
 }
 
+// IsDeprecated returns true if the ISO is deprecated
+func (iso *ISO) IsDeprecated() bool {
+	return !iso.Deprecated.IsZero()
+}
+
 // ISOType specifies the type of an ISO image.
 type ISOType string
 

@@ -33,6 +33,11 @@ type Image struct {
 	Deprecated time.Time
 }
 
+// IsDeprecated returns true if the Image is deprecated
+func (image *Image) IsDeprecated() bool {
+	return !image.Deprecated.IsZero()
+}
+
 // ImageProtection represents the protection level of an image.
 type ImageProtection struct {
 	Delete bool
