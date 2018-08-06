@@ -184,7 +184,7 @@ func TestActionClientWatchProgress(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	progressCh, errCh := env.Client.Action.WatchProgress(ctx, action)
+	progressCh, errCh := env.Client.Action.WatchProgressMS(ctx, action, 500)
 	var (
 		progressUpdates []int
 		err             error
