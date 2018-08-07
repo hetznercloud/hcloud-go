@@ -534,6 +534,7 @@ func TestServerTypeFromSchema(t *testing.T) {
 		"memory": 1.0,
 		"disk": 20,
 		"storage_type": "local",
+        "cpu_type": "shared",
 		"prices": [
 			{
 				"location": "fsn1",
@@ -575,6 +576,9 @@ func TestServerTypeFromSchema(t *testing.T) {
 	}
 	if serverType.StorageType != StorageTypeLocal {
 		t.Errorf("unexpected storage type: %q", serverType.StorageType)
+	}
+	if serverType.CPUType != CPUTypeShared {
+		t.Errorf("unexpected cpu type: %q", serverType.CPUType)
 	}
 	if len(serverType.Pricings) != 1 {
 		t.Errorf("unexpected number of pricings: %d", len(serverType.Pricings))
