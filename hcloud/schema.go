@@ -192,6 +192,7 @@ func ServerTypeFromSchema(s schema.ServerType) *ServerType {
 		Memory:      s.Memory,
 		Disk:        s.Disk,
 		StorageType: StorageType(s.StorageType),
+		CPUType:     CPUType(s.CPUType),
 	}
 	for _, price := range s.Prices {
 		st.Pricings = append(st.Pricings, ServerTypeLocationPricing{
