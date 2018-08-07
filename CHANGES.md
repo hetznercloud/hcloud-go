@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.8.0
 
 * Add `WithPollInterval()` option to `Client` which allows to specify the polling interval
   ([issue #92](https://github.com/hetznercloud/hcloud-go/issues/92))
