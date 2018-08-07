@@ -534,7 +534,7 @@ func TestServerTypeFromSchema(t *testing.T) {
 		"memory": 1.0,
 		"disk": 20,
 		"storage_type": "local",
-        "cpu_type": "shared",
+		"cpu_type": "shared",
 		"prices": [
 			{
 				"location": "fsn1",
