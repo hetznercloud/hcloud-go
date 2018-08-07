@@ -144,9 +144,9 @@ func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-cha
 	return c.WatchProgressInterval(ctx, action, 500*time.Millisecond)
 }
 
-// WatchProgressInterval is a special version of WatchProgressInterval which allows to
-// specify the polling interval. Please note that this method is not part of the stable
-// API and may be removed in future releases should the watch mechanism, for example,
+// WatchProgressInterval is a special version of WatchProgress which allows to specify
+// the polling interval. Please note that this method is not part of the stable API
+// and may be removed in future releases should the watch mechanism, for example,
 // change from poll to push.
 func (c *ActionClient) WatchProgressInterval(ctx context.Context, action *Action, interval time.Duration) (<-chan int, <-chan error) {
 	errCh := make(chan error, 1)
