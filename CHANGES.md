@@ -1,5 +1,10 @@
 # Changes
 
+## master
+
+* Add `WatchProgressInterval()` to `ActionClient` which allows to specify the polling interval
+  ([issue #90](https://github.com/hetznercloud/hcloud-go/issues/90))
+
 ## v1.7.0
 
 * Add `Deprecated ` field to `Image` ([issue #88](https://github.com/hetznercloud/hcloud-go/issues/88))
