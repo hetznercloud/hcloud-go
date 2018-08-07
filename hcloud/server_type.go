@@ -33,14 +33,14 @@ const (
 	StorageTypeCeph StorageType = "ceph"
 )
 
-// CPUType specifies the type of cpu
+// CPUType specifies the type of the CPU.
 type CPUType string
 
 const (
-	// CPUTypeShared is the type for shared cpu cores.
+	// CPUTypeShared is the type for shared CPU.
 	CPUTypeShared CPUType = "shared"
 
-	//CPUTypeDedicated is the type for dedicated cpu cores.
+	//CPUTypeDedicated is the type for dedicated CPU.
 	CPUTypeDedicated CPUType = "dedicated"
 )
 
