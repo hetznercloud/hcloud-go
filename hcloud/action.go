@@ -139,14 +139,16 @@ func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
 	return allActions, nil
 }
 
-// WatchProgress watches the actions progress until it completes with success or error.
+// WatchProgress watches the action's progress until it completes with success or error.
 func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-chan int, <-chan error) {
 	return c.WatchProgressInterval(ctx, action, 500*time.Millisecond)
 }
 
-// WatchProgressInterval watches the actions progress until it completes with success or error. Makes it possible to configuration the polling interval.
+// WatchProgressInterval is a special version of WatchProgressInterval which allows to
+// specify the polling interval. Please note that this method is not part of the stable
+// API and may be removed in future releases should the watch mechanism, for example,
+// change from poll to push.
 func (c *ActionClient) WatchProgressInterval(ctx context.Context, action *Action, interval time.Duration) (<-chan int, <-chan error) {
-
 	errCh := make(chan error, 1)
 	progressCh := make(chan int)
 
