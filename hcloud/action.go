@@ -141,11 +141,11 @@ func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
 
 // WatchProgress watches the actions progress until it completes with success or error.
 func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-chan int, <-chan error) {
-	return c.WatchProgressTimeout(ctx, action, 500*time.Millisecond)
+	return c.WatchProgressInterval(ctx, action, 500*time.Millisecond)
 }
 
-// WatchProgressTimeout watches the actions progress until it completes with success or error. Makes it possible to configuration the polling timeout.
-func (c *ActionClient) WatchProgressTimeout(ctx context.Context, action *Action, timeout time.Duration) (<-chan int, <-chan error) {
+// WatchProgressInterval watches the actions progress until it completes with success or error. Makes it possible to configuration the polling interval.
+func (c *ActionClient) WatchProgressInterval(ctx context.Context, action *Action, interval time.Duration) (<-chan int, <-chan error) {
 
 	errCh := make(chan error, 1)
 	progressCh := make(chan int)
@@ -154,7 +154,7 @@ func (c *ActionClient) WatchProgressTimeout(ctx context.Context, action *Action,
 		defer close(errCh)
 		defer close(progressCh)
 
-		ticker := time.NewTicker(timeout)
+		ticker := time.NewTicker(interval)
 		sendProgress := func(p int) {
 			select {
 			case progressCh <- p:
