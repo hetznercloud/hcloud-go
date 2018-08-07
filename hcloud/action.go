@@ -141,7 +141,6 @@ func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
 
 // WatchProgress watches the actions progress until it completes with success or error.
 func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-chan int, <-chan error) {
-
 	return c.WatchProgressTimeout(ctx, action, 500*time.Millisecond)
 }
 
