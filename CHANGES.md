@@ -4,6 +4,7 @@
 
 * Add `WatchProgressInterval()` to `ActionClient` which allows to specify the polling interval
   ([issue #90](https://github.com/hetznercloud/hcloud-go/issues/90))
+* Add `CPUType` field to `ServerType` ([issue #91](https://github.com/hetznercloud/hcloud-go/pull/91))
 
 ## v1.7.0
 
