@@ -81,7 +81,8 @@ func WithToken(token string) ClientOption {
 	}
 }
 
-// WithPollInterval configures a Client to polling the status of an action in the interval.
+// WithPollInterval configures a Client to use the specified interval when polling
+// from the API.
 func WithPollInterval(pollInterval time.Duration) ClientOption {
 	return func(client *Client) {
 		client.pollInterval = pollInterval
