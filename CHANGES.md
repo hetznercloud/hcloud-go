@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.9.0
 
 * Add `AllWithOpts()` to server, Floating IP, image, and SSH key client
 * Expose labels of servers, Floating IPs, images, and SSH Keys
