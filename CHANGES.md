@@ -4,6 +4,7 @@
 
 * Add `WithApplication()` client option to provide an application name and version
   that will be included in the `User-Agent` HTTP header
+* Add support for volumes
 
 ## v1.9.0
 
