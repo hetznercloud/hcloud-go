@@ -1,5 +1,10 @@
 # Changes
 
+## master
+
+* Add `WithApplication()` client option to provide an application name and version
+  that will be included in the `User-Agent` HTTP header
+
 ## v1.9.0
 
 * Add `AllWithOpts()` to server, Floating IP, image, and SSH key client
