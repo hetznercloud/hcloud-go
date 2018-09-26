@@ -4,6 +4,7 @@
 
 * Add `WithApplication()` client option to provide an application name and version
   that will be included in the `User-Agent` HTTP header
+* Remove the `backup-window` from `EnableBackups` 
 
 ## v1.9.0
 
