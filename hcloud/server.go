@@ -644,18 +644,10 @@ func (c *ServerClient) DetachISO(ctx context.Context, server *Server) (*Action, 
 // EnableBackup enables backup for a server. Pass in an empty backup window to let the
 // API pick a window for you. See the API documentation at docs.hetzner.cloud for a list
 // of valid backup windows.
-func (c *ServerClient) EnableBackup(ctx context.Context, server *Server, window string) (*Action, *Response, error) {
-	reqBody := schema.ServerActionEnableBackupRequest{}
-	if window != "" {
-		reqBody.BackupWindow = String(window)
-	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
+func (c *ServerClient) EnableBackup(ctx context.Context, server *Server) (*Action, *Response, error) {
 
 	path := fmt.Sprintf("/servers/%d/actions/enable_backup", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
 	if err != nil {
 		return nil, nil, err
 	}
