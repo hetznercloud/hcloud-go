@@ -186,6 +186,9 @@ func ServerPublicNetIPv6FromSchema(s schema.ServerPublicNetIPv6) ServerPublicNet
 		DNSPtr:  map[string]string{},
 	}
 	ipv6.IP, ipv6.Network, _ = net.ParseCIDR(s.IP)
+	// Workaround to extract the first IP from IPv6 range.
+	// ParseCIDR only returns 2001:db8:: for 2001:db8::/64 as IP.
+	ipv6.IP = net.ParseIP(ipv6.IP.String() + "1")
 
 	for _, dnsPtr := range s.DNSPtr {
 		ipv6.DNSPtr[dnsPtr.IP] = dnsPtr.DNSPtr
