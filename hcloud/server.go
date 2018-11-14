@@ -229,6 +229,7 @@ type ServerCreateResult struct {
 	Server       *Server
 	Action       *Action
 	RootPassword string
+	NextActions  []*Action
 }
 
 // Create creates a new server.
@@ -287,8 +288,9 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		return ServerCreateResult{}, resp, err
 	}
 	result := ServerCreateResult{
-		Server: ServerFromSchema(respBody.Server),
-		Action: ActionFromSchema(respBody.Action),
+		Server:      ServerFromSchema(respBody.Server),
+		Action:      ActionFromSchema(respBody.Action),
+		NextActions: ActionsFromSchema(respBody.NextActions),
 	}
 	if respBody.RootPassword != nil {
 		result.RootPassword = *respBody.RootPassword
