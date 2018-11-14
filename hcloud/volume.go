@@ -161,8 +161,9 @@ func (o VolumeCreateOpts) Validate() error {
 
 // VolumeCreateResult is the result of creating a volume.
 type VolumeCreateResult struct {
-	Volume *Volume
-	Action *Action
+	Volume      *Volume
+	Action      *Action
+	NextActions []*Action
 }
 
 // Create creates a new volume with the given options.
@@ -209,8 +210,9 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 	}
 
 	return VolumeCreateResult{
-		Volume: VolumeFromSchema(respBody.Volume),
-		Action: action,
+		Volume:      VolumeFromSchema(respBody.Volume),
+		Action:      action,
+		NextActions: ActionsFromSchema(respBody.NextActions),
 	}, resp, nil
 }
 
