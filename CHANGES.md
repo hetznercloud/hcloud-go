@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.11.0
 
 * Add `NextActions` to `ServerCreateResult` and `VolumeCreateResult`
 
