@@ -1,5 +1,11 @@
 # Changes
 
+## master
+
+* Add available error codes:  `ErrorCodeForbidden`, `ErrorJSONError`, `ErrorLocked`, 
+  `ErrorResourceLimitExceeded`, `ErrorResourceUnavailable`, `ErrorUniquenessError`,
+  `ErrorProtected` and `ErrorMaintenance`
+
 ## v1.11.0
 
 * Add `NextActions` to `ServerCreateResult` and `VolumeCreateResult`
