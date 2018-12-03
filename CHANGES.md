@@ -2,9 +2,7 @@
 
 ## master
 
-* Add available error codes:  `ErrorCodeForbidden`, `ErrorJSONError`, `ErrorLocked`, 
-  `ErrorResourceLimitExceeded`, `ErrorResourceUnavailable`, `ErrorUniquenessError`,
-  `ErrorProtected` and `ErrorMaintenance`
+* Add missing constants for all [documented error codes](https://docs.hetzner.cloud/#overview-errors)
 
 ## v1.11.0
 
