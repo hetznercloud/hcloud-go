@@ -17,7 +17,7 @@ const (
 	ErrorCodeLocked                ErrorCode = "locked"                  // Item is locked (Another action is running)
 	ErrorCodeResourceLimitExceeded ErrorCode = "resource_limit_exceeded" // Resource limit exceeded
 	ErrorCodeResourceUnavailable   ErrorCode = "resource_unavailable"    // Resource currently unavailable
-	ErrorCodeUniqueness            ErrorCode = "uniqueness_error"        // One or more fields must be unique
+	ErrorCodeUniquenessError       ErrorCode = "uniqueness_error"        // One or more fields must be unique
 	ErrorCodeProtected             ErrorCode = "protected"               // The actions you are trying is protected
 	ErrorCodeMaintenance           ErrorCode = "maintenance"             // Cannot perform operation due to maintenance
 
