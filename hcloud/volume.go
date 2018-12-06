@@ -135,11 +135,13 @@ func (c *VolumeClient) AllWithOpts(ctx context.Context, opts VolumeListOpts) ([]
 
 // VolumeCreateOpts specifies parameters for creating a volume.
 type VolumeCreateOpts struct {
-	Name     string
-	Size     int
-	Server   *Server
-	Location *Location
-	Labels   map[string]string
+	Name      string
+	Size      int
+	Server    *Server
+	Location  *Location
+	Labels    map[string]string
+	Automount *bool
+	Format    *string
 }
 
 // Validate checks if options are valid.
@@ -155,6 +157,9 @@ func (o VolumeCreateOpts) Validate() error {
 	}
 	if o.Server != nil && o.Location != nil {
 		return errors.New("only one of server or location must be provided")
+	}
+	if o.Server == nil && (o.Automount != nil && *o.Automount == true) {
+		return errors.New("server must be provided when automount is true")
 	}
 	return nil
 }
@@ -188,6 +193,13 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 			reqBody.Location = opts.Location.Name
 		}
 	}
+	if opts.Automount != nil {
+		reqBody.Automount = opts.Automount
+	}
+	if opts.Format != nil {
+		reqBody.Format = opts.Format
+	}
+
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
 		return VolumeCreateResult{}, nil, err
