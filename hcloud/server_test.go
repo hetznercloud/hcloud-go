@@ -354,7 +354,7 @@ func TestServersCreateWithVolumes(t *testing.T) {
 		if len(reqBody.Volumes) != 2 || reqBody.Volumes[0] != 1 || reqBody.Volumes[1] != 2 {
 			t.Errorf("unexpected Volumes %v", reqBody.Volumes)
 		}
-		if reqBody.Automount != nil && *reqBody.Automount != true {
+		if reqBody.Automount == nil || *reqBody.Automount != true {
 			t.Errorf("unexpected Automount %v", reqBody.Automount)
 		}
 		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
@@ -376,7 +376,7 @@ func TestServersCreateWithVolumes(t *testing.T) {
 			{ID: 1},
 			{ID: 2},
 		},
-		Automount: Bool(true),
+		Automount: nil, //Bool(true),
 	})
 	if err != nil {
 		t.Fatalf("Server.Create failed: %s", err)
