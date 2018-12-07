@@ -376,7 +376,7 @@ func TestServersCreateWithVolumes(t *testing.T) {
 			{ID: 1},
 			{ID: 2},
 		},
-		Automount: nil, //Bool(true),
+		Automount: Bool(true),
 	})
 	if err != nil {
 		t.Fatalf("Server.Create failed: %s", err)
