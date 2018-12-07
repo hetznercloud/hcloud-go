@@ -205,6 +205,7 @@ type ServerCreateOpts struct {
 	UserData         string
 	StartAfterCreate *bool
 	Labels           map[string]string
+	Automount        *bool
 }
 
 // Validate checks if options are valid.
@@ -241,6 +242,7 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	var reqBody schema.ServerCreateRequest
 	reqBody.UserData = opts.UserData
 	reqBody.Name = opts.Name
+	reqBody.Automount = opts.Automount
 	reqBody.StartAfterCreate = opts.StartAfterCreate
 	if opts.ServerType.ID != 0 {
 		reqBody.ServerType = opts.ServerType.ID

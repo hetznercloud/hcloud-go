@@ -85,6 +85,7 @@ type ServerCreateRequest struct {
 	UserData         string             `json:"user_data,omitempty"`
 	StartAfterCreate *bool              `json:"start_after_create,omitempty"`
 	Labels           *map[string]string `json:"labels,omitempty"`
+	Automount        *bool              `json:"automount,omitempty"`
 }
 
 // ServerCreateResponse defines the schema of the response when

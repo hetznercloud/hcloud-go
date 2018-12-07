@@ -158,7 +158,7 @@ func (o VolumeCreateOpts) Validate() error {
 	if o.Server != nil && o.Location != nil {
 		return errors.New("only one of server or location must be provided")
 	}
-	if o.Server == nil && (o.Automount != nil && *o.Automount == true) {
+	if o.Server == nil && (o.Automount != nil && *o.Automount) {
 		return errors.New("server must be provided when automount is true")
 	}
 	return nil
@@ -177,8 +177,10 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 		return VolumeCreateResult{}, nil, err
 	}
 	reqBody := schema.VolumeCreateRequest{
-		Name: opts.Name,
-		Size: opts.Size,
+		Name:      opts.Name,
+		Size:      opts.Size,
+		Automount: opts.Automount,
+		Format:    opts.Format,
 	}
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
@@ -192,12 +194,6 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 		} else {
 			reqBody.Location = opts.Location.Name
 		}
-	}
-	if opts.Automount != nil {
-		reqBody.Automount = opts.Automount
-	}
-	if opts.Format != nil {
-		reqBody.Format = opts.Format
 	}
 
 	reqBodyData, err := json.Marshal(reqBody)
@@ -270,11 +266,19 @@ func (c *VolumeClient) Update(ctx context.Context, volume *Volume, opts VolumeUp
 	return VolumeFromSchema(respBody.Volume), resp, nil
 }
 
-// Attach attaches a volume to a server.
-func (c *VolumeClient) Attach(ctx context.Context, volume *Volume, server *Server) (*Action, *Response, error) {
+// VolumeAttachOpts specifies options for attaching a volume.
+type VolumeAttachOpts struct {
+	Server    *Server
+	Automount *bool
+}
+
+// AttachWithOpts attaches a volume to a server.
+func (c *VolumeClient) AttachWithOpts(ctx context.Context, volume *Volume, opts VolumeAttachOpts) (*Action, *Response, error) {
 	reqBody := schema.VolumeActionAttachVolumeRequest{
-		Server: server.ID,
+		Server:    opts.Server.ID,
+		Automount: opts.Automount,
 	}
+
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, nil, err
@@ -292,6 +296,11 @@ func (c *VolumeClient) Attach(ctx context.Context, volume *Volume, server *Serve
 		return nil, resp, err
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// Attach attaches a volume to a server.
+func (c *VolumeClient) Attach(ctx context.Context, volume *Volume, server *Server) (*Action, *Response, error) {
+	return c.AttachWithOpts(ctx, volume, VolumeAttachOpts{Server: server})
 }
 
 // Detach detaches a volume from a server.
