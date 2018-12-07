@@ -79,7 +79,7 @@ type VolumeActionChangeProtectionResponse struct {
 // attach a volume to a server.
 type VolumeActionAttachVolumeRequest struct {
 	Server    int   `json:"server"`
-	Automount *bool `json:"automount"`
+	Automount *bool `json:"automount,omitempty"`
 }
 
 // VolumeActionAttachVolumeResponse defines the schema of the response when
