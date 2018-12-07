@@ -352,10 +352,10 @@ func TestServersCreateWithVolumes(t *testing.T) {
 			t.Fatal(err)
 		}
 		if len(reqBody.Volumes) != 2 || reqBody.Volumes[0] != 1 || reqBody.Volumes[1] != 2 {
-			t.Errorf("unexpected Volumes %v", reqBody.Volumes)
+			t.Errorf("unexpected Volumes: %v", reqBody.Volumes)
 		}
-		if reqBody.Automount == nil || *reqBody.Automount != true {
-			t.Errorf("unexpected Automount %v", reqBody.Automount)
+		if reqBody.Automount == nil || !*reqBody.Automount {
+			t.Errorf("unexpected Automount: %v", reqBody.Automount)
 		}
 		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
 			Server: schema.Server{
@@ -379,16 +379,13 @@ func TestServersCreateWithVolumes(t *testing.T) {
 		Automount: Bool(true),
 	})
 	if err != nil {
-		t.Fatalf("Server.Create failed: %s", err)
+		t.Fatal(err)
 	}
 	if result.Server == nil {
 		t.Fatal("no server")
 	}
 	if result.Server.ID != 1 {
 		t.Errorf("unexpected server ID: %v", result.Server.ID)
-	}
-	if result.RootPassword != "" {
-		t.Errorf("expected no root password, got: %v", result.RootPassword)
 	}
 	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
 		t.Errorf("unexpected next actions: %v", result.NextActions)
