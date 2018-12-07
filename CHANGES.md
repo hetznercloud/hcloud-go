@@ -3,6 +3,8 @@
 ## master
 
 * Add missing constants for all [documented error codes](https://docs.hetzner.cloud/#overview-errors)
+* Add support for automounting volumes
+* Add support for attaching volumes when creating a server
 
 ## v1.11.0
 
