@@ -46,11 +46,10 @@ func (c *LocationClient) GetByID(ctx context.Context, id int) (*Location, *Respo
 // GetByName retrieves an location by its name. If the location does not exist, nil is returned.
 func (c *LocationClient) GetByName(ctx context.Context, name string) (*Location, *Response, error) {
 	locations, response, err := c.List(ctx, LocationListOpts{Name: name})
-	var location *Location
-	if len(locations) > 0 {
-		location = locations[0]
+	if len(locations) == 0 {
+		return nil, response, err
 	}
-	return location, response, err
+	return locations[0], response, err
 }
 
 // Get retrieves a location by its ID if the input can be parsed as an integer, otherwise it
@@ -68,17 +67,17 @@ type LocationListOpts struct {
 	Name string
 }
 
-func valuesForLocationListOpts(opts LocationListOpts) url.Values {
-	vals := valuesForListOpts(opts.ListOpts)
-	if opts.Name != "" {
-		vals.Add("name", opts.Name)
+func (l *LocationListOpts) values() url.Values {
+	vals := valuesForListOpts(l.ListOpts)
+	if l.Name != "" {
+		vals.Add("name", l.Name)
 	}
 	return vals
 }
 
 // List returns a list of locations for a specific page.
 func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) ([]*Location, *Response, error) {
-	path := "/locations?" + valuesForLocationListOpts(opts).Encode()
+	path := "/locations?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

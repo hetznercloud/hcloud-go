@@ -84,13 +84,13 @@ func TestActionClientList(t *testing.T) {
 				t.Errorf("expected status[0] to be running; got %q", status[0])
 			}
 			if status[1] != "error" {
-				t.Errorf("expected status[0] to be error; got %q", status[1])
+				t.Errorf("expected status[1] to be error; got %q", status[1])
 			}
 		}
 
 		sort := r.Form["sort"]
 		if len(sort) != 3 {
-			t.Errorf("expected status to contain 3 elements; got %q", sort)
+			t.Errorf("expected sort to contain 3 elements; got %q", sort)
 		} else {
 			if sort[0] != "status" {
 				t.Errorf("expected sort[0] to be status; got %q", sort[0])

@@ -50,11 +50,10 @@ func (c *DatacenterClient) GetByID(ctx context.Context, id int) (*Datacenter, *R
 // GetByName retrieves an datacenter by its name. If the datacenter does not exist, nil is returned.
 func (c *DatacenterClient) GetByName(ctx context.Context, name string) (*Datacenter, *Response, error) {
 	datacenters, response, err := c.List(ctx, DatacenterListOpts{Name: name})
-	var datacenter *Datacenter
-	if len(datacenters) > 0 {
-		datacenter = datacenters[0]
+	if len(datacenters) == 0 {
+		return nil, response, err
 	}
-	return datacenter, response, err
+	return datacenters[0], response, err
 }
 
 // Get retrieves a datacenter by its ID if the input can be parsed as an integer, otherwise it
@@ -72,17 +71,17 @@ type DatacenterListOpts struct {
 	Name string
 }
 
-func valuesForDatacenterListOpts(opts DatacenterListOpts) url.Values {
-	vals := valuesForListOpts(opts.ListOpts)
-	if opts.Name != "" {
-		vals.Add("name", opts.Name)
+func (l *DatacenterListOpts) values() url.Values {
+	vals := valuesForListOpts(l.ListOpts)
+	if l.Name != "" {
+		vals.Add("name", l.Name)
 	}
 	return vals
 }
 
 // List returns a list of datacenters for a specific page.
 func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) ([]*Datacenter, *Response, error) {
-	path := "/datacenters?" + valuesForDatacenterListOpts(opts).Encode()
+	path := "/datacenters?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

@@ -88,9 +88,15 @@ type VolumeListOpts struct {
 	ListOpts
 }
 
+func (l *VolumeListOpts) values() url.Values {
+	vals := valuesForListOpts(l.ListOpts)
+
+	return vals
+}
+
 // List returns a list of volumes for a specific page.
 func (c *VolumeClient) List(ctx context.Context, opts VolumeListOpts) ([]*Volume, *Response, error) {
-	path := "/volumes?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/volumes?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

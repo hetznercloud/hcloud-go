@@ -1,7 +1,7 @@
 # Changes
 
 ## master 
-* Add missing request parameters to `ActionListOpts`, `DatacenterListOpts`, `ImageListOpts`, `LocationListOpts`, `ServerListOpts`, `SSHKeyListOpts`
+* Add missing request parameters to `ActionListOpts`, `DatacenterListOpts`, `ImageListOpts`, `LocationListOpts`, `ServerListOpts`, ``ServerTypeOpts,`SSHKeyListOpts`
 
 ## v1.12.0
 

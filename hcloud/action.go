@@ -100,24 +100,22 @@ type ActionListOpts struct {
 	Sort   []string
 }
 
-func valuesForActionListOpts(opts ActionListOpts) url.Values {
-	vals := valuesForListOpts(opts.ListOpts)
-	if len(opts.Status) > 0 {
-		for _, status := range opts.Status {
-			vals.Add("status", status)
-		}
+func (l *ActionListOpts) values() url.Values {
+	vals := valuesForListOpts(l.ListOpts)
+	for _, status := range l.Status {
+		vals.Add("status", status)
 	}
-	if len(opts.Sort) > 0 {
-		for _, sort := range opts.Sort {
-			vals.Add("sort", sort)
-		}
+
+	for _, sort := range l.Sort {
+		vals.Add("sort", sort)
+
 	}
 	return vals
 }
 
 // List returns a list of actions for a specific page.
 func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
-	path := "/actions?" + valuesForActionListOpts(opts).Encode()
+	path := "/actions?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

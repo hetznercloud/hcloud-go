@@ -118,11 +118,10 @@ func (c *ServerClient) GetByID(ctx context.Context, id int) (*Server, *Response,
 // GetByName retrieves a server by its name. If the server does not exist, nil is returned.
 func (c *ServerClient) GetByName(ctx context.Context, name string) (*Server, *Response, error) {
 	servers, response, err := c.List(ctx, ServerListOpts{Name: name})
-	var server *Server
-	if len(servers) > 0 {
-		server = servers[0]
+	if len(servers) == 0 {
+		return nil, response, err
 	}
-	return server, response, err
+	return servers[0], response, err
 }
 
 // Get retrieves a server by its ID if the input can be parsed as an integer, otherwise it
@@ -140,17 +139,17 @@ type ServerListOpts struct {
 	Name string
 }
 
-func valuesForServerListOpts(opts ServerListOpts) url.Values {
-	vals := valuesForListOpts(opts.ListOpts)
-	if opts.Name != "" {
-		vals.Add("name", opts.Name)
+func (l *ServerListOpts) values() url.Values {
+	vals := valuesForListOpts(l.ListOpts)
+	if l.Name != "" {
+		vals.Add("name", l.Name)
 	}
 	return vals
 }
 
 // List returns a list of servers for a specific page.
 func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server, *Response, error) {
-	path := "/servers?" + valuesForServerListOpts(opts).Encode()
+	path := "/servers?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

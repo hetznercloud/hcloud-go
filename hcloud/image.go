@@ -92,11 +92,10 @@ func (c *ImageClient) GetByID(ctx context.Context, id int) (*Image, *Response, e
 // GetByName retrieves an image by its name. If the image does not exist, nil is returned.
 func (c *ImageClient) GetByName(ctx context.Context, name string) (*Image, *Response, error) {
 	images, response, err := c.List(ctx, ImageListOpts{Name: name})
-	var image *Image
-	if len(images) > 0 {
-		image = images[0]
+	if len(images) == 0 {
+		return nil, response, err
 	}
-	return image, response, err
+	return images[0], response, err
 }
 
 // Get retrieves an image by its ID if the input can be parsed as an integer, otherwise it
@@ -116,25 +115,23 @@ type ImageListOpts struct {
 	Name    string
 }
 
-func valuesForImageListOpts(opts ImageListOpts) url.Values {
-	vals := valuesForListOpts(opts.ListOpts)
-	if len(opts.Type) > 0 {
-		for _, Type := range opts.Type {
-			vals.Add("type", Type)
-		}
+func (l *ImageListOpts) values() url.Values {
+	vals := valuesForListOpts(l.ListOpts)
+	for _, Type := range l.Type {
+		vals.Add("type", Type)
 	}
-	if opts.BoundTo != nil {
-		vals.Add("bound_to", strconv.Itoa(opts.BoundTo.ID))
+	if l.BoundTo != nil {
+		vals.Add("bound_to", strconv.Itoa(l.BoundTo.ID))
 	}
-	if opts.Name != "" {
-		vals.Add("name", opts.Name)
+	if l.Name != "" {
+		vals.Add("name", l.Name)
 	}
 	return vals
 }
 
 // List returns a list of images for a specific page.
 func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) ([]*Image, *Response, error) {
-	path := "/images?" + valuesForImageListOpts(opts).Encode()
+	path := "/images?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

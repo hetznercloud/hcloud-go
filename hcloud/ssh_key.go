@@ -47,11 +47,10 @@ func (c *SSHKeyClient) GetByID(ctx context.Context, id int) (*SSHKey, *Response,
 // GetByName retrieves a SSH key by its name. If the SSH key does not exist, nil is returned.
 func (c *SSHKeyClient) GetByName(ctx context.Context, name string) (*SSHKey, *Response, error) {
 	sshKeys, response, err := c.List(ctx, SSHKeyListOpts{Name: name})
-	var sshKey *SSHKey
-	if len(sshKeys) > 0 {
-		sshKey = sshKeys[0]
+	if len(sshKeys) == 0 {
+		return nil, response, err
 	}
-	return sshKey, response, err
+	return sshKeys[0], response, err
 }
 
 // GetByFingerprint retreives a SSH key by its fingerprint. If the SSH key does not exist, nil is returned.
@@ -80,20 +79,20 @@ type SSHKeyListOpts struct {
 	Fingerprint string
 }
 
-func valuesForSSHKeyListOpts(opts SSHKeyListOpts) url.Values {
-	vals := valuesForListOpts(opts.ListOpts)
-	if opts.Name != "" {
-		vals.Add("name", opts.Name)
+func (l *SSHKeyListOpts) values() url.Values {
+	vals := valuesForListOpts(l.ListOpts)
+	if l.Name != "" {
+		vals.Add("name", l.Name)
 	}
-	if opts.Fingerprint != "" {
-		vals.Add("fingerprint", opts.Fingerprint)
+	if l.Fingerprint != "" {
+		vals.Add("fingerprint", l.Fingerprint)
 	}
 	return vals
 }
 
 // List returns a list of SSH keys for a specific page.
 func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey, *Response, error) {
-	path := "/ssh_keys?" + valuesForSSHKeyListOpts(opts).Encode()
+	path := "/ssh_keys?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
