@@ -91,22 +91,12 @@ func (c *ImageClient) GetByID(ctx context.Context, id int) (*Image, *Response, e
 
 // GetByName retrieves an image by its name. If the image does not exist, nil is returned.
 func (c *ImageClient) GetByName(ctx context.Context, name string) (*Image, *Response, error) {
-	path := "/images?name=" + url.QueryEscape(name)
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
+	images, response, err := c.List(ctx, ImageListOpts{Name: name})
+	var image *Image
+	if len(images) > 0 {
+		image = images[0]
 	}
-
-	var body schema.ImageListResponse
-	resp, err := c.client.Do(req, &body)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if len(body.Images) == 0 {
-		return nil, resp, nil
-	}
-	return ImageFromSchema(body.Images[0]), resp, nil
+	return image, response, err
 }
 
 // Get retrieves an image by its ID if the input can be parsed as an integer, otherwise it
@@ -121,11 +111,30 @@ func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Respon
 // ImageListOpts specifies options for listing images.
 type ImageListOpts struct {
 	ListOpts
+	Type    []string
+	BoundTo *Server
+	Name    string
+}
+
+func valuesForImageListOpts(opts ImageListOpts) url.Values {
+	vals := valuesForListOpts(opts.ListOpts)
+	if len(opts.Type) > 0 {
+		for _, Type := range opts.Type {
+			vals.Add("type", Type)
+		}
+	}
+	if opts.BoundTo != nil {
+		vals.Add("bound_to", strconv.Itoa(opts.BoundTo.ID))
+	}
+	if opts.Name != "" {
+		vals.Add("name", opts.Name)
+	}
+	return vals
 }
 
 // List returns a list of images for a specific page.
 func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) ([]*Image, *Response, error) {
-	path := "/images?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/images?" + valuesForImageListOpts(opts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
@@ -145,7 +154,7 @@ func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) ([]*Image, *
 
 // All returns all images.
 func (c *ImageClient) All(ctx context.Context) ([]*Image, error) {
-	return c.AllWithOpts(ctx, ImageListOpts{ListOpts{PerPage: 50}})
+	return c.AllWithOpts(ctx, ImageListOpts{ListOpts: ListOpts{PerPage: 50}})
 }
 
 // AllWithOpts returns all images for the given options.

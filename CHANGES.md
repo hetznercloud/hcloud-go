@@ -1,5 +1,8 @@
 # Changes
 
+## master 
+
+
 ## v1.12.0
 
 * Add missing constants for all [documented error codes](https://docs.hetzner.cloud/#overview-errors)

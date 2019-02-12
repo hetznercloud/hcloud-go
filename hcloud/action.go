@@ -3,6 +3,7 @@ package hcloud
 import (
 	"context"
 	"fmt"
+	"net/url"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
@@ -95,11 +96,28 @@ func (c *ActionClient) GetByID(ctx context.Context, id int) (*Action, *Response,
 // ActionListOpts specifies options for listing actions.
 type ActionListOpts struct {
 	ListOpts
+	Status []string
+	Sort   []string
+}
+
+func valuesForActionListOpts(opts ActionListOpts) url.Values {
+	vals := valuesForListOpts(opts.ListOpts)
+	if len(opts.Status) > 0 {
+		for _, status := range opts.Status {
+			vals.Add("status", status)
+		}
+	}
+	if len(opts.Sort) > 0 {
+		for _, sort := range opts.Sort {
+			vals.Add("sort", sort)
+		}
+	}
+	return vals
 }
 
 // List returns a list of actions for a specific page.
 func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
-	path := "/actions?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/actions?" + valuesForActionListOpts(opts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

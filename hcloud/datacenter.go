@@ -49,22 +49,12 @@ func (c *DatacenterClient) GetByID(ctx context.Context, id int) (*Datacenter, *R
 
 // GetByName retrieves an datacenter by its name. If the datacenter does not exist, nil is returned.
 func (c *DatacenterClient) GetByName(ctx context.Context, name string) (*Datacenter, *Response, error) {
-	path := "/datacenters?name=" + url.QueryEscape(name)
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
+	datacenters, response, err := c.List(ctx, DatacenterListOpts{Name: name})
+	var datacenter *Datacenter
+	if len(datacenters) > 0 {
+		datacenter = datacenters[0]
 	}
-
-	var body schema.DatacenterListResponse
-	resp, err := c.client.Do(req, &body)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if len(body.Datacenters) == 0 {
-		return nil, resp, nil
-	}
-	return DatacenterFromSchema(body.Datacenters[0]), resp, nil
+	return datacenter, response, err
 }
 
 // Get retrieves a datacenter by its ID if the input can be parsed as an integer, otherwise it
@@ -79,11 +69,20 @@ func (c *DatacenterClient) Get(ctx context.Context, idOrName string) (*Datacente
 // DatacenterListOpts specifies options for listing datacenters.
 type DatacenterListOpts struct {
 	ListOpts
+	Name string
+}
+
+func valuesForDatacenterListOpts(opts DatacenterListOpts) url.Values {
+	vals := valuesForListOpts(opts.ListOpts)
+	if opts.Name != "" {
+		vals.Add("name", opts.Name)
+	}
+	return vals
 }
 
 // List returns a list of datacenters for a specific page.
 func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) ([]*Datacenter, *Response, error) {
-	path := "/datacenters?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/datacenters?" + valuesForDatacenterListOpts(opts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

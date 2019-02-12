@@ -218,6 +218,9 @@ func TestServersAllWithOpts(t *testing.T) {
 		if labelSelector := r.URL.Query().Get("label_selector"); labelSelector != "key=value" {
 			t.Errorf("unexpected label selector: %s", labelSelector)
 		}
+		if name := r.URL.Query().Get("name"); name != "my-server" {
+			t.Errorf("unexpected name: %s", name)
+		}
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(struct {
 			Servers []schema.Server `json:"servers"`
@@ -240,7 +243,7 @@ func TestServersAllWithOpts(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	opts := ServerListOpts{ListOpts{LabelSelector: "key=value"}}
+	opts := ServerListOpts{ListOpts: ListOpts{LabelSelector: "key=value"}, Name: "my-server"}
 	servers, err := env.Client.Server.AllWithOpts(ctx, opts)
 	if err != nil {
 		t.Fatalf("Servers.List failed: %s", err)

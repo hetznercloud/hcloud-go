@@ -149,6 +149,9 @@ func TestLocationClient(t *testing.T) {
 			if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
 				t.Errorf("expected per_page 50; got %q", perPage)
 			}
+			if name := r.URL.Query().Get("name"); name != "fsn1" {
+				t.Errorf("expected name fsn1; got %q", name)
+			}
 			json.NewEncoder(w).Encode(schema.LocationListResponse{
 				Locations: []schema.Location{
 					{ID: 1},
@@ -160,6 +163,7 @@ func TestLocationClient(t *testing.T) {
 		opts := LocationListOpts{}
 		opts.Page = 2
 		opts.PerPage = 50
+		opts.Name = "fsn1"
 
 		ctx := context.Background()
 		locations, _, err := env.Client.Location.List(ctx, opts)

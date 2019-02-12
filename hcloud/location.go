@@ -45,22 +45,12 @@ func (c *LocationClient) GetByID(ctx context.Context, id int) (*Location, *Respo
 
 // GetByName retrieves an location by its name. If the location does not exist, nil is returned.
 func (c *LocationClient) GetByName(ctx context.Context, name string) (*Location, *Response, error) {
-	path := "/locations?name=" + url.QueryEscape(name)
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
+	locations, response, err := c.List(ctx, LocationListOpts{Name: name})
+	var location *Location
+	if len(locations) > 0 {
+		location = locations[0]
 	}
-
-	var body schema.LocationListResponse
-	resp, err := c.client.Do(req, &body)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if len(body.Locations) == 0 {
-		return nil, resp, nil
-	}
-	return LocationFromSchema(body.Locations[0]), resp, nil
+	return location, response, err
 }
 
 // Get retrieves a location by its ID if the input can be parsed as an integer, otherwise it
@@ -75,11 +65,20 @@ func (c *LocationClient) Get(ctx context.Context, idOrName string) (*Location, *
 // LocationListOpts specifies options for listing location.
 type LocationListOpts struct {
 	ListOpts
+	Name string
+}
+
+func valuesForLocationListOpts(opts LocationListOpts) url.Values {
+	vals := valuesForListOpts(opts.ListOpts)
+	if opts.Name != "" {
+		vals.Add("name", opts.Name)
+	}
+	return vals
 }
 
 // List returns a list of locations for a specific page.
 func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) ([]*Location, *Response, error) {
-	path := "/locations?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/locations?" + valuesForLocationListOpts(opts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

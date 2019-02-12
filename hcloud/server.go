@@ -115,24 +115,14 @@ func (c *ServerClient) GetByID(ctx context.Context, id int) (*Server, *Response,
 	return ServerFromSchema(body.Server), resp, nil
 }
 
-// GetByName retreives a server by its name. If the server does not exist, nil is returned.
+// GetByName retrieves a server by its name. If the server does not exist, nil is returned.
 func (c *ServerClient) GetByName(ctx context.Context, name string) (*Server, *Response, error) {
-	path := "/servers?name=" + url.QueryEscape(name)
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
+	servers, response, err := c.List(ctx, ServerListOpts{Name: name})
+	var server *Server
+	if len(servers) > 0 {
+		server = servers[0]
 	}
-
-	var body schema.ServerListResponse
-	resp, err := c.client.Do(req, &body)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if len(body.Servers) == 0 {
-		return nil, resp, nil
-	}
-	return ServerFromSchema(body.Servers[0]), resp, nil
+	return server, response, err
 }
 
 // Get retrieves a server by its ID if the input can be parsed as an integer, otherwise it
@@ -147,11 +137,20 @@ func (c *ServerClient) Get(ctx context.Context, idOrName string) (*Server, *Resp
 // ServerListOpts specifies options for listing servers.
 type ServerListOpts struct {
 	ListOpts
+	Name string
+}
+
+func valuesForServerListOpts(opts ServerListOpts) url.Values {
+	vals := valuesForListOpts(opts.ListOpts)
+	if opts.Name != "" {
+		vals.Add("name", opts.Name)
+	}
+	return vals
 }
 
 // List returns a list of servers for a specific page.
 func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server, *Response, error) {
-	path := "/servers?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/servers?" + valuesForServerListOpts(opts).Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
@@ -171,7 +170,7 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server
 
 // All returns all servers.
 func (c *ServerClient) All(ctx context.Context) ([]*Server, error) {
-	return c.AllWithOpts(ctx, ServerListOpts{ListOpts{PerPage: 50}})
+	return c.AllWithOpts(ctx, ServerListOpts{ListOpts: ListOpts{PerPage: 50}})
 }
 
 // AllWithOpts returns all servers for the given options.

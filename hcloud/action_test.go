@@ -74,6 +74,34 @@ func TestActionClientList(t *testing.T) {
 		if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
 			t.Errorf("expected per_page 50; got %q", perPage)
 		}
+
+		r.ParseForm()
+		status := r.Form["status"]
+		if len(status) != 2 {
+			t.Errorf("expected status to contain 2 elements; got %q", status)
+		} else {
+			if status[0] != "running" {
+				t.Errorf("expected status[0] to be running; got %q", status[0])
+			}
+			if status[1] != "error" {
+				t.Errorf("expected status[0] to be error; got %q", status[1])
+			}
+		}
+
+		sort := r.Form["sort"]
+		if len(sort) != 3 {
+			t.Errorf("expected status to contain 3 elements; got %q", sort)
+		} else {
+			if sort[0] != "status" {
+				t.Errorf("expected sort[0] to be status; got %q", sort[0])
+			}
+			if sort[1] != "progress:desc" {
+				t.Errorf("expected sort[1] to be progress:desc; got %q", sort[1])
+			}
+			if sort[2] != "command:asc" {
+				t.Errorf("expected sort[2] to be command:asc; got %q", sort[2])
+			}
+		}
 		json.NewEncoder(w).Encode(schema.ActionListResponse{
 			Actions: []schema.Action{
 				{ID: 1},
@@ -85,6 +113,8 @@ func TestActionClientList(t *testing.T) {
 	opts := ActionListOpts{}
 	opts.Page = 2
 	opts.PerPage = 50
+	opts.Status = []string{string(ActionStatusRunning), string(ActionStatusError)}
+	opts.Sort = []string{"status", "progress:desc", "command:asc"}
 
 	ctx := context.Background()
 	actions, _, err := env.Client.Action.List(ctx, opts)
