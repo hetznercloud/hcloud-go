@@ -75,10 +75,8 @@ type FloatingIPListOpts struct {
 	ListOpts
 }
 
-func (l *FloatingIPListOpts) values() url.Values {
-	vals := valuesForListOpts(l.ListOpts)
-
-	return vals
+func (l FloatingIPListOpts) values() url.Values {
+	return valuesForListOpts(l.ListOpts)
 }
 
 // List returns a list of Floating IPs for a specific page.
