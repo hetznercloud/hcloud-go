@@ -100,12 +100,11 @@ type ActionListOpts struct {
 	Sort   []string
 }
 
-func (l *ActionListOpts) values() url.Values {
+func (l ActionListOpts) values() url.Values {
 	vals := valuesForListOpts(l.ListOpts)
 	for _, status := range l.Status {
 		vals.Add("status", status)
 	}
-
 	for _, sort := range l.Sort {
 		vals.Add("sort", sort)
 
