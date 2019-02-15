@@ -88,10 +88,8 @@ type VolumeListOpts struct {
 	ListOpts
 }
 
-func (l *VolumeListOpts) values() url.Values {
-	vals := valuesForListOpts(l.ListOpts)
-
-	return vals
+func (l VolumeListOpts) values() url.Values {
+	return valuesForListOpts(l.ListOpts)
 }
 
 // List returns a list of volumes for a specific page.
