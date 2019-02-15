@@ -79,7 +79,7 @@ type SSHKeyListOpts struct {
 	Fingerprint string
 }
 
-func (l *SSHKeyListOpts) values() url.Values {
+func (l SSHKeyListOpts) values() url.Values {
 	vals := valuesForListOpts(l.ListOpts)
 	if l.Name != "" {
 		vals.Add("name", l.Name)
