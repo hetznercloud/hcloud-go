@@ -115,7 +115,7 @@ type ImageListOpts struct {
 	Name    string
 }
 
-func (l *ImageListOpts) values() url.Values {
+func (l ImageListOpts) values() url.Values {
 	vals := valuesForListOpts(l.ListOpts)
 	for _, Type := range l.Type {
 		vals.Add("type", Type)
