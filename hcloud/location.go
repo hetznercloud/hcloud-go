@@ -67,7 +67,7 @@ type LocationListOpts struct {
 	Name string
 }
 
-func (l *LocationListOpts) values() url.Values {
+func (l LocationListOpts) values() url.Values {
 	vals := valuesForListOpts(l.ListOpts)
 	if l.Name != "" {
 		vals.Add("name", l.Name)
