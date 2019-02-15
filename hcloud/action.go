@@ -107,7 +107,6 @@ func (l ActionListOpts) values() url.Values {
 	}
 	for _, sort := range l.Sort {
 		vals.Add("sort", sort)
-
 	}
 	return vals
 }
