@@ -91,7 +91,7 @@ type ServerTypeListOpts struct {
 	Name string
 }
 
-func (l *ServerTypeListOpts) values() url.Values {
+func (l ServerTypeListOpts) values() url.Values {
 	vals := valuesForListOpts(l.ListOpts)
 	if l.Name != "" {
 		vals.Add("name", l.Name)
