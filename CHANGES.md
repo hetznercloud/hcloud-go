@@ -1,7 +1,8 @@
 # Changes
 
-## master 
-* Add missing request parameters to `ActionListOpts`, `DatacenterListOpts`, `ImageListOpts`, `LocationListOpts`, `ServerListOpts`, ``ServerTypeOpts,`SSHKeyListOpts`
+## master
+
+* Add missing fields to `*ListOpts` structs
 
 ## v1.12.0
 
