@@ -75,8 +75,7 @@ func TestActionClientList(t *testing.T) {
 			t.Errorf("expected per_page 50; got %q", perPage)
 		}
 
-		r.ParseForm()
-		status := r.Form["status"]
+		status := r.URL.Query()["status"]
 		if len(status) != 2 {
 			t.Errorf("expected status to contain 2 elements; got %q", status)
 		} else {
@@ -88,7 +87,7 @@ func TestActionClientList(t *testing.T) {
 			}
 		}
 
-		sort := r.Form["sort"]
+		sort := r.URL.Query()["sort"]
 		if len(sort) != 3 {
 			t.Errorf("expected sort to contain 3 elements; got %q", sort)
 		} else {
