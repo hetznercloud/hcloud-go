@@ -118,8 +118,8 @@ type ImageListOpts struct {
 
 func (l ImageListOpts) values() url.Values {
 	vals := l.ListOpts.values()
-	for _, Type := range l.Type {
-		vals.Add("type", string(Type))
+	for _, typ := range l.Type {
+		vals.Add("type", string(typ))
 	}
 	if l.BoundTo != nil {
 		vals.Add("bound_to", strconv.Itoa(l.BoundTo.ID))
@@ -127,8 +127,8 @@ func (l ImageListOpts) values() url.Values {
 	if l.Name != "" {
 		vals.Add("name", l.Name)
 	}
-	for _, Sort := range l.Sort {
-		vals.Add("sort", Sort)
+	for _, sort := range l.Sort {
+		vals.Add("sort", sort)
 	}
 	return vals
 }

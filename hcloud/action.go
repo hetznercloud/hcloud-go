@@ -103,7 +103,7 @@ type ActionListOpts struct {
 func (l ActionListOpts) values() url.Values {
 	vals := l.ListOpts.values()
 	for _, status := range l.Status {
-		vals.Add("status", status)
+		vals.Add("status", string(status))
 	}
 	for _, sort := range l.Sort {
 		vals.Add("sort", sort)
