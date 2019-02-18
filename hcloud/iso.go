@@ -61,10 +61,10 @@ func (c *ISOClient) GetByID(ctx context.Context, id int) (*ISO, *Response, error
 // GetByName retrieves an ISO by its name.
 func (c *ISOClient) GetByName(ctx context.Context, name string) (*ISO, *Response, error) {
 	isos, response, err := c.List(ctx, ISOListOpts{Name: name})
-	if len(isos) > 0 {
-		return isos[0], response, err
+	if len(isos) == 0 {
+		return nil, response, err
 	}
-	return nil, response, err
+	return isos[0], response, err
 }
 
 // Get retrieves an ISO by its ID if the input can be parsed as an integer, otherwise it retrieves an ISO by its name.
@@ -81,17 +81,17 @@ type ISOListOpts struct {
 	Name string
 }
 
-func valuesForISOListOpts(opts ISOListOpts) url.Values {
-	vals := valuesForListOpts(opts.ListOpts)
-	if opts.Name != "" {
-		vals.Add("name", opts.Name)
+func (l ISOListOpts) values() url.Values {
+	vals := l.ListOpts.values()
+	if l.Name != "" {
+		vals.Add("name", l.Name)
 	}
 	return vals
 }
 
 // List returns a list of ISOs for a specific page.
 func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) ([]*ISO, *Response, error) {
-	path := "/isos?" + valuesForISOListOpts(opts).Encode()
+	path := "/isos?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err

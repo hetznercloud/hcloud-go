@@ -110,21 +110,25 @@ func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Respon
 // ImageListOpts specifies options for listing images.
 type ImageListOpts struct {
 	ListOpts
-	Type    []string
+	Type    []ImageType
 	BoundTo *Server
 	Name    string
+	Sort    []string
 }
 
 func (l ImageListOpts) values() url.Values {
-	vals := valuesForListOpts(l.ListOpts)
+	vals := l.ListOpts.values()
 	for _, Type := range l.Type {
-		vals.Add("type", Type)
+		vals.Add("type", string(Type))
 	}
 	if l.BoundTo != nil {
 		vals.Add("bound_to", strconv.Itoa(l.BoundTo.ID))
 	}
 	if l.Name != "" {
 		vals.Add("name", l.Name)
+	}
+	for _, Sort := range l.Sort {
+		vals.Add("sort", Sort)
 	}
 	return vals
 }

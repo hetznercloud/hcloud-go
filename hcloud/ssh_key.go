@@ -56,11 +56,10 @@ func (c *SSHKeyClient) GetByName(ctx context.Context, name string) (*SSHKey, *Re
 // GetByFingerprint retreives a SSH key by its fingerprint. If the SSH key does not exist, nil is returned.
 func (c *SSHKeyClient) GetByFingerprint(ctx context.Context, fingerprint string) (*SSHKey, *Response, error) {
 	sshKeys, response, err := c.List(ctx, SSHKeyListOpts{Fingerprint: fingerprint})
-	var sshKey *SSHKey
-	if len(sshKeys) > 0 {
-		sshKey = sshKeys[0]
+	if len(sshKeys) == 0 {
+		return nil, response, err
 	}
-	return sshKey, response, err
+	return sshKeys[0], response, err
 }
 
 // Get retrieves a SSH key by its ID if the input can be parsed as an integer, otherwise it
@@ -80,7 +79,7 @@ type SSHKeyListOpts struct {
 }
 
 func (l SSHKeyListOpts) values() url.Values {
-	vals := valuesForListOpts(l.ListOpts)
+	vals := l.ListOpts.values()
 	if l.Name != "" {
 		vals.Add("name", l.Name)
 	}

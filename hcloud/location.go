@@ -68,7 +68,7 @@ type LocationListOpts struct {
 }
 
 func (l LocationListOpts) values() url.Values {
-	vals := valuesForListOpts(l.ListOpts)
+	vals := l.ListOpts.values()
 	if l.Name != "" {
 		vals.Add("name", l.Name)
 	}

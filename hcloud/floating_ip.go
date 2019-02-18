@@ -76,7 +76,7 @@ type FloatingIPListOpts struct {
 }
 
 func (l FloatingIPListOpts) values() url.Values {
-	return valuesForListOpts(l.ListOpts)
+	return l.ListOpts.values()
 }
 
 // List returns a list of Floating IPs for a specific page.

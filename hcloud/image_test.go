@@ -262,7 +262,7 @@ func TestImageClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
-		opts := ImageListOpts{ListOpts: ListOpts{LabelSelector: "key=value"}, Name: "my-image", Type: []string{"backup", "system"}}
+		opts := ImageListOpts{ListOpts: ListOpts{LabelSelector: "key=value"}, Name: "my-image", Type: []ImageType{"backup", "system"}}
 		images, err := env.Client.Image.AllWithOpts(ctx, opts)
 		if err != nil {
 			t.Fatal(err)
