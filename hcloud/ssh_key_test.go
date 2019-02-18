@@ -329,7 +329,7 @@ func TestSSHKeyAllWithOpts(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	opts := SSHKeyListOpts{ListOpts{LabelSelector: "key=value"}}
+	opts := SSHKeyListOpts{ListOpts: ListOpts{LabelSelector: "key=value"}}
 	sshKeys, err := env.Client.SSHKey.AllWithOpts(ctx, opts)
 	if err != nil {
 		t.Fatal(err)

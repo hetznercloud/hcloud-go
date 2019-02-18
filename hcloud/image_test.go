@@ -237,6 +237,9 @@ func TestImageClient(t *testing.T) {
 			if labelSelector := r.URL.Query().Get("label_selector"); labelSelector != "key=value" {
 				t.Errorf("unexpected label selector: %s", labelSelector)
 			}
+			if name := r.URL.Query().Get("name"); name != "my-image" {
+				t.Errorf("unexpected name: %s", name)
+			}
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(struct {
 				Images []schema.Image `json:"images"`
@@ -259,7 +262,7 @@ func TestImageClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
-		opts := ImageListOpts{ListOpts{LabelSelector: "key=value"}}
+		opts := ImageListOpts{ListOpts: ListOpts{LabelSelector: "key=value"}, Name: "my-image", Type: []ImageType{"backup", "system"}}
 		images, err := env.Client.Image.AllWithOpts(ctx, opts)
 		if err != nil {
 			t.Fatal(err)

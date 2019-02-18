@@ -56,22 +56,11 @@ func (c *VolumeClient) GetByID(ctx context.Context, id int) (*Volume, *Response,
 
 // GetByName retrieves a volume by its name. If the volume does not exist, nil is returned.
 func (c *VolumeClient) GetByName(ctx context.Context, name string) (*Volume, *Response, error) {
-	path := "/volumes?name=" + url.QueryEscape(name)
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
+	volumes, response, err := c.List(ctx, VolumeListOpts{Name: name})
+	if len(volumes) == 0 {
+		return nil, response, err
 	}
-
-	var body schema.VolumeListResponse
-	resp, err := c.client.Do(req, &body)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	if len(body.Volumes) == 0 {
-		return nil, resp, nil
-	}
-	return VolumeFromSchema(body.Volumes[0]), resp, nil
+	return volumes[0], response, err
 }
 
 // Get retrieves a volume by its ID if the input can be parsed as an integer, otherwise it
@@ -86,11 +75,20 @@ func (c *VolumeClient) Get(ctx context.Context, idOrName string) (*Volume, *Resp
 // VolumeListOpts specifies options for listing volumes.
 type VolumeListOpts struct {
 	ListOpts
+	Name string
+}
+
+func (l VolumeListOpts) values() url.Values {
+	vals := l.ListOpts.values()
+	if l.Name != "" {
+		vals.Add("name", l.Name)
+	}
+	return vals
 }
 
 // List returns a list of volumes for a specific page.
 func (c *VolumeClient) List(ctx context.Context, opts VolumeListOpts) ([]*Volume, *Response, error) {
-	path := "/volumes?" + valuesForListOpts(opts.ListOpts).Encode()
+	path := "/volumes?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
 	if err != nil {
 		return nil, nil, err
@@ -110,7 +108,7 @@ func (c *VolumeClient) List(ctx context.Context, opts VolumeListOpts) ([]*Volume
 
 // All returns all volumes.
 func (c *VolumeClient) All(ctx context.Context) ([]*Volume, error) {
-	return c.AllWithOpts(ctx, VolumeListOpts{ListOpts{PerPage: 50}})
+	return c.AllWithOpts(ctx, VolumeListOpts{ListOpts: ListOpts{PerPage: 50}})
 }
 
 // AllWithOpts returns all volumes with the given options.

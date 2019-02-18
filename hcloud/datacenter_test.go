@@ -149,6 +149,9 @@ func TestDatacenterClient(t *testing.T) {
 			if perPage := r.URL.Query().Get("per_page"); perPage != "50" {
 				t.Errorf("expected per_page 50; got %q", perPage)
 			}
+			if name := r.URL.Query().Get("name"); name != "nbg1-dc3" {
+				t.Errorf("expected name nbg1-dc3; got %q", name)
+			}
 			json.NewEncoder(w).Encode(schema.DatacenterListResponse{
 				Datacenters: []schema.Datacenter{
 					{ID: 1},
@@ -160,6 +163,7 @@ func TestDatacenterClient(t *testing.T) {
 		opts := DatacenterListOpts{}
 		opts.Page = 2
 		opts.PerPage = 50
+		opts.Name = "nbg1-dc3"
 
 		ctx := context.Background()
 		datacenters, _, err := env.Client.Datacenter.List(ctx, opts)
