@@ -112,7 +112,7 @@ func TestActionClientList(t *testing.T) {
 	opts := ActionListOpts{}
 	opts.Page = 2
 	opts.PerPage = 50
-	opts.Status = []string{string(ActionStatusRunning), string(ActionStatusError)}
+	opts.Status = []ActionStatus{ActionStatusRunning, ActionStatusError}
 	opts.Sort = []string{"status", "progress:desc", "command:asc"}
 
 	ctx := context.Background()
