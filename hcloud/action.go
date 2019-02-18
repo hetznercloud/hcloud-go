@@ -96,7 +96,7 @@ func (c *ActionClient) GetByID(ctx context.Context, id int) (*Action, *Response,
 // ActionListOpts specifies options for listing actions.
 type ActionListOpts struct {
 	ListOpts
-	Status []string
+	Status []ActionStatus
 	Sort   []string
 }
 
