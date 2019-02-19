@@ -184,7 +184,7 @@ func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-cha
 
 			a, _, err := c.GetByID(ctx, action.ID)
 			if err != nil {
-				errCh <- ctx.Err()
+				errCh <- err
 				return
 			}
 
