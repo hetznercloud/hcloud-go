@@ -3,6 +3,7 @@
 ## master
 
 * Add missing fields to `*ListOpts` structs
+* Fix error handling in `WatchProgress()`
 
 ## v1.12.0
 
