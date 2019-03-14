@@ -4,6 +4,7 @@
 
 * Add missing fields to `*ListOpts` structs
 * Fix error handling in `WatchProgress()`
+* Add support for filtering volumes, images, and servers by status
 
 ## v1.12.0
 

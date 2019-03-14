@@ -114,6 +114,7 @@ type ImageListOpts struct {
 	BoundTo *Server
 	Name    string
 	Sort    []string
+	Status  []ImageStatus
 }
 
 func (l ImageListOpts) values() url.Values {
@@ -129,6 +130,9 @@ func (l ImageListOpts) values() url.Values {
 	}
 	for _, sort := range l.Sort {
 		vals.Add("sort", sort)
+	}
+	for _, status := range l.Status {
+		vals.Add("status", string(status))
 	}
 	return vals
 }
