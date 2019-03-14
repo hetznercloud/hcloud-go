@@ -54,22 +54,22 @@ const (
 	// ServerStatusRunning is the status when a server is running.
 	ServerStatusRunning ServerStatus = "running"
 
-	// ServerStatusStarting is the status when a server is starting.
+	// ServerStatusStarting is the status when a server is being started.
 	ServerStatusStarting ServerStatus = "starting"
 
-	// ServerStatusStopping is the status when a server is stopping.
+	// ServerStatusStopping is the status when a server is being stopped.
 	ServerStatusStopping ServerStatus = "stopping"
 
-	// ServerStatusMigrating is the status when a server is migrating.
+	// ServerStatusMigrating is the status when a server is being migrated.
 	ServerStatusMigrating ServerStatus = "migrating"
 
-	// ServerStatusRebuilding is the status when a server is rebuilding.
+	// ServerStatusRebuilding is the status when a server is being rebuilt.
 	ServerStatusRebuilding ServerStatus = "rebuilding"
 
-	// ServerStatusDeleting is the status when a server is deleting.
+	// ServerStatusDeleting is the status when a server is being deleted.
 	ServerStatusDeleting ServerStatus = "deleting"
 
-	// ServerStatusUnknown is the status when a server is unknown.
+	// ServerStatusUnknown is the status when a server's state is unknown.
 	ServerStatusUnknown ServerStatus = "unknown"
 )
 
