@@ -3,6 +3,7 @@
 ## master
 
 * Add missing fields to `*ListOpts` structs
+* Add `status` to `Volume|Image|ServerListOpts` 
 
 ## v1.12.0
 

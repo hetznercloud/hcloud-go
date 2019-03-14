@@ -53,6 +53,24 @@ const (
 
 	// ServerStatusRunning is the status when a server is running.
 	ServerStatusRunning ServerStatus = "running"
+
+	// ServerStatusStarting is the status when a server is starting.
+	ServerStatusStarting ServerStatus = "starting"
+
+	// ServerStatusStopping is the status when a server is stopping.
+	ServerStatusStopping ServerStatus = "stopping"
+
+	// ServerStatusMigrating is the status when a server is migrating.
+	ServerStatusMigrating ServerStatus = "migrating"
+
+	// ServerStatusRebuilding is the status when a server is rebuilding.
+	ServerStatusRebuilding ServerStatus = "rebuilding"
+
+	// ServerStatusDeleting is the status when a server is deleting.
+	ServerStatusDeleting ServerStatus = "deleting"
+
+	// ServerStatusUnknown is the status when a server is unknown.
+	ServerStatusUnknown ServerStatus = "unknown"
 )
 
 // ServerPublicNet represents a server's public network.
@@ -136,13 +154,17 @@ func (c *ServerClient) Get(ctx context.Context, idOrName string) (*Server, *Resp
 // ServerListOpts specifies options for listing servers.
 type ServerListOpts struct {
 	ListOpts
-	Name string
+	Name   string
+	Status []ServerStatus
 }
 
 func (l ServerListOpts) values() url.Values {
 	vals := l.ListOpts.values()
 	if l.Name != "" {
 		vals.Add("name", l.Name)
+	}
+	for _, status := range l.Status {
+		vals.Add("status", string(status))
 	}
 	return vals
 }

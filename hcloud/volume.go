@@ -36,6 +36,17 @@ type VolumeClient struct {
 	client *Client
 }
 
+// VolumeStatus specifies a volume's status.
+type VolumeStatus string
+
+const (
+	// VolumeStatusCreating is the status when a volume is creating.
+	VolumeStatusCreating VolumeStatus = "creating"
+
+	// VolumeStatusAvailable is the status when a volume is available.
+	VolumeStatusAvailable VolumeStatus = "available"
+)
+
 // GetByID retrieves a volume by its ID. If the volume does not exist, nil is returned.
 func (c *VolumeClient) GetByID(ctx context.Context, id int) (*Volume, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/volumes/%d", id), nil)
@@ -75,13 +86,17 @@ func (c *VolumeClient) Get(ctx context.Context, idOrName string) (*Volume, *Resp
 // VolumeListOpts specifies options for listing volumes.
 type VolumeListOpts struct {
 	ListOpts
-	Name string
+	Name   string
+	Status []VolumeStatus
 }
 
 func (l VolumeListOpts) values() url.Values {
 	vals := l.ListOpts.values()
 	if l.Name != "" {
 		vals.Add("name", l.Name)
+	}
+	for _, status := range l.Status {
+		vals.Add("status", string(status))
 	}
 	return vals
 }
