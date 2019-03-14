@@ -40,7 +40,7 @@ type VolumeClient struct {
 type VolumeStatus string
 
 const (
-	// VolumeStatusCreating is the status when a volume is creating.
+	// VolumeStatusCreating is the status when a volume is being created.
 	VolumeStatusCreating VolumeStatus = "creating"
 
 	// VolumeStatusAvailable is the status when a volume is available.
