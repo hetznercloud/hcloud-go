@@ -239,3 +239,26 @@ loop:
 		t.Fatalf("unexpected progress updates: %v", progressUpdates)
 	}
 }
+
+func TestActionClientWatchProgressError(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/actions/1", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnprocessableEntity)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code:    string(ErrorCodeServiceError),
+				Message: "service error",
+			},
+		})
+	})
+
+	action := &Action{ID: 1}
+	ctx := context.Background()
+	_, errCh := env.Client.Action.WatchProgress(ctx, action)
+	if err := <-errCh; err == nil {
+		t.Fatal("expected an error")
+	}
+}
