@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.13.0
 
 * Add missing fields to `*ListOpts` structs
 * Fix error handling in `WatchProgress()`
