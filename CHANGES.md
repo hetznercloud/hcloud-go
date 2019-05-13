@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Add `Created` field to `FloatingIP`
+
 ## v1.13.0
 
 * Add missing fields to `*ListOpts` structs

@@ -96,6 +96,7 @@ func TestFloatingIPFromSchema(t *testing.T) {
 		data := []byte(`{
 			"id": 4711,
 			"description": "Web Frontend",
+			"created":"2017-08-16T17:29:14+00:00",
 			"ip": "2001:db8::/64",
 			"type": "ipv6",
 			"server": null,
@@ -155,6 +156,10 @@ func TestFloatingIPFromSchema(t *testing.T) {
 		if floatingIP.Labels["key"] != "value" || floatingIP.Labels["key2"] != "value2" {
 			t.Errorf("unexpected Labels: %v", floatingIP.Labels)
 		}
+		if !floatingIP.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
+			t.Errorf("unexpected created date: %v", floatingIP.Created)
+		}
+
 	})
 
 	t.Run("IPv4", func(t *testing.T) {
