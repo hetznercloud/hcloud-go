@@ -50,6 +50,7 @@ func FloatingIPFromSchema(s schema.FloatingIP) *FloatingIP {
 		ID:           s.ID,
 		Type:         FloatingIPType(s.Type),
 		HomeLocation: LocationFromSchema(s.HomeLocation),
+		Created:      s.Created,
 		Blocked:      s.Blocked,
 		Protection: FloatingIPProtection{
 			Delete: s.Protection.Delete,
