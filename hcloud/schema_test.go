@@ -386,7 +386,7 @@ func TestServerFromSchema(t *testing.T) {
 	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
-	server := ServerFromSchema(s)
+	server := ServerFromSchema(s, nil)
 
 	if server.ID != 1 {
 		t.Errorf("unexpected ID: %v", server.ID)
@@ -477,7 +477,7 @@ func TestServerFromSchemaNoTraffic(t *testing.T) {
 	if err := json.Unmarshal(data, &s); err != nil {
 		t.Fatal(err)
 	}
-	server := ServerFromSchema(s)
+	server := ServerFromSchema(s, nil)
 
 	if server.OutgoingTraffic != 0 {
 		t.Errorf("unexpected outgoing traffic: %v", server.OutgoingTraffic)

@@ -139,6 +139,14 @@ type ServerActionRebootResponse struct {
 	Action Action `json:"action"`
 }
 
+// ServerActionConsoleResponse defines the schema of the response when
+// creating a reboot server action.
+type ServerActionConsoleResponse struct {
+	WsURL    string `json:"wss_url"`
+	Password string `json:"password"`
+	Action   Action `json:"action"`
+}
+
 // ServerActionResetRequest defines the schema for the request to
 // create a reset server action.
 type ServerActionResetRequest struct{}

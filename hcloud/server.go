@@ -34,6 +34,7 @@ type Server struct {
 	Protection      ServerProtection
 	Labels          map[string]string
 	Volumes         []*Volume
+	Client          *ServerClient
 }
 
 // ServerProtection represents the protection level of a server.
@@ -130,7 +131,7 @@ func (c *ServerClient) GetByID(ctx context.Context, id int) (*Server, *Response,
 		}
 		return nil, nil, err
 	}
-	return ServerFromSchema(body.Server), resp, nil
+	return ServerFromSchema(body.Server, c), resp, nil
 }
 
 // GetByName retrieves a server by its name. If the server does not exist, nil is returned.
@@ -184,7 +185,7 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server
 	}
 	servers := make([]*Server, 0, len(body.Servers))
 	for _, s := range body.Servers {
-		servers = append(servers, ServerFromSchema(s))
+		servers = append(servers, ServerFromSchema(s, c))
 	}
 	return servers, resp, nil
 }
@@ -315,7 +316,7 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		return ServerCreateResult{}, resp, err
 	}
 	result := ServerCreateResult{
-		Server:      ServerFromSchema(respBody.Server),
+		Server:      ServerFromSchema(respBody.Server, c),
 		Action:      ActionFromSchema(respBody.Action),
 		NextActions: ActionsFromSchema(respBody.NextActions),
 	}
@@ -364,7 +365,7 @@ func (c *ServerClient) Update(ctx context.Context, server *Server, opts ServerUp
 	if err != nil {
 		return nil, resp, err
 	}
-	return ServerFromSchema(respBody.Server), resp, nil
+	return ServerFromSchema(respBody.Server, c), resp, nil
 }
 
 // Poweron starts a server.
@@ -397,6 +398,22 @@ func (c *ServerClient) Reboot(ctx context.Context, server *Server) (*Action, *Re
 		return nil, resp, err
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// Console get console of a server.
+func (c *ServerClient) Console(ctx context.Context, server *Server) (*schema.ServerActionConsoleResponse, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/request_console", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionConsoleResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return &respBody, resp, nil
 }
 
 // Reset resets a server.

@@ -124,7 +124,7 @@ func DatacenterFromSchema(s schema.Datacenter) *Datacenter {
 }
 
 // ServerFromSchema converts a schema.Server to a Server.
-func ServerFromSchema(s schema.Server) *Server {
+func ServerFromSchema(s schema.Server, c *ServerClient) *Server {
 	server := &Server{
 		ID:              s.ID,
 		Name:            s.Name,
@@ -140,6 +140,7 @@ func ServerFromSchema(s schema.Server) *Server {
 			Delete:  s.Protection.Delete,
 			Rebuild: s.Protection.Rebuild,
 		},
+		Client: c,
 	}
 	if s.Image != nil {
 		server.Image = ImageFromSchema(*s.Image)
