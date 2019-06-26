@@ -140,7 +140,7 @@ type ServerActionRebootResponse struct {
 }
 
 // ServerActionConsoleResponse defines the schema of the response when
-// creating a reboot server action.
+// creating a console server action.
 type ServerActionConsoleResponse struct {
 	WsURL    string `json:"wss_url"`
 	Password string `json:"password"`
