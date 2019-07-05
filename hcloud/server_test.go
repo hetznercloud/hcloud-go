@@ -3,6 +3,7 @@ package hcloud
 import (
 	"context"
 	"encoding/json"
+	"net"
 	"net/http"
 	"testing"
 
@@ -380,6 +381,52 @@ func TestServersCreateWithVolumes(t *testing.T) {
 			{ID: 2},
 		},
 		Automount: Bool(true),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Server == nil {
+		t.Fatal("no server")
+	}
+	if result.Server.ID != 1 {
+		t.Errorf("unexpected server ID: %v", result.Server.ID)
+	}
+	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
+		t.Errorf("unexpected next actions: %v", result.NextActions)
+	}
+}
+
+func TestServersCreateWithNetworks(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.ServerCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if len(reqBody.Networks) != 2 || reqBody.Networks[0] != 1 || reqBody.Networks[1] != 2 {
+			t.Errorf("unexpected Networks: %v", reqBody.Networks)
+		}
+		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
+			Server: schema.Server{
+				ID: 1,
+			},
+			NextActions: []schema.Action{
+				{ID: 2},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+		Name:       "test",
+		ServerType: &ServerType{ID: 1},
+		Image:      &Image{ID: 2},
+		Networks: []*Network{
+			{ID: 1},
+			{ID: 2},
+		},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -1459,7 +1506,7 @@ func TestServerClientChangeProtection(t *testing.T) {
 			if reqBody.Rebuild == nil || *reqBody.Rebuild != true {
 				t.Errorf("unexpected rebuild: %v", reqBody.Rebuild)
 			}
-			json.NewEncoder(w).Encode(schema.ImageActionChangeProtectionResponse{
+			json.NewEncoder(w).Encode(schema.ServerActionChangeProtectionResponse{
 				Action: schema.Action{
 					ID: 1,
 				},
@@ -1479,4 +1526,179 @@ func TestServerClientChangeProtection(t *testing.T) {
 			t.Errorf("unexpected action ID: %v", action.ID)
 		}
 	})
+}
+
+func TestServerClientAttachToNetwork(t *testing.T) {
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+
+	t.Run("attach to network", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/attach_to_network", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "POST" {
+				t.Error("expected POST")
+			}
+			var reqBody schema.ServerActionAttachToNetworkRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Network != 1 {
+				t.Errorf("unexpected Network: %v", reqBody.Network)
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionAttachToNetworkResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := ServerAttachToNetworkOpts{
+			Network: &Network{ID: 1},
+		}
+		action, _, err := env.Client.Server.AttachToNetwork(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %v", action.ID)
+		}
+	})
+
+	t.Run("attach to network with additional parameters", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/attach_to_network", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "POST" {
+				t.Error("expected POST")
+			}
+			var reqBody schema.ServerActionAttachToNetworkRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Network != 1 {
+				t.Errorf("unexpected Network: %v", reqBody.Network)
+			}
+			if reqBody.IP == nil || *reqBody.IP != "10.0.1.1" {
+				t.Errorf("unexpected IP: %v", *reqBody.IP)
+			}
+			if len(reqBody.AliasIPs) == 0 || *reqBody.AliasIPs[0] != "10.0.1.1" {
+				t.Errorf("unexpected AliasIPs: %v", *reqBody.IP)
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionAttachToNetworkResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+		ip := net.ParseIP("10.0.1.1")
+		aliasIPs := []net.IP{
+			ip,
+		}
+		opts := ServerAttachToNetworkOpts{
+			Network:  &Network{ID: 1},
+			IP:       ip,
+			AliasIPs: aliasIPs,
+		}
+		action, _, err := env.Client.Server.AttachToNetwork(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %v", action.ID)
+		}
+	})
+}
+
+func TestServerClientDetachFromNetwork(t *testing.T) {
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/detach_from_network", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.ServerActionDetachFromNetworkRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.Network != 1 {
+			t.Errorf("unexpected Network: %v", reqBody.Network)
+		}
+		json.NewEncoder(w).Encode(schema.ServerActionAttachToNetworkResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	opts := ServerDetachFromNetworkOpts{
+		Network: &Network{ID: 1},
+	}
+	action, _, err := env.Client.Server.DetachFromNetwork(ctx, server, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
+}
+
+func TestServerClientChangeAliasIP(t *testing.T) {
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/change_alias_ips", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.ServerActionChangeAliasIPsRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.Network != 1 {
+			t.Errorf("unexpected Network: %v", reqBody.Network)
+		}
+		if len(reqBody.AliasIPs) == 0 || reqBody.AliasIPs[0] != "10.0.1.1" {
+			t.Errorf("unexpected AliasIPs: %v", reqBody.AliasIPs[0])
+		}
+		json.NewEncoder(w).Encode(schema.ServerActionAttachToNetworkResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+	ip := net.ParseIP("10.0.1.1")
+	aliasIPs := []net.IP{
+		ip,
+	}
+	opts := ServerChangeAliasIPsOpts{
+		Network:  &Network{ID: 1},
+		AliasIPs: aliasIPs,
+	}
+	action, _, err := env.Client.Server.ChangeAliasIPs(ctx, server, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
 }

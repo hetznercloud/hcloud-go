@@ -109,7 +109,8 @@ func TestFloatingIPFromSchema(t *testing.T) {
 				"country": "DE",
 				"city": "Falkenstein",
 				"latitude": 50.47612,
-				"longitude": 12.370071
+				"longitude": 12.370071,
+				"network_zone": "eu-central"
 			},
 			"protection": {
 				"delete": true
@@ -261,7 +262,8 @@ func TestDatacenterFromSchema(t *testing.T) {
 			"country": "DE",
 			"city": "Falkenstein",
 			"latitude": 50.47612,
-			"longitude": 12.370071
+			"longitude": 12.370071,
+			"network_zone": "eu-central"
 		},
 		"server_types": {
 			"supported": [
@@ -301,6 +303,49 @@ func TestDatacenterFromSchema(t *testing.T) {
 	}
 }
 
+func TestLocationFromSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 1,
+		"name": "fsn1",
+		"description": "Falkenstein DC Park 1",
+		"country": "DE",
+		"city": "Falkenstein",
+		"latitude": 50.47612,
+		"longitude": 12.370071,
+		"network_zone": "eu-central"
+	}`)
+
+	var s schema.Location
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	location := LocationFromSchema(s)
+	if location.ID != 1 {
+		t.Errorf("unexpected ID: %v", location.ID)
+	}
+	if location.Name != "fsn1" {
+		t.Errorf("unexpected Name: %v", location.Name)
+	}
+	if location.Description != "Falkenstein DC Park 1" {
+		t.Errorf("unexpected Description: %v", location.Description)
+	}
+	if location.Country != "DE" {
+		t.Errorf("unexpected Country: %v", location.Country)
+	}
+	if location.City != "Falkenstein" {
+		t.Errorf("unexpected City: %v", location.City)
+	}
+	if location.Latitude != 50.47612 {
+		t.Errorf("unexpected Latitude: %v", location.Latitude)
+	}
+	if location.Longitude != 12.370071 {
+		t.Errorf("unexpected Longitude: %v", location.Longitude)
+	}
+	if location.NetworkZone != "eu-central" {
+		t.Errorf("unexpected NetworkZone: %v", location.NetworkZone)
+	}
+}
+
 func TestServerFromSchema(t *testing.T) {
 	data := []byte(`{
 		"id": 1,
@@ -324,6 +369,15 @@ func TestServerFromSchema(t *testing.T) {
 				]
 			}
 		},
+		"private_net": [
+			{
+				"network": 4711,
+				"ip": "10.0.1.1",
+				"aliases": [
+					"10.0.1.2"
+				]
+			}
+		],
 		"server_type": {
 			"id": 2
 		},
@@ -367,7 +421,8 @@ func TestServerFromSchema(t *testing.T) {
 				"country": "DE",
 				"city": "Falkenstein",
 				"latitude": 50.47612,
-				"longitude": 12.370071
+				"longitude": 12.370071,
+				"network_zone": "eu-central"
 			}
 		},
 		"protection": {
@@ -447,6 +502,12 @@ func TestServerFromSchema(t *testing.T) {
 	}
 	if s.Volumes[0] != 123 || s.Volumes[1] != 456 || s.Volumes[2] != 789 {
 		t.Errorf("unexpected volumes: %v", s.Volumes)
+	}
+	if len(server.PrivateNet) != 1 {
+		t.Errorf("unexpected length of PrivateNet: %v", len(server.PrivateNet))
+	}
+	if server.PrivateNet[0].Network.ID != 4711 {
+		t.Errorf("unexpected first private net: %v", server.PrivateNet[0])
 	}
 }
 
@@ -569,6 +630,29 @@ func TestServerPublicNetIPv6FromSchema(t *testing.T) {
 	}
 	if len(ipv6.DNSPtr) != 1 {
 		t.Errorf("unexpected DNS ptr: %v", ipv6.DNSPtr)
+	}
+}
+
+func TestServerPrivateNetFromSchema(t *testing.T) {
+	data := []byte(`{
+		"network": 4711,
+		"ip": "10.0.1.1",
+		"aliases": [
+			"10.0.1.2"
+		]
+	}`)
+
+	var s schema.ServerPrivateNet
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	privateNet := ServerPrivateNetFromSchema(s)
+
+	if privateNet.Network.ID != 4711 {
+		t.Errorf("unexpected Network: %v", privateNet.Network)
+	}
+	if privateNet.IP.String() != "10.0.1.1" {
+		t.Errorf("unexpected IP: %v", privateNet.IP)
 	}
 }
 
@@ -929,6 +1013,115 @@ func TestVolumeFromSchema(t *testing.T) {
 	}
 	if volume.Labels["key"] != "value" || volume.Labels["key2"] != "value2" {
 		t.Errorf("unexpected labels: %v", volume.Labels)
+	}
+}
+
+func TestNetworkFromSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 4711,
+		"name": "mynet",
+		"created": "2017-08-16T17:29:14+00:00",
+		"ip_range": "10.0.0.0/16",
+		"subnets": [
+			{
+				"type": "server",
+				"ip_range": "10.0.1.0/24",
+				"network_zone": "eu-central",
+				"gateway": "10.0.0.1"
+			}
+		],
+		"routes": [
+			{
+				"destination": "10.100.1.0/24",
+				"gateway": "10.0.1.1"
+			}
+		],
+		"servers": [
+			4711
+		],
+		"protection": {
+			"delete": false
+		},
+		"labels": {}
+	}`)
+
+	var s schema.Network
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	network := NetworkFromSchema(s)
+	if network.ID != 4711 {
+		t.Errorf("unexpected ID: %v", network.ID)
+	}
+	if network.Name != "mynet" {
+		t.Errorf("unexpected Name: %v", network.Name)
+	}
+	if !network.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
+		t.Errorf("unexpected created date: %v", network.Created)
+	}
+	if network.IPRange.String() != "10.0.0.0/16" {
+		t.Errorf("unexpected IPRange: %v", network.IPRange)
+	}
+	if len(network.Subnets) != 1 {
+		t.Errorf("unexpected length of Subnets: %v", len(network.Subnets))
+	}
+	if len(network.Routes) != 1 {
+		t.Errorf("unexpected length of Routes: %v", len(network.Routes))
+	}
+	if len(network.Servers) != 1 {
+		t.Errorf("unexpected length of Servers: %v", len(network.Servers))
+	}
+	if network.Servers[0].ID != 4711 {
+		t.Errorf("unexpected Server ID: %v", network.Servers[0].ID)
+	}
+	if network.Protection.Delete {
+		t.Errorf("unexpected value for delete protection: %v", network.Protection.Delete)
+	}
+}
+
+func TestNetworkSubnetFromSchema(t *testing.T) {
+	t.Run("type server", func(t *testing.T) {
+		data := []byte(`{
+			"type": "server",
+			"ip_range": "10.0.1.0/24",
+			"network_zone": "eu-central",
+			"gateway": "10.0.0.1"
+		}`)
+		var s schema.NetworkSubnet
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+		networkSubnet := NetworkSubnetFromSchema(s)
+		if networkSubnet.NetworkZone != "eu-central" {
+			t.Errorf("unexpected NetworkZone: %v", networkSubnet.NetworkZone)
+		}
+		if networkSubnet.Type != "server" {
+			t.Errorf("unexpected Type: %v", networkSubnet.Type)
+		}
+		if networkSubnet.IPRange.String() != "10.0.1.0/24" {
+			t.Errorf("unexpected IPRange: %v", networkSubnet.IPRange)
+		}
+		if networkSubnet.Gateway.String() != "10.0.0.1" {
+			t.Errorf("unexpected Gateway: %v", networkSubnet.Gateway)
+		}
+	})
+}
+
+func TestNetworkRouteFromSchema(t *testing.T) {
+	data := []byte(`{
+		"destination": "10.100.1.0/24",
+		"gateway": "10.0.1.1"
+	}`)
+	var s schema.NetworkRoute
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	networkRoute := NetworkRouteFromSchema(s)
+	if networkRoute.Destination.String() != "10.100.1.0/24" {
+		t.Errorf("unexpected Destination: %v", networkRoute.Destination)
+	}
+	if networkRoute.Gateway.String() != "10.0.1.1" {
+		t.Errorf("unexpected Gateway: %v", networkRoute.Gateway)
 	}
 }
 

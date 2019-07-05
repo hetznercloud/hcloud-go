@@ -3,6 +3,7 @@
 ## master
 
 * Add `Created` field to `FloatingIP`
+* Add support for networks
 
 ## v1.13.0
 
