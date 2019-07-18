@@ -55,6 +55,7 @@ type Client struct {
 	applicationName    string
 	applicationVersion string
 	userAgent          string
+	debugFile          io.Writer
 
 	Action     ActionClient
 	Datacenter DatacenterClient
@@ -109,6 +110,13 @@ func WithApplication(name, version string) ClientOption {
 	return func(client *Client) {
 		client.applicationName = name
 		client.applicationVersion = version
+	}
+}
+
+// WithDebugFile configures a Client to print requests, with all available information, to a given writer.
+func WithDebugFile(debugFile io.Writer) ClientOption {
+	return func(client *Client) {
+		client.debugFile = debugFile
 	}
 }
 
@@ -169,7 +177,6 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 			return nil, err
 		}
 		response := &Response{Response: resp}
-
 		body, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
 			resp.Body.Close()
@@ -177,7 +184,19 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 		}
 		resp.Body.Close()
 		resp.Body = ioutil.NopCloser(bytes.NewReader(body))
-
+		if c.debugFile != nil {
+			fmt.Fprintln(c.debugFile, "------- HCLOUD_GO_DEBUG -------")
+			// Print Request Details
+			fmt.Fprintf(c.debugFile, "Request: %s - %s\n", r.Method, r.URL)
+			fmt.Fprintf(c.debugFile, "Request Headers: %#v\n", r.Header)
+			fmt.Fprintf(c.debugFile, "Request Body: %s\n", r.Body)
+			fmt.Fprintln(c.debugFile)
+			// Print Response Details
+			fmt.Fprintf(c.debugFile, "Response Status Code: %v\n", resp.StatusCode)
+			fmt.Fprintf(c.debugFile, "Response Headers: %#v\n", resp.Header)
+			fmt.Fprintf(c.debugFile, "Response Body: %s\n", body)
+			fmt.Fprintf(c.debugFile, "-------------------------------")
+		}
 		if err = response.readMeta(body); err != nil {
 			return response, fmt.Errorf("hcloud: error reading response meta data: %s", err)
 		}
