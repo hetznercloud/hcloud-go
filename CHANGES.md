@@ -1,5 +1,8 @@
 # Changes
 
+## master
+* Add `MacAddress` field to `ServerPrivateNet`
+
 ## v1.14.0
 
 * Add `Created` field to `FloatingIP`
