@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.15.0
 
 * Add `MacAddress` field to `ServerPrivateNet`
 * Add `WithDebugWriter()` client option to provide an `io.Writer` to write debug output to
