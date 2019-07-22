@@ -637,9 +637,10 @@ func TestServerPrivateNetFromSchema(t *testing.T) {
 	data := []byte(`{
 		"network": 4711,
 		"ip": "10.0.1.1",
-		"aliases": [
+		"alias_ips": [
 			"10.0.1.2"
-		]
+		],
+		"mac_address": "86:00:ff:2a:7d:e1"
 	}`)
 
 	var s schema.ServerPrivateNet
@@ -653,6 +654,15 @@ func TestServerPrivateNetFromSchema(t *testing.T) {
 	}
 	if privateNet.IP.String() != "10.0.1.1" {
 		t.Errorf("unexpected IP: %v", privateNet.IP)
+	}
+	if len(privateNet.Aliases) != 1 {
+		t.Errorf("unexpected number of alias IPs: %v", len(privateNet.Aliases))
+	}
+	if privateNet.Aliases[0].String() != "10.0.1.2" {
+		t.Errorf("unexpected alias IP: %v", privateNet.Aliases[0])
+	}
+	if privateNet.MacAddress != "86:00:ff:2a:7d:e1" {
+		t.Errorf("unexpected mac address: %v", privateNet.MacAddress)
 	}
 }
 
