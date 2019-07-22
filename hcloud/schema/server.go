@@ -67,7 +67,7 @@ type ServerPrivateNet struct {
 	Network    int      `json:"network"`
 	IP         string   `json:"ip"`
 	AliasIPs   []string `json:"alias_ips"`
-	MacAddress string   `json:"mac_address"`
+	MACAddress string   `json:"mac_address"`
 }
 
 // ServerGetResponse defines the schema of the response when

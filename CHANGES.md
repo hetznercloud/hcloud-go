@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Rename `MacAddress` to `MACAddress` on `ServerPrivateNet`
+
 ## v1.15.0
 
 * Add `MacAddress` field to `ServerPrivateNet`
