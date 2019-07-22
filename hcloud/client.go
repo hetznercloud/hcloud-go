@@ -189,11 +189,17 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 		if c.debugWriter != nil {
 			fmt.Fprintln(c.debugWriter, "------- HCLOUD_GO_DEBUG -------")
 			// Print Request Details
-			dumpReq, _ := httputil.DumpRequest(r, true)
+			dumpReq, err := httputil.DumpRequest(r, true)
+			if err != nil {
+				return nil, err
+			}
 			fmt.Fprintf(c.debugWriter, "Request:\n%s", dumpReq)
 
 			// Print Response Details
-			dumpResp, _ := httputil.DumpResponse(resp, true)
+			dumpResp, err := httputil.DumpResponse(resp, true)
+			if err != nil {
+				return nil, err
+			}
 			fmt.Fprintf(c.debugWriter, "Response:\n%s", dumpResp)
 			fmt.Fprintf(c.debugWriter, "-------------------------------")
 		}
