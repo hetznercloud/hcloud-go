@@ -3,6 +3,7 @@
 ## master
 
 * Add `MacAddress` field to `ServerPrivateNet`
+* Add `WithDebugWriter()` client option to provide an `io.Writer` to write debug output to
 
 ## v1.14.0
 
