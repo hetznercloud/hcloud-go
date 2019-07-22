@@ -186,23 +186,21 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 		}
 		resp.Body.Close()
 		resp.Body = ioutil.NopCloser(bytes.NewReader(body))
+
 		if c.debugWriter != nil {
-			fmt.Fprintln(c.debugWriter, "------- HCLOUD_GO_DEBUG -------")
-			// Print Request Details
 			dumpReq, err := httputil.DumpRequest(r, true)
 			if err != nil {
 				return nil, err
 			}
-			fmt.Fprintf(c.debugWriter, "Request:\n%s", dumpReq)
+			fmt.Fprintf(c.debugWriter, "--- Request:\n%s\n\n", dumpReq)
 
-			// Print Response Details
 			dumpResp, err := httputil.DumpResponse(resp, true)
 			if err != nil {
 				return nil, err
 			}
-			fmt.Fprintf(c.debugWriter, "Response:\n%s", dumpResp)
-			fmt.Fprintf(c.debugWriter, "-------------------------------")
+			fmt.Fprintf(c.debugWriter, "--- Response:\n%s\n\n", dumpResp)
 		}
+
 		if err = response.readMeta(body); err != nil {
 			return response, fmt.Errorf("hcloud: error reading response meta data: %s", err)
 		}
