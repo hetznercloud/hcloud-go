@@ -101,7 +101,7 @@ type ServerPrivateNet struct {
 	Network    *Network
 	IP         net.IP
 	Aliases    []net.IP
-	MacAddress string
+	MACAddress string
 }
 
 // DNSPtrForIP returns the reverse dns pointer of the ip address.
