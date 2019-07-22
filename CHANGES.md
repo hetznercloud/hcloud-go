@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.15.1
 
 * Rename `MacAddress` to `MACAddress` on `ServerPrivateNet`
 
