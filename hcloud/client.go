@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"math"
 	"net/http"
+	"net/http/httputil"
 	"net/url"
 	"strconv"
 	"strings"
@@ -55,7 +56,7 @@ type Client struct {
 	applicationName    string
 	applicationVersion string
 	userAgent          string
-	debugFile          io.Writer
+	debugWriter        io.Writer
 
 	Action     ActionClient
 	Datacenter DatacenterClient
@@ -113,10 +114,11 @@ func WithApplication(name, version string) ClientOption {
 	}
 }
 
-// WithDebugFile configures a Client to print requests, with all available information, to a given writer.
-func WithDebugFile(debugFile io.Writer) ClientOption {
+// WithDebugWriter configures a Client to print debug information to the given
+// writer. To, for example, print debug information on stderr, set it to os.Stderr.
+func WithDebugWriter(debugFile io.Writer) ClientOption {
 	return func(client *Client) {
-		client.debugFile = debugFile
+		client.debugWriter = debugFile
 	}
 }
 
@@ -184,18 +186,16 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 		}
 		resp.Body.Close()
 		resp.Body = ioutil.NopCloser(bytes.NewReader(body))
-		if c.debugFile != nil {
-			fmt.Fprintln(c.debugFile, "------- HCLOUD_GO_DEBUG -------")
+		if c.debugWriter != nil {
+			fmt.Fprintln(c.debugWriter, "------- HCLOUD_GO_DEBUG -------")
 			// Print Request Details
-			fmt.Fprintf(c.debugFile, "Request: %s - %s\n", r.Method, r.URL)
-			fmt.Fprintf(c.debugFile, "Request Headers: %#v\n", r.Header)
-			fmt.Fprintf(c.debugFile, "Request Body: %s\n", r.Body)
-			fmt.Fprintln(c.debugFile)
+			dumpReq, _ := httputil.DumpRequest(r, true)
+			fmt.Fprintf(c.debugWriter, "Request:\n%s", dumpReq)
+
 			// Print Response Details
-			fmt.Fprintf(c.debugFile, "Response Status Code: %v\n", resp.StatusCode)
-			fmt.Fprintf(c.debugFile, "Response Headers: %#v\n", resp.Header)
-			fmt.Fprintf(c.debugFile, "Response Body: %s\n", body)
-			fmt.Fprintf(c.debugFile, "-------------------------------")
+			dumpResp, _ := httputil.DumpResponse(resp, true)
+			fmt.Fprintf(c.debugWriter, "Response:\n%s", dumpResp)
+			fmt.Fprintf(c.debugWriter, "-------------------------------")
 		}
 		if err = response.readMeta(body); err != nil {
 			return response, fmt.Errorf("hcloud: error reading response meta data: %s", err)

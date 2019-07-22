@@ -3,6 +3,7 @@
 ## master
 
 * Add `MacAddress` field to `ServerPrivateNet`
+* Add `WithDebugWriter()` client option to provide easier debugging of requests and responses
 
 ## v1.14.0
 
