@@ -1,6 +1,7 @@
 # Changes
 
 ## master
+
 * Add `MacAddress` field to `ServerPrivateNet`
 
 ## v1.14.0
