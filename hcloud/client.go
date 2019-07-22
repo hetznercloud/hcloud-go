@@ -116,9 +116,9 @@ func WithApplication(name, version string) ClientOption {
 
 // WithDebugWriter configures a Client to print debug information to the given
 // writer. To, for example, print debug information on stderr, set it to os.Stderr.
-func WithDebugWriter(debugFile io.Writer) ClientOption {
+func WithDebugWriter(debugWriter io.Writer) ClientOption {
 	return func(client *Client) {
-		client.debugWriter = debugFile
+		client.debugWriter = debugWriter
 	}
 }
 
