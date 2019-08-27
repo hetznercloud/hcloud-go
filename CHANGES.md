@@ -2,7 +2,7 @@
 
 ## master
 
-* Add support for adding Network `Subnet` without IP range
+* Make IP range optional when adding a subnet to a network
 
 ## v1.15.1
 
