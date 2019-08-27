@@ -363,7 +363,7 @@ func TestNetworkClientChangeIPRange(t *testing.T) {
 }
 
 func TestNetworkClientAddSubnet(t *testing.T) {
-	t.Run("type server", func(t *testing.T) {
+	t.Run("type server with ip range", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
 
@@ -394,6 +394,47 @@ func TestNetworkClientAddSubnet(t *testing.T) {
 			Subnet: NetworkSubnet{
 				Type:        NetworkSubnetTypeServer,
 				IPRange:     ipRange,
+				NetworkZone: NetworkZoneEUCentral,
+			},
+		}
+		action, _, err := env.Client.Network.AddSubnet(ctx, &Network{ID: 1}, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
+
+	t.Run("type server without ip range", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/networks/1/actions/add_subnet", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.NetworkActionAddSubnetRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Type != "server" {
+				t.Errorf("unexpected Type: %v", reqBody.Type)
+			}
+			if reqBody.IPRange != "" {
+				t.Errorf("unexpected IPRange: %v", reqBody.IPRange)
+			}
+			if reqBody.NetworkZone != "eu-central" {
+				t.Errorf("unexpected NetworkZone: %v", reqBody.NetworkZone)
+			}
+			json.NewEncoder(w).Encode(schema.NetworkActionAddSubnetResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		ctx := context.Background()
+		opts := NetworkAddSubnetOpts{
+			Subnet: NetworkSubnet{
+				Type:        NetworkSubnetTypeServer,
 				NetworkZone: NetworkZoneEUCentral,
 			},
 		}
