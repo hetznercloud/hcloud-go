@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Make IP range optional when adding a subnet to a network
+
 ## v1.15.1
 
 * Rename `MacAddress` to `MACAddress` on `ServerPrivateNet`
