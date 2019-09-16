@@ -190,9 +190,7 @@ func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts
 	reqBody := schema.FloatingIPCreateRequest{
 		Type:        string(opts.Type),
 		Description: opts.Description,
-	}
-	if opts.Name != nil {
-		reqBody.Name = opts.Name
+		Name:        opts.Name,
 	}
 	if opts.HomeLocation != nil {
 		reqBody.HomeLocation = String(opts.HomeLocation.Name)
