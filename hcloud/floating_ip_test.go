@@ -34,6 +34,18 @@ func TestFloatingIPClientGetByID(t *testing.T) {
 	if floatingIP.ID != 1 {
 		t.Errorf("unexpected ID: %v", floatingIP.ID)
 	}
+	t.Run("via Get", func(t *testing.T) {
+		floatingIP, _, err := env.Client.FloatingIP.Get(ctx, "1")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if floatingIP == nil {
+			t.Fatal("no Floating IP")
+		}
+		if floatingIP.ID != 1 {
+			t.Errorf("unexpected Floating IP ID: %v", floatingIP.ID)
+		}
+	})
 }
 
 func TestFloatingIPClientGetByIDNotFound(t *testing.T) {
@@ -58,6 +70,83 @@ func TestFloatingIPClientGetByIDNotFound(t *testing.T) {
 	if floatingIP != nil {
 		t.Fatal("expected no Floating IP")
 	}
+}
+
+func TestFloatingIPClientGetByName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/floating_ips", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=myFloatingIP" {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.FloatingIPListResponse{
+			FloatingIPs: []schema.FloatingIP{
+				{
+					ID:   1,
+					Name: "myFloatingIP",
+					Type: "ipv4",
+					IP:   "131.232.99.1",
+				},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	floatingIP, _, err := env.Client.FloatingIP.GetByName(ctx, "myFloatingIP")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if floatingIP == nil {
+		t.Fatal("no Floating IP")
+	}
+	if floatingIP.ID != 1 {
+		t.Errorf("unexpected ID: %v", floatingIP.ID)
+	}
+	t.Run("via Get", func(t *testing.T) {
+		floatingIP, _, err := env.Client.FloatingIP.Get(ctx, "myFloatingIP")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if floatingIP == nil {
+			t.Fatal("no Floating IP")
+		}
+		if floatingIP.ID != 1 {
+			t.Errorf("unexpected Floating IP ID: %v", floatingIP.ID)
+		}
+	})
+}
+
+func TestFloatingIPClientGetByNameNotFound(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/floating_ips", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=myFloatingIP" {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.FloatingIPListResponse{
+			FloatingIPs: []schema.FloatingIP{},
+		})
+	})
+
+	ctx := context.Background()
+	floatingIP, _, err := env.Client.FloatingIP.GetByName(ctx, "myFloatingIP")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if floatingIP != nil {
+		t.Fatal("expected no Floating IP")
+	}
+	t.Run("via Get", func(t *testing.T) {
+		floatingIP, _, err := env.Client.FloatingIP.Get(ctx, "myFloatingIP")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if floatingIP != nil {
+			t.Fatal("expected no Floating IP")
+		}
+	})
 }
 
 func TestFloatingIPClientList(t *testing.T) {
@@ -110,7 +199,7 @@ func TestFloatingIPClientAllWithOpts(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	opts := FloatingIPListOpts{ListOpts{LabelSelector: "key=value"}}
+	opts := FloatingIPListOpts{ListOpts: ListOpts{LabelSelector: "key=value"}}
 	floatingIPs, err := env.Client.FloatingIP.AllWithOpts(ctx, opts)
 	if err != nil {
 		t.Fatal(err)
@@ -148,6 +237,52 @@ func TestFloatingIPClientCreate(t *testing.T) {
 		Description:  String("test"),
 		HomeLocation: &Location{Name: "test"},
 		Server:       &Server{ID: 1},
+		Labels:       map[string]string{"key": "value"},
+	}
+
+	ctx := context.Background()
+	result, _, err := env.Client.FloatingIP.Create(ctx, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if result.FloatingIP.ID != 1 {
+		t.Errorf("unexpected Floating IP ID: %d", result.FloatingIP.ID)
+	}
+	if result.Action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", result.Action.ID)
+	}
+}
+
+func TestFloatingIPClientCreateWithName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/floating_ips", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.FloatingIPCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.Name == nil || *reqBody.Name != "MyFloatingIP" {
+			t.Errorf("unexpected name in request: %v", reqBody.Name)
+		}
+		json.NewEncoder(w).Encode(schema.FloatingIPCreateResponse{
+			FloatingIP: schema.FloatingIP{ID: 1, Type: "ipv4", IP: "131.232.99.1"},
+			Action: &schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	opts := FloatingIPCreateOpts{
+		Type:         FloatingIPTypeIPv4,
+		Description:  String("test"),
+		HomeLocation: &Location{Name: "test"},
+		Server:       &Server{ID: 1},
+		Name:         String("MyFloatingIP"),
 		Labels:       map[string]string{"key": "value"},
 	}
 
@@ -259,6 +394,41 @@ func TestFloatingIPClientUpdate(t *testing.T) {
 		}
 	})
 
+	t.Run("update name", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/floating_ips/1", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "PUT" {
+				t.Error("expected PUT")
+			}
+			var reqBody schema.FloatingIPUpdateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Name != "test" {
+				t.Errorf("unexpected name: %v", reqBody.Name)
+			}
+			json.NewEncoder(w).Encode(schema.FloatingIPUpdateResponse{
+				FloatingIP: schema.FloatingIP{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := FloatingIPUpdateOpts{
+			Name: "test",
+		}
+		updatedFloatingIP, _, err := env.Client.FloatingIP.Update(ctx, floatingIP, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if updatedFloatingIP.ID != 1 {
+			t.Errorf("unexpected Floating IP ID: %v", updatedFloatingIP.ID)
+		}
+	})
+
 	t.Run("no updates", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
@@ -273,6 +443,9 @@ func TestFloatingIPClientUpdate(t *testing.T) {
 			}
 			if reqBody.Description != "" {
 				t.Errorf("unexpected no description, but got: %v", reqBody.Description)
+			}
+			if reqBody.Name != "" {
+				t.Errorf("unexpected no name, but got: %v", reqBody.Name)
 			}
 			json.NewEncoder(w).Encode(schema.FloatingIPUpdateResponse{
 				FloatingIP: schema.FloatingIP{
