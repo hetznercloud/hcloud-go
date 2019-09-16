@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.16.0
 
 * Make IP range optional when adding a subnet to a network
 * Add support for names to Floating IPs
