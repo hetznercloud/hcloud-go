@@ -95,6 +95,7 @@ func TestFloatingIPFromSchema(t *testing.T) {
 	t.Run("IPv6", func(t *testing.T) {
 		data := []byte(`{
 			"id": 4711,
+			"name": "Web Frontend",
 			"description": "Web Frontend",
 			"created":"2017-08-16T17:29:14+00:00",
 			"ip": "2001:db8::/64",
@@ -132,6 +133,9 @@ func TestFloatingIPFromSchema(t *testing.T) {
 		}
 		if !floatingIP.Blocked {
 			t.Errorf("unexpected value for Blocked: %v", floatingIP.Blocked)
+		}
+		if floatingIP.Name != "Web Frontend" {
+			t.Errorf("unexpected name: %v", floatingIP.Name)
 		}
 		if floatingIP.Description != "Web Frontend" {
 			t.Errorf("unexpected description: %v", floatingIP.Description)

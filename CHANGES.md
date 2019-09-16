@@ -3,6 +3,7 @@
 ## master
 
 * Make IP range optional when adding a subnet to a network
+* Add support for names to Floating IPs
 
 ## v1.15.1
 
