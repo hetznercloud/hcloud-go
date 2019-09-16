@@ -1,6 +1,6 @@
 # hcloud: A Go library for the Hetzner Cloud API
 
-[![Build status](https://travis-ci.org/hetznercloud/hcloud-go.svg?branch=master)](https://travis-ci.org/hetznercloud/hcloud-go)
+[![GitHub Actions status](https://github.com/hetznercloud/hcloud-go/workflows/Continuous%20Integration/badge.svg)](https://github.com/hetznercloud/hcloud-go/actions)
 [![GoDoc](https://godoc.org/github.com/hetznercloud/hcloud-go/hcloud?status.svg)](https://godoc.org/github.com/hetznercloud/hcloud-go/hcloud)
 
 Package hcloud is a library for the Hetzner Cloud API.
