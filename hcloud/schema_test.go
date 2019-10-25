@@ -755,7 +755,8 @@ func TestSSHKeyFromSchema(t *testing.T) {
 		"labels": {
 			"key": "value",
 			"key2": "value2"
-		}
+		},
+		"created":"2017-08-16T17:29:14+00:00"
 	}`)
 
 	var s schema.SSHKey
@@ -778,6 +779,9 @@ func TestSSHKeyFromSchema(t *testing.T) {
 	}
 	if sshKey.Labels["key"] != "value" || sshKey.Labels["key2"] != "value2" {
 		t.Errorf("unexpected labels: %v", sshKey.Labels)
+	}
+	if !sshKey.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
+		t.Errorf("unexpected created date: %v", sshKey.Created)
 	}
 }
 
