@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.17.0
 
 * Add `Created` field to `SSHKey`
 
