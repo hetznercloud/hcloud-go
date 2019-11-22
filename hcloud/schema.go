@@ -381,6 +381,91 @@ func NetworkRouteFromSchema(s schema.NetworkRoute) NetworkRoute {
 	return r
 }
 
+func LoadBalancerTypeFromSchema(s schema.LoadBalancerType) *LoadBalancerType {
+	lt := &LoadBalancerType{
+		ID:          s.ID,
+		Name:        s.Name,
+		Description: s.Description,
+		Requests:    s.Requests,
+		Services:    s.Services,
+	}
+	return lt
+}
+func LoadBalancerFromSchema(s schema.LoadBalancer) *LoadBalancer {
+	l := &LoadBalancer{
+		ID:               s.ID,
+		Name:             s.Name,
+		IPv4:             net.ParseIP(s.IPv4),
+		IPv6:             net.ParseIP(s.IPv6),
+		Location:         LocationFromSchema(s.Location),
+		LoadBalancerType: LoadBalancerTypeFromSchema(s.LoadBalancerType),
+		Algorithm:        LoadBalancerAlgorithm{Type: s.Algorithm.Type},
+		Protection: LoadBalancerProtection{
+			Delete: s.Protection.Delete,
+		},
+		Labels:  map[string]string{},
+		Created: s.Created,
+	}
+	for _, service := range s.Services {
+		l.Services = append(l.Services, LoadBalancerServiceFromSchema(service))
+	}
+	for _, target := range s.Targets {
+		l.Targets = append(l.Targets, LoadBalancerTargetFromSchema(target))
+	}
+	for key, value := range s.Labels {
+		l.Labels[key] = value
+	}
+	return l
+}
+
+func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) *LoadBalancerService {
+	ls := &LoadBalancerService{
+		Protocol:        s.Protocol,
+		ListenPort:      s.ListenPort,
+		DestinationPort: s.DestinationPort,
+		ProxyProtocol:   s.Proxyprotocol,
+		HealthCheck:     LoadBalancerServiceHealthCheckFromSchema(s.HealthCheck),
+	}
+
+	if s.HTTP != nil {
+		ls.HTTP = &LoadBalancerServiceHTTP{
+			CookieName:     s.HTTP.CookieName,
+			CookieLifeTime: s.HTTP.CookieLifetime,
+		}
+	}
+	return ls
+}
+func LoadBalancerServiceHealthCheckFromSchema(s schema.LoadBalancerServiceHealthCheck) LoadBalancerServiceHealthCheck {
+	lsh := LoadBalancerServiceHealthCheck{
+		Protocol: s.Protocol,
+		Port:     s.Port,
+		Interval: s.Interval,
+		Retries:  s.Retries,
+		Timeout:  s.Timeout,
+	}
+
+	if s.HTTP != nil {
+		lsh.HTTP = &LoadBalancerServiceHealthCheckHTTP{
+			Domain: s.HTTP.Domain,
+			Path:   s.HTTP.Path,
+		}
+	}
+	return lsh
+}
+
+func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarget {
+	lt := LoadBalancerTarget{
+		Type: s.Type,
+	}
+
+	if s.Server != nil {
+		lt.LoadBalancerTargetServer = &LoadBalancerTargetServer{
+			Server: Server{ID: s.Server.ID},
+		}
+	}
+	return lt
+}
+
 // PaginationFromSchema converts a schema.MetaPagination to a Pagination.
 func PaginationFromSchema(s schema.MetaPagination) Pagination {
 	return Pagination{
