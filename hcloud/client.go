@@ -58,18 +58,19 @@ type Client struct {
 	userAgent          string
 	debugWriter        io.Writer
 
-	Action     ActionClient
-	Datacenter DatacenterClient
-	FloatingIP FloatingIPClient
-	Image      ImageClient
-	ISO        ISOClient
-	Location   LocationClient
-	Network    NetworkClient
-	Pricing    PricingClient
-	Server     ServerClient
-	ServerType ServerTypeClient
-	SSHKey     SSHKeyClient
-	Volume     VolumeClient
+	Action       ActionClient
+	Datacenter   DatacenterClient
+	FloatingIP   FloatingIPClient
+	Image        ImageClient
+	ISO          ISOClient
+	Location     LocationClient
+	Network      NetworkClient
+	Pricing      PricingClient
+	Server       ServerClient
+	ServerType   ServerTypeClient
+	SSHKey       SSHKeyClient
+	Volume       VolumeClient
+	LoadBalancer LoadBalancerClient
 }
 
 // A ClientOption is used to configure a Client.
@@ -149,6 +150,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.ServerType = ServerTypeClient{client: client}
 	client.SSHKey = SSHKeyClient{client: client}
 	client.Volume = VolumeClient{client: client}
+	client.LoadBalancer = LoadBalancerClient{client: client}
 
 	return client
 }
