@@ -977,6 +977,7 @@ func TestVolumeFromSchema(t *testing.T) {
 		"id": 4711,
 		"created": "2016-01-30T23:50:11+00:00",
 		"name": "db-storage",
+		"status": "creating",
 		"server": 2,
 		"location": {
 			"id": 1,
@@ -1007,6 +1008,9 @@ func TestVolumeFromSchema(t *testing.T) {
 	}
 	if volume.Name != "db-storage" {
 		t.Errorf("unexpected name: %v", volume.Name)
+	}
+	if volume.Status != VolumeStatusCreating {
+		t.Errorf("unexpected status: %v", volume.Status)
 	}
 	if !volume.Created.Equal(time.Date(2016, 1, 30, 23, 50, 11, 0, time.UTC)) {
 		t.Errorf("unexpected created date: %s", volume.Created)

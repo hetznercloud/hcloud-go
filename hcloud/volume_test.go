@@ -20,6 +20,7 @@ func TestVolumeClientGet(t *testing.T) {
 				"id": 1,
 				"created": "2016-01-30T23:50:11+00:00",
 				"name": "db-storage",
+				"status": "creating",
 				"server": null,
 				"location": {
 					"id": 1,
@@ -106,6 +107,7 @@ func TestVolumeClientGetByName(t *testing.T) {
 					"id": 1,
 					"created": "2016-01-30T23:50:11+00:00",
 					"name": "my-volume",
+					"status": "creating",
 					"server": null,
 					"location": {
 						"id": 1,
@@ -208,6 +210,7 @@ func TestVolumeClientCreateWithServer(t *testing.T) {
 				"id": 1,
 				"created": "2016-01-30T23:50:11+00:00",
 				"name": "my-volume",
+				"status": "creating",
 				"server": 1,
 				"location": {
 					"id": 1,
@@ -323,6 +326,7 @@ func TestVolumeClientCreateWithLocation(t *testing.T) {
 				"created": "2016-01-30T23:50:11+00:00",
 				"name": "my-volume",
 				"server": null,
+				"status": "creating",
 				"location": {
 					"id": 1,
 					"name": "fsn1",
@@ -391,6 +395,7 @@ func TestVolumeClientCreateWithAutomount(t *testing.T) {
 				"id": 1,
 				"created": "2016-01-30T23:50:11+00:00",
 				"name": "my-volume",
+				"status": "creating",
 				"server": 1,
 				"location": {
 					"id": 1,
