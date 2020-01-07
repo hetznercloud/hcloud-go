@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Add `Status` field to `Volume`
+
 ## v1.17.0
 
 * Add `Created` field to `SSHKey`
