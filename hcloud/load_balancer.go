@@ -59,8 +59,16 @@ type LoadBalancerAlgorithm struct {
 	Type string
 }
 
+// LoadBalancerTargetType specifies a load balancer target type.
+type LoadBalancerTargetType string
+
+const (
+	LoadBalancerTargetTypeServer        LoadBalancerTargetType = "server"
+	LoadBalancerTargetTypeLabelSelector LoadBalancerTargetType = "label_selector"
+)
+
 type LoadBalancerTarget struct {
-	Type string
+	Type LoadBalancerTargetType
 	*LoadBalancerTargetServer
 	*LoadBalancerTargetLabelSelector
 }
@@ -246,12 +254,49 @@ func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalan
 	return c.client.Do(req, nil)
 }
 
-// Detach detaches a volume from a server.
-func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server *Server) (*Action, *Response, error) {
-	// TODO: Move to generic removeTarget after POC
+// LoadBalancerTargetOpts specifies options for adding or removing targets from a LoadBalancer.
+type LoadBalancerTargetOpts struct {
+	Server        *Server
+	LabelSelector string
+}
+
+// Validate checks if options are valid.
+func (o LoadBalancerTargetOpts) Validate() error {
+	if o.Server == nil && o.LabelSelector == "" {
+		return errors.New("missing server or label_selector")
+	} else if o.Server != nil && o.LabelSelector != "" {
+		return errors.New("server and label_selector are mutually exclusive")
+	}
+	return nil
+}
+
+// GetType returns the Target type based on the given options
+func (o LoadBalancerTargetOpts) GetType() LoadBalancerTargetType {
+	if o.LabelSelector != "" {
+		return LoadBalancerTargetTypeServer
+	}
+	return LoadBalancerTargetTypeLabelSelector
+
+}
+
+// AddTarget adds a target to a load balancer.
+func (c *LoadBalancerClient) AddTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerTargetOpts) (*Action, *Response, error) {
+	if err := opts.Validate(); err != nil {
+		return nil, nil, err
+	}
+	targetType := opts.GetType()
 	reqBody := schema.LoadBalancerTargetRequest{
-		Type:   "server",
-		Server: &schema.Server{ID: server.ID},
+		Type: string(targetType),
+	}
+	switch targetType {
+	case LoadBalancerTargetTypeServer:
+		reqBody.Server = &schema.LoadBalancerTargetServer{
+			ID: opts.Server.ID,
+		}
+	case LoadBalancerTargetTypeLabelSelector:
+		reqBody.LabelSelector = &schema.LoadBalancerTargetLabelSelector{
+			Selector: opts.LabelSelector,
+		}
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -272,12 +317,24 @@ func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-// Detach detaches a volume from a server.
-func (c *LoadBalancerClient) RemoveServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server *Server) (*Action, *Response, error) {
-	// TODO: Move to generic removeTarget after POC
+// RemoveTarget removes a target from a load balancer.
+func (c *LoadBalancerClient) RemoveTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerTargetOpts) (*Action, *Response, error) {
+	if err := opts.Validate(); err != nil {
+		return nil, nil, err
+	}
+	targetType := opts.GetType()
 	reqBody := schema.LoadBalancerTargetRequest{
-		Type:   "server",
-		Server: &schema.Server{ID: server.ID},
+		Type: string(targetType),
+	}
+	switch targetType {
+	case LoadBalancerTargetTypeServer:
+		reqBody.Server = &schema.LoadBalancerTargetServer{
+			ID: opts.Server.ID,
+		}
+	case LoadBalancerTargetTypeLabelSelector:
+		reqBody.LabelSelector = &schema.LoadBalancerTargetLabelSelector{
+			Selector: opts.LabelSelector,
+		}
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -296,4 +353,33 @@ func (c *LoadBalancerClient) RemoveServerTarget(ctx context.Context, loadBalance
 		return nil, resp, err
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// LoadBalancerChangeProtectionOpts specifies options for changing the resource protection level of a network.
+type LoadBalancerChangeProtectionOpts struct {
+	Delete *bool
+}
+
+// ChangeProtection changes the resource protection level of a load balancer.
+func (c *LoadBalancerClient) ChangeProtection(ctx context.Context, network *LoadBalancer, opts LoadBalancerChangeProtectionOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionChangeProtectionRequest{
+		Delete: opts.Delete,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/change_protection", network.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.LoadBalancerActionChangeProtectionResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
 }
