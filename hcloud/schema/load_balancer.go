@@ -3,24 +3,28 @@ package schema
 import "time"
 
 type LoadBalancer struct {
-	ID               int              `json:"id"`
-	Name             string           `json:"name"`
-	IPv4             string           `json:"ipv4"`
-	IPv6             string           `json:"ipv6"`
-	Location         Location         `json:"location"`
-	LoadBalancerType LoadBalancerType `json:"load_balancer_type"`
-	Protection       struct {
-		Delete bool `json:"delete"`
-	} `json:"protection"`
-	Labels    map[string]string     `json:"labels"`
-	Created   time.Time             `json:"created"`
-	Services  []LoadBalancerService `json:"services"`
-	Targets   []LoadBalancerTarget  `json:"targets"`
-	Algorithm struct {
+	ID               int                    `json:"id"`
+	Name             string                 `json:"name"`
+	IPv4             string                 `json:"ipv4"`
+	IPv6             string                 `json:"ipv6"`
+	Location         Location               `json:"location"`
+	LoadBalancerType LoadBalancerType       `json:"load_balancer_type"`
+	Protection       LoadBalancerProtection `json:"protection"`
+	Labels           map[string]string      `json:"labels"`
+	Created          time.Time              `json:"created"`
+	Services         []LoadBalancerService  `json:"services"`
+	Targets          []LoadBalancerTarget   `json:"targets"`
+	Algorithm        struct {
 		Type string `json:"type"`
 	} `json:"algorithm"`
 }
 
+// LoadBalancerProtection represents the protection level of a load balancer.
+type LoadBalancerProtection struct {
+	Delete bool `json:"delete"`
+}
+
+// LoadBalancerService represents a service of a load balancer.
 type LoadBalancerService struct {
 	Protocol        string                         `json:"protocol"`
 	ListenPort      int                            `json:"listen_port"`
@@ -30,10 +34,14 @@ type LoadBalancerService struct {
 	HealthCheck     LoadBalancerServiceHealthCheck `json:"health_check"`
 	Status          string                         `json:"status"`
 }
+
+// LoadBalancerServiceHTTP represents the http configuration for a LoadBalancerService
 type LoadBalancerServiceHTTP struct {
 	CookieName     string `json:"cookie_name"`
 	CookieLifetime int    `json:"cookie_lifetime"`
 }
+
+// LoadBalancerServiceHealthCheck represents
 type LoadBalancerServiceHealthCheck struct {
 	Protocol string                              `json:"protocol"`
 	Port     int                                 `json:"port"`
@@ -48,11 +56,15 @@ type LoadBalancerServiceHealthCheckHTTP struct {
 }
 
 type LoadBalancerTarget struct {
-	Type   string                    `json:"type"`
-	Server *LoadBalancerTargetServer `json:"server"`
+	Type          string                           `json:"type"`
+	Server        *LoadBalancerTargetServer        `json:"server"`
+	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector"`
 }
 type LoadBalancerTargetServer struct {
 	ID int `json:"id"`
+}
+type LoadBalancerTargetLabelSelector struct {
+	Selector string `json:"selector"`
 }
 
 // LoadBalancerListResponse defines the schema of the response when
@@ -70,8 +82,9 @@ type LoadBalancerGetResponse struct {
 // LoadBalancerListResponse defines the schema of the response when
 // listing LoadBalancer.
 type LoadBalancerTargetRequest struct {
-	Type   string  `json:"type"`
-	Server *Server `json:"server"`
+	Type          string                           `json:"type"`
+	Server        *LoadBalancerTargetServer        `json:"server"`
+	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector,omitempty"`
 }
 
 // VolumeActionDetachVolumeResponse defines the schema of the response when
@@ -89,4 +102,16 @@ type LoadBalancerCreateRequest struct {
 // creating a LoadBalancer.
 type LoadBalancerCreateResponse struct {
 	LoadBalancer LoadBalancer `json:"load_balancer"`
+}
+
+// LoadBalancerActionChangeProtectionRequest defines the schema of the request to
+// change the resource protection of a load balancer.
+type LoadBalancerActionChangeProtectionRequest struct {
+	Delete *bool `json:"delete,omitempty"`
+}
+
+// LoadBalancerActionChangeProtectionResponse defines the schema of the response when
+// changing the resource protection of a load balancer.
+type LoadBalancerActionChangeProtectionResponse struct {
+	Action Action `json:"action"`
 }

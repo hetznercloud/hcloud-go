@@ -455,12 +455,17 @@ func LoadBalancerServiceHealthCheckFromSchema(s schema.LoadBalancerServiceHealth
 
 func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarget {
 	lt := LoadBalancerTarget{
-		Type: s.Type,
+		Type: LoadBalancerTargetType(s.Type),
 	}
 
 	if s.Server != nil {
 		lt.LoadBalancerTargetServer = &LoadBalancerTargetServer{
 			Server: Server{ID: s.Server.ID},
+		}
+	}
+	if s.LabelSelector != nil {
+		lt.LoadBalancerTargetLabelSelector = &LoadBalancerTargetLabelSelector{
+			LabelSelector: struct{ Selector string }{Selector: s.LabelSelector.Selector}, // TODO Optimize
 		}
 	}
 	return lt
