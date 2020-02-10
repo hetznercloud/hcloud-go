@@ -14,7 +14,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-// LoadBalancerType represents a LoadBalancer in the Hetzner Cloud.
+// LoadBalancer represents a Load Balancer in the Hetzner Cloud.
 type LoadBalancer struct {
 	ID               int
 	Name             string
@@ -29,18 +29,24 @@ type LoadBalancer struct {
 	Labels           map[string]string
 	Created          time.Time
 }
+
+// LoadBalancerService represents a service of a Load Balancer
 type LoadBalancerService struct {
-	Protocol        string
+	Protocol        LoadBalancerServiceProtocol
 	ListenPort      int
 	DestinationPort int
 	ProxyProtocol   bool
 	HTTP            *LoadBalancerServiceHTTP
 	HealthCheck     LoadBalancerServiceHealthCheck
 }
+
+// LoadBalancerServiceHTTP represents HTTP specific options for a service of a Load Balancer
 type LoadBalancerServiceHTTP struct {
 	CookieName     string
 	CookieLifeTime int
 }
+
+// LoadBalancerServiceHealthCheck represents Health Check specific options for a service of a Load Balancer
 type LoadBalancerServiceHealthCheck struct {
 	Protocol string
 	Port     int
@@ -50,11 +56,13 @@ type LoadBalancerServiceHealthCheck struct {
 	HTTP     *LoadBalancerServiceHealthCheckHTTP
 }
 
+// LoadBalancerServiceHealthCheckHTTP represents HTTP specific options for a Health Check of a Load Balancer
 type LoadBalancerServiceHealthCheckHTTP struct {
 	Domain string
 	Path   string
 }
 
+// LoadBalancerAlgorithm represents Algorithm option of a Load Balancer
 type LoadBalancerAlgorithm struct {
 	Type string
 }
@@ -63,20 +71,45 @@ type LoadBalancerAlgorithm struct {
 type LoadBalancerTargetType string
 
 const (
-	LoadBalancerTargetTypeServer        LoadBalancerTargetType = "server"
+	// LoadBalancerTargetTypeServer is the type when a cloud server should be linked directly.
+	LoadBalancerTargetTypeServer LoadBalancerTargetType = "server"
+	// LoadBalancerTargetTypeLabelSelector is the type when multiple cloud server should be linked through a label selector.
 	LoadBalancerTargetTypeLabelSelector LoadBalancerTargetType = "label_selector"
 )
 
+// LoadBalancerServiceProtocol specifies a load balancer service protocol.
+type LoadBalancerServiceProtocol string
+
+const (
+	// LoadBalancerServiceProtocolTCP is the protocol when the Load Balancer is used as TCP Load Balancer.
+	LoadBalancerServiceProtocolTCP LoadBalancerServiceProtocol = "tcp"
+	// LoadBalancerServiceProtocolHTTP is the protocol when the Load Balancer is used as HTTP Load Balancer.
+	LoadBalancerServiceProtocolHTTP LoadBalancerServiceProtocol = "http"
+	// LoadBalancerServiceProtocolHTTPS is the protocol when the Load Balancer is used as HTTP Load Balancer with SSL Termination.
+	LoadBalancerServiceProtocolHTTPS LoadBalancerServiceProtocol = "https"
+)
+
+// LoadBalancerAlgorithmType specifies a load balancer service protocol.
+type LoadBalancerAlgorithmType string
+
+const (
+	// LoadBalancerAlgorithmTypeRoundRobin represents a RoundRobin algorithm.
+	LoadBalancerAlgorithmTypeRoundRobin LoadBalancerAlgorithmType = "round_robin"
+)
+
+// LoadBalancerTarget represents target of a Load Balancer
 type LoadBalancerTarget struct {
 	Type LoadBalancerTargetType
 	*LoadBalancerTargetServer
 	*LoadBalancerTargetLabelSelector
 }
 
+// LoadBalancerTargetServer represents server target of a Load Balancer
 type LoadBalancerTargetServer struct {
 	Server Server
 }
 
+// LoadBalancerTargetLabelSelector represents label selector target of a Load Balancer
 type LoadBalancerTargetLabelSelector struct {
 	LabelSelector struct {
 		Selector string
@@ -120,8 +153,8 @@ func (c *LoadBalancerClient) GetByName(ctx context.Context, name string) (*LoadB
 	return LoadBalancer[0], response, err
 }
 
-// Get retrieves a server type by its ID if the input can be parsed as an integer, otherwise it
-// retrieves a server type by its name. If the server type does not exist, nil is returned.
+// Get retrieves a Load Balancer by its ID if the input can be parsed as an integer, otherwise it
+// retrieves a Load Balancer by its name. If the Load Balancer does not exist, nil is returned.
 func (c *LoadBalancerClient) Get(ctx context.Context, idOrName string) (*LoadBalancer, *Response, error) {
 	if id, err := strconv.Atoi(idOrName); err == nil {
 		return c.GetByID(ctx, int(id))
@@ -129,7 +162,7 @@ func (c *LoadBalancerClient) Get(ctx context.Context, idOrName string) (*LoadBal
 	return c.GetByName(ctx, idOrName)
 }
 
-// LoadBalancerListOpts specifies options for listing server types.
+// LoadBalancerListOpts specifies options for listing Load Balancers.
 type LoadBalancerListOpts struct {
 	ListOpts
 	Name string
@@ -143,7 +176,7 @@ func (l LoadBalancerListOpts) values() url.Values {
 	return vals
 }
 
-// List returns a list of server types for a specific page.
+// List returns a list of Load Balancers for a specific page.
 func (c *LoadBalancerClient) List(ctx context.Context, opts LoadBalancerListOpts) ([]*LoadBalancer, *Response, error) {
 	path := "/load_balancers?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
@@ -163,7 +196,7 @@ func (c *LoadBalancerClient) List(ctx context.Context, opts LoadBalancerListOpts
 	return LoadBalancers, resp, nil
 }
 
-// All returns all server types.
+// All returns all Load Balancers.
 func (c *LoadBalancerClient) All(ctx context.Context) ([]*LoadBalancer, error) {
 	allLoadBalancer := []*LoadBalancer{}
 
@@ -186,7 +219,7 @@ func (c *LoadBalancerClient) All(ctx context.Context) ([]*LoadBalancer, error) {
 	return allLoadBalancer, nil
 }
 
-// AllWithOpts returns all LoadBalancers for the given options.
+// AllWithOpts returns all Load Balancers for the given options.
 func (c *LoadBalancerClient) AllWithOpts(ctx context.Context, opts LoadBalancerListOpts) ([]*LoadBalancer, error) {
 	var allLoadBalancers []*LoadBalancer
 
@@ -206,9 +239,46 @@ func (c *LoadBalancerClient) AllWithOpts(ctx context.Context, opts LoadBalancerL
 	return allLoadBalancers, nil
 }
 
-// LoadBalancerCreateOpts specifies options for creating a new LoadBalancer.
+// LoadBalancerUpdateOpts specifies options for updating a Load Balancer.
+type LoadBalancerUpdateOpts struct {
+	Name   string
+	Labels map[string]string
+}
+
+// Update updates a Load Balancer.
+func (c *LoadBalancerClient) Update(ctx context.Context, network *LoadBalancer, opts LoadBalancerUpdateOpts) (*LoadBalancer, *Response, error) {
+	reqBody := schema.LoadBalancerUpdateRequest{
+		Name: opts.Name,
+	}
+	if opts.Labels != nil {
+		reqBody.Labels = &opts.Labels
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d", network.ID)
+	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.LoadBalancerUpdateResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return LoadBalancerFromSchema(respBody.LoadBalancer), resp, nil
+}
+
+// LoadBalancerCreateOpts specifies options for creating a new Load Balancer.
 type LoadBalancerCreateOpts struct {
-	Name string
+	Name             string
+	LoadBalancerType *LoadBalancerType
+	Algorithm        LoadBalancerAlgorithm
+	Location         *Location
+	NetworkZone      string
 }
 
 // Validate checks if options are valid.
@@ -216,17 +286,44 @@ func (o LoadBalancerCreateOpts) Validate() error {
 	if o.Name == "" {
 		return errors.New("missing name")
 	}
-
+	if o.LoadBalancerType == nil || (o.LoadBalancerType.ID == 0 && o.LoadBalancerType.Name == "") {
+		return errors.New("missing load balancer type")
+	}
+	if o.Algorithm.Type == "" {
+		return errors.New("missing algorithm type")
+	}
+	if o.Location != nil && o.NetworkZone != "" {
+		return errors.New("location and network_zone are mutually exclusive")
+	}
 	return nil
 }
 
-// Create creates a new LoadBalancer.
+// Create creates a new Load Balancer.
 func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreateOpts) (*LoadBalancer, *Response, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, nil, err
 	}
 	reqBody := schema.LoadBalancerCreateRequest{
 		Name: opts.Name,
+		Algorithm: schema.LoadBalancerAlgorithm{
+			Type: opts.Algorithm.Type,
+		},
+	}
+	if opts.LoadBalancerType.ID != 0 {
+		reqBody.LoadBalancerType = opts.LoadBalancerType.ID
+	} else if opts.LoadBalancerType.Name != "" {
+		reqBody.LoadBalancerType = opts.LoadBalancerType.Name
+	}
+
+	if opts.Location != nil {
+		if opts.Location.ID != 0 {
+			reqBody.Location = strconv.Itoa(opts.Location.ID)
+		} else {
+			reqBody.Location = opts.Location.Name
+		}
+	}
+	if opts.NetworkZone != "" {
+		reqBody.NetworkZone = opts.NetworkZone
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -245,7 +342,7 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 	return LoadBalancerFromSchema(respBody.LoadBalancer), resp, nil
 }
 
-// Delete deletes a load balancer.
+// Delete deletes a Load Balancer.
 func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalancer) (*Response, error) {
 	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/load_balancers/%d", loadBalancer.ID), nil)
 	if err != nil {
@@ -254,7 +351,7 @@ func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalan
 	return c.client.Do(req, nil)
 }
 
-// LoadBalancerTargetOpts specifies options for adding or removing targets from a LoadBalancer.
+// LoadBalancerTargetOpts specifies options for adding or removing targets from a Load Balancer.
 type LoadBalancerTargetOpts struct {
 	Server        *Server
 	LabelSelector string
@@ -271,20 +368,20 @@ func (o LoadBalancerTargetOpts) Validate() error {
 }
 
 // GetType returns the Target type based on the given options
-func (o LoadBalancerTargetOpts) GetType() LoadBalancerTargetType {
+func (o LoadBalancerTargetOpts) getType() LoadBalancerTargetType {
 	if o.LabelSelector != "" {
-		return LoadBalancerTargetTypeServer
+		return LoadBalancerTargetTypeLabelSelector
 	}
-	return LoadBalancerTargetTypeLabelSelector
+	return LoadBalancerTargetTypeServer
 
 }
 
-// AddTarget adds a target to a load balancer.
+// AddTarget adds a target to a Load Balancer.
 func (c *LoadBalancerClient) AddTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerTargetOpts) (*Action, *Response, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, nil, err
 	}
-	targetType := opts.GetType()
+	targetType := opts.getType()
 	reqBody := schema.LoadBalancerTargetRequest{
 		Type: string(targetType),
 	}
@@ -317,12 +414,12 @@ func (c *LoadBalancerClient) AddTarget(ctx context.Context, loadBalancer *LoadBa
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-// RemoveTarget removes a target from a load balancer.
+// RemoveTarget removes a target from a Load Balancer.
 func (c *LoadBalancerClient) RemoveTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerTargetOpts) (*Action, *Response, error) {
 	if err := opts.Validate(); err != nil {
 		return nil, nil, err
 	}
-	targetType := opts.GetType()
+	targetType := opts.getType()
 	reqBody := schema.LoadBalancerTargetRequest{
 		Type: string(targetType),
 	}
@@ -355,12 +452,73 @@ func (c *LoadBalancerClient) RemoveTarget(ctx context.Context, loadBalancer *Loa
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-// LoadBalancerChangeProtectionOpts specifies options for changing the resource protection level of a network.
+// LoadBalancerAddServiceOpts specifies options for adding service to a Load Balancer.
+type LoadBalancerAddServiceOpts struct {
+	Protocol        LoadBalancerServiceProtocol
+	ListenPort      *int
+	DestinationPort *int
+	ProxyProtocol   *bool
+	HTTP            LoadBalancerServiceHTTP
+}
+
+// AddService adds a service to a Load Balancer.
+func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddServiceOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerAddServiceRequest{
+		Protocol:        string(opts.Protocol),
+		ListenPort:      opts.ListenPort,
+		DestinationPort: opts.DestinationPort,
+		ProxyProtocol:   opts.ProxyProtocol,
+	}
+
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/add_service", loadBalancer.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var respBody schema.LoadBalancerAddServiceResponse
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// DeleteService removes a server from a Load Balancer.
+func (c *LoadBalancerClient) DeleteService(ctx context.Context, loadBalancer *LoadBalancer, listenPort int) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerDeleteServiceRequest{
+		ListenPort: listenPort,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/delete_service", loadBalancer.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var respBody schema.LoadBalancerDeleteServiceResponse
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// LoadBalancerChangeProtectionOpts specifies options for changing the resource protection level of a Load Balancer.
 type LoadBalancerChangeProtectionOpts struct {
 	Delete *bool
 }
 
-// ChangeProtection changes the resource protection level of a load balancer.
+// ChangeProtection changes the resource protection level of a Load Balancer.
 func (c *LoadBalancerClient) ChangeProtection(ctx context.Context, network *LoadBalancer, opts LoadBalancerChangeProtectionOpts) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionChangeProtectionRequest{
 		Delete: opts.Delete,
@@ -382,4 +540,39 @@ func (c *LoadBalancerClient) ChangeProtection(ctx context.Context, network *Load
 		return nil, resp, err
 	}
 	return ActionFromSchema(respBody.Action), resp, err
+}
+
+// LoadBalancerChangeAlgorithmOpts specifies options for changing the algorithm of a Load Balancer.
+type LoadBalancerChangeAlgorithmOpts struct {
+	Type LoadBalancerAlgorithmType
+}
+
+// ChangeAlgorithm changes the algorithm of a Load Balancer.
+func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, network *LoadBalancer, opts LoadBalancerChangeAlgorithmOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionChangeAlgorithmRequest{
+		Type: string(opts.Type),
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/change_algorithm", network.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.LoadBalancerActionChangeAlgorithmResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
+}
+
+// UpdateHealthCheck updates the health check from a service.
+func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, network *LoadBalancer, opts LoadBalancerChangeAlgorithmOpts) (*Action, *Response, error) {
+	// TODO
+	return nil, nil, fmt.Errorf("Not implemented yet")
 }
