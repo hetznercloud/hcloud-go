@@ -381,6 +381,7 @@ func NetworkRouteFromSchema(s schema.NetworkRoute) NetworkRoute {
 	return r
 }
 
+// LoadBalancerTypeFromSchema converts a schema.LoadBalancerType to a LoadBalancerType.
 func LoadBalancerTypeFromSchema(s schema.LoadBalancerType) *LoadBalancerType {
 	lt := &LoadBalancerType{
 		ID:          s.ID,
@@ -391,6 +392,8 @@ func LoadBalancerTypeFromSchema(s schema.LoadBalancerType) *LoadBalancerType {
 	}
 	return lt
 }
+
+// LoadBalancerFromSchema converts a schema.LoadBalancer to a LoadBalancer.
 func LoadBalancerFromSchema(s schema.LoadBalancer) *LoadBalancer {
 	l := &LoadBalancer{
 		ID:               s.ID,
@@ -418,9 +421,10 @@ func LoadBalancerFromSchema(s schema.LoadBalancer) *LoadBalancer {
 	return l
 }
 
+// LoadBalancerServiceFromSchema converts a schema.LoadBalancerService to a LoadBalancerService.
 func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) *LoadBalancerService {
 	ls := &LoadBalancerService{
-		Protocol:        s.Protocol,
+		Protocol:        LoadBalancerServiceProtocol(s.Protocol),
 		ListenPort:      s.ListenPort,
 		DestinationPort: s.DestinationPort,
 		ProxyProtocol:   s.Proxyprotocol,
@@ -435,6 +439,8 @@ func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) *LoadBalancerSe
 	}
 	return ls
 }
+
+// LoadBalancerServiceHealthCheckFromSchema converts a schema.LoadBalancerServiceHealthCheck to a LoadBalancerServiceHealthCheck.
 func LoadBalancerServiceHealthCheckFromSchema(s schema.LoadBalancerServiceHealthCheck) LoadBalancerServiceHealthCheck {
 	lsh := LoadBalancerServiceHealthCheck{
 		Protocol: s.Protocol,
@@ -453,6 +459,7 @@ func LoadBalancerServiceHealthCheckFromSchema(s schema.LoadBalancerServiceHealth
 	return lsh
 }
 
+// LoadBalancerTargetFromSchema converts a schema.LoadBalancerTarget to a LoadBalancerTarget.
 func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarget {
 	lt := LoadBalancerTarget{
 		Type: LoadBalancerTargetType(s.Type),
