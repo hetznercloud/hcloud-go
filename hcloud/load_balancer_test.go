@@ -189,6 +189,9 @@ func TestLoadBalancerCreate(t *testing.T) {
 				LoadBalancer: schema.LoadBalancer{
 					ID: 1,
 				},
+				Action: schema.Action{
+					ID: 1,
+				},
 			})
 		})
 		opts := LoadBalancerCreateOpts{
