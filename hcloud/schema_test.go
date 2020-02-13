@@ -1143,6 +1143,310 @@ func TestNetworkRouteFromSchema(t *testing.T) {
 	}
 }
 
+func TestLoadBalancerTypeFromSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 1,
+		"name": "lx11",
+		"description": "LX11",
+		"max_connections": 20000,
+		"services": 3,
+		"deprecated": "2016-01-30T23:50:00+00:00",
+		"prices": [
+			{
+				"location": "fsn1",
+				"price_hourly": {
+					"net": "1",
+					"gross": "1.19"
+				},
+				"price_monthly": {
+					"net": "1",
+					"gross": "1.19"
+				}
+			}
+		]
+	}`)
+	var s schema.LoadBalancerType
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	loadBalancerType := LoadBalancerTypeFromSchema(s)
+	if loadBalancerType.ID != 1 {
+		t.Errorf("unexpected ID: %v", loadBalancerType.ID)
+	}
+	if loadBalancerType.Name != "lx11" {
+		t.Errorf("unexpected Name: %v", loadBalancerType.Name)
+	}
+	if loadBalancerType.Description != "LX11" {
+		t.Errorf("unexpected Description: %v", loadBalancerType.Description)
+	}
+	if loadBalancerType.MaxConnections != 20000 {
+		t.Errorf("unexpected MaxConnections: %v", loadBalancerType.MaxConnections)
+	}
+	if loadBalancerType.Services != 3 {
+		t.Errorf("unexpected Services: %v", loadBalancerType.Services)
+	}
+	if len(loadBalancerType.Pricings) != 1 {
+		t.Errorf("unexpected number of pricings: %d", len(loadBalancerType.Pricings))
+	} else {
+		if loadBalancerType.Pricings[0].Location.Name != "fsn1" {
+			t.Errorf("unexpected location name: %v", loadBalancerType.Pricings[0].Location.Name)
+		}
+		if loadBalancerType.Pricings[0].Hourly.Net != "1" {
+			t.Errorf("unexpected hourly net price: %v", loadBalancerType.Pricings[0].Hourly.Net)
+		}
+		if loadBalancerType.Pricings[0].Hourly.Gross != "1.19" {
+			t.Errorf("unexpected hourly gross price: %v", loadBalancerType.Pricings[0].Hourly.Gross)
+		}
+		if loadBalancerType.Pricings[0].Monthly.Net != "1" {
+			t.Errorf("unexpected monthly net price: %v", loadBalancerType.Pricings[0].Monthly.Net)
+		}
+		if loadBalancerType.Pricings[0].Monthly.Gross != "1.19" {
+			t.Errorf("unexpected monthly gross price: %v", loadBalancerType.Pricings[0].Monthly.Gross)
+		}
+	}
+}
+
+func TestLoadBalancerFromSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 4711,
+		"name": "Web Frontend",
+		"ipv4": "131.232.99.1",
+		"ipv6": "2001:db8::1",
+		"location": {
+			"id": 1,
+			"name": "fsn1",
+			"description": "Falkenstein DC Park 1",
+			"country": "DE",
+			"city": "Falkenstein",
+			"latitude": 50.47612,
+			"longitude": 12.370071,
+			"network_zone": "eu-central"
+		},
+		"load_balancer_type": {
+			"id": 1,
+			"name": "lx11",
+			"description": "LX11",
+			"max_connections": 20000,
+			"services": 3,
+			"prices": [
+				{
+					"location": "fsn-1",
+					"price_hourly": {
+						"net": "1",
+						"gross": "1.19"
+					},
+					"price_monthly": {
+						"net": "1",
+						"gross": "1.19"
+					}
+				}
+			]
+		},
+		"protection": {
+			"delete": false
+		},
+		"labels": {},
+		"created": "2016-01-30T23:50:00+00:00",
+		"services": [
+			{
+				"protocol": "http",
+				"listen_port": 443,
+				"destination_port": 80,
+				"proxyprotocol": false,
+				"http": {
+					"cookie_name": "HCLBSTICKY",
+					"cookie_lifetime": 300,
+					"certificates": [
+						897
+					]
+				},
+				"health_check": {
+					"protocol": "http",
+					"port": 4711,
+					"interval": 15,
+					"timeout": 10,
+					"retries": 3,
+					"http": {
+						"domain": "example.com",
+						"path": "/"
+					}
+				}
+			}
+		],
+		"targets": [
+			{
+				"type": "server",
+				"server": {
+					"id": 80
+				},
+				"label_selector": null,
+				"health_status": [
+					{
+						"listen_port": 443,
+						"healthy": true
+					}
+				]
+			}
+		],
+		"algorithm": {
+			"type": "round_robin"
+		}
+	}`)
+	var s schema.LoadBalancer
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	loadBalancer := LoadBalancerFromSchema(s)
+	if loadBalancer.ID != 4711 {
+		t.Errorf("unexpected ID: %v", loadBalancer.ID)
+	}
+	if loadBalancer.Name != "Web Frontend" {
+		t.Errorf("unexpected Name: %v", loadBalancer.Name)
+	}
+	if loadBalancer.IPv4.String() != "131.232.99.1" {
+		t.Errorf("unexpected IPv4: %v", loadBalancer.IPv4)
+	}
+	if loadBalancer.IPv6.String() != "2001:db8::1" {
+		t.Errorf("unexpected IPv4: %v", loadBalancer.IPv4)
+	}
+	if loadBalancer.Location == nil || loadBalancer.Location.ID != 1 {
+		t.Errorf("unexpected Location: %v", loadBalancer.Location)
+	}
+	if loadBalancer.LoadBalancerType == nil || loadBalancer.LoadBalancerType.ID != 1 {
+		t.Errorf("unexpected LoadBalancerType: %v", loadBalancer.LoadBalancerType)
+	}
+	if loadBalancer.Protection.Delete {
+		t.Errorf("unexpected value for delete protection: %v", loadBalancer.Protection.Delete)
+	}
+	if !loadBalancer.Created.Equal(time.Date(2016, 01, 30, 23, 50, 00, 0, time.UTC)) {
+		t.Errorf("unexpected created date: %v", loadBalancer.Created)
+	}
+	if len(loadBalancer.Services) != 1 {
+		t.Errorf("unexpected length of Services: %v", len(loadBalancer.Services))
+	}
+	if len(loadBalancer.Targets) != 1 {
+		t.Errorf("unexpected length of Targets: %v", len(loadBalancer.Targets))
+	}
+	if loadBalancer.Algorithm.Type != "round_robin" {
+		t.Errorf("unexpected Algorithm.Type: %v", loadBalancer.Algorithm.Type)
+	}
+}
+
+func TestLoadBalancerServiceFromSchema(t *testing.T) {
+	data := []byte(`{
+		"protocol": "http",
+		"listen_port": 443,
+		"destination_port": 80,
+		"proxyprotocol": false,
+		"http": {
+			"cookie_name": "HCLBSTICKY",
+			"cookie_lifetime": 300,
+			"certificates": [
+				897
+			]
+		},
+		"health_check": {
+			"protocol": "http",
+			"port": 4711,
+			"interval": 15,
+			"timeout": 10,
+			"retries": 3,
+			"http": {
+				"domain": "example.com",
+				"path": "/"
+			}
+		}
+	}`)
+	var s schema.LoadBalancerService
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	loadBalancerService := LoadBalancerServiceFromSchema(s)
+	if loadBalancerService.Protocol != "http" {
+		t.Errorf("unexpected Protocol: %v", loadBalancerService.Protocol)
+	}
+	if loadBalancerService.ListenPort != 443 {
+		t.Errorf("unexpected ListenPort: %v", loadBalancerService.ListenPort)
+	}
+	if loadBalancerService.DestinationPort != 80 {
+		t.Errorf("unexpected DestinationPort: %v", loadBalancerService.DestinationPort)
+	}
+	if loadBalancerService.ProxyProtocol {
+		t.Errorf("unexpected ProxyProtocol: %v", loadBalancerService.ProxyProtocol)
+	}
+	if loadBalancerService.HTTP.CookieName != "HCLBSTICKY" {
+		t.Errorf("unexpected HTTP.CookieName: %v", loadBalancerService.HTTP.CookieName)
+	}
+	if loadBalancerService.HTTP.CookieLifeTime != 300 {
+		t.Errorf("unexpected HTTP.CookieLifeTime: %v", loadBalancerService.HTTP.CookieLifeTime)
+	}
+	/*if loadBalancerService.HTTP.Certificates[0].ID == 897 {
+		t.Errorf("unexpected HTTP.CookieLifeTime: %v", loadBalancerService.HTTP.Certificates[0].ID)
+	}*/
+
+	if loadBalancerService.HealthCheck.Protocol != "http" {
+		t.Errorf("unexpected HealthCheck.Protocol: %v", loadBalancerService.HealthCheck.Protocol)
+	}
+	if loadBalancerService.HealthCheck.Port != 4711 {
+		t.Errorf("unexpected HealthCheck.Port: %v", loadBalancerService.HealthCheck.Port)
+	}
+	if loadBalancerService.HealthCheck.Interval != 15 {
+		t.Errorf("unexpected HealthCheck.Interval: %v", loadBalancerService.HealthCheck.Interval)
+	}
+	if loadBalancerService.HealthCheck.Timeout != 10 {
+		t.Errorf("unexpected HealthCheck.Timeout: %v", loadBalancerService.HealthCheck.Timeout)
+	}
+	if loadBalancerService.HealthCheck.Retries != 3 {
+		t.Errorf("unexpected HealthCheck.Retries: %v", loadBalancerService.HealthCheck.Retries)
+	}
+	if loadBalancerService.HealthCheck.HTTP.Domain != "example.com" {
+		t.Errorf("unexpected HealthCheck.HTTP.Domain: %v", loadBalancerService.HealthCheck.HTTP.Domain)
+	}
+	if loadBalancerService.HealthCheck.HTTP.Path != "/" {
+		t.Errorf("unexpected HealthCheck.HTTP.Path: %v", loadBalancerService.HealthCheck.HTTP.Path)
+	}
+}
+
+func TestLoadBalancerTargetFromSchema(t *testing.T) {
+	data := []byte(`{
+		"type": "server",
+		"server": {
+			"id": 80
+		},
+		"label_selector": null,
+		"health_status": [
+			{
+				"listen_port": 443,
+				"healthy": true
+			}
+		]
+	}`)
+	var s schema.LoadBalancerTarget
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	loadBalancerTarget := LoadBalancerTargetFromSchema(s)
+	if loadBalancerTarget.Type != "server" {
+		t.Errorf("unexpected Type: %v", loadBalancerTarget.Type)
+	}
+	if loadBalancerTarget.LoadBalancerTargetServer == nil || loadBalancerTarget.Server.ID != 80 {
+		t.Errorf("unexpected Server: %v", loadBalancerTarget.Server)
+	}
+	if loadBalancerTarget.LoadBalancerTargetLabelSelector != nil {
+		t.Errorf("unexpected LabelSelector.Selector: %v", loadBalancerTarget.LabelSelector)
+	}
+	if len(loadBalancerTarget.HealthStatus) != 1 {
+		t.Errorf("unexpected Health Status length: %v", len(loadBalancerTarget.HealthStatus))
+	} else {
+		if loadBalancerTarget.HealthStatus[0].ListenPort != 443 {
+			t.Errorf("unexpected HealthStatus[0].ListenPort: %v", loadBalancerTarget.HealthStatus[0].ListenPort)
+		}
+		if !loadBalancerTarget.HealthStatus[0].Healthy {
+			t.Errorf("unexpected HealthStatus[0].Healthy: %v", loadBalancerTarget.HealthStatus[0].Healthy)
+		}
+	}
+}
+
 func TestPricingFromSchema(t *testing.T) {
 	data := []byte(`{
 		"currency": "EUR",
@@ -1172,6 +1476,25 @@ func TestPricingFromSchema(t *testing.T) {
 			{
 				"id": 4,
 				"name": "CX11",
+				"prices": [
+					{
+						"location": "fsn1",
+						"price_hourly": {
+							"net": "1",
+							"gross": "1.19"
+						},
+						"price_monthly": {
+							"net": "1",
+							"gross": "1.19"
+						}
+					}
+				]
+			}
+		],
+		"load_balancer_types": [
+			{
+				"id": 4,
+				"name": "LX11",
 				"prices": [
 					{
 						"location": "fsn1",
@@ -1248,6 +1571,53 @@ func TestPricingFromSchema(t *testing.T) {
 		}
 		if p.ServerType.Name != "CX11" {
 			t.Errorf("unexpected ServerType.Name: %v", p.ServerType.Name)
+		}
+
+		if len(p.Pricings) != 1 {
+			t.Errorf("unexpected number of prices: %d", len(p.Pricings))
+		} else {
+			if p.Pricings[0].Location.Name != "fsn1" {
+				t.Errorf("unexpected Location.Name: %v", p.Pricings[0].Location.Name)
+			}
+
+			if p.Pricings[0].Hourly.Currency != "EUR" {
+				t.Errorf("unexpected Hourly.Currency: %v", p.Pricings[0].Hourly.Currency)
+			}
+			if p.Pricings[0].Hourly.VATRate != "19.00" {
+				t.Errorf("unexpected Hourly.VATRate: %v", p.Pricings[0].Hourly.VATRate)
+			}
+			if p.Pricings[0].Hourly.Net != "1" {
+				t.Errorf("unexpected Hourly.Net: %v", p.Pricings[0].Hourly.Net)
+			}
+			if p.Pricings[0].Hourly.Gross != "1.19" {
+				t.Errorf("unexpected Hourly.Gross: %v", p.Pricings[0].Hourly.Gross)
+			}
+
+			if p.Pricings[0].Monthly.Currency != "EUR" {
+				t.Errorf("unexpected Monthly.Currency: %v", p.Pricings[0].Monthly.Currency)
+			}
+			if p.Pricings[0].Monthly.VATRate != "19.00" {
+				t.Errorf("unexpected Monthly.VATRate: %v", p.Pricings[0].Monthly.VATRate)
+			}
+			if p.Pricings[0].Monthly.Net != "1" {
+				t.Errorf("unexpected Monthly.Net: %v", p.Pricings[0].Monthly.Net)
+			}
+			if p.Pricings[0].Monthly.Gross != "1.19" {
+				t.Errorf("unexpected Monthly.Gross: %v", p.Pricings[0].Monthly.Gross)
+			}
+		}
+	}
+
+	if len(pricing.LoadBalancerTypes) != 1 {
+		t.Errorf("unexpected number of Load Balancer types: %d", len(pricing.LoadBalancerTypes))
+	} else {
+		p := pricing.LoadBalancerTypes[0]
+
+		if p.LoadBalancerType.ID != 4 {
+			t.Errorf("unexpected LoadBalancerType.ID: %d", p.LoadBalancerType.ID)
+		}
+		if p.LoadBalancerType.Name != "LX11" {
+			t.Errorf("unexpected LoadBalancerType.Name: %v", p.LoadBalancerType.Name)
 		}
 
 		if len(p.Pricings) != 1 {
