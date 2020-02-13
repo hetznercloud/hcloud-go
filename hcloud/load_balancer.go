@@ -389,7 +389,7 @@ func (c *LoadBalancerClient) AddTarget(ctx context.Context, loadBalancer *LoadBa
 		return nil, nil, err
 	}
 	targetType := opts.getType()
-	reqBody := schema.LoadBalancerTargetRequest{
+	reqBody := schema.LoadBalancerActionTargetRequest{
 		Type: string(targetType),
 	}
 	switch targetType {
@@ -413,7 +413,7 @@ func (c *LoadBalancerClient) AddTarget(ctx context.Context, loadBalancer *LoadBa
 		return nil, nil, err
 	}
 
-	var respBody schema.LoadBalancerTargetResponse
+	var respBody schema.LoadBalancerActionTargetResponse
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
@@ -427,7 +427,7 @@ func (c *LoadBalancerClient) RemoveTarget(ctx context.Context, loadBalancer *Loa
 		return nil, nil, err
 	}
 	targetType := opts.getType()
-	reqBody := schema.LoadBalancerTargetRequest{
+	reqBody := schema.LoadBalancerActionTargetRequest{
 		Type: string(targetType),
 	}
 	switch targetType {
@@ -451,7 +451,7 @@ func (c *LoadBalancerClient) RemoveTarget(ctx context.Context, loadBalancer *Loa
 		return nil, nil, err
 	}
 
-	var respBody schema.LoadBalancerTargetResponse
+	var respBody schema.LoadBalancerActionTargetResponse
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
@@ -462,19 +462,43 @@ func (c *LoadBalancerClient) RemoveTarget(ctx context.Context, loadBalancer *Loa
 // LoadBalancerAddServiceOpts specifies options for adding service to a Load Balancer.
 type LoadBalancerAddServiceOpts struct {
 	Protocol        LoadBalancerServiceProtocol
-	ListenPort      *int
-	DestinationPort *int
+	ListenPort      int
+	DestinationPort int
 	ProxyProtocol   *bool
-	HTTP            LoadBalancerServiceHTTP
+	HTTP            *LoadBalancerServiceHTTP
+	HealthCheck     *LoadBalancerServiceHealthCheck
 }
 
 // AddService adds a service to a Load Balancer.
 func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddServiceOpts) (*Action, *Response, error) {
-	reqBody := schema.LoadBalancerAddServiceRequest{
+	reqBody := schema.LoadBalancerActionAddServiceRequest{
 		Protocol:        string(opts.Protocol),
 		ListenPort:      opts.ListenPort,
 		DestinationPort: opts.DestinationPort,
 		ProxyProtocol:   opts.ProxyProtocol,
+	}
+
+	if opts.HTTP != nil {
+		reqBody.HTTP = &schema.LoadBalancerServiceHTTP{
+			CookieName:     opts.HTTP.CookieName,
+			CookieLifetime: opts.HTTP.CookieLifeTime,
+		}
+	}
+
+	if opts.HealthCheck != nil {
+		reqBody.HealthCheck = &schema.LoadBalancerServiceHealthCheck{
+			Protocol: opts.HealthCheck.Protocol,
+			Port:     opts.HealthCheck.Port,
+			Interval: opts.HealthCheck.Interval,
+			Timeout:  opts.HealthCheck.Timeout,
+			Retries:  opts.HealthCheck.Retries,
+		}
+		if opts.HealthCheck.HTTP != nil {
+			reqBody.HealthCheck.HTTP = &schema.LoadBalancerServiceHealthCheckHTTP{
+				Domain: opts.HealthCheck.HTTP.Domain,
+				Path:   opts.HealthCheck.HTTP.Path,
+			}
+		}
 	}
 
 	reqBodyData, err := json.Marshal(reqBody)
@@ -488,7 +512,7 @@ func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadB
 		return nil, nil, err
 	}
 
-	var respBody schema.LoadBalancerAddServiceResponse
+	var respBody schema.LoadBalancerActionAddServiceResponse
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
@@ -578,8 +602,46 @@ func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, loadBalancer *
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
+// LoadBalancerUpdateHealthCheckOpts specifies options for updating a health check of a service from a Load Balancer.
+type LoadBalancerUpdateHealthCheckOpts struct {
+	ListenPort  int
+	HealthCheck LoadBalancerServiceHealthCheck
+}
+
 // UpdateHealthCheck updates the health check from a service.
-func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerChangeAlgorithmOpts) (*Action, *Response, error) {
-	// TODO
-	return nil, nil, fmt.Errorf("Not implemented yet")
+func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerUpdateHealthCheckOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionUpdateHealthCheckRequest{
+		ListenPort: opts.ListenPort,
+		HealthCheck: schema.LoadBalancerServiceHealthCheck{
+			Protocol: opts.HealthCheck.Protocol,
+			Port:     opts.HealthCheck.Port,
+			Interval: opts.HealthCheck.Interval,
+			Timeout:  opts.HealthCheck.Timeout,
+			Retries:  opts.HealthCheck.Retries,
+		},
+	}
+
+	if opts.HealthCheck.HTTP != nil {
+		reqBody.HealthCheck.HTTP = &schema.LoadBalancerServiceHealthCheckHTTP{
+			Domain: opts.HealthCheck.HTTP.Domain,
+			Path:   opts.HealthCheck.HTTP.Path,
+		}
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/update_healthcheck", loadBalancer.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.LoadBalancerActionChangeAlgorithmResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
 }
