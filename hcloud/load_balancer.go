@@ -305,10 +305,16 @@ func (o LoadBalancerCreateOpts) Validate() error {
 	return nil
 }
 
-// Create creates a new Load Balancer.
-func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreateOpts) (*LoadBalancer, *Response, error) {
+// LoadBalancerCreateResult is the result of a create Load Balancer call.
+type LoadBalancerCreateResult struct {
+	LoadBalancer *LoadBalancer
+	Action       *Action
+}
+
+// Create creates a new Load Balancer
+func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreateOpts) (LoadBalancerCreateResult, *Response, error) {
 	if err := opts.Validate(); err != nil {
-		return nil, nil, err
+		return LoadBalancerCreateResult{}, nil, err
 	}
 	reqBody := schema.LoadBalancerCreateRequest{
 		Name: opts.Name,
@@ -334,19 +340,22 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
-		return nil, nil, err
+		return LoadBalancerCreateResult{}, nil, err
 	}
 	req, err := c.client.NewRequest(ctx, "POST", "/load_balancers", bytes.NewReader(reqBodyData))
 	if err != nil {
-		return nil, nil, err
+		return LoadBalancerCreateResult{}, nil, err
 	}
 
 	respBody := schema.LoadBalancerCreateResponse{}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
-		return nil, resp, err
+		return LoadBalancerCreateResult{}, resp, err
 	}
-	return LoadBalancerFromSchema(respBody.LoadBalancer), resp, nil
+	return LoadBalancerCreateResult{
+		LoadBalancer: LoadBalancerFromSchema(respBody.LoadBalancer),
+		Action:       ActionFromSchema(respBody.Action),
+	}, resp, nil
 }
 
 // Delete deletes a Load Balancer.
