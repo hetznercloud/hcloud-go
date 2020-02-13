@@ -641,7 +641,7 @@ func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, loadBalancer
 		return nil, nil, err
 	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/update_healthcheck", loadBalancer.ID)
+	path := fmt.Sprintf("/load_balancers/%d/actions/update_health_check", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
 	if err != nil {
 		return nil, nil, err
