@@ -862,7 +862,7 @@ func TestLoadBalancerUpdateHealthCheck(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	env.Mux.HandleFunc("/load_balancers/1/actions/update_healthcheck", func(w http.ResponseWriter, r *http.Request) {
+	env.Mux.HandleFunc("/load_balancers/1/actions/update_health_check", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			t.Error("expected POST")
 		}
