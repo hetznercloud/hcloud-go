@@ -153,6 +153,7 @@ type LoadBalancerCreateRequest struct {
 // create a LoadBalancer.
 type LoadBalancerCreateResponse struct {
 	LoadBalancer LoadBalancer `json:"load_balancer"`
+	Action       Action       `json:"action"`
 }
 
 // LoadBalancerActionChangeProtectionRequest defines the schema of the request to
