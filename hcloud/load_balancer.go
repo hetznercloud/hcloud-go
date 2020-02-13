@@ -102,6 +102,7 @@ type LoadBalancerTarget struct {
 	Type LoadBalancerTargetType
 	*LoadBalancerTargetServer
 	*LoadBalancerTargetLabelSelector
+	HealthStatus []LoadBalancerTargetHealthStatus
 }
 
 // LoadBalancerTargetServer represents server target of a Load Balancer
@@ -116,17 +117,23 @@ type LoadBalancerTargetLabelSelector struct {
 	}
 }
 
+// LoadBalancerTargetHealthStatus represents target health status of a Load Balancer
+type LoadBalancerTargetHealthStatus struct {
+	ListenPort int
+	Healthy    bool
+}
+
 // LoadBalancerProtection represents the protection level of a Load Balancer.
 type LoadBalancerProtection struct {
 	Delete bool
 }
 
-// LoadBalancerClient is a client for the server types API.
+// LoadBalancerClient is a client for the Load Balancers API.
 type LoadBalancerClient struct {
 	client *Client
 }
 
-// GetByID retrieves a server type by its ID. If the server type does not exist, nil is returned.
+// GetByID retrieves a Load Balancer by its ID. If the Load Balancer does not exist, nil is returned.
 func (c *LoadBalancerClient) GetByID(ctx context.Context, id int) (*LoadBalancer, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/load_balancers/%d", id), nil)
 	if err != nil {
@@ -144,7 +151,7 @@ func (c *LoadBalancerClient) GetByID(ctx context.Context, id int) (*LoadBalancer
 	return LoadBalancerFromSchema(body.LoadBalancer), resp, nil
 }
 
-// GetByName retrieves a server type by its name. If the server type does not exist, nil is returned.
+// GetByName retrieves a Load Balancer by its name. If the Load Balancer does not exist, nil is returned.
 func (c *LoadBalancerClient) GetByName(ctx context.Context, name string) (*LoadBalancer, *Response, error) {
 	LoadBalancer, response, err := c.List(ctx, LoadBalancerListOpts{Name: name})
 	if len(LoadBalancer) == 0 {
@@ -246,7 +253,7 @@ type LoadBalancerUpdateOpts struct {
 }
 
 // Update updates a Load Balancer.
-func (c *LoadBalancerClient) Update(ctx context.Context, network *LoadBalancer, opts LoadBalancerUpdateOpts) (*LoadBalancer, *Response, error) {
+func (c *LoadBalancerClient) Update(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerUpdateOpts) (*LoadBalancer, *Response, error) {
 	reqBody := schema.LoadBalancerUpdateRequest{
 		Name: opts.Name,
 	}
@@ -258,7 +265,7 @@ func (c *LoadBalancerClient) Update(ctx context.Context, network *LoadBalancer, 
 		return nil, nil, err
 	}
 
-	path := fmt.Sprintf("/load_balancers/%d", network.ID)
+	path := fmt.Sprintf("/load_balancers/%d", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
 	if err != nil {
 		return nil, nil, err
@@ -293,7 +300,7 @@ func (o LoadBalancerCreateOpts) Validate() error {
 		return errors.New("missing algorithm type")
 	}
 	if o.Location != nil && o.NetworkZone != "" {
-		return errors.New("location and network_zone are mutually exclusive")
+		return errors.New("location and loadBalancer_zone are mutually exclusive")
 	}
 	return nil
 }
@@ -519,7 +526,7 @@ type LoadBalancerChangeProtectionOpts struct {
 }
 
 // ChangeProtection changes the resource protection level of a Load Balancer.
-func (c *LoadBalancerClient) ChangeProtection(ctx context.Context, network *LoadBalancer, opts LoadBalancerChangeProtectionOpts) (*Action, *Response, error) {
+func (c *LoadBalancerClient) ChangeProtection(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerChangeProtectionOpts) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
@@ -528,7 +535,7 @@ func (c *LoadBalancerClient) ChangeProtection(ctx context.Context, network *Load
 		return nil, nil, err
 	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/change_protection", network.ID)
+	path := fmt.Sprintf("/load_balancers/%d/actions/change_protection", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
 	if err != nil {
 		return nil, nil, err
@@ -548,7 +555,7 @@ type LoadBalancerChangeAlgorithmOpts struct {
 }
 
 // ChangeAlgorithm changes the algorithm of a Load Balancer.
-func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, network *LoadBalancer, opts LoadBalancerChangeAlgorithmOpts) (*Action, *Response, error) {
+func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerChangeAlgorithmOpts) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionChangeAlgorithmRequest{
 		Type: string(opts.Type),
 	}
@@ -557,7 +564,7 @@ func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, network *LoadB
 		return nil, nil, err
 	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/change_algorithm", network.ID)
+	path := fmt.Sprintf("/load_balancers/%d/actions/change_algorithm", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
 	if err != nil {
 		return nil, nil, err
@@ -572,7 +579,7 @@ func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, network *LoadB
 }
 
 // UpdateHealthCheck updates the health check from a service.
-func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, network *LoadBalancer, opts LoadBalancerChangeAlgorithmOpts) (*Action, *Response, error) {
+func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerChangeAlgorithmOpts) (*Action, *Response, error) {
 	// TODO
 	return nil, nil, fmt.Errorf("Not implemented yet")
 }
