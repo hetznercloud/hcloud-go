@@ -66,6 +66,13 @@ type LoadBalancerTarget struct {
 	Type          string                           `json:"type"`
 	Server        *LoadBalancerTargetServer        `json:"server"`
 	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector"`
+	HealthStatus  []LoadBalancerTargetHealthStatus `json:"health_status"`
+}
+
+// LoadBalancerTargetHealthStatus represents a health status of target of a Load Balancer.
+type LoadBalancerTargetHealthStatus struct {
+	ListenPort int  `json:"listen_port"`
+	Healthy    bool `json:"healthy"`
 }
 
 // LoadBalancerTargetServer represents a server target of a Load Balancer.

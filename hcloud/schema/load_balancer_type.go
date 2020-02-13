@@ -2,11 +2,12 @@ package schema
 
 // LoadBalancerType defines the schema of a LoadBalancer type.
 type LoadBalancerType struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Requests    int    `json:"requests"`
-	Services    int    `json:"services"`
+	ID             int                            `json:"id"`
+	Name           string                         `json:"name"`
+	Description    string                         `json:"description"`
+	MaxConnections int                            `json:"max_connections"`
+	Services       int                            `json:"services"`
+	Prices         []PricingLoadBalancerTypePrice `json:"prices"`
 }
 
 // LoadBalancerTypeListResponse defines the schema of the response when

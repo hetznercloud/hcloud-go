@@ -385,11 +385,24 @@ func NetworkRouteFromSchema(s schema.NetworkRoute) NetworkRoute {
 // LoadBalancerTypeFromSchema converts a schema.LoadBalancerType to a LoadBalancerType.
 func LoadBalancerTypeFromSchema(s schema.LoadBalancerType) *LoadBalancerType {
 	lt := &LoadBalancerType{
-		ID:          s.ID,
-		Name:        s.Name,
-		Description: s.Description,
-		Requests:    s.Requests,
-		Services:    s.Services,
+		ID:             s.ID,
+		Name:           s.Name,
+		Description:    s.Description,
+		MaxConnections: s.MaxConnections,
+		Services:       s.Services,
+	}
+	for _, price := range s.Prices {
+		lt.Pricings = append(lt.Pricings, LoadBalancerTypeLocationPricing{
+			Location: &Location{Name: price.Location},
+			Hourly: Price{
+				Net:   price.PriceHourly.Net,
+				Gross: price.PriceHourly.Gross,
+			},
+			Monthly: Price{
+				Net:   price.PriceMonthly.Net,
+				Gross: price.PriceMonthly.Gross,
+			},
+		})
 	}
 	return lt
 }
@@ -476,7 +489,18 @@ func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarge
 			LabelSelector: struct{ Selector string }{Selector: s.LabelSelector.Selector}, // TODO Optimize
 		}
 	}
+	for _, healthStatus := range s.HealthStatus {
+		lt.HealthStatus = append(lt.HealthStatus, LoadBalancerTargetHealthStatusFromSchema(healthStatus))
+	}
 	return lt
+}
+
+// LoadBalancerTargetHealthStatusFromSchema converts a schema.LoadBalancerTarget to a LoadBalancerTarget.
+func LoadBalancerTargetHealthStatusFromSchema(s schema.LoadBalancerTargetHealthStatus) LoadBalancerTargetHealthStatus {
+	return LoadBalancerTargetHealthStatus{
+		ListenPort: s.ListenPort,
+		Healthy:    s.Healthy,
+	}
 }
 
 // PaginationFromSchema converts a schema.MetaPagination to a Pagination.
@@ -568,6 +592,33 @@ func PricingFromSchema(s schema.Pricing) Pricing {
 			ServerType: &ServerType{
 				ID:   serverType.ID,
 				Name: serverType.Name,
+			},
+			Pricings: pricings,
+		})
+	}
+	for _, loadBalancerType := range s.LoadBalancerTypes {
+		var pricings []LoadBalancerTypeLocationPricing
+		for _, price := range loadBalancerType.Prices {
+			pricings = append(pricings, LoadBalancerTypeLocationPricing{
+				Location: &Location{Name: price.Location},
+				Hourly: Price{
+					Currency: s.Currency,
+					VATRate:  s.VATRate,
+					Net:      price.PriceHourly.Net,
+					Gross:    price.PriceHourly.Gross,
+				},
+				Monthly: Price{
+					Currency: s.Currency,
+					VATRate:  s.VATRate,
+					Net:      price.PriceMonthly.Net,
+					Gross:    price.PriceMonthly.Gross,
+				},
+			})
+		}
+		p.LoadBalancerTypes = append(p.LoadBalancerTypes, LoadBalancerTypePricing{
+			LoadBalancerType: &LoadBalancerType{
+				ID:   loadBalancerType.ID,
+				Name: loadBalancerType.Name,
 			},
 			Pricings: pricings,
 		})

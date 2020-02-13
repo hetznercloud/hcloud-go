@@ -11,11 +11,12 @@ import (
 
 // LoadBalancerType represents a LoadBalancer type in the Hetzner Cloud.
 type LoadBalancerType struct {
-	ID          int
-	Name        string
-	Description string
-	Requests    int
-	Services    int
+	ID             int
+	Name           string
+	Description    string
+	MaxConnections int
+	Services       int
+	Pricings       []LoadBalancerTypeLocationPricing
 }
 
 // LoadBalancerTypeClient is a client for the Load Balancer types API.
