@@ -382,7 +382,7 @@ func TestLoadBalancerClientAddTarget(t *testing.T) {
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
-			var reqBody schema.LoadBalancerTargetRequest
+			var reqBody schema.LoadBalancerActionTargetRequest
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
@@ -392,7 +392,7 @@ func TestLoadBalancerClientAddTarget(t *testing.T) {
 			if reqBody.Server.ID != 1 {
 				t.Errorf("unexpected server id %v", reqBody.Server.ID)
 			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerTargetResponse{
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
 				Action: schema.Action{
 					ID: 1,
 				},
@@ -422,7 +422,7 @@ func TestLoadBalancerClientAddTarget(t *testing.T) {
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
-			var reqBody schema.LoadBalancerTargetRequest
+			var reqBody schema.LoadBalancerActionTargetRequest
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
@@ -432,7 +432,7 @@ func TestLoadBalancerClientAddTarget(t *testing.T) {
 			if reqBody.LabelSelector.Selector != "key=value" {
 				t.Errorf("unexpected LabelSelector %v", reqBody.LabelSelector)
 			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerTargetResponse{
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
 				Action: schema.Action{
 					ID: 1,
 				},
@@ -462,7 +462,7 @@ func TestLoadBalancerClientRemoveTarget(t *testing.T) {
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
-			var reqBody schema.LoadBalancerTargetRequest
+			var reqBody schema.LoadBalancerActionTargetRequest
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
@@ -472,7 +472,7 @@ func TestLoadBalancerClientRemoveTarget(t *testing.T) {
 			if reqBody.Server.ID != 1 {
 				t.Errorf("unexpected server id %v", reqBody.Server.ID)
 			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerTargetResponse{
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
 				Action: schema.Action{
 					ID: 1,
 				},
@@ -502,7 +502,7 @@ func TestLoadBalancerClientRemoveTarget(t *testing.T) {
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
-			var reqBody schema.LoadBalancerTargetRequest
+			var reqBody schema.LoadBalancerActionTargetRequest
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
@@ -512,7 +512,7 @@ func TestLoadBalancerClientRemoveTarget(t *testing.T) {
 			if reqBody.LabelSelector.Selector != "key=value" {
 				t.Errorf("unexpected LabelSelector %v", reqBody.LabelSelector)
 			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerTargetResponse{
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
 				Action: schema.Action{
 					ID: 1,
 				},
@@ -534,7 +534,244 @@ func TestLoadBalancerClientRemoveTarget(t *testing.T) {
 }
 
 func TestLoadBalancerAddService(t *testing.T) {
-	// TODO
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
+
+	t.Run("all fields", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+		env.Mux.HandleFunc("/load_balancers/1/actions/add_service", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "POST" {
+				t.Error("expected POST")
+			}
+			var reqBody schema.LoadBalancerActionAddServiceRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Protocol != "http" {
+				t.Errorf("unexpected Protocol: %v", reqBody.Protocol)
+			}
+			if reqBody.ListenPort != 4711 {
+				t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
+			}
+			if reqBody.DestinationPort != 80 {
+				t.Errorf("unexpected DestinationPort: %v", reqBody.DestinationPort)
+			}
+			if reqBody.HTTP == nil {
+				t.Errorf("unexpected HTTP: %v", reqBody.HTTP)
+			} else {
+				if reqBody.HTTP.CookieName != "HCLBSTICKY" {
+					t.Errorf("unexpectedTTP.CookieName: %v", reqBody.HTTP.CookieName)
+				}
+				if reqBody.HTTP.CookieLifetime != 300 {
+					t.Errorf("unexpected HealthCheck.CookieLifetime: %v", reqBody.HTTP.CookieLifetime)
+				}
+			}
+			if reqBody.HealthCheck.Protocol != "http" {
+				t.Errorf("unexpected HealthCheck.Protocol: %v", reqBody.HealthCheck.Protocol)
+			}
+			if reqBody.HealthCheck.Port != 4711 {
+				t.Errorf("unexpected HealthCheck.Port: %v", reqBody.HealthCheck.Port)
+			}
+			if reqBody.HealthCheck.Interval != 15 {
+				t.Errorf("unexpected HealthCheck.Interval: %v", reqBody.HealthCheck.Interval)
+			}
+			if reqBody.HealthCheck.Timeout != 10 {
+				t.Errorf("unexpected HealthCheck.Timeout: %v", reqBody.HealthCheck.Timeout)
+			}
+			if reqBody.HealthCheck.Retries != 3 {
+				t.Errorf("unexpected HealthCheck.Retries: %v", reqBody.HealthCheck.Retries)
+			}
+			if reqBody.HealthCheck.HTTP == nil {
+				t.Errorf("unexpected HealthCheck.HTTP: %v", reqBody.HealthCheck.HTTP)
+			} else {
+				if reqBody.HealthCheck.HTTP.Domain != "example.com" {
+					t.Errorf("unexpected HealthCheck.HTTP.Domain: %v", reqBody.HealthCheck.HTTP.Domain)
+				}
+				if reqBody.HealthCheck.HTTP.Path != "/" {
+					t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
+				}
+			}
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateHealthCheckResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := LoadBalancerAddServiceOpts{
+			Protocol:        LoadBalancerServiceProtocolHTTP,
+			ListenPort:      4711,
+			DestinationPort: 80,
+			HTTP: &LoadBalancerServiceHTTP{
+				CookieName:     "HCLBSTICKY",
+				CookieLifeTime: 300,
+			},
+			HealthCheck: &LoadBalancerServiceHealthCheck{
+				Protocol: "http",
+				Port:     4711,
+				Interval: 15,
+				Timeout:  10,
+				Retries:  3,
+				HTTP: &LoadBalancerServiceHealthCheckHTTP{
+					Domain: "example.com",
+					Path:   "/",
+				},
+			},
+		}
+		action, _, err := env.Client.LoadBalancer.AddService(ctx, loadBalancer, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %v", action.ID)
+		}
+	})
+
+	t.Run("without health check", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+		env.Mux.HandleFunc("/load_balancers/1/actions/add_service", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "POST" {
+				t.Error("expected POST")
+			}
+			var reqBody schema.LoadBalancerActionAddServiceRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Protocol != "http" {
+				t.Errorf("unexpected Protocol: %v", reqBody.Protocol)
+			}
+			if reqBody.ListenPort != 4711 {
+				t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
+			}
+			if reqBody.DestinationPort != 80 {
+				t.Errorf("unexpected DestinationPort: %v", reqBody.DestinationPort)
+			}
+			if reqBody.HTTP == nil {
+				t.Errorf("unexpected HTTP: %v", reqBody.HTTP)
+			} else {
+				if reqBody.HTTP.CookieName != "HCLBSTICKY" {
+					t.Errorf("unexpectedTTP.CookieName: %v", reqBody.HTTP.CookieName)
+				}
+				if reqBody.HTTP.CookieLifetime != 300 {
+					t.Errorf("unexpected HealthCheck.CookieLifetime: %v", reqBody.HTTP.CookieLifetime)
+				}
+			}
+			if reqBody.HealthCheck != nil {
+				t.Errorf("unexpected HealthCheck: %v", reqBody.HTTP)
+			}
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateHealthCheckResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := LoadBalancerAddServiceOpts{
+			Protocol:        LoadBalancerServiceProtocolHTTP,
+			ListenPort:      4711,
+			DestinationPort: 80,
+			HTTP: &LoadBalancerServiceHTTP{
+				CookieName:     "HCLBSTICKY",
+				CookieLifeTime: 300,
+			},
+			HealthCheck: nil,
+		}
+		action, _, err := env.Client.LoadBalancer.AddService(ctx, loadBalancer, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %v", action.ID)
+		}
+	})
+
+	t.Run("protocol tcp and without http configuration", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+		env.Mux.HandleFunc("/load_balancers/1/actions/add_service", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "POST" {
+				t.Error("expected POST")
+			}
+			var reqBody schema.LoadBalancerActionAddServiceRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Protocol != "tcp" {
+				t.Errorf("unexpected Protocol: %v", reqBody.Protocol)
+			}
+			if reqBody.ListenPort != 4711 {
+				t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
+			}
+			if reqBody.DestinationPort != 80 {
+				t.Errorf("unexpected DestinationPort: %v", reqBody.DestinationPort)
+			}
+			if reqBody.HTTP != nil {
+				t.Errorf("unexpected HTTP: %v", reqBody.HTTP)
+			}
+			if reqBody.HealthCheck.Protocol != "http" {
+				t.Errorf("unexpected HealthCheck.Protocol: %v", reqBody.HealthCheck.Protocol)
+			}
+			if reqBody.HealthCheck.Port != 4711 {
+				t.Errorf("unexpected HealthCheck.Port: %v", reqBody.HealthCheck.Port)
+			}
+			if reqBody.HealthCheck.Interval != 15 {
+				t.Errorf("unexpected HealthCheck.Interval: %v", reqBody.HealthCheck.Interval)
+			}
+			if reqBody.HealthCheck.Timeout != 10 {
+				t.Errorf("unexpected HealthCheck.Timeout: %v", reqBody.HealthCheck.Timeout)
+			}
+			if reqBody.HealthCheck.Retries != 3 {
+				t.Errorf("unexpected HealthCheck.Retries: %v", reqBody.HealthCheck.Retries)
+			}
+			if reqBody.HealthCheck.HTTP == nil {
+				t.Errorf("unexpected HealthCheck.HTTP: %v", reqBody.HealthCheck.HTTP)
+			} else {
+				if reqBody.HealthCheck.HTTP.Domain != "example.com" {
+					t.Errorf("unexpected HealthCheck.HTTP.Domain: %v", reqBody.HealthCheck.HTTP.Domain)
+				}
+				if reqBody.HealthCheck.HTTP.Path != "/" {
+					t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
+				}
+			}
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateHealthCheckResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := LoadBalancerAddServiceOpts{
+			Protocol:        LoadBalancerServiceProtocolTCP,
+			ListenPort:      4711,
+			DestinationPort: 80,
+			HTTP:            nil,
+			HealthCheck: &LoadBalancerServiceHealthCheck{
+				Protocol: "http",
+				Port:     4711,
+				Interval: 15,
+				Timeout:  10,
+				Retries:  3,
+				HTTP: &LoadBalancerServiceHealthCheckHTTP{
+					Domain: "example.com",
+					Path:   "/",
+				},
+			},
+		}
+		action, _, err := env.Client.LoadBalancer.AddService(ctx, loadBalancer, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %v", action.ID)
+		}
+	})
 }
 
 func TestLoadBalancerDeleteService(t *testing.T) {
@@ -552,7 +789,7 @@ func TestLoadBalancerDeleteService(t *testing.T) {
 		if reqBody.ListenPort != 4711 {
 			t.Errorf("unexpected ListenPort %v", reqBody.ListenPort)
 		}
-		json.NewEncoder(w).Encode(schema.LoadBalancerTargetResponse{
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
 			Action: schema.Action{
 				ID: 1,
 			},
@@ -578,42 +815,113 @@ func TestLoadBalancerClientChangeAlgorithm(t *testing.T) {
 		loadBalancer = &LoadBalancer{ID: 1}
 	)
 
-	t.Run("enable delete protection", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
+	env := newTestEnv()
+	defer env.Teardown()
 
-		env.Mux.HandleFunc("/load_balancers/1/actions/change_algorithm", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionChangeAlgorithmRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Type != "round_robin" {
-				t.Errorf("unexpected type: %v", reqBody.Type)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionChangeAlgorithmResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerChangeAlgorithmOpts{
-			Type: LoadBalancerAlgorithmTypeRoundRobin,
+	env.Mux.HandleFunc("/load_balancers/1/actions/change_algorithm", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
 		}
-		action, _, err := env.Client.LoadBalancer.ChangeAlgorithm(ctx, loadBalancer, opts)
-		if err != nil {
+		var reqBody schema.LoadBalancerActionChangeAlgorithmRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
+		if reqBody.Type != "round_robin" {
+			t.Errorf("unexpected type: %v", reqBody.Type)
 		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionChangeAlgorithmResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
 	})
+
+	opts := LoadBalancerChangeAlgorithmOpts{
+		Type: LoadBalancerAlgorithmTypeRoundRobin,
+	}
+	action, _, err := env.Client.LoadBalancer.ChangeAlgorithm(ctx, loadBalancer, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
+
 }
 
 func TestLoadBalancerUpdateHealthCheck(t *testing.T) {
-	// TODO
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
+
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers/1/actions/update_healthcheck", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.LoadBalancerActionUpdateHealthCheckRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.ListenPort != 4711 {
+			t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
+		}
+		if reqBody.HealthCheck.Protocol != "http" {
+			t.Errorf("unexpected HealthCheck.Protocol: %v", reqBody.HealthCheck.Protocol)
+		}
+		if reqBody.HealthCheck.Port != 4711 {
+			t.Errorf("unexpected HealthCheck.Port: %v", reqBody.HealthCheck.Port)
+		}
+		if reqBody.HealthCheck.Interval != 15 {
+			t.Errorf("unexpected HealthCheck.Interval: %v", reqBody.HealthCheck.Interval)
+		}
+		if reqBody.HealthCheck.Timeout != 10 {
+			t.Errorf("unexpected HealthCheck.Timeout: %v", reqBody.HealthCheck.Timeout)
+		}
+		if reqBody.HealthCheck.Retries != 3 {
+			t.Errorf("unexpected HealthCheck.Retries: %v", reqBody.HealthCheck.Retries)
+		}
+		if reqBody.HealthCheck.HTTP == nil {
+			t.Errorf("unexpected HealthCheck.HTTP: %v", reqBody.HealthCheck.HTTP)
+		} else {
+			if reqBody.HealthCheck.HTTP.Domain != "example.com" {
+				t.Errorf("unexpected HealthCheck.HTTP.Domain: %v", reqBody.HealthCheck.HTTP.Domain)
+			}
+			if reqBody.HealthCheck.HTTP.Path != "/" {
+				t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
+			}
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateHealthCheckResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	opts := LoadBalancerUpdateHealthCheckOpts{
+		ListenPort: 4711,
+		HealthCheck: LoadBalancerServiceHealthCheck{
+			Protocol: "http",
+			Port:     4711,
+			Interval: 15,
+			Timeout:  10,
+			Retries:  3,
+			HTTP: &LoadBalancerServiceHealthCheckHTTP{
+				Domain: "example.com",
+				Path:   "/",
+			},
+		},
+	}
+	action, _, err := env.Client.LoadBalancer.UpdateHealthCheck(ctx, loadBalancer, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
 }
