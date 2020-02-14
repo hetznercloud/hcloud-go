@@ -2,14 +2,14 @@ package schema
 
 // Pricing defines the schema for pricing information.
 type Pricing struct {
-	Currency          string              `json:"currency"`
-	VATRate           string              `json:"vat_rate"`
-	Image             PricingImage        `json:"image"`
-	FloatingIP        PricingFloatingIP   `json:"floating_ip"`
-	Traffic           PricingTraffic      `json:"traffic"`
-	ServerBackup      PricingServerBackup `json:"server_backup"`
-	ServerTypes       []PricingServerType `json:"server_types"`
-	LoadBalancerTypes []PricingServerType `json:"load_balancer_types"`
+	Currency          string                    `json:"currency"`
+	VATRate           string                    `json:"vat_rate"`
+	Image             PricingImage              `json:"image"`
+	FloatingIP        PricingFloatingIP         `json:"floating_ip"`
+	Traffic           PricingTraffic            `json:"traffic"`
+	ServerBackup      PricingServerBackup       `json:"server_backup"`
+	ServerTypes       []PricingServerType       `json:"server_types"`
+	LoadBalancerTypes []PricingLoadBalancerType `json:"load_balancer_types"`
 }
 
 // Price defines the schema of a single price with net and gross amount.
