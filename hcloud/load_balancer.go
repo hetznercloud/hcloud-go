@@ -23,14 +23,14 @@ type LoadBalancer struct {
 	Location         *Location
 	LoadBalancerType *LoadBalancerType
 	Algorithm        LoadBalancerAlgorithm
-	Services         []*LoadBalancerService
+	Services         []LoadBalancerService
 	Targets          []LoadBalancerTarget
 	Protection       LoadBalancerProtection
 	Labels           map[string]string
 	Created          time.Time
 }
 
-// LoadBalancerService represents a service of a Load Balancer
+// LoadBalancerService represents a service of a Load Balancer.
 type LoadBalancerService struct {
 	Protocol        LoadBalancerServiceProtocol
 	ListenPort      int
@@ -43,15 +43,15 @@ type LoadBalancerService struct {
 // LoadBalancerServiceHTTP represents HTTP specific options for a service of a Load Balancer
 type LoadBalancerServiceHTTP struct {
 	CookieName     string
-	CookieLifeTime int
+	CookieLifetime time.Duration
 }
 
 // LoadBalancerServiceHealthCheck represents Health Check specific options for a service of a Load Balancer
 type LoadBalancerServiceHealthCheck struct {
 	Protocol string
 	Port     int
-	Interval int
-	Timeout  int
+	Interval time.Duration
+	Timeout  time.Duration
 	Retries  int
 	HTTP     *LoadBalancerServiceHealthCheckHTTP
 }
@@ -99,10 +99,10 @@ const (
 
 // LoadBalancerTarget represents target of a Load Balancer
 type LoadBalancerTarget struct {
-	Type LoadBalancerTargetType
-	*LoadBalancerTargetServer
-	*LoadBalancerTargetLabelSelector
-	HealthStatus []LoadBalancerTargetHealthStatus
+	Type          LoadBalancerTargetType
+	Server        *LoadBalancerTargetServer
+	LabelSelector *LoadBalancerTargetLabelSelector
+	HealthStatus  []LoadBalancerTargetHealthStatus
 }
 
 // LoadBalancerTargetServer represents server target of a Load Balancer
@@ -112,9 +112,7 @@ type LoadBalancerTargetServer struct {
 
 // LoadBalancerTargetLabelSelector represents label selector target of a Load Balancer
 type LoadBalancerTargetLabelSelector struct {
-	LabelSelector struct {
-		Selector string
-	}
+	Selector string
 }
 
 // LoadBalancerTargetHealthStatus represents target health status of a Load Balancer
@@ -285,7 +283,7 @@ type LoadBalancerCreateOpts struct {
 	LoadBalancerType *LoadBalancerType
 	Algorithm        LoadBalancerAlgorithm
 	Location         *Location
-	NetworkZone      string
+	NetworkZone      NetworkZone
 }
 
 // Validate checks if options are valid.
@@ -299,8 +297,11 @@ func (o LoadBalancerCreateOpts) Validate() error {
 	if o.Algorithm.Type == "" {
 		return errors.New("missing algorithm type")
 	}
+	if o.Location == nil && o.NetworkZone == "" {
+		return errors.New("one of location and network_zone must be set")
+	}
 	if o.Location != nil && o.NetworkZone != "" {
-		return errors.New("location and loadBalancer_zone are mutually exclusive")
+		return errors.New("location and network_zone are mutually exclusive")
 	}
 	return nil
 }
@@ -311,7 +312,7 @@ type LoadBalancerCreateResult struct {
 	Action       *Action
 }
 
-// Create creates a new Load Balancer
+// Create creates a new Load Balancer.
 func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreateOpts) (LoadBalancerCreateResult, *Response, error) {
 	if err := opts.Validate(); err != nil {
 		return LoadBalancerCreateResult{}, nil, err
@@ -336,7 +337,7 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 		}
 	}
 	if opts.NetworkZone != "" {
-		reqBody.NetworkZone = opts.NetworkZone
+		reqBody.NetworkZone = string(opts.NetworkZone)
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -367,50 +368,7 @@ func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalan
 	return c.client.Do(req, nil)
 }
 
-// LoadBalancerTargetOpts specifies options for adding or removing targets from a Load Balancer.
-type LoadBalancerTargetOpts struct {
-	Server        *Server
-	LabelSelector string
-}
-
-// Validate checks if options are valid.
-func (o LoadBalancerTargetOpts) Validate() error {
-	if o.Server == nil && o.LabelSelector == "" {
-		return errors.New("missing server or label_selector")
-	} else if o.Server != nil && o.LabelSelector != "" {
-		return errors.New("server and label_selector are mutually exclusive")
-	}
-	return nil
-}
-
-// GetType returns the Target type based on the given options
-func (o LoadBalancerTargetOpts) getType() LoadBalancerTargetType {
-	if o.LabelSelector != "" {
-		return LoadBalancerTargetTypeLabelSelector
-	}
-	return LoadBalancerTargetTypeServer
-
-}
-
-// AddTarget adds a target to a Load Balancer.
-func (c *LoadBalancerClient) AddTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerTargetOpts) (*Action, *Response, error) {
-	if err := opts.Validate(); err != nil {
-		return nil, nil, err
-	}
-	targetType := opts.getType()
-	reqBody := schema.LoadBalancerActionTargetRequest{
-		Type: string(targetType),
-	}
-	switch targetType {
-	case LoadBalancerTargetTypeServer:
-		reqBody.Server = &schema.LoadBalancerTargetServer{
-			ID: opts.Server.ID,
-		}
-	case LoadBalancerTargetTypeLabelSelector:
-		reqBody.LabelSelector = &schema.LoadBalancerTargetLabelSelector{
-			Selector: opts.LabelSelector,
-		}
-	}
+func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionTargetRequest) (*Action, *Response, error) {
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, nil, err
@@ -430,25 +388,7 @@ func (c *LoadBalancerClient) AddTarget(ctx context.Context, loadBalancer *LoadBa
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-// RemoveTarget removes a target from a Load Balancer.
-func (c *LoadBalancerClient) RemoveTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerTargetOpts) (*Action, *Response, error) {
-	if err := opts.Validate(); err != nil {
-		return nil, nil, err
-	}
-	targetType := opts.getType()
-	reqBody := schema.LoadBalancerActionTargetRequest{
-		Type: string(targetType),
-	}
-	switch targetType {
-	case LoadBalancerTargetTypeServer:
-		reqBody.Server = &schema.LoadBalancerTargetServer{
-			ID: opts.Server.ID,
-		}
-	case LoadBalancerTargetTypeLabelSelector:
-		reqBody.LabelSelector = &schema.LoadBalancerTargetLabelSelector{
-			Selector: opts.LabelSelector,
-		}
-	}
+func (c *LoadBalancerClient) removeTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionTargetRequest) (*Action, *Response, error) {
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, nil, err
@@ -466,6 +406,50 @@ func (c *LoadBalancerClient) RemoveTarget(ctx context.Context, loadBalancer *Loa
 		return nil, resp, err
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// AddServerTarget adds a server target to a Load Balancer.
+func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server Server) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionTargetRequest{
+		Type: string(LoadBalancerTargetTypeServer),
+		Server: &schema.LoadBalancerTargetServer{
+			ID: server.ID,
+		},
+	}
+	return c.addTarget(ctx, loadBalancer, reqBody)
+}
+
+// RemoveServerTarget removes a server target from a Load Balancer.
+func (c *LoadBalancerClient) RemoveServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server Server) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionTargetRequest{
+		Type: string(LoadBalancerTargetTypeServer),
+		Server: &schema.LoadBalancerTargetServer{
+			ID: server.ID,
+		},
+	}
+	return c.removeTarget(ctx, loadBalancer, reqBody)
+}
+
+// AddLabelSelectorTarget adds a label selector target to a Load Balancer.
+func (c *LoadBalancerClient) AddLabelSelectorTarget(ctx context.Context, loadBalancer *LoadBalancer, labelSelector string) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionTargetRequest{
+		Type: string(LoadBalancerTargetTypeLabelSelector),
+		LabelSelector: &schema.LoadBalancerTargetLabelSelector{
+			Selector: labelSelector,
+		},
+	}
+	return c.addTarget(ctx, loadBalancer, reqBody)
+}
+
+// RemoveLabelSelectorTarget removes a label selector target from a Load Balancer.
+func (c *LoadBalancerClient) RemoveLabelSelectorTarget(ctx context.Context, loadBalancer *LoadBalancer, labelSelector string) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionTargetRequest{
+		Type: string(LoadBalancerTargetTypeLabelSelector),
+		LabelSelector: &schema.LoadBalancerTargetLabelSelector{
+			Selector: labelSelector,
+		},
+	}
+	return c.removeTarget(ctx, loadBalancer, reqBody)
 }
 
 // LoadBalancerAddServiceOpts specifies options for adding service to a Load Balancer.
@@ -490,7 +474,7 @@ func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadB
 	if opts.HTTP != nil {
 		reqBody.HTTP = &schema.LoadBalancerServiceHTTP{
 			CookieName:     opts.HTTP.CookieName,
-			CookieLifetime: opts.HTTP.CookieLifeTime,
+			CookieLifetime: int(opts.HTTP.CookieLifetime.Seconds()),
 		}
 	}
 
@@ -498,8 +482,8 @@ func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadB
 		reqBody.HealthCheck = &schema.LoadBalancerServiceHealthCheck{
 			Protocol: opts.HealthCheck.Protocol,
 			Port:     opts.HealthCheck.Port,
-			Interval: opts.HealthCheck.Interval,
-			Timeout:  opts.HealthCheck.Timeout,
+			Interval: int(opts.HealthCheck.Interval.Seconds()),
+			Timeout:  int(opts.HealthCheck.Timeout.Seconds()),
 			Retries:  opts.HealthCheck.Retries,
 		}
 		if opts.HealthCheck.HTTP != nil {
@@ -624,8 +608,8 @@ func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, loadBalancer
 		HealthCheck: schema.LoadBalancerServiceHealthCheck{
 			Protocol: opts.HealthCheck.Protocol,
 			Port:     opts.HealthCheck.Port,
-			Interval: opts.HealthCheck.Interval,
-			Timeout:  opts.HealthCheck.Timeout,
+			Interval: int(opts.HealthCheck.Interval.Seconds()),
+			Timeout:  int(opts.HealthCheck.Timeout.Seconds()),
 			Retries:  opts.HealthCheck.Retries,
 		},
 	}
