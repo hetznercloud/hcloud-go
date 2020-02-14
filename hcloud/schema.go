@@ -2,6 +2,7 @@ package hcloud
 
 import (
 	"net"
+	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
@@ -435,8 +436,8 @@ func LoadBalancerFromSchema(s schema.LoadBalancer) *LoadBalancer {
 }
 
 // LoadBalancerServiceFromSchema converts a schema.LoadBalancerService to a LoadBalancerService.
-func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) *LoadBalancerService {
-	ls := &LoadBalancerService{
+func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) LoadBalancerService {
+	ls := LoadBalancerService{
 		Protocol:        LoadBalancerServiceProtocol(s.Protocol),
 		ListenPort:      s.ListenPort,
 		DestinationPort: s.DestinationPort,
@@ -447,7 +448,7 @@ func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) *LoadBalancerSe
 	if s.HTTP != nil {
 		ls.HTTP = &LoadBalancerServiceHTTP{
 			CookieName:     s.HTTP.CookieName,
-			CookieLifeTime: s.HTTP.CookieLifetime,
+			CookieLifetime: time.Duration(s.HTTP.CookieLifetime) * time.Second,
 		}
 	}
 	return ls
@@ -458,9 +459,9 @@ func LoadBalancerServiceHealthCheckFromSchema(s schema.LoadBalancerServiceHealth
 	lsh := LoadBalancerServiceHealthCheck{
 		Protocol: s.Protocol,
 		Port:     s.Port,
-		Interval: s.Interval,
+		Interval: time.Duration(s.Interval) * time.Second,
 		Retries:  s.Retries,
-		Timeout:  s.Timeout,
+		Timeout:  time.Duration(s.Timeout) * time.Second,
 	}
 
 	if s.HTTP != nil {
@@ -479,13 +480,13 @@ func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarge
 	}
 
 	if s.Server != nil {
-		lt.LoadBalancerTargetServer = &LoadBalancerTargetServer{
+		lt.Server = &LoadBalancerTargetServer{
 			Server: Server{ID: s.Server.ID},
 		}
 	}
 	if s.LabelSelector != nil {
-		lt.LoadBalancerTargetLabelSelector = &LoadBalancerTargetLabelSelector{
-			LabelSelector: struct{ Selector string }{Selector: s.LabelSelector.Selector}, // TODO Optimize
+		lt.LabelSelector = &LoadBalancerTargetLabelSelector{
+			Selector: s.LabelSelector.Selector,
 		}
 	}
 	for _, healthStatus := range s.HealthStatus {

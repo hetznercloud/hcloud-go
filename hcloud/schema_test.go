@@ -1377,11 +1377,11 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 	if loadBalancerService.HTTP.CookieName != "HCLBSTICKY" {
 		t.Errorf("unexpected HTTP.CookieName: %v", loadBalancerService.HTTP.CookieName)
 	}
-	if loadBalancerService.HTTP.CookieLifeTime != 300 {
-		t.Errorf("unexpected HTTP.CookieLifeTime: %v", loadBalancerService.HTTP.CookieLifeTime)
+	if loadBalancerService.HTTP.CookieLifetime.Seconds() != 300 {
+		t.Errorf("unexpected HTTP.CookieLifetime: %v", loadBalancerService.HTTP.CookieLifetime.Seconds())
 	}
 	/*if loadBalancerService.HTTP.Certificates[0].ID == 897 {
-		t.Errorf("unexpected HTTP.CookieLifeTime: %v", loadBalancerService.HTTP.Certificates[0].ID)
+		t.Errorf("unexpected HTTP.CookieLifetime: %v", loadBalancerService.HTTP.Certificates[0].ID)
 	}*/
 
 	if loadBalancerService.HealthCheck.Protocol != "http" {
@@ -1390,10 +1390,10 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 	if loadBalancerService.HealthCheck.Port != 4711 {
 		t.Errorf("unexpected HealthCheck.Port: %v", loadBalancerService.HealthCheck.Port)
 	}
-	if loadBalancerService.HealthCheck.Interval != 15 {
+	if loadBalancerService.HealthCheck.Interval.Seconds() != 15 {
 		t.Errorf("unexpected HealthCheck.Interval: %v", loadBalancerService.HealthCheck.Interval)
 	}
-	if loadBalancerService.HealthCheck.Timeout != 10 {
+	if loadBalancerService.HealthCheck.Timeout.Seconds() != 10 {
 		t.Errorf("unexpected HealthCheck.Timeout: %v", loadBalancerService.HealthCheck.Timeout)
 	}
 	if loadBalancerService.HealthCheck.Retries != 3 {
@@ -1429,10 +1429,10 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 	if loadBalancerTarget.Type != "server" {
 		t.Errorf("unexpected Type: %v", loadBalancerTarget.Type)
 	}
-	if loadBalancerTarget.LoadBalancerTargetServer == nil || loadBalancerTarget.Server.ID != 80 {
+	if loadBalancerTarget.Server == nil || loadBalancerTarget.Server.Server.ID != 80 {
 		t.Errorf("unexpected Server: %v", loadBalancerTarget.Server)
 	}
-	if loadBalancerTarget.LoadBalancerTargetLabelSelector != nil {
+	if loadBalancerTarget.LabelSelector != nil {
 		t.Errorf("unexpected LabelSelector.Selector: %v", loadBalancerTarget.LabelSelector)
 	}
 	if len(loadBalancerTarget.HealthStatus) != 1 {
