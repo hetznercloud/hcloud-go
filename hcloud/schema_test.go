@@ -1149,7 +1149,9 @@ func TestLoadBalancerTypeFromSchema(t *testing.T) {
 		"name": "lx11",
 		"description": "LX11",
 		"max_connections": 20000,
-		"services": 3,
+		"max_services": 3,
+		"max_targets": 25,
+		"max_assigned_certificates": 10,
 		"deprecated": "2016-01-30T23:50:00+00:00",
 		"prices": [
 			{
@@ -1182,8 +1184,14 @@ func TestLoadBalancerTypeFromSchema(t *testing.T) {
 	if loadBalancerType.MaxConnections != 20000 {
 		t.Errorf("unexpected MaxConnections: %v", loadBalancerType.MaxConnections)
 	}
-	if loadBalancerType.Services != 3 {
-		t.Errorf("unexpected Services: %v", loadBalancerType.Services)
+	if loadBalancerType.MaxServices != 3 {
+		t.Errorf("unexpected MaxServices: %v", loadBalancerType.MaxServices)
+	}
+	if loadBalancerType.MaxTargets != 25 {
+		t.Errorf("unexpected MaxTargets: %v", loadBalancerType.MaxTargets)
+	}
+	if loadBalancerType.MaxAssignedCertificates != 10 {
+		t.Errorf("unexpected MaxAssignedCertificates: %v", loadBalancerType.MaxAssignedCertificates)
 	}
 	if len(loadBalancerType.Pricings) != 1 {
 		t.Errorf("unexpected number of pricings: %d", len(loadBalancerType.Pricings))
@@ -1322,7 +1330,7 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 		t.Errorf("unexpected created date: %v", loadBalancer.Created)
 	}
 	if len(loadBalancer.Services) != 1 {
-		t.Errorf("unexpected length of Services: %v", len(loadBalancer.Services))
+		t.Errorf("unexpected length of MaxServices: %v", len(loadBalancer.Services))
 	}
 	if len(loadBalancer.Targets) != 1 {
 		t.Errorf("unexpected length of Targets: %v", len(loadBalancer.Targets))

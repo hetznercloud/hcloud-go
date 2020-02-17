@@ -385,11 +385,13 @@ func NetworkRouteFromSchema(s schema.NetworkRoute) NetworkRoute {
 // LoadBalancerTypeFromSchema converts a schema.LoadBalancerType to a LoadBalancerType.
 func LoadBalancerTypeFromSchema(s schema.LoadBalancerType) *LoadBalancerType {
 	lt := &LoadBalancerType{
-		ID:             s.ID,
-		Name:           s.Name,
-		Description:    s.Description,
-		MaxConnections: s.MaxConnections,
-		Services:       s.Services,
+		ID:                      s.ID,
+		Name:                    s.Name,
+		Description:             s.Description,
+		MaxConnections:          s.MaxConnections,
+		MaxServices:             s.MaxServices,
+		MaxTargets:              s.MaxTargets,
+		MaxAssignedCertificates: s.MaxAssignedCertificates,
 	}
 	for _, price := range s.Prices {
 		lt.Pricings = append(lt.Pricings, LoadBalancerTypeLocationPricing{
