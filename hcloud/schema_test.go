@@ -1291,7 +1291,7 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 				"health_status": [
 					{
 						"listen_port": 443,
-						"healthy": true
+						"status": "healthy"
 					}
 				]
 			}
@@ -1425,7 +1425,7 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 		"health_status": [
 			{
 				"listen_port": 443,
-				"healthy": true
+				"healthy": "healthy"
 			}
 		]
 	}`)
@@ -1449,8 +1449,8 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 		if loadBalancerTarget.HealthStatus[0].ListenPort != 443 {
 			t.Errorf("unexpected HealthStatus[0].ListenPort: %v", loadBalancerTarget.HealthStatus[0].ListenPort)
 		}
-		if !loadBalancerTarget.HealthStatus[0].Healthy {
-			t.Errorf("unexpected HealthStatus[0].Healthy: %v", loadBalancerTarget.HealthStatus[0].Healthy)
+		if loadBalancerTarget.HealthStatus[0].Status != LoadBalancerTargetHealthStatusStatusHealthy {
+			t.Errorf("unexpected HealthStatus[0].Status: %v", loadBalancerTarget.HealthStatus[0].Status)
 		}
 	}
 }

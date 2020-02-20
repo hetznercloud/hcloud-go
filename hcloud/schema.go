@@ -501,7 +501,7 @@ func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarge
 func LoadBalancerTargetHealthStatusFromSchema(s schema.LoadBalancerTargetHealthStatus) LoadBalancerTargetHealthStatus {
 	return LoadBalancerTargetHealthStatus{
 		ListenPort: s.ListenPort,
-		Healthy:    s.Healthy,
+		Status:     LoadBalancerTargetHealthStatusStatus(s.Status),
 	}
 }
 
