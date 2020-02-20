@@ -495,7 +495,7 @@ func TestLoadBalancerClientAddServerTarget(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	action, _, err := env.Client.LoadBalancer.AddServerTarget(ctx, &LoadBalancer{ID: 1}, Server{ID: 1})
+	action, _, err := env.Client.LoadBalancer.AddServerTarget(ctx, &LoadBalancer{ID: 1}, &Server{ID: 1})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -565,7 +565,7 @@ func TestLoadBalancerClientRemoveServerTarget(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	action, _, err := env.Client.LoadBalancer.RemoveServerTarget(ctx, &LoadBalancer{ID: 1}, Server{ID: 1})
+	action, _, err := env.Client.LoadBalancer.RemoveServerTarget(ctx, &LoadBalancer{ID: 1}, &Server{ID: 1})
 	if err != nil {
 		t.Fatal(err)
 	}
