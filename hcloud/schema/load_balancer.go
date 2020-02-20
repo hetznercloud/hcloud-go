@@ -36,7 +36,6 @@ type LoadBalancerService struct {
 	Proxyprotocol   bool                           `json:"proxyprotocol"`
 	HTTP            *LoadBalancerServiceHTTP       `json:"http"`
 	HealthCheck     LoadBalancerServiceHealthCheck `json:"health_check"`
-	Status          string                         `json:"status"`
 }
 
 // LoadBalancerServiceHTTP represents the http configuration for a LoadBalancerService.
@@ -71,8 +70,8 @@ type LoadBalancerTarget struct {
 
 // LoadBalancerTargetHealthStatus represents a health status of target of a Load Balancer.
 type LoadBalancerTargetHealthStatus struct {
-	ListenPort int  `json:"listen_port"`
-	Healthy    bool `json:"healthy"`
+	ListenPort int    `json:"listen_port"`
+	Status     string `json:"healthy"`
 }
 
 // LoadBalancerTargetServer represents a server target of a Load Balancer.
