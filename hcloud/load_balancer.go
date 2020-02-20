@@ -64,7 +64,7 @@ type LoadBalancerServiceHealthCheckHTTP struct {
 
 // LoadBalancerAlgorithm represents Algorithm option of a Load Balancer
 type LoadBalancerAlgorithm struct {
-	Type string
+	Type LoadBalancerAlgorithmType
 }
 
 // LoadBalancerTargetType specifies a load balancer target type.
@@ -332,7 +332,7 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 	reqBody := schema.LoadBalancerCreateRequest{
 		Name: opts.Name,
 		Algorithm: schema.LoadBalancerAlgorithm{
-			Type: opts.Algorithm.Type,
+			Type: string(opts.Algorithm.Type),
 		},
 	}
 	if opts.LoadBalancerType.ID != 0 {
@@ -421,7 +421,7 @@ func (c *LoadBalancerClient) removeTarget(ctx context.Context, loadBalancer *Loa
 }
 
 // AddServerTarget adds a server target to a Load Balancer.
-func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server Server) (*Action, *Response, error) {
+func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server *Server) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionTargetRequest{
 		Type: string(LoadBalancerTargetTypeServer),
 		Server: &schema.LoadBalancerTargetServer{
@@ -432,7 +432,7 @@ func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *
 }
 
 // RemoveServerTarget removes a server target from a Load Balancer.
-func (c *LoadBalancerClient) RemoveServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server Server) (*Action, *Response, error) {
+func (c *LoadBalancerClient) RemoveServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server *Server) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionTargetRequest{
 		Type: string(LoadBalancerTargetTypeServer),
 		Server: &schema.LoadBalancerTargetServer{
