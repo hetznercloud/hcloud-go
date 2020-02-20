@@ -296,6 +296,7 @@ type LoadBalancerCreateOpts struct {
 	Algorithm        LoadBalancerAlgorithm
 	Location         *Location
 	NetworkZone      NetworkZone
+	Labels           map[string]string
 }
 
 // Validate checks if options are valid.
@@ -350,6 +351,10 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 	}
 	if opts.NetworkZone != "" {
 		reqBody.NetworkZone = string(opts.NetworkZone)
+	}
+
+	if opts.Labels != nil {
+		reqBody.Labels = &opts.Labels
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
