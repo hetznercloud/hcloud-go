@@ -146,6 +146,7 @@ type LoadBalancerCreateRequest struct {
 	Algorithm        LoadBalancerAlgorithm `json:"algorithm"`
 	Location         string                `json:"location,omitempty"`
 	NetworkZone      string                `json:"network_zone,omitempty"`
+	Labels           *map[string]string    `json:"labels,omitempty"`
 }
 
 // LoadBalancerCreateResponse defines the schema of the response to
