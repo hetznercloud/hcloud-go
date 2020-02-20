@@ -418,7 +418,7 @@ func LoadBalancerFromSchema(s schema.LoadBalancer) *LoadBalancer {
 		IPv6:             net.ParseIP(s.IPv6),
 		Location:         LocationFromSchema(s.Location),
 		LoadBalancerType: LoadBalancerTypeFromSchema(s.LoadBalancerType),
-		Algorithm:        LoadBalancerAlgorithm{Type: s.Algorithm.Type},
+		Algorithm:        LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmType(s.Algorithm.Type)},
 		Protection: LoadBalancerProtection{
 			Delete: s.Protection.Delete,
 		},
