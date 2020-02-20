@@ -115,10 +115,22 @@ type LoadBalancerTargetLabelSelector struct {
 	Selector string
 }
 
+// LoadBalancerTargetHealthStatusStatus specifies the health status status of a target of a Load Balancer.
+type LoadBalancerTargetHealthStatusStatus string
+
+const (
+	// LoadBalancerTargetHealthStatusStatusUnknown is the status when the Load Balancer target health status is unknown.
+	LoadBalancerTargetHealthStatusStatusUnknown LoadBalancerTargetHealthStatusStatus = "unkown"
+	// LoadBalancerTargetHealthStatusStatusHealthy is the status when the Load Balancer target health status is healthy.
+	LoadBalancerTargetHealthStatusStatusHealthy LoadBalancerTargetHealthStatusStatus = "healthy"
+	// LoadBalancerTargetHealthStatusStatusUnHealthy is the status when the Load Balancer target health status is unhealthy.
+	LoadBalancerTargetHealthStatusStatusUnHealthy LoadBalancerTargetHealthStatusStatus = "unhealthy"
+)
+
 // LoadBalancerTargetHealthStatus represents target health status of a Load Balancer
 type LoadBalancerTargetHealthStatus struct {
 	ListenPort int
-	Healthy    bool
+	Status     LoadBalancerTargetHealthStatusStatus
 }
 
 // LoadBalancerProtection represents the protection level of a Load Balancer.
