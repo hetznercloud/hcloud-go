@@ -71,7 +71,7 @@ type LoadBalancerTarget struct {
 // LoadBalancerTargetHealthStatus represents a health status of target of a Load Balancer.
 type LoadBalancerTargetHealthStatus struct {
 	ListenPort int    `json:"listen_port"`
-	Status     string `json:"healthy"`
+	Status     string `json:"status"`
 }
 
 // LoadBalancerTargetServer represents a server target of a Load Balancer.

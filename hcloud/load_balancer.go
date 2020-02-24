@@ -120,7 +120,7 @@ type LoadBalancerTargetHealthStatusStatus string
 
 const (
 	// LoadBalancerTargetHealthStatusStatusUnknown is the status when the Load Balancer target health status is unknown.
-	LoadBalancerTargetHealthStatusStatusUnknown LoadBalancerTargetHealthStatusStatus = "unkown"
+	LoadBalancerTargetHealthStatusStatusUnknown LoadBalancerTargetHealthStatusStatus = "unknown"
 	// LoadBalancerTargetHealthStatusStatusHealthy is the status when the Load Balancer target health status is healthy.
 	LoadBalancerTargetHealthStatusStatusHealthy LoadBalancerTargetHealthStatusStatus = "healthy"
 	// LoadBalancerTargetHealthStatusStatusUnHealthy is the status when the Load Balancer target health status is unhealthy.
