@@ -58,8 +58,11 @@ type LoadBalancerServiceHealthCheck struct {
 
 // LoadBalancerServiceHealthCheckHTTP represents HTTP specific options for a Health Check of a Load Balancer
 type LoadBalancerServiceHealthCheckHTTP struct {
-	Domain string
-	Path   string
+	Domain      string
+	Path        string
+	Response    string
+	StatusCodes []int
+	TLS         bool
 }
 
 // LoadBalancerAlgorithm represents Algorithm option of a Load Balancer
@@ -107,7 +110,7 @@ type LoadBalancerTarget struct {
 
 // LoadBalancerTargetServer represents server target of a Load Balancer
 type LoadBalancerTargetServer struct {
-	Server Server
+	Server *Server
 }
 
 // LoadBalancerTargetLabelSelector represents label selector target of a Load Balancer
@@ -297,6 +300,7 @@ type LoadBalancerCreateOpts struct {
 	Location         *Location
 	NetworkZone      NetworkZone
 	Labels           map[string]string
+	Targets          []LoadBalancerTarget
 }
 
 // Validate checks if options are valid.
@@ -355,6 +359,17 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
+	}
+	for _, target := range opts.Targets {
+		schemaTarget := schema.LoadBalancerTarget{}
+		if target.Type == LoadBalancerTargetTypeServer {
+			schemaTarget.Type = string(LoadBalancerTargetTypeServer)
+			schemaTarget.Server = &schema.LoadBalancerTargetServer{ID: target.Server.Server.ID}
+		} else if target.Type == LoadBalancerTargetTypeLabelSelector {
+			schemaTarget.Type = string(LoadBalancerTargetTypeLabelSelector)
+			schemaTarget.LabelSelector = &schema.LoadBalancerTargetLabelSelector{Selector: target.LabelSelector.Selector}
+		}
+		reqBody.Targets = append(reqBody.Targets, schemaTarget)
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -633,8 +648,11 @@ func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, loadBalancer
 
 	if opts.HealthCheck.HTTP != nil {
 		reqBody.HealthCheck.HTTP = &schema.LoadBalancerServiceHealthCheckHTTP{
-			Domain: opts.HealthCheck.HTTP.Domain,
-			Path:   opts.HealthCheck.HTTP.Path,
+			Domain:      opts.HealthCheck.HTTP.Domain,
+			Path:        opts.HealthCheck.HTTP.Path,
+			Response:    opts.HealthCheck.HTTP.Response,
+			StatusCodes: opts.HealthCheck.HTTP.StatusCodes,
+			TLS:         opts.HealthCheck.HTTP.TLS,
 		}
 	}
 	reqBodyData, err := json.Marshal(reqBody)

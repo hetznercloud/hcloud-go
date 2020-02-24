@@ -865,7 +865,7 @@ func TestLoadBalancerDeleteService(t *testing.T) {
 		if reqBody.ListenPort != 4711 {
 			t.Errorf("unexpected ListenPort %v", reqBody.ListenPort)
 		}
-		json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
+		json.NewEncoder(w).Encode(schema.LoadBalancerDeleteServiceResponse{
 			Action: schema.Action{
 				ID: 1,
 			},

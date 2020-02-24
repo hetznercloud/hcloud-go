@@ -1361,7 +1361,10 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 			"retries": 3,
 			"http": {
 				"domain": "example.com",
-				"path": "/"
+				"path": "/",
+				"response": "",
+				"status_codes":[200,201],
+				"tls": false
 			}
 		}
 	}`)
@@ -1413,6 +1416,22 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 	if loadBalancerService.HealthCheck.HTTP.Path != "/" {
 		t.Errorf("unexpected HealthCheck.HTTP.Path: %v", loadBalancerService.HealthCheck.HTTP.Path)
 	}
+	if loadBalancerService.HealthCheck.HTTP.Response != "" {
+		t.Errorf("unexpected HealthCheck.HTTP.Response: %v", loadBalancerService.HealthCheck.HTTP.Response)
+	}
+	if loadBalancerService.HealthCheck.HTTP.TLS {
+		t.Errorf("unexpected HealthCheck.HTTP.TLS: %v", loadBalancerService.HealthCheck.HTTP.TLS)
+	}
+	if len(loadBalancerService.HealthCheck.HTTP.StatusCodes) != 2 {
+		t.Errorf("unexpected len(HealthCheck.HTTP.StatusCodes): %v", len(loadBalancerService.HealthCheck.HTTP.StatusCodes))
+	} else {
+		if loadBalancerService.HealthCheck.HTTP.StatusCodes[0] != 200 {
+			t.Errorf("unexpected HealthCheck.HTTP.StatusCodes[0]: %v", loadBalancerService.HealthCheck.HTTP.StatusCodes[0])
+		}
+		if loadBalancerService.HealthCheck.HTTP.StatusCodes[1] != 201 {
+			t.Errorf("unexpected HealthCheck.HTTP.StatusCodes[1]: %v", loadBalancerService.HealthCheck.HTTP.StatusCodes[1])
+		}
+	}
 }
 
 func TestLoadBalancerTargetFromSchema(t *testing.T) {
@@ -1425,7 +1444,7 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 		"health_status": [
 			{
 				"listen_port": 443,
-				"healthy": "healthy"
+				"status": "healthy"
 			}
 		]
 	}`)

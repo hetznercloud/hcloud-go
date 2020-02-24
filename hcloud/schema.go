@@ -468,8 +468,11 @@ func LoadBalancerServiceHealthCheckFromSchema(s schema.LoadBalancerServiceHealth
 
 	if s.HTTP != nil {
 		lsh.HTTP = &LoadBalancerServiceHealthCheckHTTP{
-			Domain: s.HTTP.Domain,
-			Path:   s.HTTP.Path,
+			Domain:      s.HTTP.Domain,
+			Path:        s.HTTP.Path,
+			Response:    s.HTTP.Response,
+			StatusCodes: s.HTTP.StatusCodes,
+			TLS:         s.HTTP.TLS,
 		}
 	}
 	return lsh
@@ -483,7 +486,7 @@ func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarge
 
 	if s.Server != nil {
 		lt.Server = &LoadBalancerTargetServer{
-			Server: Server{ID: s.Server.ID},
+			Server: &Server{ID: s.Server.ID},
 		}
 	}
 	if s.LabelSelector != nil {
