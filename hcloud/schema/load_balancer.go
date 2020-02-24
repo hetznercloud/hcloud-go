@@ -56,8 +56,11 @@ type LoadBalancerServiceHealthCheck struct {
 
 // LoadBalancerServiceHealthCheckHTTP represents a http health check configuration.
 type LoadBalancerServiceHealthCheckHTTP struct {
-	Domain string `json:"domain"`
-	Path   string `json:"path"`
+	Domain      string `json:"domain"`
+	Path        string `json:"path"`
+	Response    string `json:"response"`
+	StatusCodes []int  `json:"status_codes"`
+	TLS         bool   `json:"tls"`
 }
 
 // LoadBalancerTarget represents a target of a Load Balancer.
@@ -147,6 +150,7 @@ type LoadBalancerCreateRequest struct {
 	Location         string                `json:"location,omitempty"`
 	NetworkZone      string                `json:"network_zone,omitempty"`
 	Labels           *map[string]string    `json:"labels,omitempty"`
+	Targets          []LoadBalancerTarget  `json:"targets,omitempty"`
 }
 
 // LoadBalancerCreateResponse defines the schema of the response to
