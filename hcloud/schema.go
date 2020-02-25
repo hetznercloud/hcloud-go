@@ -508,6 +508,32 @@ func LoadBalancerTargetHealthStatusFromSchema(s schema.LoadBalancerTargetHealthS
 	}
 }
 
+// CertificateFromSchema converts a schema.Certificate to a Certificate.
+func CertificateFromSchema(s schema.Certificate) *Certificate {
+	c := &Certificate{
+		ID:                 s.ID,
+		Name:               s.Name,
+		Type:               CertificateType(s.Type),
+		Certificate:        s.Certificate,
+		Chain:              s.Chain,
+		Created:            s.Created,
+		NotValidBefore:     s.NotValidBefore,
+		NotValidAfter:      s.NotValidAfter,
+		DomainNames:        s.DomainNames,
+		Fingerprint:        s.Fingerprint,
+		Issuer:             s.Issuer,
+		PublicKeyInfo:      s.PublicKeyInfo,
+		SignatureAlgorithm: s.SignatureAlgorithm,
+		Protection: CertificateProtection{
+			Delete: s.Protection.Delete,
+		},
+	}
+	for key, value := range s.Labels {
+		c.Labels[key] = value
+	}
+	return c
+}
+
 // PaginationFromSchema converts a schema.MetaPagination to a Pagination.
 func PaginationFromSchema(s schema.MetaPagination) Pagination {
 	return Pagination{
