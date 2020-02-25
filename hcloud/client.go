@@ -72,6 +72,7 @@ type Client struct {
 	Volume           VolumeClient
 	LoadBalancer     LoadBalancerClient
 	LoadBalancerType LoadBalancerTypeClient
+	Certificate      CertificateClient
 }
 
 // A ClientOption is used to configure a Client.
@@ -160,6 +161,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.Volume = VolumeClient{client: client}
 	client.LoadBalancer = LoadBalancerClient{client: client}
 	client.LoadBalancerType = LoadBalancerTypeClient{client: client}
+	client.Certificate = CertificateClient{client: client}
 
 	return client
 }
