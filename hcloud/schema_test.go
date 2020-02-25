@@ -1474,6 +1474,88 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 	}
 }
 
+func TestCertificateFromSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 897,
+		"name": "my website cert",
+		"labels": {},
+		"type": "uploaded",
+		"protection": {
+			"delete": false
+		},
+		"certificate": "-----BEGIN CERTIFICATE-----\n...",
+		"chain": "-----BEGIN CERTIFICATE-----\n...",
+		"created": "2016-01-30T23:50:00+00:00",
+		"not_valid_before": "2016-01-30T23:51:00+00:00",
+		"not_valid_after": "2016-01-30T23:55:00+00:00",
+		"domain_names": [
+			"example.com",
+			"webmail.example.com",
+			"www.example.com"
+		],
+		"fingerprint": "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
+		"issuer": "C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3",
+		"public_key_info": "RSA, 2048 bit",
+		"signature_algorithm": "sha256WithRSAEncryption"
+	}
+`)
+	var s schema.Certificate
+	if err := json.Unmarshal(data, &s); err != nil {
+		t.Fatal(err)
+	}
+	certificate := CertificateFromSchema(s)
+
+	if certificate.ID != 897 {
+		t.Errorf("unexpected ID: %v", certificate.ID)
+	}
+	if certificate.Name != "my website cert" {
+		t.Errorf("unexpected Name: %v", certificate.Name)
+	}
+	if certificate.Type != CertificateTypeUploaded {
+		t.Errorf("unexpected Type: %v", certificate.Type)
+	}
+	if certificate.Certificate != "-----BEGIN CERTIFICATE-----\n..." {
+		t.Errorf("unexpected Certificate: %v", certificate.Certificate)
+	}
+	if certificate.Chain != "-----BEGIN CERTIFICATE-----\n..." {
+		t.Errorf("unexpected Chain: %v", certificate.Chain)
+	}
+	if !certificate.Created.Equal(time.Date(2016, 01, 30, 23, 50, 00, 0, time.UTC)) {
+		t.Errorf("unexpected created date: %v", certificate.Created)
+	}
+	if !certificate.NotValidBefore.Equal(time.Date(2016, 01, 30, 23, 51, 00, 0, time.UTC)) {
+		t.Errorf("unexpected NotValidBefore: %v", certificate.NotValidBefore)
+	}
+	if !certificate.NotValidAfter.Equal(time.Date(2016, 01, 30, 23, 55, 00, 0, time.UTC)) {
+		t.Errorf("unexpected NotValidAfter: %v", certificate.NotValidAfter)
+	}
+	if len(certificate.DomainNames) != 3 {
+		t.Errorf("unexpected DomainNames length: %v", len(certificate.DomainNames))
+	} else {
+		if certificate.DomainNames[0] != "example.com" {
+			t.Errorf("unexpected DomainNames[0]: %v", certificate.DomainNames[0])
+		}
+		if certificate.DomainNames[1] != "webmail.example.com" {
+			t.Errorf("unexpected DomainNames[1]: %v", certificate.DomainNames[1])
+		}
+		if certificate.DomainNames[2] != "www.example.com" {
+			t.Errorf("unexpected DomainNames[2]: %v", certificate.DomainNames[2])
+		}
+	}
+	if certificate.Fingerprint != "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f" {
+		t.Errorf("unexpected Fingerprint: %v", certificate.Fingerprint)
+	}
+	if certificate.Issuer != "C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3" {
+		t.Errorf("unexpected Issuer: %v", certificate.Issuer)
+	}
+	if certificate.PublicKeyInfo != "RSA, 2048 bit" {
+		t.Errorf("unexpected PublicKeyInfo: %v", certificate.PublicKeyInfo)
+	}
+	if certificate.SignatureAlgorithm != "sha256WithRSAEncryption" {
+		t.Errorf("unexpected SignatureAlgorithm: %v", certificate.SignatureAlgorithm)
+	}
+}
+
 func TestPricingFromSchema(t *testing.T) {
 	data := []byte(`{
 		"currency": "EUR",
