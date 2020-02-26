@@ -30,12 +30,12 @@ type LoadBalancerProtection struct {
 
 // LoadBalancerService represents a service of a Load Balancer.
 type LoadBalancerService struct {
-	Protocol        string                         `json:"protocol"`
-	ListenPort      int                            `json:"listen_port,omitempty"`
-	DestinationPort int                            `json:"destination_port,omitempty"`
-	Proxyprotocol   bool                           `json:"proxyprotocol,omitempty"`
-	HTTP            *LoadBalancerServiceHTTP       `json:"http,omitempty"`
-	HealthCheck     LoadBalancerServiceHealthCheck `json:"health_check,omitempty"`
+	Protocol        string                          `json:"protocol"`
+	ListenPort      int                             `json:"listen_port,omitempty"`
+	DestinationPort int                             `json:"destination_port,omitempty"`
+	Proxyprotocol   bool                            `json:"proxyprotocol,omitempty"`
+	HTTP            *LoadBalancerServiceHTTP        `json:"http,omitempty"`
+	HealthCheck     *LoadBalancerServiceHealthCheck `json:"health_check,omitempty"`
 }
 
 // LoadBalancerServiceHTTP represents the http configuration for a LoadBalancerService.
@@ -145,14 +145,14 @@ type LoadBalancerDeleteServiceResponse struct {
 
 // LoadBalancerCreateRequest defines the schema of the request to create a LoadBalancer.
 type LoadBalancerCreateRequest struct {
-	Name             string                `json:"name"`
-	LoadBalancerType interface{}           `json:"load_balancer_type"` // int or string
-	Algorithm        LoadBalancerAlgorithm `json:"algorithm"`
-	Location         string                `json:"location,omitempty"`
-	NetworkZone      string                `json:"network_zone,omitempty"`
-	Labels           *map[string]string    `json:"labels,omitempty"`
-	Targets          []LoadBalancerTarget  `json:"targets,omitempty"`
-	Services         []LoadBalancerService `json:"services,omitempty"`
+	Name             string                 `json:"name"`
+	LoadBalancerType interface{}            `json:"load_balancer_type"` // int or string
+	Algorithm        *LoadBalancerAlgorithm `json:"algorithm,omitempty"`
+	Location         string                 `json:"location,omitempty"`
+	NetworkZone      string                 `json:"network_zone,omitempty"`
+	Labels           *map[string]string     `json:"labels,omitempty"`
+	Targets          []LoadBalancerTarget   `json:"targets,omitempty"`
+	Services         []LoadBalancerService  `json:"services,omitempty"`
 }
 
 // LoadBalancerCreateResponse defines the schema of the response to
