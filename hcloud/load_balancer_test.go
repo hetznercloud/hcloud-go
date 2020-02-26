@@ -168,20 +168,6 @@ func TestLoadBalancerCreate(t *testing.T) {
 		}
 	})
 
-	t.Run("missing required field algorithm", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		opts := LoadBalancerCreateOpts{
-			Name:             "my-loadBalancer",
-			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
-		}
-		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
-		if err == nil || err.Error() != "missing algorithm type" {
-			t.Fatalf("LoadBalancer.Create should fail with \"missing algorithm type\" but failed with %s", err)
-		}
-	})
-
 	t.Run("missing required field location and network zone", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
@@ -189,7 +175,6 @@ func TestLoadBalancerCreate(t *testing.T) {
 		opts := LoadBalancerCreateOpts{
 			Name:             "my-loadBalancer",
 			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
-			Algorithm:        LoadBalancerAlgorithm{Type: "round_robin"},
 		}
 		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
 		if err == nil || err.Error() != "one of location and network_zone must be set" {
@@ -204,7 +189,6 @@ func TestLoadBalancerCreate(t *testing.T) {
 		opts := LoadBalancerCreateOpts{
 			Name:             "my-loadBalancer",
 			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
-			Algorithm:        LoadBalancerAlgorithm{Type: "round_robin"},
 			Location:         &Location{Name: "fsn1"},
 			NetworkZone:      NetworkZoneEUCentral,
 		}
@@ -247,7 +231,7 @@ func TestLoadBalancerCreate(t *testing.T) {
 		opts := LoadBalancerCreateOpts{
 			Name:             "my-load_balancer",
 			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
-			Algorithm:        LoadBalancerAlgorithm{Type: "round_robin"},
+			Algorithm:        &LoadBalancerAlgorithm{Type: "round_robin"},
 			Location:         &Location{Name: "fsn1"},
 		}
 		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
@@ -289,7 +273,7 @@ func TestLoadBalancerCreate(t *testing.T) {
 		opts := LoadBalancerCreateOpts{
 			Name:             "my-load_balancer",
 			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
-			Algorithm:        LoadBalancerAlgorithm{Type: "round_robin"},
+			Algorithm:        &LoadBalancerAlgorithm{Type: "round_robin"},
 			NetworkZone:      NetworkZoneEUCentral,
 		}
 		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
