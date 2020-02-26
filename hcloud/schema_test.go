@@ -1391,10 +1391,9 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 	if loadBalancerService.HTTP.CookieLifetime.Seconds() != 300 {
 		t.Errorf("unexpected HTTP.CookieLifetime: %v", loadBalancerService.HTTP.CookieLifetime.Seconds())
 	}
-	/*if loadBalancerService.HTTP.Certificates[0].ID == 897 {
-		t.Errorf("unexpected HTTP.CookieLifetime: %v", loadBalancerService.HTTP.Certificates[0].ID)
-	}*/
-
+	if loadBalancerService.HTTP.Certificates[0].ID != 897 {
+		t.Errorf("unexpected Certificates[0].ID : %v", loadBalancerService.HTTP.Certificates[0].ID)
+	}
 	if loadBalancerService.HealthCheck.Protocol != "http" {
 		t.Errorf("unexpected HealthCheck.Protocol: %v", loadBalancerService.HealthCheck.Protocol)
 	}

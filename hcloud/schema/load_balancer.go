@@ -31,17 +31,18 @@ type LoadBalancerProtection struct {
 // LoadBalancerService represents a service of a Load Balancer.
 type LoadBalancerService struct {
 	Protocol        string                         `json:"protocol"`
-	ListenPort      int                            `json:"listen_port"`
-	DestinationPort int                            `json:"destination_port"`
-	Proxyprotocol   bool                           `json:"proxyprotocol"`
-	HTTP            *LoadBalancerServiceHTTP       `json:"http"`
-	HealthCheck     LoadBalancerServiceHealthCheck `json:"health_check"`
+	ListenPort      int                            `json:"listen_port,omitempty"`
+	DestinationPort int                            `json:"destination_port,omitempty"`
+	Proxyprotocol   bool                           `json:"proxyprotocol,omitempty"`
+	HTTP            *LoadBalancerServiceHTTP       `json:"http,omitempty"`
+	HealthCheck     LoadBalancerServiceHealthCheck `json:"health_check,omitempty"`
 }
 
 // LoadBalancerServiceHTTP represents the http configuration for a LoadBalancerService.
 type LoadBalancerServiceHTTP struct {
-	CookieName     string `json:"cookie_name"`
-	CookieLifetime int    `json:"cookie_lifetime"`
+	CookieName     string `json:"cookie_name,omitempty"`
+	CookieLifetime int    `json:"cookie_lifetime,omitempty"`
+	Certificates   []int  `json:"certificates,omitempty"`
 }
 
 // LoadBalancerServiceHealthCheck represents a service health check configuration.
@@ -66,9 +67,9 @@ type LoadBalancerServiceHealthCheckHTTP struct {
 // LoadBalancerTarget represents a target of a Load Balancer.
 type LoadBalancerTarget struct {
 	Type          string                           `json:"type"`
-	Server        *LoadBalancerTargetServer        `json:"server"`
-	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector"`
-	HealthStatus  []LoadBalancerTargetHealthStatus `json:"health_status"`
+	Server        *LoadBalancerTargetServer        `json:"server,omitempty"`
+	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector,omitempty"`
+	HealthStatus  []LoadBalancerTargetHealthStatus `json:"health_status,omitempty"`
 }
 
 // LoadBalancerTargetHealthStatus represents a health status of target of a Load Balancer.
@@ -151,6 +152,7 @@ type LoadBalancerCreateRequest struct {
 	NetworkZone      string                `json:"network_zone,omitempty"`
 	Labels           *map[string]string    `json:"labels,omitempty"`
 	Targets          []LoadBalancerTarget  `json:"targets,omitempty"`
+	Services         []LoadBalancerService `json:"services,omitempty"`
 }
 
 // LoadBalancerCreateResponse defines the schema of the response to
