@@ -37,7 +37,7 @@ type LoadBalancerService struct {
 	DestinationPort int
 	ProxyProtocol   bool
 	HTTP            *LoadBalancerServiceHTTP
-	HealthCheck     LoadBalancerServiceHealthCheck
+	HealthCheck     *LoadBalancerServiceHealthCheck
 }
 
 // LoadBalancerServiceHTTP represents HTTP specific options for a service of a Load Balancer
@@ -297,7 +297,7 @@ func (c *LoadBalancerClient) Update(ctx context.Context, loadBalancer *LoadBalan
 type LoadBalancerCreateOpts struct {
 	Name             string
 	LoadBalancerType *LoadBalancerType
-	Algorithm        LoadBalancerAlgorithm
+	Algorithm        *LoadBalancerAlgorithm
 	Location         *Location
 	NetworkZone      NetworkZone
 	Labels           map[string]string
@@ -312,9 +312,6 @@ func (o LoadBalancerCreateOpts) Validate() error {
 	}
 	if o.LoadBalancerType == nil || (o.LoadBalancerType.ID == 0 && o.LoadBalancerType.Name == "") {
 		return errors.New("missing load balancer type")
-	}
-	if o.Algorithm.Type == "" {
-		return errors.New("missing algorithm type")
 	}
 	if o.Location == nil && o.NetworkZone == "" {
 		return errors.New("one of location and network_zone must be set")
@@ -338,9 +335,11 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 	}
 	reqBody := schema.LoadBalancerCreateRequest{
 		Name: opts.Name,
-		Algorithm: schema.LoadBalancerAlgorithm{
+	}
+	if opts.Algorithm != nil {
+		reqBody.Algorithm = &schema.LoadBalancerAlgorithm{
 			Type: string(opts.Algorithm.Type),
-		},
+		}
 	}
 	if opts.LoadBalancerType.ID != 0 {
 		reqBody.LoadBalancerType = opts.LoadBalancerType.ID
@@ -393,6 +392,7 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 		reqBody.Services = append(reqBody.Services, schemaService)
 	}
 	reqBodyData, err := json.Marshal(reqBody)
+
 	if err != nil {
 		return LoadBalancerCreateResult{}, nil, err
 	}
