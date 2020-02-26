@@ -44,6 +44,7 @@ type LoadBalancerService struct {
 type LoadBalancerServiceHTTP struct {
 	CookieName     string
 	CookieLifetime time.Duration
+	Certificates   []*Certificate
 }
 
 // LoadBalancerServiceHealthCheck represents Health Check specific options for a service of a Load Balancer
@@ -301,6 +302,7 @@ type LoadBalancerCreateOpts struct {
 	NetworkZone      NetworkZone
 	Labels           map[string]string
 	Targets          []LoadBalancerTarget
+	Services         []LoadBalancerService
 }
 
 // Validate checks if options are valid.
@@ -370,6 +372,25 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 			schemaTarget.LabelSelector = &schema.LoadBalancerTargetLabelSelector{Selector: target.LabelSelector.Selector}
 		}
 		reqBody.Targets = append(reqBody.Targets, schemaTarget)
+	}
+
+	for _, service := range opts.Services {
+		schemaService := schema.LoadBalancerService{
+			Protocol:        string(service.Protocol),
+			ListenPort:      service.ListenPort,
+			DestinationPort: service.DestinationPort,
+			Proxyprotocol:   service.ProxyProtocol,
+		}
+		if service.Protocol == LoadBalancerServiceProtocolHTTP || service.Protocol == LoadBalancerServiceProtocolHTTPS {
+			schemaService.HTTP = &schema.LoadBalancerServiceHTTP{
+				CookieName:     service.HTTP.CookieName,
+				CookieLifetime: int(service.HTTP.CookieLifetime.Seconds()),
+			}
+			for _, certificate := range service.HTTP.Certificates {
+				schemaService.HTTP.Certificates = append(schemaService.HTTP.Certificates, certificate.ID)
+			}
+		}
+		reqBody.Services = append(reqBody.Services, schemaService)
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
