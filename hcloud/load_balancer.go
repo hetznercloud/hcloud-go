@@ -99,6 +99,8 @@ type LoadBalancerAlgorithmType string
 const (
 	// LoadBalancerAlgorithmTypeRoundRobin represents a RoundRobin algorithm.
 	LoadBalancerAlgorithmTypeRoundRobin LoadBalancerAlgorithmType = "round_robin"
+	// LoadBalancerAlgorithmTypeLeastConnection represents a Least Connection algorithm.
+	LoadBalancerAlgorithmTypeLeastConnection LoadBalancerAlgorithmType = "least_connection"
 )
 
 // LoadBalancerTarget represents target of a Load Balancer
