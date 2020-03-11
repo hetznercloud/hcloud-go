@@ -531,6 +531,9 @@ func CertificateFromSchema(s schema.Certificate) *Certificate {
 			Delete: s.Protection.Delete,
 		},
 	}
+	if len(s.Labels) > 0 {
+		c.Labels = make(map[string]string)
+	}
 	for key, value := range s.Labels {
 		c.Labels[key] = value
 	}
