@@ -1482,10 +1482,6 @@ func TestCertificateFromSchema(t *testing.T) {
 		"id": 897,
 		"name": "my website cert",
 		"labels": {},
-		"type": "uploaded",
-		"protection": {
-			"delete": false
-		},
 		"certificate": "-----BEGIN CERTIFICATE-----\n...",
 		"chain": "-----BEGIN CERTIFICATE-----\n...",
 		"created": "2016-01-30T23:50:00+00:00",
@@ -1496,10 +1492,7 @@ func TestCertificateFromSchema(t *testing.T) {
 			"webmail.example.com",
 			"www.example.com"
 		],
-		"fingerprint": "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
-		"issuer": "C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3",
-		"public_key_info": "RSA, 2048 bit",
-		"signature_algorithm": "sha256WithRSAEncryption"
+		"fingerprint": "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f"
 	}
 `)
 	var s schema.Certificate
@@ -1513,9 +1506,6 @@ func TestCertificateFromSchema(t *testing.T) {
 	}
 	if certificate.Name != "my website cert" {
 		t.Errorf("unexpected Name: %v", certificate.Name)
-	}
-	if certificate.Type != CertificateTypeUploaded {
-		t.Errorf("unexpected Type: %v", certificate.Type)
 	}
 	if certificate.Certificate != "-----BEGIN CERTIFICATE-----\n..." {
 		t.Errorf("unexpected Certificate: %v", certificate.Certificate)
@@ -1547,15 +1537,6 @@ func TestCertificateFromSchema(t *testing.T) {
 	}
 	if certificate.Fingerprint != "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f" {
 		t.Errorf("unexpected Fingerprint: %v", certificate.Fingerprint)
-	}
-	if certificate.Issuer != "C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3" {
-		t.Errorf("unexpected Issuer: %v", certificate.Issuer)
-	}
-	if certificate.PublicKeyInfo != "RSA, 2048 bit" {
-		t.Errorf("unexpected PublicKeyInfo: %v", certificate.PublicKeyInfo)
-	}
-	if certificate.SignatureAlgorithm != "sha256WithRSAEncryption" {
-		t.Errorf("unexpected SignatureAlgorithm: %v", certificate.SignatureAlgorithm)
 	}
 }
 

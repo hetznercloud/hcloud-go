@@ -515,22 +515,15 @@ func LoadBalancerTargetHealthStatusFromSchema(s schema.LoadBalancerTargetHealthS
 // CertificateFromSchema converts a schema.Certificate to a Certificate.
 func CertificateFromSchema(s schema.Certificate) *Certificate {
 	c := &Certificate{
-		ID:                 s.ID,
-		Name:               s.Name,
-		Type:               CertificateType(s.Type),
-		Certificate:        s.Certificate,
-		Chain:              s.Chain,
-		Created:            s.Created,
-		NotValidBefore:     s.NotValidBefore,
-		NotValidAfter:      s.NotValidAfter,
-		DomainNames:        s.DomainNames,
-		Fingerprint:        s.Fingerprint,
-		Issuer:             s.Issuer,
-		PublicKeyInfo:      s.PublicKeyInfo,
-		SignatureAlgorithm: s.SignatureAlgorithm,
-		Protection: CertificateProtection{
-			Delete: s.Protection.Delete,
-		},
+		ID:             s.ID,
+		Name:           s.Name,
+		Certificate:    s.Certificate,
+		Chain:          s.Chain,
+		Created:        s.Created,
+		NotValidBefore: s.NotValidBefore,
+		NotValidAfter:  s.NotValidAfter,
+		DomainNames:    s.DomainNames,
+		Fingerprint:    s.Fingerprint,
 	}
 	if len(s.Labels) > 0 {
 		c.Labels = make(map[string]string)
