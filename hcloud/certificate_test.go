@@ -154,26 +154,12 @@ func TestCertificateCreate(t *testing.T) {
 		}
 	})
 
-	t.Run("missing required field type", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		opts := CertificateCreateOpts{
-			Name: "my-cert",
-		}
-		_, _, err := env.Client.Certificate.Create(ctx, opts)
-		if err == nil || err.Error() != "missing type" {
-			t.Fatalf("Certificate.Create should fail with \"missing type\" but failed with %s", err)
-		}
-	})
-
 	t.Run("missing required field certificate", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
 
 		opts := CertificateCreateOpts{
 			Name: "my-cert",
-			Type: CertificateTypeUploaded,
 		}
 		_, _, err := env.Client.Certificate.Create(ctx, opts)
 		if err == nil || err.Error() != "missing certificate" {
@@ -187,7 +173,6 @@ func TestCertificateCreate(t *testing.T) {
 
 		opts := CertificateCreateOpts{
 			Name:        "my-cert",
-			Type:        CertificateTypeUploaded,
 			Certificate: "-----BEGIN CERTIFICATE-----\n...",
 		}
 		_, _, err := env.Client.Certificate.Create(ctx, opts)
@@ -225,7 +210,6 @@ func TestCertificateCreate(t *testing.T) {
 		})
 		opts := CertificateCreateOpts{
 			Name:        "my-cert",
-			Type:        CertificateTypeUploaded,
 			Certificate: "-----BEGIN CERTIFICATE-----\n...",
 			PrivateKey:  "-----BEGIN PRIVATE KEY-----\n...",
 		}
@@ -267,7 +251,6 @@ func TestCertificateCreate(t *testing.T) {
 		})
 		opts := CertificateCreateOpts{
 			Name:        "my-cert",
-			Type:        CertificateTypeUploaded,
 			Certificate: "-----BEGIN CERTIFICATE-----\n...",
 			Chain:       "-----BEGIN CHAIN-----\n...",
 			PrivateKey:  "-----BEGIN PRIVATE KEY-----\n...",
@@ -403,48 +386,6 @@ func TestCertificateClientUpdate(t *testing.T) {
 
 		if updatedCertificate.ID != 1 {
 			t.Errorf("unexpected certficate ID: %v", updatedCertificate.ID)
-		}
-	})
-}
-
-func TestCertificateClientChangeProtection(t *testing.T) {
-	var (
-		ctx        = context.Background()
-		certficate = &Certificate{ID: 1}
-	)
-
-	t.Run("enable delete protection", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/certificates/1/actions/change_protection", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.CertificateActionChangeProtectionRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Delete == nil || *reqBody.Delete != true {
-				t.Errorf("unexpected delete: %v", reqBody.Delete)
-			}
-			json.NewEncoder(w).Encode(schema.CertificateActionChangeProtectionResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := CertificateChangeProtectionOpts{
-			Delete: Bool(true),
-		}
-		action, _, err := env.Client.Certificate.ChangeProtection(ctx, certficate, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
 		}
 	})
 }

@@ -14,35 +14,17 @@ import (
 
 // Certificate represents an certificate in the Hetzner Cloud.
 type Certificate struct {
-	ID                 int
-	Name               string
-	Type               CertificateType
-	Protection         CertificateProtection
-	Labels             map[string]string
-	Certificate        string
-	Chain              string
-	Created            time.Time
-	NotValidBefore     time.Time
-	NotValidAfter      time.Time
-	DomainNames        []string
-	Fingerprint        string
-	Issuer             string
-	PublicKeyInfo      string
-	SignatureAlgorithm string
+	ID             int
+	Name           string
+	Labels         map[string]string
+	Certificate    string
+	Chain          string
+	Created        time.Time
+	NotValidBefore time.Time
+	NotValidAfter  time.Time
+	DomainNames    []string
+	Fingerprint    string
 }
-
-// CertificateProtection represents the protection level of a certificate.
-type CertificateProtection struct {
-	Delete bool
-}
-
-// CertificateType represents the type of a certificate.
-type CertificateType string
-
-const (
-	// CertificateTypeUploaded represents a uploaded certificate.
-	CertificateTypeUploaded CertificateType = "uploaded"
-)
 
 // CertificateClient is a client for the Certificates API.
 type CertificateClient struct {
@@ -89,16 +71,12 @@ func (c *CertificateClient) Get(ctx context.Context, idOrName string) (*Certific
 type CertificateListOpts struct {
 	ListOpts
 	Name string
-	Type CertificateType
 }
 
 func (l CertificateListOpts) values() url.Values {
 	vals := l.ListOpts.values()
 	if l.Name != "" {
 		vals.Add("name", l.Name)
-	}
-	if l.Type != "" {
-		vals.Add("type", string(l.Type))
 	}
 	return vals
 }
@@ -169,7 +147,6 @@ func (c *CertificateClient) AllWithOpts(ctx context.Context, opts CertificateLis
 // CertificateCreateOpts specifies options for creating a new Certificate.
 type CertificateCreateOpts struct {
 	Name        string
-	Type        CertificateType
 	Certificate string
 	Chain       string
 	PrivateKey  string
@@ -179,9 +156,6 @@ type CertificateCreateOpts struct {
 func (o CertificateCreateOpts) Validate() error {
 	if o.Name == "" {
 		return errors.New("missing name")
-	}
-	if o.Type == "" {
-		return errors.New("missing type")
 	}
 	if o.Certificate == "" {
 		return errors.New("missing certificate")
@@ -260,33 +234,4 @@ func (c *CertificateClient) Delete(ctx context.Context, loadBalancer *Certificat
 		return nil, err
 	}
 	return c.client.Do(req, nil)
-}
-
-// CertificateChangeProtectionOpts specifies options for changing the resource protection level of a Load Balancer.
-type CertificateChangeProtectionOpts struct {
-	Delete *bool
-}
-
-// ChangeProtection changes the resource protection level of a Load Balancer.
-func (c *CertificateClient) ChangeProtection(ctx context.Context, loadBalancer *Certificate, opts CertificateChangeProtectionOpts) (*Action, *Response, error) {
-	reqBody := schema.CertificateActionChangeProtectionRequest{
-		Delete: opts.Delete,
-	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	path := fmt.Sprintf("/certificates/%d/actions/change_protection", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	respBody := schema.CertificateActionChangeProtectionResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return nil, resp, err
-	}
-	return ActionFromSchema(respBody.Action), resp, err
 }
