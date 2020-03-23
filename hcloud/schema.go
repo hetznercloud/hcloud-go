@@ -462,7 +462,7 @@ func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) LoadBalancerSer
 // LoadBalancerServiceHealthCheckFromSchema converts a schema.LoadBalancerServiceHealthCheck to a LoadBalancerServiceHealthCheck.
 func LoadBalancerServiceHealthCheckFromSchema(s *schema.LoadBalancerServiceHealthCheck) *LoadBalancerServiceHealthCheck {
 	lsh := LoadBalancerServiceHealthCheck{
-		Protocol: s.Protocol,
+		Protocol: LoadBalancerServiceProtocol(s.Protocol),
 		Port:     s.Port,
 		Interval: time.Duration(s.Interval) * time.Second,
 		Retries:  s.Retries,

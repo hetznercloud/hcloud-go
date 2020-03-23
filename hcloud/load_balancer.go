@@ -49,7 +49,7 @@ type LoadBalancerServiceHTTP struct {
 
 // LoadBalancerServiceHealthCheck represents Health Check specific options for a service of a Load Balancer
 type LoadBalancerServiceHealthCheck struct {
-	Protocol string
+	Protocol LoadBalancerServiceProtocol
 	Port     int
 	Interval time.Duration
 	Timeout  time.Duration
@@ -535,7 +535,7 @@ func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadB
 
 	if opts.HealthCheck != nil {
 		reqBody.HealthCheck = &schema.LoadBalancerServiceHealthCheck{
-			Protocol: opts.HealthCheck.Protocol,
+			Protocol: string(opts.HealthCheck.Protocol),
 			Port:     opts.HealthCheck.Port,
 			Interval: int(opts.HealthCheck.Interval.Seconds()),
 			Timeout:  int(opts.HealthCheck.Timeout.Seconds()),
@@ -661,7 +661,7 @@ func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, loadBalancer
 	reqBody := schema.LoadBalancerActionUpdateHealthCheckRequest{
 		ListenPort: opts.ListenPort,
 		HealthCheck: schema.LoadBalancerServiceHealthCheck{
-			Protocol: opts.HealthCheck.Protocol,
+			Protocol: string(opts.HealthCheck.Protocol),
 			Port:     opts.HealthCheck.Port,
 			Interval: int(opts.HealthCheck.Interval.Seconds()),
 			Timeout:  int(opts.HealthCheck.Timeout.Seconds()),
