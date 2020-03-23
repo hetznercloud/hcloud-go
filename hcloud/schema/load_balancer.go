@@ -120,7 +120,7 @@ type LoadBalancerActionAddServiceRequest struct {
 	Protocol        string                          `json:"protocol"`
 	ListenPort      int                             `json:"listen_port,omitempty"`
 	DestinationPort int                             `json:"destination_port,omitempty"`
-	ProxyProtocol   *bool                           `json:"proxy_protocol,omitempty"`
+	ProxyProtocol   *bool                           `json:"proxyprotocol,omitempty"`
 	HTTP            *LoadBalancerServiceHTTP        `json:"http,omitempty"`
 	HealthCheck     *LoadBalancerServiceHealthCheck `json:"health_check,omitempty"`
 }
