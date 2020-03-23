@@ -52,7 +52,7 @@ type LoadBalancerServiceHealthCheck struct {
 	Interval int                                 `json:"interval"`
 	Timeout  int                                 `json:"timeout"`
 	Retries  int                                 `json:"retries"`
-	HTTP     *LoadBalancerServiceHealthCheckHTTP `json:"http"`
+	HTTP     *LoadBalancerServiceHealthCheckHTTP `json:"http,omitempty"`
 }
 
 // LoadBalancerServiceHealthCheckHTTP represents a http health check configuration.
