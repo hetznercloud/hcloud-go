@@ -531,6 +531,9 @@ func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadB
 			CookieName:     opts.HTTP.CookieName,
 			CookieLifetime: int(opts.HTTP.CookieLifetime.Seconds()),
 		}
+		for _, certificate := range opts.HTTP.Certificates {
+			reqBody.HTTP.Certificates = append(reqBody.HTTP.Certificates, certificate.ID)
+		}
 	}
 
 	if opts.HealthCheck != nil {
