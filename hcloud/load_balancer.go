@@ -100,7 +100,7 @@ const (
 	// LoadBalancerAlgorithmTypeRoundRobin represents a RoundRobin algorithm.
 	LoadBalancerAlgorithmTypeRoundRobin LoadBalancerAlgorithmType = "round_robin"
 	// LoadBalancerAlgorithmTypeLeastConnection represents a Least Connection algorithm.
-	LoadBalancerAlgorithmTypeLeastConnection LoadBalancerAlgorithmType = "least_connection"
+	LoadBalancerAlgorithmTypeLeastConnection LoadBalancerAlgorithmType = "least_connections"
 )
 
 // LoadBalancerTarget represents target of a Load Balancer
