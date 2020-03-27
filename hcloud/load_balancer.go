@@ -99,8 +99,8 @@ type LoadBalancerAlgorithmType string
 const (
 	// LoadBalancerAlgorithmTypeRoundRobin represents a RoundRobin algorithm.
 	LoadBalancerAlgorithmTypeRoundRobin LoadBalancerAlgorithmType = "round_robin"
-	// LoadBalancerAlgorithmTypeLeastConnection represents a Least Connection algorithm.
-	LoadBalancerAlgorithmTypeLeastConnection LoadBalancerAlgorithmType = "least_connections"
+	// LoadBalancerAlgorithmTypeLeastConnections represents a Least Connection algorithm.
+	LoadBalancerAlgorithmTypeLeastConnections LoadBalancerAlgorithmType = "least_connections"
 )
 
 // LoadBalancerTarget represents target of a Load Balancer
@@ -639,6 +639,7 @@ func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, loadBalancer *
 		return nil, nil, err
 	}
 
+	fmt.Printf("%s\n", reqBodyData)
 	path := fmt.Sprintf("/load_balancers/%d/actions/change_algorithm", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
 	if err != nil {
