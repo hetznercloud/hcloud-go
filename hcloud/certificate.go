@@ -6,10 +6,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 	"net/url"
 	"strconv"
 	"time"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 // Certificate represents an certificate in the Hetzner Cloud.
@@ -150,6 +151,7 @@ type CertificateCreateOpts struct {
 	Certificate string
 	Chain       string
 	PrivateKey  string
+	Labels      map[string]string
 }
 
 // Validate checks if options are valid.
@@ -176,6 +178,7 @@ func (c *CertificateClient) Create(ctx context.Context, opts CertificateCreateOp
 		Certificate: opts.Certificate,
 		Chain:       opts.Chain,
 		PrivateKey:  opts.PrivateKey,
+		Labels:      opts.Labels,
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
