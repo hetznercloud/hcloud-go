@@ -199,13 +199,8 @@ func TestCertificateCreate(t *testing.T) {
 			if reqBody.PrivateKey != "-----BEGIN PRIVATE KEY-----\n..." {
 				t.Errorf("unexpected PrivateKey: %v", reqBody.PrivateKey)
 			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerCreateResponse{
-				LoadBalancer: schema.LoadBalancer{
-					ID: 1,
-				},
-				Action: schema.Action{
-					ID: 1,
-				},
+			json.NewEncoder(w).Encode(schema.CertificateCreateResponse{
+				Certificate: schema.Certificate{ID: 1},
 			})
 		})
 		opts := CertificateCreateOpts{
@@ -240,13 +235,8 @@ func TestCertificateCreate(t *testing.T) {
 			if reqBody.PrivateKey != "-----BEGIN PRIVATE KEY-----\n..." {
 				t.Errorf("unexpected PrivateKey: %v", reqBody.PrivateKey)
 			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerCreateResponse{
-				LoadBalancer: schema.LoadBalancer{
-					ID: 1,
-				},
-				Action: schema.Action{
-					ID: 1,
-				},
+			json.NewEncoder(w).Encode(schema.CertificateCreateResponse{
+				Certificate: schema.Certificate{ID: 1},
 			})
 		})
 		opts := CertificateCreateOpts{
@@ -254,6 +244,43 @@ func TestCertificateCreate(t *testing.T) {
 			Certificate: "-----BEGIN CERTIFICATE-----\n...",
 			Chain:       "-----BEGIN CHAIN-----\n...",
 			PrivateKey:  "-----BEGIN PRIVATE KEY-----\n...",
+		}
+		_, _, err := env.Client.Certificate.Create(ctx, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
+
+	t.Run("required fields with labels", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/certificates", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.CertificateCreateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Name != "my-cert" {
+				t.Errorf("unexpected Name: %v", reqBody.Name)
+			}
+			if reqBody.Certificate != "-----BEGIN CERTIFICATE-----\n..." {
+				t.Errorf("unexpected Certificate: %v", reqBody.Certificate)
+			}
+			if reqBody.Labels == nil || reqBody.Labels["key"] != "value" {
+				t.Errorf("no or wrong labels set: %v", reqBody.Labels)
+			}
+			if reqBody.PrivateKey != "-----BEGIN PRIVATE KEY-----\n..." {
+				t.Errorf("unexpected PrivateKey: %v", reqBody.PrivateKey)
+			}
+			json.NewEncoder(w).Encode(schema.CertificateCreateResponse{
+				Certificate: schema.Certificate{ID: 1},
+			})
+		})
+		opts := CertificateCreateOpts{
+			Name:        "my-cert",
+			Certificate: "-----BEGIN CERTIFICATE-----\n...",
+			PrivateKey:  "-----BEGIN PRIVATE KEY-----\n...",
+			Labels:      map[string]string{"key": "value"},
 		}
 		_, _, err := env.Client.Certificate.Create(ctx, opts)
 		if err != nil {
