@@ -1355,7 +1355,8 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 			"cookie_lifetime": 300,
 			"certificates": [
 				897
-			]
+			],
+			"redirect_http": true
 		},
 		"health_check": {
 			"protocol": "http",
@@ -1397,6 +1398,9 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 	}
 	if loadBalancerService.HTTP.Certificates[0].ID != 897 {
 		t.Errorf("unexpected Certificates[0].ID : %v", loadBalancerService.HTTP.Certificates[0].ID)
+	}
+	if !loadBalancerService.HTTP.RedirectHTTP {
+		t.Errorf("unexpected RedirectHTTP: %v", loadBalancerService.HTTP.RedirectHTTP)
 	}
 	if loadBalancerService.HealthCheck.Protocol != "http" {
 		t.Errorf("unexpected HealthCheck.Protocol: %v", loadBalancerService.HealthCheck.Protocol)
