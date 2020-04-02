@@ -187,6 +187,14 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, body io.Re
 func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 	var retries int
 	for {
+		if c.debugWriter != nil {
+			// To get the response body we need to read it before the request was actually send. https://github.com/golang/go/issues/29792
+			dumpReq, err := httputil.DumpRequest(r, true)
+			if err != nil {
+				return nil, err
+			}
+			fmt.Fprintf(c.debugWriter, "--- Request:\n%s\n\n", dumpReq)
+		}
 		resp, err := c.httpClient.Do(r)
 		if err != nil {
 			return nil, err
@@ -201,12 +209,6 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 		resp.Body = ioutil.NopCloser(bytes.NewReader(body))
 
 		if c.debugWriter != nil {
-			dumpReq, err := httputil.DumpRequest(r, true)
-			if err != nil {
-				return nil, err
-			}
-			fmt.Fprintf(c.debugWriter, "--- Request:\n%s\n\n", dumpReq)
-
 			dumpResp, err := httputil.DumpResponse(resp, true)
 			if err != nil {
 				return nil, err
