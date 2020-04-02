@@ -452,6 +452,7 @@ func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) LoadBalancerSer
 		ls.HTTP = &LoadBalancerServiceHTTP{
 			CookieName:     s.HTTP.CookieName,
 			CookieLifetime: time.Duration(s.HTTP.CookieLifetime) * time.Second,
+			RedirectHTTP:   s.HTTP.RedirectHTTP,
 		}
 		for _, certificateID := range s.HTTP.Certificates {
 			ls.HTTP.Certificates = append(ls.HTTP.Certificates, &Certificate{ID: certificateID})
