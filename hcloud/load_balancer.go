@@ -549,8 +549,11 @@ func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadB
 		}
 		if opts.HealthCheck.HTTP != nil {
 			reqBody.HealthCheck.HTTP = &schema.LoadBalancerServiceHealthCheckHTTP{
-				Domain: opts.HealthCheck.HTTP.Domain,
-				Path:   opts.HealthCheck.HTTP.Path,
+				Domain:      opts.HealthCheck.HTTP.Domain,
+				Path:        opts.HealthCheck.HTTP.Path,
+				Response:    opts.HealthCheck.HTTP.Response,
+				StatusCodes: opts.HealthCheck.HTTP.StatusCodes,
+				TLS:         opts.HealthCheck.HTTP.TLS,
 			}
 		}
 	}
