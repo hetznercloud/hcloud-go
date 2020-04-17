@@ -413,10 +413,17 @@ func LoadBalancerTypeFromSchema(s schema.LoadBalancerType) *LoadBalancerType {
 // LoadBalancerFromSchema converts a schema.LoadBalancer to a LoadBalancer.
 func LoadBalancerFromSchema(s schema.LoadBalancer) *LoadBalancer {
 	l := &LoadBalancer{
-		ID:               s.ID,
-		Name:             s.Name,
-		IPv4:             net.ParseIP(s.IPv4),
-		IPv6:             net.ParseIP(s.IPv6),
+		ID:   s.ID,
+		Name: s.Name,
+		PublicNet: LoadBalancerPublicNet{
+			Enabled: s.PublicNet.Enabled,
+			IPv4: LoadBalancerPublicNetIPv4{
+				IP: net.ParseIP(s.PublicNet.IPv4.IP),
+			},
+			IPv6: LoadBalancerPublicNetIPv6{
+				IP: net.ParseIP(s.PublicNet.IPv6.IP),
+			},
+		},
 		Location:         LocationFromSchema(s.Location),
 		LoadBalancerType: LoadBalancerTypeFromSchema(s.LoadBalancerType),
 		Algorithm:        LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmType(s.Algorithm.Type)},
@@ -425,6 +432,12 @@ func LoadBalancerFromSchema(s schema.LoadBalancer) *LoadBalancer {
 		},
 		Labels:  map[string]string{},
 		Created: s.Created,
+	}
+	for _, privateNet := range s.PrivateNet {
+		l.PrivatNet = append(l.PrivatNet, LoadBalancerPrivateNet{
+			Network: &Network{ID: privateNet.Network},
+			IP:      net.ParseIP(privateNet.IP),
+		})
 	}
 	for _, service := range s.Services {
 		l.Services = append(l.Services, LoadBalancerServiceFromSchema(service))

@@ -4,18 +4,44 @@ import "time"
 
 // LoadBalancer represents a Load Balancer in the Hetzner Cloud.
 type LoadBalancer struct {
-	ID               int                    `json:"id"`
-	Name             string                 `json:"name"`
-	IPv4             string                 `json:"ipv4"`
-	IPv6             string                 `json:"ipv6"`
-	Location         Location               `json:"location"`
-	LoadBalancerType LoadBalancerType       `json:"load_balancer_type"`
-	Protection       LoadBalancerProtection `json:"protection"`
-	Labels           map[string]string      `json:"labels"`
-	Created          time.Time              `json:"created"`
-	Services         []LoadBalancerService  `json:"services"`
-	Targets          []LoadBalancerTarget   `json:"targets"`
-	Algorithm        LoadBalancerAlgorithm  `json:"algorithm"`
+	ID               int                      `json:"id"`
+	Name             string                   `json:"name"`
+	PublicNet        LoadBalancerPublicNet    `json:"public_net"`
+	PrivateNet       []LoadBalancerPrivateNet `json:"private_net"`
+	Location         Location                 `json:"location"`
+	LoadBalancerType LoadBalancerType         `json:"load_balancer_type"`
+	Protection       LoadBalancerProtection   `json:"protection"`
+	Labels           map[string]string        `json:"labels"`
+	Created          time.Time                `json:"created"`
+	Services         []LoadBalancerService    `json:"services"`
+	Targets          []LoadBalancerTarget     `json:"targets"`
+	Algorithm        LoadBalancerAlgorithm    `json:"algorithm"`
+}
+
+// LoadBalancerPublicNet defines the schema of a Load Balancers
+// public network information.
+type LoadBalancerPublicNet struct {
+	Enabled bool                      `json:"enabled"`
+	IPv4    LoadBalancerPublicNetIPv4 `json:"ipv4"`
+	IPv6    LoadBalancerPublicNetIPv6 `json:"ipv6"`
+}
+
+// LoadBalancerPublicNetIPv4 defines the schema of a Load Balancers public
+// network information for an IPv4.
+type LoadBalancerPublicNetIPv4 struct {
+	IP string `json:"ip"`
+}
+
+// LoadBalancerPublicNetIPv6 defines the schema of a Load Balancers public
+// network information for an IPv6.
+type LoadBalancerPublicNetIPv6 struct {
+	IP string `json:"ip"`
+}
+
+// LoadBalancerPrivateNet defines the schema of a Load Balancers private network information.
+type LoadBalancerPrivateNet struct {
+	Network int    `json:"network"`
+	IP      string `json:"ip"`
 }
 
 // LoadBalancerAlgorithm represents the algorithm of a Load Balancer.

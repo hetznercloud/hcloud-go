@@ -18,8 +18,8 @@ import (
 type LoadBalancer struct {
 	ID               int
 	Name             string
-	IPv4             net.IP
-	IPv6             net.IP
+	PublicNet        LoadBalancerPublicNet
+	PrivatNet        []LoadBalancerPrivateNet
 	Location         *Location
 	LoadBalancerType *LoadBalancerType
 	Algorithm        LoadBalancerAlgorithm
@@ -28,6 +28,29 @@ type LoadBalancer struct {
 	Protection       LoadBalancerProtection
 	Labels           map[string]string
 	Created          time.Time
+}
+
+// LoadBalancerPublicNet represents a Load Balancers public network.
+type LoadBalancerPublicNet struct {
+	Enabled bool
+	IPv4    LoadBalancerPublicNetIPv4
+	IPv6    LoadBalancerPublicNetIPv6
+}
+
+// LoadBalancerPublicNetIPv4 represents a Load Balancers public IPv4 address.
+type LoadBalancerPublicNetIPv4 struct {
+	IP net.IP
+}
+
+// LoadBalancerPublicNetIPv6 represents a Load Balancers public IPv6 address.
+type LoadBalancerPublicNetIPv6 struct {
+	IP net.IP
+}
+
+// LoadBalancerPrivateNet defines the schema of a Load Balancers private network information.
+type LoadBalancerPrivateNet struct {
+	Network *Network
+	IP      net.IP
 }
 
 // LoadBalancerService represents a service of a Load Balancer.

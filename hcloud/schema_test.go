@@ -1222,8 +1222,20 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 	data := []byte(`{
 		"id": 4711,
 		"name": "Web Frontend",
-		"ipv4": "131.232.99.1",
-		"ipv6": "2001:db8::1",
+		"public_net": {
+			"ipv4": {
+				"ip": "131.232.99.1"
+			},
+			"ipv6": {
+				"ip": "2001:db8::1"
+			}
+		}
+		"private_net": [
+			{
+				"network_id": 4711,
+				"ip": "10.0.255.1"
+			}
+		],
 		"location": {
 			"id": 1,
 			"name": "fsn1",
@@ -1315,11 +1327,21 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 	if loadBalancer.Name != "Web Frontend" {
 		t.Errorf("unexpected Name: %v", loadBalancer.Name)
 	}
-	if loadBalancer.IPv4.String() != "131.232.99.1" {
-		t.Errorf("unexpected IPv4: %v", loadBalancer.IPv4)
+	if loadBalancer.PublicNet.IPv4.IP.String() != "131.232.99.1" {
+		t.Errorf("unexpected IPv4: %v", loadBalancer.PublicNet.IPv4.IP)
 	}
-	if loadBalancer.IPv6.String() != "2001:db8::1" {
-		t.Errorf("unexpected IPv4: %v", loadBalancer.IPv4)
+	if loadBalancer.PublicNet.IPv6.IP.String() != "2001:db8::1" {
+		t.Errorf("unexpected IPv6: %v", loadBalancer.PublicNet.IPv6)
+	}
+	if len(loadBalancer.PrivatNet) != 1 {
+		t.Errorf("unexpected length of PrivatNet: %v", len(loadBalancer.PrivatNet))
+	} else {
+		if loadBalancer.PrivatNet[0].Network.ID != 4711 {
+			t.Errorf("unexpected Network ID: %v", loadBalancer.PrivatNet[0].Network.ID)
+		}
+		if loadBalancer.PrivatNet[0].IP.String() != "10.0.255.1" {
+			t.Errorf("unexpected Network IP: %v", loadBalancer.PrivatNet[0].IP)
+		}
 	}
 	if loadBalancer.Location == nil || loadBalancer.Location.ID != 1 {
 		t.Errorf("unexpected Location: %v", loadBalancer.Location)
@@ -1334,7 +1356,7 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 		t.Errorf("unexpected created date: %v", loadBalancer.Created)
 	}
 	if len(loadBalancer.Services) != 1 {
-		t.Errorf("unexpected length of MaxServices: %v", len(loadBalancer.Services))
+		t.Errorf("unexpected length of Services: %v", len(loadBalancer.Services))
 	}
 	if len(loadBalancer.Targets) != 1 {
 		t.Errorf("unexpected length of Targets: %v", len(loadBalancer.Targets))
