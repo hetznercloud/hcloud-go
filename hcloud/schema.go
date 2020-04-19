@@ -1,9 +1,8 @@
 package hcloud
 
 import (
-	"net"
-
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"net"
 )
 
 // This file provides converter functions to convert models in the
@@ -476,4 +475,71 @@ func PricingFromSchema(s schema.Pricing) Pricing {
 		})
 	}
 	return p
+}
+
+// RecordFromSchema converts a schema.Record to a record.
+func RecordFromSchema(r schema.Record) *Record {
+	record := &Record{
+		ID:       r.ID,
+		Name:     r.Name,
+		Created:  r.Created.Time,
+		Modified: r.Modified.Time,
+		TTL:      r.TTL,
+		Type:     RecordType(r.Type),
+		Value:    r.Value,
+		ZoneID:   r.ZoneID,
+	}
+	return record
+}
+
+// ZoneFromSchema converts a schema.Zone to a zone.
+func ZoneFromSchema(z schema.Zone) *Zone {
+	return &Zone{
+		ID:              z.ID,
+		Name:            z.Name,
+		Ns:              z.Ns,
+		LegacyDNSHost:   z.LegacyDNSHost,
+		LegacyNs:        z.LegacyNs,
+		Created:         z.Created.Time,
+		Modified:        z.Modified.Time,
+		Verified:        z.Verified.Time,
+		Owner:           z.Owner,
+		Paused:          z.Paused,
+		Permission:      z.Permission,
+		Project:         z.Project,
+		Registrar:       z.Registrar,
+		Status:          z.Status,
+		TTL:             z.TTL,
+		IsSecondaryDNS:  z.IsSecondaryDNS,
+		TxtVerification: *TxtVerificationFromSchema(z.TxtVerification),
+		ZoneType:        *ZoneTypeFromSchema(z.ZoneType),
+		RecordsCount:    z.RecordsCount,
+	}
+}
+
+// TxtVerificationFromSchema converts a schema.TxtVerification to a TxtVerification.
+func TxtVerificationFromSchema(t schema.TxtVerification) *TxtVerification {
+	return &TxtVerification{
+		Name:  t.Name,
+		Token: t.Token,
+	}
+}
+
+// ZoneTypeFromSchema converts a schema.ZoneType to a ZoneType.
+func ZoneTypeFromSchema(z schema.ZoneType) *ZoneType {
+	var prices []Price
+	for _, price := range z.Prices {
+		prices = append(prices, Price{
+			//Currency: ,
+			//VATRate:  ,todo
+			Net:   price.Net,
+			Gross: price.Gross,
+		})
+	}
+	return &ZoneType{
+		ID:          z.ID,
+		Name:        z.Name,
+		Description: z.Description,
+		Prices:      prices,
+	}
 }
