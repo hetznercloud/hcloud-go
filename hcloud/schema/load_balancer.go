@@ -131,7 +131,7 @@ type LoadBalancerGetResponse struct {
 // add or remove a target from a Load Balancer.
 type LoadBalancerActionTargetRequest struct {
 	Type          string                           `json:"type"`
-	Server        *LoadBalancerTargetServer        `json:"server"`
+	Server        *LoadBalancerTargetServer        `json:"server,omitempty"`
 	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector,omitempty"`
 }
 

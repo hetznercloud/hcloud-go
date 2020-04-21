@@ -389,10 +389,11 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 	}
 	for _, target := range opts.Targets {
 		schemaTarget := schema.LoadBalancerTarget{}
-		if target.Type == LoadBalancerTargetTypeServer {
+		switch target.Type {
+		case LoadBalancerTargetTypeServer:
 			schemaTarget.Type = string(LoadBalancerTargetTypeServer)
 			schemaTarget.Server = &schema.LoadBalancerTargetServer{ID: target.Server.Server.ID}
-		} else if target.Type == LoadBalancerTargetTypeLabelSelector {
+		case LoadBalancerTargetTypeLabelSelector:
 			schemaTarget.Type = string(LoadBalancerTargetTypeLabelSelector)
 			schemaTarget.LabelSelector = &schema.LoadBalancerTargetLabelSelector{Selector: target.LabelSelector.Selector}
 		}
