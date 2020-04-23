@@ -133,6 +133,7 @@ type LoadBalancerTarget struct {
 	Server        *LoadBalancerTargetServer
 	LabelSelector *LoadBalancerTargetLabelSelector
 	HealthStatus  []LoadBalancerTargetHealthStatus
+	Targets       []LoadBalancerTarget
 }
 
 // LoadBalancerTargetServer represents server target of a Load Balancer

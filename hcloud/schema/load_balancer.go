@@ -97,6 +97,7 @@ type LoadBalancerTarget struct {
 	Server        *LoadBalancerTargetServer        `json:"server,omitempty"`
 	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector,omitempty"`
 	HealthStatus  []LoadBalancerTargetHealthStatus `json:"health_status,omitempty"`
+	Targets       []LoadBalancerTarget             `json:"targets,omitempty"`
 }
 
 // LoadBalancerTargetHealthStatus represents a health status of target of a Load Balancer.

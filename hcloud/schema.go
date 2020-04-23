@@ -515,6 +515,9 @@ func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarge
 	for _, healthStatus := range s.HealthStatus {
 		lt.HealthStatus = append(lt.HealthStatus, LoadBalancerTargetHealthStatusFromSchema(healthStatus))
 	}
+	for _, target := range s.Targets {
+		lt.Targets = append(lt.Targets, LoadBalancerTargetFromSchema(target))
+	}
 	return lt
 }
 
