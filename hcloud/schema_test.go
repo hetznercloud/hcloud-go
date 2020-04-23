@@ -1229,10 +1229,10 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 			"ipv6": {
 				"ip": "2001:db8::1"
 			}
-		}
+		},
 		"private_net": [
 			{
-				"network_id": 4711,
+				"network": 4711,
 				"ip": "10.0.255.1"
 			}
 		],
