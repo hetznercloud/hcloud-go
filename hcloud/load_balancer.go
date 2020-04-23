@@ -86,7 +86,7 @@ type LoadBalancerServiceHealthCheckHTTP struct {
 	Domain      string
 	Path        string
 	Response    string
-	StatusCodes []int
+	StatusCodes []string
 	TLS         bool
 }
 

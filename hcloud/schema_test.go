@@ -1410,7 +1410,7 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 				"domain": "example.com",
 				"path": "/",
 				"response": "",
-				"status_codes":[200,201],
+				"status_codes":["200","201"],
 				"tls": false
 			}
 		}
@@ -1474,10 +1474,10 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 	if len(loadBalancerService.HealthCheck.HTTP.StatusCodes) != 2 {
 		t.Errorf("unexpected len(HealthCheck.HTTP.StatusCodes): %v", len(loadBalancerService.HealthCheck.HTTP.StatusCodes))
 	} else {
-		if loadBalancerService.HealthCheck.HTTP.StatusCodes[0] != 200 {
+		if loadBalancerService.HealthCheck.HTTP.StatusCodes[0] != "200" {
 			t.Errorf("unexpected HealthCheck.HTTP.StatusCodes[0]: %v", loadBalancerService.HealthCheck.HTTP.StatusCodes[0])
 		}
-		if loadBalancerService.HealthCheck.HTTP.StatusCodes[1] != 201 {
+		if loadBalancerService.HealthCheck.HTTP.StatusCodes[1] != "201" {
 			t.Errorf("unexpected HealthCheck.HTTP.StatusCodes[1]: %v", loadBalancerService.HealthCheck.HTTP.StatusCodes[1])
 		}
 	}
