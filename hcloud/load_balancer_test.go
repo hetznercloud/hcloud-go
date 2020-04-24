@@ -1107,3 +1107,55 @@ func TestLoadBalancerClientDetachFromNetwork(t *testing.T) {
 		t.Errorf("unexpected action ID: %v", action.ID)
 	}
 }
+
+func TestLoadBalancerClientEnablePublicInterface(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
+
+	env.Mux.HandleFunc("/load_balancers/1/actions/enable_public_interface", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionEnablePublicInterfaceResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	action, _, err := env.Client.LoadBalancer.EnablePublicInterface(ctx, loadBalancer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
+
+func TestLoadBalancerClientDisablePublicInterface(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
+
+	env.Mux.HandleFunc("/load_balancers/1/actions/disable_public_interface", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionDisablePublicInterfaceResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	action, _, err := env.Client.LoadBalancer.DisablePublicInterface(ctx, loadBalancer)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}

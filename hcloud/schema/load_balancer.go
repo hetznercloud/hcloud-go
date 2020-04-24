@@ -262,3 +262,23 @@ type LoadBalancerActionDetachFromNetworkRequest struct {
 type LoadBalancerActionDetachFromNetworkResponse struct {
 	Action Action `json:"action"`
 }
+
+// LoadBalancerActionEnablePublicInterfaceRequest defines the schema for the request to
+// enable the public interface of a Load Balancer.
+type LoadBalancerActionEnablePublicInterfaceRequest struct{}
+
+// LoadBalancerActionEnablePublicInterfaceResponse defines the schema of the response when
+// creating a enable_public_interface Load Balancer action.
+type LoadBalancerActionEnablePublicInterfaceResponse struct {
+	Action Action `json:"action"`
+}
+
+// LoadBalancerActionDisablePublicInterfaceRequest defines the schema for the request to
+// disable the public interface of a Load Balancer.
+type LoadBalancerActionDisablePublicInterfaceRequest struct{}
+
+// LoadBalancerActionDisablePublicInterfaceResponse defines the schema of the response when
+// creating a disable_public_interface Load Balancer action.
+type LoadBalancerActionDisablePublicInterfaceResponse struct {
+	Action Action `json:"action"`
+}

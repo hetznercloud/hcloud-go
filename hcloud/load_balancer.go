@@ -738,8 +738,8 @@ type LoadBalancerAttachToNetworkOpts struct {
 	IP      net.IP
 }
 
-// AttachToNetwork attaches a server to a network.
-func (c *LoadBalancerClient) AttachToNetwork(ctx context.Context, server *LoadBalancer, opts LoadBalancerAttachToNetworkOpts) (*Action, *Response, error) {
+// AttachToNetwork attaches a load balancer to a network.
+func (c *LoadBalancerClient) AttachToNetwork(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAttachToNetworkOpts) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionAttachToNetworkRequest{
 		Network: opts.Network.ID,
 	}
@@ -751,7 +751,7 @@ func (c *LoadBalancerClient) AttachToNetwork(ctx context.Context, server *LoadBa
 		return nil, nil, err
 	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/attach_to_network", server.ID)
+	path := fmt.Sprintf("/load_balancers/%d/actions/attach_to_network", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
 	if err != nil {
 		return nil, nil, err
@@ -770,8 +770,8 @@ type LoadBalancerDetachFromNetworkOpts struct {
 	Network *Network
 }
 
-// DetachFromNetwork detaches a server from a network.
-func (c *LoadBalancerClient) DetachFromNetwork(ctx context.Context, server *LoadBalancer, opts LoadBalancerDetachFromNetworkOpts) (*Action, *Response, error) {
+// DetachFromNetwork detaches a Load Balancer from a network.
+func (c *LoadBalancerClient) DetachFromNetwork(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerDetachFromNetworkOpts) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionDetachFromNetworkRequest{
 		Network: opts.Network.ID,
 	}
@@ -780,13 +780,43 @@ func (c *LoadBalancerClient) DetachFromNetwork(ctx context.Context, server *Load
 		return nil, nil, err
 	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/detach_from_network", server.ID)
+	path := fmt.Sprintf("/load_balancers/%d/actions/detach_from_network", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
 	if err != nil {
 		return nil, nil, err
 	}
 
 	respBody := schema.LoadBalancerActionDetachFromNetworkResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
+}
+
+// EnablePublicInterface enables the public interface from a Load Balancer.
+func (c *LoadBalancerClient) EnablePublicInterface(ctx context.Context, loadBalancer *LoadBalancer) (*Action, *Response, error) {
+	path := fmt.Sprintf("/load_balancers/%d/actions/enable_public_interface", loadBalancer.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	respBody := schema.LoadBalancerActionEnablePublicInterfaceResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
+}
+
+// DisablePublicInterface enables the public interface from a Load Balancer.
+func (c *LoadBalancerClient) DisablePublicInterface(ctx context.Context, loadBalancer *LoadBalancer) (*Action, *Response, error) {
+	path := fmt.Sprintf("/load_balancers/%d/actions/disable_public_interface", loadBalancer.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	respBody := schema.LoadBalancerActionDisablePublicInterfaceResponse{}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
