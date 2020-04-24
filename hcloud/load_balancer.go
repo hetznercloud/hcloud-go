@@ -731,3 +731,65 @@ func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, loadBalancer
 	}
 	return ActionFromSchema(respBody.Action), resp, err
 }
+
+// LoadBalancerAttachToNetworkOpts specifies options for attaching a Load Balancer to a network.
+type LoadBalancerAttachToNetworkOpts struct {
+	Network *Network
+	IP      net.IP
+}
+
+// AttachToNetwork attaches a server to a network.
+func (c *LoadBalancerClient) AttachToNetwork(ctx context.Context, server *LoadBalancer, opts LoadBalancerAttachToNetworkOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionAttachToNetworkRequest{
+		Network: opts.Network.ID,
+	}
+	if opts.IP != nil {
+		reqBody.IP = String(opts.IP.String())
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/attach_to_network", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.LoadBalancerActionAttachToNetworkResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
+}
+
+// LoadBalancerDetachFromNetworkOpts specifies options for detaching a Load Balancer from a network.
+type LoadBalancerDetachFromNetworkOpts struct {
+	Network *Network
+}
+
+// DetachFromNetwork detaches a server from a network.
+func (c *LoadBalancerClient) DetachFromNetwork(ctx context.Context, server *LoadBalancer, opts LoadBalancerDetachFromNetworkOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionDetachFromNetworkRequest{
+		Network: opts.Network.ID,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/detach_from_network", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.LoadBalancerActionDetachFromNetworkResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
+}

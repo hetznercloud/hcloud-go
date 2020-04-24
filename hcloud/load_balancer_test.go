@@ -3,6 +3,7 @@ package hcloud
 import (
 	"context"
 	"encoding/json"
+	"net"
 	"net/http"
 	"testing"
 	"time"
@@ -977,6 +978,127 @@ func TestLoadBalancerUpdateHealthCheck(t *testing.T) {
 		},
 	}
 	action, _, err := env.Client.LoadBalancer.UpdateHealthCheck(ctx, loadBalancer, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
+}
+
+func TestLoadBalancerClientAttachToNetwork(t *testing.T) {
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
+
+	t.Run("attach to network", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/load_balancers/1/actions/attach_to_network", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "POST" {
+				t.Error("expected POST")
+			}
+			var reqBody schema.LoadBalancerActionAttachToNetworkRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Network != 1 {
+				t.Errorf("unexpected Network: %v", reqBody.Network)
+			}
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionAttachToNetworkResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := LoadBalancerAttachToNetworkOpts{
+			Network: &Network{ID: 1},
+		}
+		action, _, err := env.Client.LoadBalancer.AttachToNetwork(ctx, loadBalancer, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %v", action.ID)
+		}
+	})
+
+	t.Run("attach to network with additional parameters", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/load_balancers/1/actions/attach_to_network", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "POST" {
+				t.Error("expected POST")
+			}
+			var reqBody schema.LoadBalancerActionAttachToNetworkRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Network != 1 {
+				t.Errorf("unexpected Network: %v", reqBody.Network)
+			}
+			if reqBody.IP == nil || *reqBody.IP != "10.0.1.1" {
+				t.Errorf("unexpected IP: %v", *reqBody.IP)
+			}
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionAttachToNetworkResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+		ip := net.ParseIP("10.0.1.1")
+		opts := LoadBalancerAttachToNetworkOpts{
+			Network: &Network{ID: 1},
+			IP:      ip,
+		}
+		action, _, err := env.Client.LoadBalancer.AttachToNetwork(ctx, loadBalancer, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %v", action.ID)
+		}
+	})
+}
+
+func TestLoadBalancerClientDetachFromNetwork(t *testing.T) {
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
+
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers/1/actions/detach_from_network", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.LoadBalancerActionDetachFromNetworkRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.Network != 1 {
+			t.Errorf("unexpected Network: %v", reqBody.Network)
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionDetachFromNetworkResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	opts := LoadBalancerDetachFromNetworkOpts{
+		Network: &Network{ID: 1},
+	}
+	action, _, err := env.Client.LoadBalancer.DetachFromNetwork(ctx, loadBalancer, opts)
 	if err != nil {
 		t.Fatal(err)
 	}

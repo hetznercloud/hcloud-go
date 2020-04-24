@@ -237,3 +237,28 @@ type LoadBalancerActionUpdateHealthCheckRequest struct {
 type LoadBalancerActionUpdateHealthCheckResponse struct {
 	Action Action `json:"action"`
 }
+
+// LoadBalancerActionAttachToNetworkRequest defines the schema for the request to
+// attach a network to a Load Balancer.
+type LoadBalancerActionAttachToNetworkRequest struct {
+	Network int     `json:"network"`
+	IP      *string `json:"ip,omitempty"`
+}
+
+// LoadBalancerActionAttachToNetworkResponse defines the schema of the response when
+// creating an attach_to_network Load Balancer action.
+type LoadBalancerActionAttachToNetworkResponse struct {
+	Action Action `json:"action"`
+}
+
+// LoadBalancerActionDetachFromNetworkRequest defines the schema for the request to
+// detach a network from a Load Balancer.
+type LoadBalancerActionDetachFromNetworkRequest struct {
+	Network int `json:"network"`
+}
+
+// LoadBalancerActionDetachFromNetworkResponse defines the schema of the response when
+// creating a detach_from_network Load Balancer action.
+type LoadBalancerActionDetachFromNetworkResponse struct {
+	Action Action `json:"action"`
+}
