@@ -670,7 +670,6 @@ func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, loadBalancer *
 		return nil, nil, err
 	}
 
-	fmt.Printf("%s\n", reqBodyData)
 	path := fmt.Sprintf("/load_balancers/%d/actions/change_algorithm", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
 	if err != nil {

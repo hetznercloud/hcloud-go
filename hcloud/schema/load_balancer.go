@@ -84,11 +84,11 @@ type LoadBalancerServiceHealthCheck struct {
 
 // LoadBalancerServiceHealthCheckHTTP represents a http health check configuration.
 type LoadBalancerServiceHealthCheckHTTP struct {
-	Domain      string   `json:"domain"`
-	Path        string   `json:"path"`
-	Response    string   `json:"response"`
-	StatusCodes []string `json:"status_codes"`
-	TLS         bool     `json:"tls"`
+	Domain      string   `json:"domain,omitempty"`
+	Path        string   `json:"path,omitempty"`
+	Response    string   `json:"response,omitempty"`
+	StatusCodes []string `json:"status_codes,omitempty"`
+	TLS         bool     `json:"tls,omitempty"`
 }
 
 // LoadBalancerTarget represents a target of a Load Balancer.
