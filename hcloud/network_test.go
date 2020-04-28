@@ -372,7 +372,7 @@ func TestNetworkClientAddSubnet(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if reqBody.Type != "server" {
+			if reqBody.Type != "cloud" {
 				t.Errorf("unexpected Type: %v", reqBody.Type)
 			}
 			if reqBody.IPRange != "10.0.1.0/24" {
@@ -415,7 +415,7 @@ func TestNetworkClientAddSubnet(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if reqBody.Type != "server" {
+			if reqBody.Type != "cloud" {
 				t.Errorf("unexpected Type: %v", reqBody.Type)
 			}
 			if reqBody.IPRange != "" {
