@@ -392,7 +392,7 @@ func TestNetworkClientAddSubnet(t *testing.T) {
 		_, ipRange, _ := net.ParseCIDR("10.0.1.0/24")
 		opts := NetworkAddSubnetOpts{
 			Subnet: NetworkSubnet{
-				Type:        NetworkSubnetTypeServer,
+				Type:        NetworkSubnetTypeCloud,
 				IPRange:     ipRange,
 				NetworkZone: NetworkZoneEUCentral,
 			},
@@ -434,7 +434,7 @@ func TestNetworkClientAddSubnet(t *testing.T) {
 		ctx := context.Background()
 		opts := NetworkAddSubnetOpts{
 			Subnet: NetworkSubnet{
-				Type:        NetworkSubnetTypeServer,
+				Type:        NetworkSubnetTypeCloud,
 				NetworkZone: NetworkZoneEUCentral,
 			},
 		}
