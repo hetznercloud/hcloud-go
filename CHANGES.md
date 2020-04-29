@@ -3,6 +3,7 @@
 ## master
 
 * Add `Status` field to `Volume`
+* Add subnet type `cloud`
 
 ## v1.17.0
 
