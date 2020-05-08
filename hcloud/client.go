@@ -122,6 +122,13 @@ func WithDebugWriter(debugWriter io.Writer) ClientOption {
 	}
 }
 
+// WithHTTPClient configures a Client to perform HTTP requests with httpClient.
+func WithHTTPClient(httpClient *http.Client) ClientOption {
+	return func(client *Client) {
+		client.httpClient = httpClient
+	}
+}
+
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
