@@ -4,6 +4,7 @@
 
 * Add `Status` field to `Volume`
 * Add subnet type `cloud`
+* Use `http.DefaultClient` by default to take advantage of cached TCP connections
 
 ## v1.17.0
 

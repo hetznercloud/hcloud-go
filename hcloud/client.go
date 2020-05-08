@@ -126,7 +126,7 @@ func WithDebugWriter(debugWriter io.Writer) ClientOption {
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
 		endpoint:     Endpoint,
-		httpClient:   &http.Client{},
+		httpClient:   http.DefaultClient,
 		backoffFunc:  ExponentialBackoff(2, 500*time.Millisecond),
 		pollInterval: 500 * time.Millisecond,
 	}
