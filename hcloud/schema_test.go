@@ -1277,6 +1277,7 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 				"listen_port": 443,
 				"destination_port": 80,
 				"proxyprotocol": false,
+				"sticky_sessions": false,
 				"http": {
 					"cookie_name": "HCLBSTICKY",
 					"cookie_lifetime": 300,
@@ -1398,7 +1399,8 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 			"certificates": [
 				897
 			],
-			"redirect_http": true
+			"redirect_http": true,
+			"sticky_sessions": true
 		},
 		"health_check": {
 			"protocol": "http",
@@ -1442,7 +1444,11 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 		t.Errorf("unexpected Certificates[0].ID : %v", loadBalancerService.HTTP.Certificates[0].ID)
 	}
 	if !loadBalancerService.HTTP.RedirectHTTP {
-		t.Errorf("unexpected RedirectHTTP: %v", loadBalancerService.HTTP.RedirectHTTP)
+		t.Errorf("unexpected HTTP.RedirectHTTP: %v", loadBalancerService.HTTP.RedirectHTTP)
+	}
+
+	if !loadBalancerService.HTTP.StickySessions {
+		t.Errorf("unexpected HTTP.StickySessions: %v", loadBalancerService.HTTP.StickySessions)
 	}
 	if loadBalancerService.HealthCheck.Protocol != "http" {
 		t.Errorf("unexpected HealthCheck.Protocol: %v", loadBalancerService.HealthCheck.Protocol)

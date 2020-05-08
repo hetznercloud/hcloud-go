@@ -627,7 +627,13 @@ func TestLoadBalancerAddService(t *testing.T) {
 					t.Errorf("unexpectedTTP.CookieName: %v", reqBody.HTTP.CookieName)
 				}
 				if reqBody.HTTP.CookieLifetime != 300 {
-					t.Errorf("unexpected HealthCheck.CookieLifetime: %v", reqBody.HTTP.CookieLifetime)
+					t.Errorf("unexpected HTTP.CookieLifetime: %v", reqBody.HTTP.CookieLifetime)
+				}
+				if reqBody.HTTP.RedirectHTTP {
+					t.Errorf("unexpected HTTP.RedirectHTTP: %v", reqBody.HTTP.RedirectHTTP)
+				}
+				if !reqBody.HTTP.StickySessions {
+					t.Errorf("unexpected HTTP.StickySessions: %v", reqBody.HTTP.StickySessions)
 				}
 			}
 			if reqBody.HealthCheck.Protocol != "http" {
@@ -669,6 +675,8 @@ func TestLoadBalancerAddService(t *testing.T) {
 			HTTP: &LoadBalancerServiceHTTP{
 				CookieName:     "HCLBSTICKY",
 				CookieLifetime: 5 * time.Minute,
+				RedirectHTTP:   false,
+				StickySessions: true,
 			},
 			HealthCheck: &LoadBalancerServiceHealthCheck{
 				Protocol: "http",

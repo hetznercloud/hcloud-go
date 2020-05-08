@@ -69,6 +69,7 @@ type LoadBalancerServiceHTTP struct {
 	CookieLifetime time.Duration
 	Certificates   []*Certificate
 	RedirectHTTP   bool
+	StickySessions bool
 }
 
 // LoadBalancerServiceHealthCheck represents Health Check specific options for a service of a Load Balancer
@@ -413,6 +414,7 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 				CookieName:     service.HTTP.CookieName,
 				CookieLifetime: int(service.HTTP.CookieLifetime.Seconds()),
 				RedirectHTTP:   service.HTTP.RedirectHTTP,
+				StickySessions: service.HTTP.StickySessions,
 			}
 			for _, certificate := range service.HTTP.Certificates {
 				schemaService.HTTP.Certificates = append(schemaService.HTTP.Certificates, certificate.ID)
@@ -558,6 +560,7 @@ func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadB
 			CookieName:     opts.HTTP.CookieName,
 			CookieLifetime: int(opts.HTTP.CookieLifetime.Seconds()),
 			RedirectHTTP:   opts.HTTP.RedirectHTTP,
+			StickySessions: opts.HTTP.StickySessions,
 		}
 		for _, certificate := range opts.HTTP.Certificates {
 			reqBody.HTTP.Certificates = append(reqBody.HTTP.Certificates, certificate.ID)

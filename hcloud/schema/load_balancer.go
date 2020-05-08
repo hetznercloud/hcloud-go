@@ -70,6 +70,7 @@ type LoadBalancerServiceHTTP struct {
 	CookieLifetime int    `json:"cookie_lifetime,omitempty"`
 	Certificates   []int  `json:"certificates,omitempty"`
 	RedirectHTTP   bool   `json:"redirect_http,omitempty"`
+	StickySessions bool   `json:"sticky_sessions,omitempty"`
 }
 
 // LoadBalancerServiceHealthCheck represents a service health check configuration.
