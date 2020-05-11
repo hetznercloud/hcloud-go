@@ -5,6 +5,7 @@
 * Add `Status` field to `Volume`
 * Add subnet type `cloud`
 * Add `WithHTTPClient` option to specify a custom `http.Client`
+* Add API for requesting a VNC console
 
 ## v1.17.0
 
