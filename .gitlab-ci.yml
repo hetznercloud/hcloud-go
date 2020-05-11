@@ -7,6 +7,8 @@ test:
   except:
     - tags
   script:
+    - go get -u golang.org/x/lint/golint
+    - go get -v -t -d ./...
     - ./script/checkall.bash
   tags:
     - hc-bladerunner
