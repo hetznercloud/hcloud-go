@@ -1528,6 +1528,36 @@ func TestServerClientChangeProtection(t *testing.T) {
 	})
 }
 
+func TestServerClientRequestConsole(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1/actions/request_console", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionRequestConsoleResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+			WSSURL:   "wss://console.hetzner.cloud/?server_id=1&token=3db32d15-af2f-459c-8bf8-dee1fd05f49c",
+			Password: "9MQaTg2VAGI0FIpc10k3UpRXcHj2wQ6x",
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.RequestConsole(ctx, &Server{ID: 1})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", result.Action.ID)
+	}
+	if result.WSSURL != "wss://console.hetzner.cloud/?server_id=1&token=3db32d15-af2f-459c-8bf8-dee1fd05f49c" {
+		t.Errorf("unexpected WebSocket URL: %v", result.WSSURL)
+	}
+	if result.Password != "9MQaTg2VAGI0FIpc10k3UpRXcHj2wQ6x" {
+		t.Errorf("unexpected password: %v", result.Password)
+	}
+}
+
 func TestServerClientAttachToNetwork(t *testing.T) {
 	var (
 		ctx    = context.Background()
