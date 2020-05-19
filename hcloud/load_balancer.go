@@ -102,8 +102,6 @@ type LoadBalancerTargetType string
 const (
 	// LoadBalancerTargetTypeServer is the type when a cloud server should be linked directly.
 	LoadBalancerTargetTypeServer LoadBalancerTargetType = "server"
-	// LoadBalancerTargetTypeLabelSelector is the type when multiple cloud server should be linked through a label selector.
-	LoadBalancerTargetTypeLabelSelector LoadBalancerTargetType = "label_selector"
 )
 
 // LoadBalancerServiceProtocol specifies a load balancer service protocol.
@@ -130,22 +128,16 @@ const (
 
 // LoadBalancerTarget represents target of a Load Balancer
 type LoadBalancerTarget struct {
-	Type          LoadBalancerTargetType
-	Server        *LoadBalancerTargetServer
-	LabelSelector *LoadBalancerTargetLabelSelector
-	HealthStatus  []LoadBalancerTargetHealthStatus
-	Targets       []LoadBalancerTarget
-	UsePrivateIP  bool
+	Type         LoadBalancerTargetType
+	Server       *LoadBalancerTargetServer
+	HealthStatus []LoadBalancerTargetHealthStatus
+	Targets      []LoadBalancerTarget
+	UsePrivateIP bool
 }
 
 // LoadBalancerTargetServer represents server target of a Load Balancer
 type LoadBalancerTargetServer struct {
 	Server *Server
-}
-
-// LoadBalancerTargetLabelSelector represents label selector target of a Load Balancer
-type LoadBalancerTargetLabelSelector struct {
-	Selector string
 }
 
 // LoadBalancerTargetHealthStatusStatus specifies the health status status of a target of a Load Balancer.
@@ -412,9 +404,6 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 		case LoadBalancerTargetTypeServer:
 			schemaTarget.Type = string(LoadBalancerTargetTypeServer)
 			schemaTarget.Server = &schema.LoadBalancerTargetServer{ID: target.Server.Server.ID}
-		case LoadBalancerTargetTypeLabelSelector:
-			schemaTarget.Type = string(LoadBalancerTargetTypeLabelSelector)
-			schemaTarget.LabelSelector = &schema.LoadBalancerTargetLabelSelector{Selector: target.LabelSelector.Selector}
 		}
 		reqBody.Targets = append(reqBody.Targets, schemaTarget)
 	}
@@ -526,28 +515,6 @@ func (c *LoadBalancerClient) RemoveServerTarget(ctx context.Context, loadBalance
 		Type: string(LoadBalancerTargetTypeServer),
 		Server: &schema.LoadBalancerTargetServer{
 			ID: server.ID,
-		},
-	}
-	return c.removeTarget(ctx, loadBalancer, reqBody)
-}
-
-// AddLabelSelectorTarget adds a label selector target to a Load Balancer.
-func (c *LoadBalancerClient) AddLabelSelectorTarget(ctx context.Context, loadBalancer *LoadBalancer, labelSelector string) (*Action, *Response, error) {
-	reqBody := schema.LoadBalancerActionTargetRequest{
-		Type: string(LoadBalancerTargetTypeLabelSelector),
-		LabelSelector: &schema.LoadBalancerTargetLabelSelector{
-			Selector: labelSelector,
-		},
-	}
-	return c.addTarget(ctx, loadBalancer, reqBody)
-}
-
-// RemoveLabelSelectorTarget removes a label selector target from a Load Balancer.
-func (c *LoadBalancerClient) RemoveLabelSelectorTarget(ctx context.Context, loadBalancer *LoadBalancer, labelSelector string) (*Action, *Response, error) {
-	reqBody := schema.LoadBalancerActionTargetRequest{
-		Type: string(LoadBalancerTargetTypeLabelSelector),
-		LabelSelector: &schema.LoadBalancerTargetLabelSelector{
-			Selector: labelSelector,
 		},
 	}
 	return c.removeTarget(ctx, loadBalancer, reqBody)

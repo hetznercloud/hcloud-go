@@ -94,12 +94,10 @@ type LoadBalancerServiceHealthCheckHTTP struct {
 
 // LoadBalancerTarget represents a target of a Load Balancer.
 type LoadBalancerTarget struct {
-	Type          string                           `json:"type"`
-	Server        *LoadBalancerTargetServer        `json:"server,omitempty"`
-	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector,omitempty"`
-	HealthStatus  []LoadBalancerTargetHealthStatus `json:"health_status,omitempty"`
-	Targets       []LoadBalancerTarget             `json:"targets,omitempty"`
-	UsePrivateIP  bool                             `json:"use_private_ip,omitempty"`
+	Type         string                           `json:"type"`
+	Server       *LoadBalancerTargetServer        `json:"server,omitempty"`
+	HealthStatus []LoadBalancerTargetHealthStatus `json:"health_status,omitempty"`
+	UsePrivateIP bool                             `json:"use_private_ip,omitempty"`
 }
 
 // LoadBalancerTargetHealthStatus represents a health status of target of a Load Balancer.
@@ -111,11 +109,6 @@ type LoadBalancerTargetHealthStatus struct {
 // LoadBalancerTargetServer represents a server target of a Load Balancer.
 type LoadBalancerTargetServer struct {
 	ID int `json:"id"`
-}
-
-// LoadBalancerTargetLabelSelector represents a label selector target of a Load Balancer.
-type LoadBalancerTargetLabelSelector struct {
-	Selector string `json:"selector"`
 }
 
 // LoadBalancerListResponse defines the schema of the response when
@@ -133,9 +126,8 @@ type LoadBalancerGetResponse struct {
 // LoadBalancerActionTargetRequest defines the schema of the request to
 // add or remove a target from a Load Balancer.
 type LoadBalancerActionTargetRequest struct {
-	Type          string                           `json:"type"`
-	Server        *LoadBalancerTargetServer        `json:"server,omitempty"`
-	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector,omitempty"`
+	Type   string                    `json:"type"`
+	Server *LoadBalancerTargetServer `json:"server,omitempty"`
 }
 
 // LoadBalancerActionTargetResponse defines the schema of the response when

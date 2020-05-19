@@ -488,41 +488,6 @@ func TestLoadBalancerClientAddServerTarget(t *testing.T) {
 		t.Errorf("unexpected action ID: %d", action.ID)
 	}
 }
-func TestLoadBalancerClientAddLabelSelectorTarget(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/load_balancers/1/actions/add_target", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
-			t.Error("expected POST")
-		}
-		var reqBody schema.LoadBalancerActionTargetRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			t.Fatal(err)
-		}
-		if reqBody.Type != string(LoadBalancerTargetTypeLabelSelector) {
-			t.Errorf("unexpected type %v", reqBody.Type)
-		}
-		if reqBody.LabelSelector.Selector != "key=value" {
-			t.Errorf("unexpected LabelSelector %v", reqBody.LabelSelector)
-		}
-		json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
-			Action: schema.Action{
-				ID: 1,
-			},
-		})
-	})
-
-	ctx := context.Background()
-	action, _, err := env.Client.LoadBalancer.AddLabelSelectorTarget(ctx, &LoadBalancer{ID: 1}, "key=value")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if action.ID != 1 {
-		t.Errorf("unexpected action ID: %d", action.ID)
-	}
-
-}
 
 func TestLoadBalancerClientRemoveServerTarget(t *testing.T) {
 	env := newTestEnv()
@@ -557,41 +522,6 @@ func TestLoadBalancerClientRemoveServerTarget(t *testing.T) {
 	if action.ID != 1 {
 		t.Errorf("unexpected action ID: %d", action.ID)
 	}
-}
-func TestLoadBalancerClientRemoveLabelSelectorTarget(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/load_balancers/1/actions/remove_target", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
-			t.Error("expected POST")
-		}
-		var reqBody schema.LoadBalancerActionTargetRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			t.Fatal(err)
-		}
-		if reqBody.Type != string(LoadBalancerTargetTypeLabelSelector) {
-			t.Errorf("unexpected type %v", reqBody.Type)
-		}
-		if reqBody.LabelSelector.Selector != "key=value" {
-			t.Errorf("unexpected LabelSelector %v", reqBody.LabelSelector)
-		}
-		json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
-			Action: schema.Action{
-				ID: 1,
-			},
-		})
-	})
-
-	ctx := context.Background()
-	action, _, err := env.Client.LoadBalancer.RemoveLabelSelectorTarget(ctx, &LoadBalancer{ID: 1}, "key=value")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if action.ID != 1 {
-		t.Errorf("unexpected action ID: %d", action.ID)
-	}
-
 }
 
 func TestLoadBalancerAddService(t *testing.T) {
