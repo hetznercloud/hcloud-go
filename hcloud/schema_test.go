@@ -1335,14 +1335,14 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 	if loadBalancer.PublicNet.IPv6.IP.String() != "2001:db8::1" {
 		t.Errorf("unexpected IPv6: %v", loadBalancer.PublicNet.IPv6)
 	}
-	if len(loadBalancer.PrivatNet) != 1 {
-		t.Errorf("unexpected length of PrivatNet: %v", len(loadBalancer.PrivatNet))
+	if len(loadBalancer.PrivateNet) != 1 {
+		t.Errorf("unexpected length of PrivateNet: %v", len(loadBalancer.PrivateNet))
 	} else {
-		if loadBalancer.PrivatNet[0].Network.ID != 4711 {
-			t.Errorf("unexpected Network ID: %v", loadBalancer.PrivatNet[0].Network.ID)
+		if loadBalancer.PrivateNet[0].Network.ID != 4711 {
+			t.Errorf("unexpected Network ID: %v", loadBalancer.PrivateNet[0].Network.ID)
 		}
-		if loadBalancer.PrivatNet[0].IP.String() != "10.0.255.1" {
-			t.Errorf("unexpected Network IP: %v", loadBalancer.PrivatNet[0].IP)
+		if loadBalancer.PrivateNet[0].IP.String() != "10.0.255.1" {
+			t.Errorf("unexpected Network IP: %v", loadBalancer.PrivateNet[0].IP)
 		}
 	}
 	if loadBalancer.Location == nil || loadBalancer.Location.ID != 1 {

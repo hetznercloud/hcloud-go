@@ -19,7 +19,7 @@ type LoadBalancer struct {
 	ID               int
 	Name             string
 	PublicNet        LoadBalancerPublicNet
-	PrivatNet        []LoadBalancerPrivateNet
+	PrivateNet       []LoadBalancerPrivateNet
 	Location         *Location
 	LoadBalancerType *LoadBalancerType
 	Algorithm        LoadBalancerAlgorithm

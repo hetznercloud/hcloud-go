@@ -434,7 +434,7 @@ func LoadBalancerFromSchema(s schema.LoadBalancer) *LoadBalancer {
 		Created: s.Created,
 	}
 	for _, privateNet := range s.PrivateNet {
-		l.PrivatNet = append(l.PrivatNet, LoadBalancerPrivateNet{
+		l.PrivateNet = append(l.PrivateNet, LoadBalancerPrivateNet{
 			Network: &Network{ID: privateNet.Network},
 			IP:      net.ParseIP(privateNet.IP),
 		})
