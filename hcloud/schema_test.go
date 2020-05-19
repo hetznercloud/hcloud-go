@@ -1310,7 +1310,8 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 						"listen_port": 443,
 						"status": "healthy"
 					}
-				]
+				],
+				"use_private_ip": false
 			},
 			{
 				"type": "label_selector",
@@ -1328,7 +1329,8 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 								"listen_port": 443,
 								"status": "healthy"
 							}
-						]
+						],
+						"use_private_ip": false
 					}
 				]
 			}
@@ -1502,7 +1504,8 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 				"listen_port": 443,
 				"status": "healthy"
 			}
-		]
+		],
+		"use_private_ip": false
 	}`)
 		var s schema.LoadBalancerTarget
 		if err := json.Unmarshal(data, &s); err != nil {
@@ -1517,6 +1520,9 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 		}
 		if loadBalancerTarget.LabelSelector != nil {
 			t.Errorf("unexpected LabelSelector.Selector: %v", loadBalancerTarget.LabelSelector)
+		}
+		if loadBalancerTarget.UsePrivateIP {
+			t.Errorf("unexpected UsePrivateIP: %v", loadBalancerTarget.UsePrivateIP)
 		}
 		if len(loadBalancerTarget.HealthStatus) != 1 {
 			t.Errorf("unexpected Health Status length: %v", len(loadBalancerTarget.HealthStatus))

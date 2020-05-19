@@ -500,7 +500,8 @@ func LoadBalancerServiceHealthCheckFromSchema(s *schema.LoadBalancerServiceHealt
 // LoadBalancerTargetFromSchema converts a schema.LoadBalancerTarget to a LoadBalancerTarget.
 func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarget {
 	lt := LoadBalancerTarget{
-		Type: LoadBalancerTargetType(s.Type),
+		Type:         LoadBalancerTargetType(s.Type),
+		UsePrivateIP: s.UsePrivateIP,
 	}
 
 	if s.Server != nil {

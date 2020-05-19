@@ -135,6 +135,7 @@ type LoadBalancerTarget struct {
 	LabelSelector *LoadBalancerTargetLabelSelector
 	HealthStatus  []LoadBalancerTargetHealthStatus
 	Targets       []LoadBalancerTarget
+	UsePrivateIP  bool
 }
 
 // LoadBalancerTargetServer represents server target of a Load Balancer
@@ -331,6 +332,8 @@ type LoadBalancerCreateOpts struct {
 	Labels           map[string]string
 	Targets          []LoadBalancerTarget
 	Services         []LoadBalancerService
+	PublicInterface  *bool
+	Network          *Network
 }
 
 // Validate checks if options are valid.
@@ -340,6 +343,11 @@ func (o LoadBalancerCreateOpts) Validate() error {
 	}
 	if o.LoadBalancerType == nil || (o.LoadBalancerType.ID == 0 && o.LoadBalancerType.Name == "") {
 		return errors.New("missing load balancer type")
+	}
+	if o.Network != nil && o.Network.ID == 0 {
+		{
+			return errors.New("missing network id")
+		}
 	}
 	if o.Location == nil && o.NetworkZone == "" {
 		return errors.New("one of location and network_zone must be set")
@@ -389,6 +397,15 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
+
+	if opts.Network != nil {
+		reqBody.Network = &opts.Network.ID
+	}
+
+	if opts.PublicInterface != nil {
+		reqBody.PublicInterface = opts.PublicInterface
+	}
+
 	for _, target := range opts.Targets {
 		schemaTarget := schema.LoadBalancerTarget{}
 		switch target.Type {

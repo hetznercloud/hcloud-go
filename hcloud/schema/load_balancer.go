@@ -99,6 +99,7 @@ type LoadBalancerTarget struct {
 	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector,omitempty"`
 	HealthStatus  []LoadBalancerTargetHealthStatus `json:"health_status,omitempty"`
 	Targets       []LoadBalancerTarget             `json:"targets,omitempty"`
+	UsePrivateIP  bool                             `json:"use_private_ip,omitempty"`
 }
 
 // LoadBalancerTargetHealthStatus represents a health status of target of a Load Balancer.
@@ -182,6 +183,8 @@ type LoadBalancerCreateRequest struct {
 	Labels           *map[string]string     `json:"labels,omitempty"`
 	Targets          []LoadBalancerTarget   `json:"targets,omitempty"`
 	Services         []LoadBalancerService  `json:"services,omitempty"`
+	PublicInterface  *bool                  `json:"public_interface,omitempty"`
+	Network          *int                   `json:"network,omitempty"`
 }
 
 // LoadBalancerCreateResponse defines the schema of the response to
