@@ -214,43 +214,6 @@ func TestCertificateCreate(t *testing.T) {
 		}
 	})
 
-	t.Run("required fields with chain", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/certificates", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody schema.CertificateCreateRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Name != "my-cert" {
-				t.Errorf("unexpected Name: %v", reqBody.Name)
-			}
-			if reqBody.Certificate != "-----BEGIN CERTIFICATE-----\n..." {
-				t.Errorf("unexpected Certificate: %v", reqBody.Certificate)
-			}
-			if reqBody.Chain != "-----BEGIN CHAIN-----\n..." {
-				t.Errorf("unexpected Chain: %v", reqBody.Chain)
-			}
-			if reqBody.PrivateKey != "-----BEGIN PRIVATE KEY-----\n..." {
-				t.Errorf("unexpected PrivateKey: %v", reqBody.PrivateKey)
-			}
-			json.NewEncoder(w).Encode(schema.CertificateCreateResponse{
-				Certificate: schema.Certificate{ID: 1},
-			})
-		})
-		opts := CertificateCreateOpts{
-			Name:        "my-cert",
-			Certificate: "-----BEGIN CERTIFICATE-----\n...",
-			Chain:       "-----BEGIN CHAIN-----\n...",
-			PrivateKey:  "-----BEGIN PRIVATE KEY-----\n...",
-		}
-		_, _, err := env.Client.Certificate.Create(ctx, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-	})
-
 	t.Run("required fields with labels", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

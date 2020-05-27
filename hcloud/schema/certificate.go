@@ -8,7 +8,6 @@ type Certificate struct {
 	Name           string            `json:"name"`
 	Labels         map[string]string `json:"labels"`
 	Certificate    string            `json:"certificate"`
-	Chain          string            `json:"chain"`
 	Created        time.Time         `json:"created"`
 	NotValidBefore time.Time         `json:"not_valid_before"`
 	NotValidAfter  time.Time         `json:"not_valid_after"`
@@ -32,7 +31,6 @@ type CertificateGetResponse struct {
 type CertificateCreateRequest struct {
 	Name        string            `json:"name"`
 	Certificate string            `json:"certificate"`
-	Chain       string            `json:"chain,omitempty"`
 	PrivateKey  string            `json:"private_key"`
 	Labels      map[string]string `json:"labels,omitempty"`
 }

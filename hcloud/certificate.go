@@ -19,7 +19,6 @@ type Certificate struct {
 	Name           string
 	Labels         map[string]string
 	Certificate    string
-	Chain          string
 	Created        time.Time
 	NotValidBefore time.Time
 	NotValidAfter  time.Time
@@ -149,7 +148,6 @@ func (c *CertificateClient) AllWithOpts(ctx context.Context, opts CertificateLis
 type CertificateCreateOpts struct {
 	Name        string
 	Certificate string
-	Chain       string
 	PrivateKey  string
 	Labels      map[string]string
 }
@@ -176,7 +174,6 @@ func (c *CertificateClient) Create(ctx context.Context, opts CertificateCreateOp
 	reqBody := schema.CertificateCreateRequest{
 		Name:        opts.Name,
 		Certificate: opts.Certificate,
-		Chain:       opts.Chain,
 		PrivateKey:  opts.PrivateKey,
 		Labels:      opts.Labels,
 	}

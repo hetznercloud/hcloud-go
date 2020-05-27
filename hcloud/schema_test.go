@@ -1519,7 +1519,6 @@ func TestCertificateFromSchema(t *testing.T) {
 		"name": "my website cert",
 		"labels": {},
 		"certificate": "-----BEGIN CERTIFICATE-----\n...",
-		"chain": "-----BEGIN CERTIFICATE-----\n...",
 		"created": "2016-01-30T23:50:00+00:00",
 		"not_valid_before": "2016-01-30T23:51:00+00:00",
 		"not_valid_after": "2016-01-30T23:55:00+00:00",
@@ -1545,9 +1544,6 @@ func TestCertificateFromSchema(t *testing.T) {
 	}
 	if certificate.Certificate != "-----BEGIN CERTIFICATE-----\n..." {
 		t.Errorf("unexpected Certificate: %v", certificate.Certificate)
-	}
-	if certificate.Chain != "-----BEGIN CERTIFICATE-----\n..." {
-		t.Errorf("unexpected Chain: %v", certificate.Chain)
 	}
 	if !certificate.Created.Equal(time.Date(2016, 01, 30, 23, 50, 00, 0, time.UTC)) {
 		t.Errorf("unexpected created date: %v", certificate.Created)
