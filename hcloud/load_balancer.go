@@ -677,47 +677,6 @@ type LoadBalancerUpdateHealthCheckOpts struct {
 	HealthCheck LoadBalancerServiceHealthCheck
 }
 
-// UpdateHealthCheck updates the health check from a service.
-func (c *LoadBalancerClient) UpdateHealthCheck(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerUpdateHealthCheckOpts) (*Action, *Response, error) {
-	reqBody := schema.LoadBalancerActionUpdateHealthCheckRequest{
-		ListenPort: opts.ListenPort,
-		HealthCheck: schema.LoadBalancerServiceHealthCheck{
-			Protocol: string(opts.HealthCheck.Protocol),
-			Port:     opts.HealthCheck.Port,
-			Interval: int(opts.HealthCheck.Interval.Seconds()),
-			Timeout:  int(opts.HealthCheck.Timeout.Seconds()),
-			Retries:  opts.HealthCheck.Retries,
-		},
-	}
-
-	if opts.HealthCheck.HTTP != nil {
-		reqBody.HealthCheck.HTTP = &schema.LoadBalancerServiceHealthCheckHTTP{
-			Domain:      opts.HealthCheck.HTTP.Domain,
-			Path:        opts.HealthCheck.HTTP.Path,
-			Response:    opts.HealthCheck.HTTP.Response,
-			StatusCodes: opts.HealthCheck.HTTP.StatusCodes,
-			TLS:         opts.HealthCheck.HTTP.TLS,
-		}
-	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	path := fmt.Sprintf("/load_balancers/%d/actions/update_health_check", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	respBody := schema.LoadBalancerActionChangeAlgorithmResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return nil, resp, err
-	}
-	return ActionFromSchema(respBody.Action), resp, err
-}
-
 // LoadBalancerAttachToNetworkOpts specifies options for attaching a Load Balancer to a network.
 type LoadBalancerAttachToNetworkOpts struct {
 	Network *Network

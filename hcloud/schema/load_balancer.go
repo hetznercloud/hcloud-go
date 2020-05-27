@@ -221,19 +221,6 @@ type LoadBalancerActionChangeAlgorithmResponse struct {
 	Action Action `json:"action"`
 }
 
-// LoadBalancerActionUpdateHealthCheckRequest defines the schema of the request to
-// updates the health check of a load balancer service.
-type LoadBalancerActionUpdateHealthCheckRequest struct {
-	ListenPort  int                            `json:"listen_port"`
-	HealthCheck LoadBalancerServiceHealthCheck `json:"health_check"`
-}
-
-// LoadBalancerActionUpdateHealthCheckResponse defines the schema of the response when
-// updating the health check of a load balancer service.
-type LoadBalancerActionUpdateHealthCheckResponse struct {
-	Action Action `json:"action"`
-}
-
 // LoadBalancerActionAttachToNetworkRequest defines the schema for the request to
 // attach a network to a Load Balancer.
 type LoadBalancerActionAttachToNetworkRequest struct {

@@ -591,7 +591,7 @@ func TestLoadBalancerAddService(t *testing.T) {
 					t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
 				}
 			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateHealthCheckResponse{
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionAddServiceResponse{
 				Action: schema.Action{
 					ID: 1,
 				},
@@ -663,7 +663,7 @@ func TestLoadBalancerAddService(t *testing.T) {
 			if reqBody.HealthCheck != nil {
 				t.Errorf("unexpected HealthCheck: %v", reqBody.HTTP)
 			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateHealthCheckResponse{
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionAddServiceResponse{
 				Action: schema.Action{
 					ID: 1,
 				},
@@ -738,7 +738,7 @@ func TestLoadBalancerAddService(t *testing.T) {
 					t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
 				}
 			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateHealthCheckResponse{
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionAddServiceResponse{
 				Action: schema.Action{
 					ID: 1,
 				},
@@ -847,82 +847,6 @@ func TestLoadBalancerClientChangeAlgorithm(t *testing.T) {
 		t.Errorf("unexpected action ID: %v", action.ID)
 	}
 
-}
-
-func TestLoadBalancerUpdateHealthCheck(t *testing.T) {
-	var (
-		ctx          = context.Background()
-		loadBalancer = &LoadBalancer{ID: 1}
-	)
-
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/load_balancers/1/actions/update_health_check", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
-			t.Error("expected POST")
-		}
-		var reqBody schema.LoadBalancerActionUpdateHealthCheckRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			t.Fatal(err)
-		}
-		if reqBody.ListenPort != 4711 {
-			t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
-		}
-		if reqBody.HealthCheck.Protocol != "http" {
-			t.Errorf("unexpected HealthCheck.Protocol: %v", reqBody.HealthCheck.Protocol)
-		}
-		if reqBody.HealthCheck.Port != 4711 {
-			t.Errorf("unexpected HealthCheck.Port: %v", reqBody.HealthCheck.Port)
-		}
-		if reqBody.HealthCheck.Interval != 15 {
-			t.Errorf("unexpected HealthCheck.Interval: %v", reqBody.HealthCheck.Interval)
-		}
-		if reqBody.HealthCheck.Timeout != 10 {
-			t.Errorf("unexpected HealthCheck.Timeout: %v", reqBody.HealthCheck.Timeout)
-		}
-		if reqBody.HealthCheck.Retries != 3 {
-			t.Errorf("unexpected HealthCheck.Retries: %v", reqBody.HealthCheck.Retries)
-		}
-		if reqBody.HealthCheck.HTTP == nil {
-			t.Errorf("unexpected HealthCheck.HTTP: %v", reqBody.HealthCheck.HTTP)
-		} else {
-			if reqBody.HealthCheck.HTTP.Domain != "example.com" {
-				t.Errorf("unexpected HealthCheck.HTTP.Domain: %v", reqBody.HealthCheck.HTTP.Domain)
-			}
-			if reqBody.HealthCheck.HTTP.Path != "/" {
-				t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
-			}
-		}
-		json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateHealthCheckResponse{
-			Action: schema.Action{
-				ID: 1,
-			},
-		})
-	})
-
-	opts := LoadBalancerUpdateHealthCheckOpts{
-		ListenPort: 4711,
-		HealthCheck: LoadBalancerServiceHealthCheck{
-			Protocol: "http",
-			Port:     4711,
-			Interval: 15 * time.Second,
-			Timeout:  10 * time.Second,
-			Retries:  3,
-			HTTP: &LoadBalancerServiceHealthCheckHTTP{
-				Domain: "example.com",
-				Path:   "/",
-			},
-		},
-	}
-	action, _, err := env.Client.LoadBalancer.UpdateHealthCheck(ctx, loadBalancer, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if action.ID != 1 {
-		t.Errorf("unexpected action ID: %v", action.ID)
-	}
 }
 
 func TestLoadBalancerClientAttachToNetwork(t *testing.T) {
