@@ -75,11 +75,11 @@ type LoadBalancerServiceHTTP struct {
 
 // LoadBalancerServiceHealthCheck represents a service health check configuration.
 type LoadBalancerServiceHealthCheck struct {
-	Protocol string                              `json:"protocol"`
-	Port     int                                 `json:"port"`
-	Interval int                                 `json:"interval"`
-	Timeout  int                                 `json:"timeout"`
-	Retries  int                                 `json:"retries"`
+	Protocol string                              `json:"protocol,omitempty"`
+	Port     int                                 `json:"port,omitempty"`
+	Interval int                                 `json:"interval,omitempty"`
+	Timeout  int                                 `json:"timeout,omitempty"`
+	Retries  int                                 `json:"retries,omitempty"`
 	HTTP     *LoadBalancerServiceHealthCheckHTTP `json:"http,omitempty"`
 }
 
@@ -123,9 +123,17 @@ type LoadBalancerGetResponse struct {
 	LoadBalancer LoadBalancer `json:"load_balancer"`
 }
 
-// LoadBalancerActionTargetRequest defines the schema of the request to
-// add or remove a target from a Load Balancer.
-type LoadBalancerActionTargetRequest struct {
+// LoadBalancerActionAddTargetRequest defines the schema of the request to
+// add a target to a Load Balancer.
+type LoadBalancerActionAddTargetRequest struct {
+	Type         string                    `json:"type"`
+	Server       *LoadBalancerTargetServer `json:"server,omitempty"`
+	UsePrivateIP bool                      `json:"use_private_ip"`
+}
+
+// LoadBalancerActionRemoveTargetRequest defines the schema of the request to
+// remove a target from a Load Balancer.
+type LoadBalancerActionRemoveTargetRequest struct {
 	Type   string                    `json:"type"`
 	Server *LoadBalancerTargetServer `json:"server,omitempty"`
 }
@@ -150,6 +158,32 @@ type LoadBalancerActionAddServiceRequest struct {
 // LoadBalancerActionAddServiceResponse defines the schema of the response when
 // creating a add service action.
 type LoadBalancerActionAddServiceResponse struct {
+	Action Action `json:"action"`
+}
+
+// LoadBalancerActionUpdateServiceRequest defines the schema of the request to
+// update a service from a Load Balancer.
+type LoadBalancerActionUpdateServiceRequest struct {
+	Protocol        string                          `json:"protocol,omitempty"`
+	ListenPort      int                             `json:"listen_port"`
+	DestinationPort *int                            `json:"destination_port,omitempty"`
+	ProxyProtocol   *bool                           `json:"proxyprotocol,omitempty"`
+	HTTP            *LoadBalancerUpdateServiceHTTP  `json:"http,omitempty"`
+	HealthCheck     *LoadBalancerServiceHealthCheck `json:"health_check,omitempty"`
+}
+
+// LoadBalancerUpdateServiceHTTP represents the http configuration for a LoadBalancerActionUpdateServiceRequest.
+type LoadBalancerUpdateServiceHTTP struct {
+	CookieName     string `json:"cookie_name,omitempty"`
+	CookieLifetime int    `json:"cookie_lifetime,omitempty"`
+	Certificates   []int  `json:"certificates,omitempty"`
+	RedirectHTTP   *bool  `json:"redirect_http,omitempty"`
+	StickySessions *bool  `json:"sticky_sessions,omitempty"`
+}
+
+// LoadBalancerActionUpdateServiceResponse defines the schema of the response when
+// creating a update service action.
+type LoadBalancerActionUpdateServiceResponse struct {
 	Action Action `json:"action"`
 }
 

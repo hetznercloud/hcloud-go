@@ -458,7 +458,7 @@ func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalan
 	return c.client.Do(req, nil)
 }
 
-func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionTargetRequest) (*Action, *Response, error) {
+func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionAddTargetRequest) (*Action, *Response, error) {
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, nil, err
@@ -478,7 +478,7 @@ func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBa
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-func (c *LoadBalancerClient) removeTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionTargetRequest) (*Action, *Response, error) {
+func (c *LoadBalancerClient) removeTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionRemoveTargetRequest) (*Action, *Response, error) {
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, nil, err
@@ -499,19 +499,20 @@ func (c *LoadBalancerClient) removeTarget(ctx context.Context, loadBalancer *Loa
 }
 
 // AddServerTarget adds a server target to a Load Balancer.
-func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server *Server) (*Action, *Response, error) {
-	reqBody := schema.LoadBalancerActionTargetRequest{
+func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server *Server, usePrivateIP bool) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionAddTargetRequest{
 		Type: string(LoadBalancerTargetTypeServer),
 		Server: &schema.LoadBalancerTargetServer{
 			ID: server.ID,
 		},
+		UsePrivateIP: usePrivateIP,
 	}
 	return c.addTarget(ctx, loadBalancer, reqBody)
 }
 
 // RemoveServerTarget removes a server target from a Load Balancer.
 func (c *LoadBalancerClient) RemoveServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server *Server) (*Action, *Response, error) {
-	reqBody := schema.LoadBalancerActionTargetRequest{
+	reqBody := schema.LoadBalancerActionRemoveTargetRequest{
 		Type: string(LoadBalancerTargetTypeServer),
 		Server: &schema.LoadBalancerTargetServer{
 			ID: server.ID,
@@ -582,6 +583,85 @@ func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadB
 	}
 
 	var respBody schema.LoadBalancerActionAddServiceResponse
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// LoadBalancerUpdateServiceOpts specifies options for updating service to a Load Balancer.
+type LoadBalancerUpdateServiceOpts struct {
+	Protocol        LoadBalancerServiceProtocol
+	ListenPort      int
+	DestinationPort *int
+	ProxyProtocol   *bool
+	HTTP            *LoadBalancerUpdateServiceHTTPOpts
+	HealthCheck     *LoadBalancerServiceHealthCheck
+}
+
+// LoadBalancerUpdateServiceHTTPOpts represents HTTP specific options for updating a service of a Load Balancer
+type LoadBalancerUpdateServiceHTTPOpts struct {
+	CookieName     string
+	CookieLifetime time.Duration
+	Certificates   []*Certificate
+	RedirectHTTP   *bool
+	StickySessions *bool
+}
+
+// UpdateService adds a service to a Load Balancer.
+func (c *LoadBalancerClient) UpdateService(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerUpdateServiceOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionUpdateServiceRequest{
+		ListenPort:      opts.ListenPort,
+		DestinationPort: opts.DestinationPort,
+		ProxyProtocol:   opts.ProxyProtocol,
+	}
+	if opts.Protocol != "" {
+		reqBody.Protocol = string(opts.Protocol)
+	}
+	if opts.HTTP != nil {
+		reqBody.HTTP = &schema.LoadBalancerUpdateServiceHTTP{
+			CookieName:     opts.HTTP.CookieName,
+			CookieLifetime: int(opts.HTTP.CookieLifetime.Seconds()),
+			RedirectHTTP:   opts.HTTP.RedirectHTTP,
+			StickySessions: opts.HTTP.StickySessions,
+		}
+		for _, certificate := range opts.HTTP.Certificates {
+			reqBody.HTTP.Certificates = append(reqBody.HTTP.Certificates, certificate.ID)
+		}
+	}
+
+	if opts.HealthCheck != nil {
+		reqBody.HealthCheck = &schema.LoadBalancerServiceHealthCheck{
+			Protocol: string(opts.HealthCheck.Protocol),
+			Port:     opts.HealthCheck.Port,
+			Interval: int(opts.HealthCheck.Interval.Seconds()),
+			Timeout:  int(opts.HealthCheck.Timeout.Seconds()),
+			Retries:  opts.HealthCheck.Retries,
+		}
+		if opts.HealthCheck.HTTP != nil {
+			reqBody.HealthCheck.HTTP = &schema.LoadBalancerServiceHealthCheckHTTP{
+				Domain:      opts.HealthCheck.HTTP.Domain,
+				Path:        opts.HealthCheck.HTTP.Path,
+				Response:    opts.HealthCheck.HTTP.Response,
+				StatusCodes: opts.HealthCheck.HTTP.StatusCodes,
+				TLS:         opts.HealthCheck.HTTP.TLS,
+			}
+		}
+	}
+
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/update_service", loadBalancer.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var respBody schema.LoadBalancerActionUpdateServiceResponse
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
@@ -669,12 +749,6 @@ func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, loadBalancer *
 		return nil, resp, err
 	}
 	return ActionFromSchema(respBody.Action), resp, err
-}
-
-// LoadBalancerUpdateHealthCheckOpts specifies options for updating a health check of a service from a Load Balancer.
-type LoadBalancerUpdateHealthCheckOpts struct {
-	ListenPort  int
-	HealthCheck LoadBalancerServiceHealthCheck
 }
 
 // LoadBalancerAttachToNetworkOpts specifies options for attaching a Load Balancer to a network.
