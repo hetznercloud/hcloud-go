@@ -6,6 +6,7 @@
 * Add subnet type `cloud`
 * Add `WithHTTPClient` option to specify a custom `http.Client`
 * Add API for requesting a VNC console
+* Add support for load balancers and certificates (beta)
 
 ## v1.17.0
 
