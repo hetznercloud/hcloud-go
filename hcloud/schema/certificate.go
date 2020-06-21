@@ -29,10 +29,10 @@ type CertificateGetResponse struct {
 
 // CertificateCreateRequest defines the schema of the request to create a certificate.
 type CertificateCreateRequest struct {
-	Name        string            `json:"name"`
-	Certificate string            `json:"certificate"`
-	PrivateKey  string            `json:"private_key"`
-	Labels      map[string]string `json:"labels,omitempty"`
+	Name        string             `json:"name"`
+	Certificate string             `json:"certificate"`
+	PrivateKey  string             `json:"private_key"`
+	Labels      *map[string]string `json:"labels,omitempty"`
 }
 
 // CertificateCreateResponse defines the schema of the response when creating a certificate.
@@ -42,7 +42,7 @@ type CertificateCreateResponse struct {
 
 // CertificateUpdateRequest defines the schema of the request to update a certificate.
 type CertificateUpdateRequest struct {
-	Name   string             `json:"name,omitempty"`
+	Name   *string            `json:"name,omitempty"`
 	Labels *map[string]string `json:"labels,omitempty"`
 }
 

@@ -103,7 +103,7 @@ func (c *CertificateClient) List(ctx context.Context, opts CertificateListOpts) 
 
 // All returns all Certificates.
 func (c *CertificateClient) All(ctx context.Context) ([]*Certificate, error) {
-	allCertificate := []*Certificate{}
+	allCertificates := []*Certificate{}
 
 	opts := CertificateListOpts{}
 	opts.PerPage = 50
@@ -114,14 +114,14 @@ func (c *CertificateClient) All(ctx context.Context) ([]*Certificate, error) {
 		if err != nil {
 			return resp, err
 		}
-		allCertificate = append(allCertificate, Certificate...)
+		allCertificates = append(allCertificates, Certificate...)
 		return resp, nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return allCertificate, nil
+	return allCertificates, nil
 }
 
 // AllWithOpts returns all Certificates for the given options.
@@ -175,7 +175,9 @@ func (c *CertificateClient) Create(ctx context.Context, opts CertificateCreateOp
 		Name:        opts.Name,
 		Certificate: opts.Certificate,
 		PrivateKey:  opts.PrivateKey,
-		Labels:      opts.Labels,
+	}
+	if opts.Labels != nil {
+		reqBody.Labels = &opts.Labels
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -201,9 +203,10 @@ type CertificateUpdateOpts struct {
 }
 
 // Update updates a Certificate.
-func (c *CertificateClient) Update(ctx context.Context, loadBalancer *Certificate, opts CertificateUpdateOpts) (*Certificate, *Response, error) {
-	reqBody := schema.CertificateUpdateRequest{
-		Name: opts.Name,
+func (c *CertificateClient) Update(ctx context.Context, certificate *Certificate, opts CertificateUpdateOpts) (*Certificate, *Response, error) {
+	reqBody := schema.CertificateUpdateRequest{}
+	if opts.Name != "" {
+		reqBody.Name = &opts.Name
 	}
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
@@ -213,7 +216,7 @@ func (c *CertificateClient) Update(ctx context.Context, loadBalancer *Certificat
 		return nil, nil, err
 	}
 
-	path := fmt.Sprintf("/certificates/%d", loadBalancer.ID)
+	path := fmt.Sprintf("/certificates/%d", certificate.ID)
 	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
 	if err != nil {
 		return nil, nil, err
@@ -228,8 +231,8 @@ func (c *CertificateClient) Update(ctx context.Context, loadBalancer *Certificat
 }
 
 // Delete deletes a certificate.
-func (c *CertificateClient) Delete(ctx context.Context, loadBalancer *Certificate) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/certificates/%d", loadBalancer.ID), nil)
+func (c *CertificateClient) Delete(ctx context.Context, certificate *Certificate) (*Response, error) {
+	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/certificates/%d", certificate.ID), nil)
 	if err != nil {
 		return nil, err
 	}
