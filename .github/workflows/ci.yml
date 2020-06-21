@@ -27,6 +27,6 @@ jobs:
         # Temporary fix for:
         # https://github.com/actions/setup-go/issues/14
         export PATH=$PATH:$(go env GOPATH)/bin
-        golint -set_exit_status ./...
+        golint -set_exit_status .
     - name: Run tests
       run: go test -v ./...
