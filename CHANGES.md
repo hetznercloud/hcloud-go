@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.18.0
 
 * Add `Status` field to `Volume`
 * Add subnet type `cloud`
