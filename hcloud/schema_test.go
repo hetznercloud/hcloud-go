@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
@@ -1412,8 +1414,8 @@ func TestLoadBalancerServiceFromSchema(t *testing.T) {
 	if loadBalancerService.DestinationPort != 80 {
 		t.Errorf("unexpected DestinationPort: %v", loadBalancerService.DestinationPort)
 	}
-	if loadBalancerService.ProxyProtocol {
-		t.Errorf("unexpected ProxyProtocol: %v", loadBalancerService.ProxyProtocol)
+	if loadBalancerService.Proxyprotocol {
+		t.Errorf("unexpected ProxyProtocol: %v", loadBalancerService.Proxyprotocol)
 	}
 	if loadBalancerService.HTTP.CookieName != "HCLBSTICKY" {
 		t.Errorf("unexpected HTTP.CookieName: %v", loadBalancerService.HTTP.CookieName)
@@ -1778,5 +1780,343 @@ func TestPricingFromSchema(t *testing.T) {
 				t.Errorf("unexpected Monthly.Gross: %v", p.Pricings[0].Monthly.Gross)
 			}
 		}
+	}
+}
+
+func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
+	testCases := map[string]struct {
+		Opts    LoadBalancerCreateOpts
+		Request schema.LoadBalancerCreateRequest
+	}{
+		"minimal": {
+			Opts: LoadBalancerCreateOpts{
+				Name:             "test",
+				LoadBalancerType: &LoadBalancerType{Name: "lb11"},
+				Algorithm:        &LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmTypeRoundRobin},
+				NetworkZone:      NetworkZoneEUCentral,
+			},
+			Request: schema.LoadBalancerCreateRequest{
+				Name:             "test",
+				LoadBalancerType: "lb11",
+				Algorithm: &schema.LoadBalancerCreateRequestAlgorithm{
+					Type: string(LoadBalancerAlgorithmTypeRoundRobin),
+				},
+				NetworkZone: String(string(NetworkZoneEUCentral)),
+			},
+		},
+		"all set": {
+			Opts: LoadBalancerCreateOpts{
+				Name:             "test",
+				LoadBalancerType: &LoadBalancerType{Name: "lb11"},
+				Algorithm:        &LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmTypeRoundRobin},
+				NetworkZone:      NetworkZoneEUCentral,
+				Labels:           map[string]string{"foo": "bar"},
+				PublicInterface:  Bool(true),
+				Network:          &Network{ID: 3},
+				Services: []LoadBalancerCreateOptsService{
+					{
+						Protocol:        LoadBalancerServiceProtocolHTTP,
+						DestinationPort: Int(80),
+						Proxyprotocol:   Bool(true),
+						HTTP: &LoadBalancerCreateOptsServiceHTTP{
+							CookieName:     String("keks"),
+							CookieLifetime: Duration(5 * time.Minute),
+							RedirectHTTP:   Bool(true),
+							StickySessions: Bool(true),
+							Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+						},
+						HealthCheck: &LoadBalancerCreateOptsServiceHealthCheck{
+							Protocol: LoadBalancerServiceProtocolHTTP,
+							Port:     Int(80),
+							Interval: Duration(5 * time.Second),
+							Timeout:  Duration(1 * time.Second),
+							Retries:  Int(3),
+							HTTP: &LoadBalancerCreateOptsServiceHealthCheckHTTP{
+								Domain:      String("example.com"),
+								Path:        String("/health"),
+								Response:    String("ok"),
+								StatusCodes: []string{"2??", "3??"},
+								TLS:         Bool(true),
+							},
+						},
+					},
+				},
+				Targets: []LoadBalancerCreateOptsTarget{
+					{
+						Type: LoadBalancerTargetTypeServer,
+						Server: LoadBalancerCreateOptsTargetServer{
+							Server: &Server{ID: 5},
+						},
+					},
+				},
+			},
+			Request: schema.LoadBalancerCreateRequest{
+				Name:             "test",
+				LoadBalancerType: "lb11",
+				Algorithm: &schema.LoadBalancerCreateRequestAlgorithm{
+					Type: string(LoadBalancerAlgorithmTypeRoundRobin),
+				},
+				NetworkZone: String(string(NetworkZoneEUCentral)),
+				Labels: func() *map[string]string {
+					labels := map[string]string{"foo": "bar"}
+					return &labels
+				}(),
+				PublicInterface: Bool(true),
+				Network:         Int(3),
+				Services: []schema.LoadBalancerCreateRequestService{
+					{
+						Protocol:        string(LoadBalancerServiceProtocolHTTP),
+						DestinationPort: Int(80),
+						Proxyprotocol:   Bool(true),
+						HTTP: &schema.LoadBalancerCreateRequestServiceHTTP{
+							CookieName:     String("keks"),
+							CookieLifetime: Int(5 * 60),
+							RedirectHTTP:   Bool(true),
+							StickySessions: Bool(true),
+							Certificates:   intSlice([]int{1, 2}),
+						},
+						HealthCheck: &schema.LoadBalancerCreateRequestServiceHealthCheck{
+							Protocol: string(LoadBalancerServiceProtocolHTTP),
+							Port:     Int(80),
+							Interval: Int(5),
+							Timeout:  Int(1),
+							Retries:  Int(3),
+							HTTP: &schema.LoadBalancerCreateRequestServiceHealthCheckHTTP{
+								Domain:      String("example.com"),
+								Path:        String("/health"),
+								Response:    String("ok"),
+								StatusCodes: stringSlice([]string{"2??", "3??"}),
+								TLS:         Bool(true),
+							},
+						},
+					},
+				},
+				Targets: []schema.LoadBalancerCreateRequestTarget{
+					{
+						Type: "server",
+						Server: &schema.LoadBalancerCreateRequestTargetServer{
+							ID: 5,
+						},
+					},
+				},
+			},
+		},
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			req := loadBalancerCreateOptsToSchema(testCase.Opts)
+			if !cmp.Equal(testCase.Request, req) {
+				t.Log(cmp.Diff(testCase.Request, req))
+				t.Fail()
+			}
+		})
+	}
+}
+
+func TestLoadBalancerAddServiceOptsToSchema(t *testing.T) {
+	testCases := map[string]struct {
+		Opts    LoadBalancerAddServiceOpts
+		Request schema.LoadBalancerActionAddServiceRequest
+	}{
+		"minimal": {
+			Opts: LoadBalancerAddServiceOpts{
+				Protocol: LoadBalancerServiceProtocolHTTP,
+			},
+			Request: schema.LoadBalancerActionAddServiceRequest{
+				Protocol: string(LoadBalancerServiceProtocolHTTP),
+			},
+		},
+		"all set": {
+			Opts: LoadBalancerAddServiceOpts{
+				Protocol:        LoadBalancerServiceProtocolHTTP,
+				DestinationPort: Int(80),
+				Proxyprotocol:   Bool(true),
+				HTTP: &LoadBalancerAddServiceOptsHTTP{
+					CookieName:     String("keks"),
+					CookieLifetime: Duration(5 * time.Minute),
+					RedirectHTTP:   Bool(true),
+					StickySessions: Bool(true),
+					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+				},
+				HealthCheck: &LoadBalancerAddServiceOptsHealthCheck{
+					Protocol: LoadBalancerServiceProtocolHTTP,
+					Port:     Int(80),
+					Interval: Duration(5 * time.Second),
+					Timeout:  Duration(1 * time.Second),
+					Retries:  Int(3),
+					HTTP: &LoadBalancerAddServiceOptsHealthCheckHTTP{
+						Domain:      String("example.com"),
+						Path:        String("/health"),
+						Response:    String("ok"),
+						StatusCodes: []string{"2??", "3??"},
+						TLS:         Bool(true),
+					},
+				},
+			},
+			Request: schema.LoadBalancerActionAddServiceRequest{
+				Protocol:        string(LoadBalancerServiceProtocolHTTP),
+				DestinationPort: Int(80),
+				Proxyprotocol:   Bool(true),
+				HTTP: &schema.LoadBalancerActionAddServiceRequestHTTP{
+					CookieName:     String("keks"),
+					CookieLifetime: Int(5 * 60),
+					RedirectHTTP:   Bool(true),
+					StickySessions: Bool(true),
+					Certificates:   intSlice([]int{1, 2}),
+				},
+				HealthCheck: &schema.LoadBalancerActionAddServiceRequestHealthCheck{
+					Protocol: string(LoadBalancerServiceProtocolHTTP),
+					Port:     Int(80),
+					Interval: Int(5),
+					Timeout:  Int(1),
+					Retries:  Int(3),
+					HTTP: &schema.LoadBalancerActionAddServiceRequestHealthCheckHTTP{
+						Domain:      String("example.com"),
+						Path:        String("/health"),
+						Response:    String("ok"),
+						StatusCodes: stringSlice([]string{"2??", "3??"}),
+						TLS:         Bool(true),
+					},
+				},
+			},
+		},
+		"no health check": {
+			Opts: LoadBalancerAddServiceOpts{
+				Protocol:        LoadBalancerServiceProtocolHTTP,
+				DestinationPort: Int(80),
+				Proxyprotocol:   Bool(true),
+				HTTP: &LoadBalancerAddServiceOptsHTTP{
+					CookieName:     String("keks"),
+					CookieLifetime: Duration(5 * time.Minute),
+					RedirectHTTP:   Bool(true),
+					StickySessions: Bool(true),
+					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+				},
+			},
+			Request: schema.LoadBalancerActionAddServiceRequest{
+				Protocol:        string(LoadBalancerServiceProtocolHTTP),
+				DestinationPort: Int(80),
+				Proxyprotocol:   Bool(true),
+				HTTP: &schema.LoadBalancerActionAddServiceRequestHTTP{
+					CookieName:     String("keks"),
+					CookieLifetime: Int(5 * 60),
+					RedirectHTTP:   Bool(true),
+					StickySessions: Bool(true),
+					Certificates:   intSlice([]int{1, 2}),
+				},
+				HealthCheck: nil,
+			},
+		},
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			req := loadBalancerAddServiceOptsToSchema(testCase.Opts)
+			if !cmp.Equal(testCase.Request, req) {
+				t.Log(cmp.Diff(testCase.Request, req))
+				t.Fail()
+			}
+		})
+	}
+}
+
+func TestLoadBalancerUpdateServiceOptsToSchema(t *testing.T) {
+	testCases := map[string]struct {
+		Opts    LoadBalancerUpdateServiceOpts
+		Request schema.LoadBalancerActionUpdateServiceRequest
+	}{
+		"empty": {
+			Opts:    LoadBalancerUpdateServiceOpts{},
+			Request: schema.LoadBalancerActionUpdateServiceRequest{},
+		},
+		"all set": {
+			Opts: LoadBalancerUpdateServiceOpts{
+				Protocol:        LoadBalancerServiceProtocolHTTP,
+				DestinationPort: Int(80),
+				Proxyprotocol:   Bool(true),
+				HTTP: &LoadBalancerUpdateServiceOptsHTTP{
+					CookieName:     String("keks"),
+					CookieLifetime: Duration(5 * time.Minute),
+					RedirectHTTP:   Bool(true),
+					StickySessions: Bool(true),
+					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+				},
+				HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
+					Protocol: LoadBalancerServiceProtocolHTTP,
+					Port:     Int(80),
+					Interval: Duration(5 * time.Second),
+					Timeout:  Duration(1 * time.Second),
+					Retries:  Int(3),
+					HTTP: &LoadBalancerUpdateServiceOptsHealthCheckHTTP{
+						Domain:      String("example.com"),
+						Path:        String("/health"),
+						Response:    String("ok"),
+						StatusCodes: []string{"2??", "3??"},
+						TLS:         Bool(true),
+					},
+				},
+			},
+			Request: schema.LoadBalancerActionUpdateServiceRequest{
+				Protocol:        String(string(LoadBalancerServiceProtocolHTTP)),
+				DestinationPort: Int(80),
+				Proxyprotocol:   Bool(true),
+				HTTP: &schema.LoadBalancerActionUpdateServiceRequestHTTP{
+					CookieName:     String("keks"),
+					CookieLifetime: Int(5 * 60),
+					RedirectHTTP:   Bool(true),
+					StickySessions: Bool(true),
+					Certificates:   intSlice([]int{1, 2}),
+				},
+				HealthCheck: &schema.LoadBalancerActionUpdateServiceRequestHealthCheck{
+					Protocol: String(string(LoadBalancerServiceProtocolHTTP)),
+					Port:     Int(80),
+					Interval: Int(5),
+					Timeout:  Int(1),
+					Retries:  Int(3),
+					HTTP: &schema.LoadBalancerActionUpdateServiceRequestHealthCheckHTTP{
+						Domain:      String("example.com"),
+						Path:        String("/health"),
+						Response:    String("ok"),
+						StatusCodes: stringSlice([]string{"2??", "3??"}),
+						TLS:         Bool(true),
+					},
+				},
+			},
+		},
+		"no health check": {
+			Opts: LoadBalancerUpdateServiceOpts{
+				Protocol:        LoadBalancerServiceProtocolHTTP,
+				DestinationPort: Int(80),
+				Proxyprotocol:   Bool(true),
+				HTTP: &LoadBalancerUpdateServiceOptsHTTP{
+					CookieName:     String("keks"),
+					CookieLifetime: Duration(5 * time.Minute),
+					RedirectHTTP:   Bool(true),
+					StickySessions: Bool(true),
+					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+				},
+			},
+			Request: schema.LoadBalancerActionUpdateServiceRequest{
+				Protocol:        String(string(LoadBalancerServiceProtocolHTTP)),
+				DestinationPort: Int(80),
+				Proxyprotocol:   Bool(true),
+				HTTP: &schema.LoadBalancerActionUpdateServiceRequestHTTP{
+					CookieName:     String("keks"),
+					CookieLifetime: Int(5 * 60),
+					RedirectHTTP:   Bool(true),
+					StickySessions: Bool(true),
+					Certificates:   intSlice([]int{1, 2}),
+				},
+				HealthCheck: nil,
+			},
+		},
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			req := loadBalancerUpdateServiceOptsToSchema(testCase.Opts)
+			if !cmp.Equal(testCase.Request, req) {
+				t.Log(cmp.Diff(testCase.Request, req))
+				t.Fail()
+			}
+		})
 	}
 }

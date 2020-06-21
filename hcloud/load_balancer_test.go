@@ -8,6 +8,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/google/go-cmp/cmp"
+
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
@@ -22,6 +24,7 @@ func TestLoadBalancerClientGetByID(t *testing.T) {
 			},
 		})
 	})
+
 	ctx := context.Background()
 
 	loadBalancer, _, err := env.Client.LoadBalancer.GetByID(ctx, 1)
@@ -29,10 +32,10 @@ func TestLoadBalancerClientGetByID(t *testing.T) {
 		t.Fatal(err)
 	}
 	if loadBalancer == nil {
-		t.Fatal("no loadBalancer")
+		t.Fatal("no load balancer")
 	}
 	if loadBalancer.ID != 1 {
-		t.Errorf("unexpected loadBalancer ID: %v", loadBalancer.ID)
+		t.Errorf("unexpected load balancer ID: %v", loadBalancer.ID)
 	}
 
 	t.Run("called via Get", func(t *testing.T) {
@@ -41,10 +44,10 @@ func TestLoadBalancerClientGetByID(t *testing.T) {
 			t.Fatal(err)
 		}
 		if loadBalancer == nil {
-			t.Fatal("no loadBalancer")
+			t.Fatal("no load balancer")
 		}
 		if loadBalancer.ID != 1 {
-			t.Errorf("unexpected loadBalancer ID: %v", loadBalancer.ID)
+			t.Errorf("unexpected load balancer ID: %v", loadBalancer.ID)
 		}
 	})
 }
@@ -64,12 +67,13 @@ func TestLoadBalancerClientGetByIDNotFound(t *testing.T) {
 	})
 
 	ctx := context.Background()
+
 	loadBalancer, _, err := env.Client.LoadBalancer.GetByID(ctx, 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if loadBalancer != nil {
-		t.Fatal("expected no loadBalancer")
+		t.Fatal("expected no load balancer")
 	}
 }
 
@@ -90,6 +94,7 @@ func TestLoadBalancerClientGetByName(t *testing.T) {
 			},
 		})
 	})
+
 	ctx := context.Background()
 
 	loadBalancer, _, err := env.Client.LoadBalancer.GetByName(ctx, "mylb")
@@ -97,10 +102,10 @@ func TestLoadBalancerClientGetByName(t *testing.T) {
 		t.Fatal(err)
 	}
 	if loadBalancer == nil {
-		t.Fatal("no loadBalancer")
+		t.Fatal("no load balancer")
 	}
 	if loadBalancer.ID != 1 {
-		t.Errorf("unexpected loadBalancer ID: %v", loadBalancer.ID)
+		t.Errorf("unexpected load balancer ID: %v", loadBalancer.ID)
 	}
 
 	t.Run("via Get", func(t *testing.T) {
@@ -109,10 +114,10 @@ func TestLoadBalancerClientGetByName(t *testing.T) {
 			t.Fatal(err)
 		}
 		if loadBalancer == nil {
-			t.Fatal("no loadBalancer")
+			t.Fatal("no load balancer")
 		}
 		if loadBalancer.ID != 1 {
-			t.Errorf("unexpected loadBalancer ID: %v", loadBalancer.ID)
+			t.Errorf("unexpected load balancer ID: %v", loadBalancer.ID)
 		}
 	})
 }
@@ -131,157 +136,66 @@ func TestLoadBalancerClientGetByNameNotFound(t *testing.T) {
 	})
 
 	ctx := context.Background()
+
 	loadBalancer, _, err := env.Client.LoadBalancer.GetByName(ctx, "mylb")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if loadBalancer != nil {
-		t.Fatal("unexpected loadBalancer")
+		t.Fatal("unexpected load balancer")
 	}
 }
 
 func TestLoadBalancerCreate(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.LoadBalancerCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		expectedReqBody := schema.LoadBalancerCreateRequest{
+			Name:             "load-balancer",
+			LoadBalancerType: "lb1",
+			Algorithm: &schema.LoadBalancerCreateRequestAlgorithm{
+				Type: "round_robin",
+			},
+			Location: String("fsn1"),
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerCreateResponse{
+			LoadBalancer: schema.LoadBalancer{ID: 2},
+			Action:       schema.Action{ID: 1},
+		})
+	})
+
 	var (
-		ctx = context.Background()
+		ctx       = context.Background()
+		lbType    = &LoadBalancerType{Name: "lb1"}
+		algorithm = &LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmTypeRoundRobin}
+		location  = &Location{Name: "fsn1"}
+		opts      = LoadBalancerCreateOpts{
+			Name:             "load-balancer",
+			LoadBalancerType: lbType,
+			Algorithm:        algorithm,
+			Location:         location,
+		}
 	)
 
-	t.Run("missing required field name", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		opts := LoadBalancerCreateOpts{}
-		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
-		if err == nil || err.Error() != "missing name" {
-			t.Fatalf("LoadBalancer.Create should fail with \"missing name\" but failed with %s", err)
-		}
-	})
-
-	t.Run("missing required field load balancer type", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		opts := LoadBalancerCreateOpts{
-			Name: "my-loadBalancer",
-		}
-		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
-		if err == nil || err.Error() != "missing load balancer type" {
-			t.Fatalf("LoadBalancer.Create should fail with \"missing load balancer type\" but failed with %s", err)
-		}
-	})
-
-	t.Run("missing required field location and network zone", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		opts := LoadBalancerCreateOpts{
-			Name:             "my-loadBalancer",
-			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
-		}
-		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
-		if err == nil || err.Error() != "one of location and network_zone must be set" {
-			t.Fatalf("LoadBalancer.Create should fail with \"one of location and network_zone must be set\" but failed with %s", err)
-		}
-	})
-
-	t.Run("location and network_zone are mutually exclusive", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		opts := LoadBalancerCreateOpts{
-			Name:             "my-loadBalancer",
-			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
-			Location:         &Location{Name: "fsn1"},
-			NetworkZone:      NetworkZoneEUCentral,
-		}
-		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
-		if err == nil || err.Error() != "location and network_zone are mutually exclusive" {
-			t.Fatalf("LoadBalancer.Create should fail with \"location and network_zone are mutually exclusive\" but failed with %s", err)
-		}
-	})
-
-	t.Run("required fields", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/load_balancers", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody schema.LoadBalancerCreateRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Name != "my-load_balancer" {
-				t.Errorf("unexpected Name: %v", reqBody.Name)
-			}
-			if reqBody.LoadBalancerType != "lb1" {
-				t.Errorf("unexpected LoadBalancerType: %v", reqBody.LoadBalancerType)
-			}
-			if reqBody.Location != "fsn1" {
-				t.Errorf("unexpected Location: %v", reqBody.Location)
-			}
-			if reqBody.Algorithm.Type != "round_robin" {
-				t.Errorf("unexpected AlgorithmType: %v", reqBody.Algorithm.Type)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerCreateResponse{
-				LoadBalancer: schema.LoadBalancer{
-					ID: 1,
-				},
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-		opts := LoadBalancerCreateOpts{
-			Name:             "my-load_balancer",
-			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
-			Algorithm:        &LoadBalancerAlgorithm{Type: "round_robin"},
-			Location:         &Location{Name: "fsn1"},
-		}
-		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-	})
-
-	t.Run("with network_zone", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/load_balancers", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody schema.LoadBalancerCreateRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Name != "my-load_balancer" {
-				t.Errorf("unexpected Name: %v", reqBody.Name)
-			}
-			if reqBody.LoadBalancerType != "lb1" {
-				t.Errorf("unexpected LoadBalancerType: %v", reqBody.LoadBalancerType)
-			}
-			if reqBody.NetworkZone != "eu-central" {
-				t.Errorf("unexpected NetworkZone: %v", reqBody.NetworkZone)
-			}
-			if reqBody.Algorithm.Type != "round_robin" {
-				t.Errorf("unexpected AlgorithmType: %v", reqBody.Algorithm.Type)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerCreateResponse{
-				LoadBalancer: schema.LoadBalancer{
-					ID: 1,
-				},
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-		opts := LoadBalancerCreateOpts{
-			Name:             "my-load_balancer",
-			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
-			Algorithm:        &LoadBalancerAlgorithm{Type: "round_robin"},
-			NetworkZone:      NetworkZoneEUCentral,
-		}
-		_, _, err := env.Client.LoadBalancer.Create(ctx, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-	})
+	result, _, err := env.Client.LoadBalancer.Create(ctx, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", result.Action.ID)
+	}
+	if result.LoadBalancer.ID != 2 {
+		t.Errorf("unexpected load balancer ID: %d", result.LoadBalancer.ID)
+	}
 }
 
 func TestLoadBalancerDelete(t *testing.T) {
@@ -296,6 +210,7 @@ func TestLoadBalancerDelete(t *testing.T) {
 		ctx          = context.Background()
 		loadBalancer = &LoadBalancer{ID: 1}
 	)
+
 	_, err := env.Client.LoadBalancer.Delete(ctx, loadBalancer)
 	if err != nil {
 		t.Fatal(err)
@@ -303,155 +218,89 @@ func TestLoadBalancerDelete(t *testing.T) {
 }
 
 func TestLoadBalancerClientUpdate(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers/1", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "PUT" {
+			t.Error("expected PUT")
+		}
+		var reqBody schema.LoadBalancerUpdateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		expectedReqBody := schema.LoadBalancerUpdateRequest{
+			Name: String("test"),
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerUpdateResponse{
+			LoadBalancer: schema.LoadBalancer{
+				ID: 1,
+			},
+		})
+	})
+
 	var (
 		ctx          = context.Background()
 		loadBalancer = &LoadBalancer{ID: 1}
 	)
 
-	t.Run("update name", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/load_balancers/1", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "PUT" {
-				t.Error("expected PUT")
-			}
-			var reqBody schema.ServerUpdateRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Name != "test" {
-				t.Errorf("unexpected name: %v", reqBody.Name)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerUpdateResponse{
-				LoadBalancer: schema.LoadBalancer{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerUpdateOpts{
-			Name: "test",
-		}
-		updatedLoadBalancer, _, err := env.Client.LoadBalancer.Update(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if updatedLoadBalancer.ID != 1 {
-			t.Errorf("unexpected loadBalancer ID: %v", updatedLoadBalancer.ID)
-		}
-	})
-
-	t.Run("update labels", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/load_balancers/1", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "PUT" {
-				t.Error("expected PUT")
-			}
-			var reqBody schema.ServerUpdateRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Labels == nil || (*reqBody.Labels)["key"] != "value" {
-				t.Errorf("unexpected labels in request: %v", reqBody.Labels)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerUpdateResponse{
-				LoadBalancer: schema.LoadBalancer{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerUpdateOpts{
-			Labels: map[string]string{"key": "value"},
-		}
-		updatedLoadBalancer, _, err := env.Client.LoadBalancer.Update(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if updatedLoadBalancer.ID != 1 {
-			t.Errorf("unexpected loadBalancer ID: %v", updatedLoadBalancer.ID)
-		}
-	})
-
-	t.Run("no updates", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/load_balancers/1", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "PUT" {
-				t.Error("expected PUT")
-			}
-			var reqBody schema.ServerUpdateRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Name != "" {
-				t.Errorf("unexpected no name, but got: %v", reqBody.Name)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerUpdateResponse{
-				LoadBalancer: schema.LoadBalancer{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerUpdateOpts{}
-		updatedLoadBalancer, _, err := env.Client.LoadBalancer.Update(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if updatedLoadBalancer.ID != 1 {
-			t.Errorf("unexpected loadBalancer ID: %v", updatedLoadBalancer.ID)
-		}
-	})
+	opts := LoadBalancerUpdateOpts{
+		Name: "test",
+	}
+	updatedLoadBalancer, _, err := env.Client.LoadBalancer.Update(ctx, loadBalancer, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if updatedLoadBalancer.ID != 1 {
+		t.Errorf("unexpected load balancer ID: %v", updatedLoadBalancer.ID)
+	}
 }
 
 func TestLoadBalancerClientChangeProtection(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers/1/actions/change_protection", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.LoadBalancerActionChangeProtectionRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		expectedReqBody := schema.LoadBalancerActionChangeProtectionRequest{
+			Delete: Bool(true),
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionChangeProtectionResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
 	var (
 		ctx          = context.Background()
 		loadBalancer = &LoadBalancer{ID: 1}
 	)
 
-	t.Run("enable delete protection", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/load_balancers/1/actions/change_protection", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionChangeProtectionRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Delete == nil || *reqBody.Delete != true {
-				t.Errorf("unexpected delete: %v", reqBody.Delete)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionChangeProtectionResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerChangeProtectionOpts{
-			Delete: Bool(true),
-		}
-		action, _, err := env.Client.LoadBalancer.ChangeProtection(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
-		}
-	})
+	opts := LoadBalancerChangeProtectionOpts{
+		Delete: Bool(true),
+	}
+	action, _, err := env.Client.LoadBalancer.ChangeProtection(ctx, loadBalancer, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
 }
 
 func TestLoadBalancerClientAddServerTarget(t *testing.T) {
@@ -466,24 +315,35 @@ func TestLoadBalancerClientAddServerTarget(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if reqBody.Type != string(LoadBalancerTargetTypeServer) {
-			t.Errorf("unexpected type %v", reqBody.Type)
+		expectedReqBody := schema.LoadBalancerActionAddTargetRequest{
+			Type: string(LoadBalancerTargetTypeServer),
+			Server: &schema.LoadBalancerActionAddTargetRequestServer{
+				ID: 1,
+			},
+			UsePrivateIP: Bool(true),
 		}
-		if reqBody.Server.ID != 1 {
-			t.Errorf("unexpected server id %v", reqBody.Server.ID)
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
 		}
-		if !reqBody.UsePrivateIP {
-			t.Errorf("unexpected UsePrivateIP %v", reqBody.UsePrivateIP)
-		}
-		json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionAddTargetResponse{
 			Action: schema.Action{
 				ID: 1,
 			},
 		})
 	})
 
-	ctx := context.Background()
-	action, _, err := env.Client.LoadBalancer.AddServerTarget(ctx, &LoadBalancer{ID: 1}, &Server{ID: 1}, true)
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+		server       = &Server{ID: 1}
+	)
+
+	opts := LoadBalancerAddServerTargetOpts{
+		Server:       server,
+		UsePrivateIP: Bool(true),
+	}
+	action, _, err := env.Client.LoadBalancer.AddServerTarget(ctx, loadBalancer, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -504,21 +364,30 @@ func TestLoadBalancerClientRemoveServerTarget(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if reqBody.Type != string(LoadBalancerTargetTypeServer) {
-			t.Errorf("unexpected type %v", reqBody.Type)
+		expectedReqBody := schema.LoadBalancerActionRemoveTargetRequest{
+			Type: string(LoadBalancerTargetTypeServer),
+			Server: &schema.LoadBalancerActionRemoveTargetRequestServer{
+				ID: 1,
+			},
 		}
-		if reqBody.Server.ID != 1 {
-			t.Errorf("unexpected server id %v", reqBody.Server.ID)
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
 		}
-		json.NewEncoder(w).Encode(schema.LoadBalancerActionTargetResponse{
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionRemoveTargetResponse{
 			Action: schema.Action{
 				ID: 1,
 			},
 		})
 	})
 
-	ctx := context.Background()
-	action, _, err := env.Client.LoadBalancer.RemoveServerTarget(ctx, &LoadBalancer{ID: 1}, &Server{ID: 1})
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+		server       = &Server{ID: 1}
+	)
+
+	action, _, err := env.Client.LoadBalancer.RemoveServerTarget(ctx, loadBalancer, server)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -528,501 +397,164 @@ func TestLoadBalancerClientRemoveServerTarget(t *testing.T) {
 }
 
 func TestLoadBalancerAddService(t *testing.T) {
-	var (
-		ctx          = context.Background()
-		loadBalancer = &LoadBalancer{ID: 1}
-	)
+	env := newTestEnv()
+	defer env.Teardown()
 
-	t.Run("all fields", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-		env.Mux.HandleFunc("/load_balancers/1/actions/add_service", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionAddServiceRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Protocol != "http" {
-				t.Errorf("unexpected Protocol: %v", reqBody.Protocol)
-			}
-			if reqBody.ListenPort != 4711 {
-				t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
-			}
-			if reqBody.DestinationPort != 80 {
-				t.Errorf("unexpected DestinationPort: %v", reqBody.DestinationPort)
-			}
-			if reqBody.HTTP == nil {
-				t.Errorf("unexpected HTTP: %v", reqBody.HTTP)
-			} else {
-				if reqBody.HTTP.CookieName != "HCLBSTICKY" {
-					t.Errorf("unexpectedTTP.CookieName: %v", reqBody.HTTP.CookieName)
-				}
-				if reqBody.HTTP.CookieLifetime != 300 {
-					t.Errorf("unexpected HTTP.CookieLifetime: %v", reqBody.HTTP.CookieLifetime)
-				}
-				if reqBody.HTTP.RedirectHTTP {
-					t.Errorf("unexpected HTTP.RedirectHTTP: %v", reqBody.HTTP.RedirectHTTP)
-				}
-				if !reqBody.HTTP.StickySessions {
-					t.Errorf("unexpected HTTP.StickySessions: %v", reqBody.HTTP.StickySessions)
-				}
-			}
-			if reqBody.HealthCheck.Protocol != "http" {
-				t.Errorf("unexpected HealthCheck.Protocol: %v", reqBody.HealthCheck.Protocol)
-			}
-			if reqBody.HealthCheck.Port != 4711 {
-				t.Errorf("unexpected HealthCheck.Port: %v", reqBody.HealthCheck.Port)
-			}
-			if reqBody.HealthCheck.Interval != 15 {
-				t.Errorf("unexpected HealthCheck.Interval: %v", reqBody.HealthCheck.Interval)
-			}
-			if reqBody.HealthCheck.Timeout != 10 {
-				t.Errorf("unexpected HealthCheck.Timeout: %v", reqBody.HealthCheck.Timeout)
-			}
-			if reqBody.HealthCheck.Retries != 3 {
-				t.Errorf("unexpected HealthCheck.Retries: %v", reqBody.HealthCheck.Retries)
-			}
-			if reqBody.HealthCheck.HTTP == nil {
-				t.Errorf("unexpected HealthCheck.HTTP: %v", reqBody.HealthCheck.HTTP)
-			} else {
-				if reqBody.HealthCheck.HTTP.Domain != "example.com" {
-					t.Errorf("unexpected HealthCheck.HTTP.Domain: %v", reqBody.HealthCheck.HTTP.Domain)
-				}
-				if reqBody.HealthCheck.HTTP.Path != "/" {
-					t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
-				}
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionAddServiceResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerAddServiceOpts{
-			Protocol:        LoadBalancerServiceProtocolHTTP,
-			ListenPort:      4711,
-			DestinationPort: 80,
-			HTTP: &LoadBalancerServiceHTTP{
-				CookieName:     "HCLBSTICKY",
-				CookieLifetime: 5 * time.Minute,
-				RedirectHTTP:   false,
-				StickySessions: true,
-			},
-			HealthCheck: &LoadBalancerServiceHealthCheck{
-				Protocol: "http",
-				Port:     4711,
-				Interval: 15 * time.Second,
-				Timeout:  10 * time.Second,
-				Retries:  3,
-				HTTP: &LoadBalancerServiceHealthCheckHTTP{
-					Domain: "example.com",
-					Path:   "/",
-				},
-			},
+	env.Mux.HandleFunc("/load_balancers/1/actions/add_service", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
 		}
-		action, _, err := env.Client.LoadBalancer.AddService(ctx, loadBalancer, opts)
-		if err != nil {
+		var reqBody schema.LoadBalancerActionAddServiceRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
-		}
-	})
-
-	t.Run("without health check", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-		env.Mux.HandleFunc("/load_balancers/1/actions/add_service", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionAddServiceRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Protocol != "http" {
-				t.Errorf("unexpected Protocol: %v", reqBody.Protocol)
-			}
-			if reqBody.ListenPort != 4711 {
-				t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
-			}
-			if reqBody.DestinationPort != 80 {
-				t.Errorf("unexpected DestinationPort: %v", reqBody.DestinationPort)
-			}
-			if reqBody.HTTP == nil {
-				t.Errorf("unexpected HTTP: %v", reqBody.HTTP)
-			} else {
-				if reqBody.HTTP.CookieName != "HCLBSTICKY" {
-					t.Errorf("unexpectedTTP.CookieName: %v", reqBody.HTTP.CookieName)
-				}
-				if reqBody.HTTP.CookieLifetime != 300 {
-					t.Errorf("unexpected HealthCheck.CookieLifetime: %v", reqBody.HTTP.CookieLifetime)
-				}
-			}
-			if reqBody.HealthCheck != nil {
-				t.Errorf("unexpected HealthCheck: %v", reqBody.HTTP)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionAddServiceResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerAddServiceOpts{
-			Protocol:        LoadBalancerServiceProtocolHTTP,
-			ListenPort:      4711,
-			DestinationPort: 80,
-			HTTP: &LoadBalancerServiceHTTP{
-				CookieName:     "HCLBSTICKY",
-				CookieLifetime: 5 * time.Minute,
-			},
-			HealthCheck: nil,
-		}
-		action, _, err := env.Client.LoadBalancer.AddService(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
-		}
-	})
-
-	t.Run("protocol tcp and without http configuration", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-		env.Mux.HandleFunc("/load_balancers/1/actions/add_service", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionAddServiceRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Protocol != "tcp" {
-				t.Errorf("unexpected Protocol: %v", reqBody.Protocol)
-			}
-			if reqBody.ListenPort != 4711 {
-				t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
-			}
-			if reqBody.DestinationPort != 80 {
-				t.Errorf("unexpected DestinationPort: %v", reqBody.DestinationPort)
-			}
-			if reqBody.HTTP != nil {
-				t.Errorf("unexpected HTTP: %v", reqBody.HTTP)
-			}
-			if reqBody.HealthCheck.Protocol != "http" {
-				t.Errorf("unexpected HealthCheck.Protocol: %v", reqBody.HealthCheck.Protocol)
-			}
-			if reqBody.HealthCheck.Port != 4711 {
-				t.Errorf("unexpected HealthCheck.Port: %v", reqBody.HealthCheck.Port)
-			}
-			if reqBody.HealthCheck.Interval != 15 {
-				t.Errorf("unexpected HealthCheck.Interval: %v", reqBody.HealthCheck.Interval)
-			}
-			if reqBody.HealthCheck.Timeout != 10 {
-				t.Errorf("unexpected HealthCheck.Timeout: %v", reqBody.HealthCheck.Timeout)
-			}
-			if reqBody.HealthCheck.Retries != 3 {
-				t.Errorf("unexpected HealthCheck.Retries: %v", reqBody.HealthCheck.Retries)
-			}
-			if reqBody.HealthCheck.HTTP == nil {
-				t.Errorf("unexpected HealthCheck.HTTP: %v", reqBody.HealthCheck.HTTP)
-			} else {
-				if reqBody.HealthCheck.HTTP.Domain != "example.com" {
-					t.Errorf("unexpected HealthCheck.HTTP.Domain: %v", reqBody.HealthCheck.HTTP.Domain)
-				}
-				if reqBody.HealthCheck.HTTP.Path != "/" {
-					t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
-				}
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionAddServiceResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerAddServiceOpts{
-			Protocol:        LoadBalancerServiceProtocolTCP,
-			ListenPort:      4711,
-			DestinationPort: 80,
-			HTTP:            nil,
-			HealthCheck: &LoadBalancerServiceHealthCheck{
-				Protocol: "http",
-				Port:     4711,
-				Interval: 15 * time.Second,
-				Timeout:  10 * time.Second,
-				Retries:  3,
-				HTTP: &LoadBalancerServiceHealthCheckHTTP{
-					Domain: "example.com",
-					Path:   "/",
-				},
-			},
-		}
-		action, _, err := env.Client.LoadBalancer.AddService(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
-		}
-	})
-}
-
-func TestLoadBalancerUpdateService(t *testing.T) {
-	var (
-		ctx          = context.Background()
-		loadBalancer = &LoadBalancer{ID: 1}
-	)
-
-	t.Run("all fields", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-		env.Mux.HandleFunc("/load_balancers/1/actions/update_service", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionUpdateServiceRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Protocol != "http" {
-				t.Errorf("unexpected Protocol: %v", reqBody.Protocol)
-			}
-			if reqBody.ListenPort != 4711 {
-				t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
-			}
-			if *reqBody.DestinationPort != 80 {
-				t.Errorf("unexpected DestinationPort: %v", reqBody.DestinationPort)
-			}
-			if reqBody.HTTP == nil {
-				t.Errorf("unexpected HTTP: %v", reqBody.HTTP)
-			} else {
-				if reqBody.HTTP.CookieName != "HCLBSTICKY" {
-					t.Errorf("unexpectedTTP.CookieName: %v", reqBody.HTTP.CookieName)
-				}
-				if reqBody.HTTP.CookieLifetime != 300 {
-					t.Errorf("unexpected HTTP.CookieLifetime: %v", reqBody.HTTP.CookieLifetime)
-				}
-				if *reqBody.HTTP.RedirectHTTP {
-					t.Errorf("unexpected HTTP.RedirectHTTP: %v", reqBody.HTTP.RedirectHTTP)
-				}
-				if !*reqBody.HTTP.StickySessions {
-					t.Errorf("unexpected HTTP.StickySessions: %v", reqBody.HTTP.StickySessions)
-				}
-			}
-			if reqBody.HealthCheck.Protocol != "http" {
-				t.Errorf("unexpected HealthCheck.Protocol: %v", reqBody.HealthCheck.Protocol)
-			}
-			if reqBody.HealthCheck.Port != 4711 {
-				t.Errorf("unexpected HealthCheck.Port: %v", reqBody.HealthCheck.Port)
-			}
-			if reqBody.HealthCheck.Interval != 15 {
-				t.Errorf("unexpected HealthCheck.Interval: %v", reqBody.HealthCheck.Interval)
-			}
-			if reqBody.HealthCheck.Timeout != 10 {
-				t.Errorf("unexpected HealthCheck.Timeout: %v", reqBody.HealthCheck.Timeout)
-			}
-			if reqBody.HealthCheck.Retries != 3 {
-				t.Errorf("unexpected HealthCheck.Retries: %v", reqBody.HealthCheck.Retries)
-			}
-			if reqBody.HealthCheck.HTTP == nil {
-				t.Errorf("unexpected HealthCheck.HTTP: %v", reqBody.HealthCheck.HTTP)
-			} else {
-				if reqBody.HealthCheck.HTTP.Domain != "example.com" {
-					t.Errorf("unexpected HealthCheck.HTTP.Domain: %v", reqBody.HealthCheck.HTTP.Domain)
-				}
-				if reqBody.HealthCheck.HTTP.Path != "/" {
-					t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
-				}
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateServiceResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerUpdateServiceOpts{
-			Protocol:        LoadBalancerServiceProtocolHTTP,
-			ListenPort:      4711,
+		expectedReqBody := schema.LoadBalancerActionAddServiceRequest{
+			Protocol:        string(LoadBalancerServiceProtocolHTTP),
+			ListenPort:      Int(4711),
 			DestinationPort: Int(80),
-			HTTP: &LoadBalancerUpdateServiceHTTPOpts{
-				CookieName:     "HCLBSTICKY",
-				CookieLifetime: 5 * time.Minute,
+			HTTP: &schema.LoadBalancerActionAddServiceRequestHTTP{
+				CookieName:     String("HCLBSTICKY"),
+				CookieLifetime: Int(5 * 60),
 				RedirectHTTP:   Bool(false),
 				StickySessions: Bool(true),
 			},
-			HealthCheck: &LoadBalancerServiceHealthCheck{
+			HealthCheck: &schema.LoadBalancerActionAddServiceRequestHealthCheck{
 				Protocol: "http",
-				Port:     4711,
-				Interval: 15 * time.Second,
-				Timeout:  10 * time.Second,
-				Retries:  3,
-				HTTP: &LoadBalancerServiceHealthCheckHTTP{
-					Domain: "example.com",
-					Path:   "/",
+				Port:     Int(4711),
+				Interval: Int(15),
+				Timeout:  Int(10),
+				Retries:  Int(3),
+				HTTP: &schema.LoadBalancerActionAddServiceRequestHealthCheckHTTP{
+					Domain: String("example.com"),
+					Path:   String("/"),
 				},
 			},
 		}
-		action, _, err := env.Client.LoadBalancer.UpdateService(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
 		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
-		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionAddServiceResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
 	})
 
-	t.Run("without health check", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-		env.Mux.HandleFunc("/load_balancers/1/actions/update_service", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionUpdateServiceRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Protocol != "http" {
-				t.Errorf("unexpected Protocol: %v", reqBody.Protocol)
-			}
-			if reqBody.ListenPort != 4711 {
-				t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
-			}
-			if *reqBody.DestinationPort != 80 {
-				t.Errorf("unexpected DestinationPort: %v", reqBody.DestinationPort)
-			}
-			if reqBody.HTTP == nil {
-				t.Errorf("unexpected HTTP: %v", reqBody.HTTP)
-			} else {
-				if reqBody.HTTP.CookieName != "HCLBSTICKY" {
-					t.Errorf("unexpectedTTP.CookieName: %v", reqBody.HTTP.CookieName)
-				}
-				if reqBody.HTTP.CookieLifetime != 300 {
-					t.Errorf("unexpected HealthCheck.CookieLifetime: %v", reqBody.HTTP.CookieLifetime)
-				}
-			}
-			if reqBody.HealthCheck != nil {
-				t.Errorf("unexpected HealthCheck: %v", reqBody.HTTP)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateServiceResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
 
-		opts := LoadBalancerUpdateServiceOpts{
-			Protocol:        LoadBalancerServiceProtocolHTTP,
+	opts := LoadBalancerAddServiceOpts{
+		Protocol:        LoadBalancerServiceProtocolHTTP,
+		ListenPort:      Int(4711),
+		DestinationPort: Int(80),
+		HTTP: &LoadBalancerAddServiceOptsHTTP{
+			CookieName:     String("HCLBSTICKY"),
+			CookieLifetime: Duration(5 * time.Minute),
+			RedirectHTTP:   Bool(false),
+			StickySessions: Bool(true),
+		},
+		HealthCheck: &LoadBalancerAddServiceOptsHealthCheck{
+			Protocol: "http",
+			Port:     Int(4711),
+			Interval: Duration(15 * time.Second),
+			Timeout:  Duration(10 * time.Second),
+			Retries:  Int(3),
+			HTTP: &LoadBalancerAddServiceOptsHealthCheckHTTP{
+				Domain: String("example.com"),
+				Path:   String("/"),
+			},
+		},
+	}
+	action, _, err := env.Client.LoadBalancer.AddService(ctx, loadBalancer, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
+}
+
+func TestLoadBalancerUpdateService(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers/1/actions/update_service", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.LoadBalancerActionUpdateServiceRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		expectedReqBody := schema.LoadBalancerActionUpdateServiceRequest{
+			Protocol:        String(string(LoadBalancerServiceProtocolHTTP)),
 			ListenPort:      4711,
 			DestinationPort: Int(80),
-			HTTP: &LoadBalancerUpdateServiceHTTPOpts{
-				CookieName:     "HCLBSTICKY",
-				CookieLifetime: 5 * time.Minute,
+			HTTP: &schema.LoadBalancerActionUpdateServiceRequestHTTP{
+				CookieName:     String("HCLBSTICKY"),
+				CookieLifetime: Int(5 * 60),
+				RedirectHTTP:   Bool(false),
+				StickySessions: Bool(true),
 			},
-			HealthCheck: nil,
-		}
-		action, _, err := env.Client.LoadBalancer.UpdateService(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
-		}
-	})
-
-	t.Run("protocol tcp and without http configuration", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-		env.Mux.HandleFunc("/load_balancers/1/actions/update_service", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionUpdateServiceRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Protocol != "tcp" {
-				t.Errorf("unexpected Protocol: %v", reqBody.Protocol)
-			}
-			if reqBody.ListenPort != 4711 {
-				t.Errorf("unexpected ListenPort: %v", reqBody.ListenPort)
-			}
-			if *reqBody.DestinationPort != 80 {
-				t.Errorf("unexpected DestinationPort: %v", reqBody.DestinationPort)
-			}
-			if reqBody.HTTP != nil {
-				t.Errorf("unexpected HTTP: %v", reqBody.HTTP)
-			}
-			if reqBody.HealthCheck.Protocol != "http" {
-				t.Errorf("unexpected HealthCheck.Protocol: %v", reqBody.HealthCheck.Protocol)
-			}
-			if reqBody.HealthCheck.Port != 4711 {
-				t.Errorf("unexpected HealthCheck.Port: %v", reqBody.HealthCheck.Port)
-			}
-			if reqBody.HealthCheck.Interval != 15 {
-				t.Errorf("unexpected HealthCheck.Interval: %v", reqBody.HealthCheck.Interval)
-			}
-			if reqBody.HealthCheck.Timeout != 10 {
-				t.Errorf("unexpected HealthCheck.Timeout: %v", reqBody.HealthCheck.Timeout)
-			}
-			if reqBody.HealthCheck.Retries != 3 {
-				t.Errorf("unexpected HealthCheck.Retries: %v", reqBody.HealthCheck.Retries)
-			}
-			if reqBody.HealthCheck.HTTP == nil {
-				t.Errorf("unexpected HealthCheck.HTTP: %v", reqBody.HealthCheck.HTTP)
-			} else {
-				if reqBody.HealthCheck.HTTP.Domain != "example.com" {
-					t.Errorf("unexpected HealthCheck.HTTP.Domain: %v", reqBody.HealthCheck.HTTP.Domain)
-				}
-				if reqBody.HealthCheck.HTTP.Path != "/" {
-					t.Errorf("unexpected HealthCheck.HTTP.Path: %v", reqBody.HealthCheck.HTTP.Path)
-				}
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateServiceResponse{
-				Action: schema.Action{
-					ID: 1,
+			HealthCheck: &schema.LoadBalancerActionUpdateServiceRequestHealthCheck{
+				Protocol: String(string(LoadBalancerServiceProtocolHTTP)),
+				Port:     Int(4711),
+				Interval: Int(15),
+				Timeout:  Int(10),
+				Retries:  Int(3),
+				HTTP: &schema.LoadBalancerActionUpdateServiceRequestHealthCheckHTTP{
+					Domain: String("example.com"),
+					Path:   String("/"),
 				},
-			})
+			},
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionUpdateServiceResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
 		})
-
-		opts := LoadBalancerUpdateServiceOpts{
-			Protocol:        LoadBalancerServiceProtocolTCP,
-			ListenPort:      4711,
-			DestinationPort: Int(80),
-			HTTP:            nil,
-			HealthCheck: &LoadBalancerServiceHealthCheck{
-				Protocol: "http",
-				Port:     4711,
-				Interval: 15 * time.Second,
-				Timeout:  10 * time.Second,
-				Retries:  3,
-				HTTP: &LoadBalancerServiceHealthCheckHTTP{
-					Domain: "example.com",
-					Path:   "/",
-				},
-			},
-		}
-		action, _, err := env.Client.LoadBalancer.UpdateService(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
-		}
 	})
+
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
+
+	opts := LoadBalancerUpdateServiceOpts{
+		Protocol:        LoadBalancerServiceProtocolHTTP,
+		DestinationPort: Int(80),
+		HTTP: &LoadBalancerUpdateServiceOptsHTTP{
+			CookieName:     String("HCLBSTICKY"),
+			CookieLifetime: Duration(5 * time.Minute),
+			RedirectHTTP:   Bool(false),
+			StickySessions: Bool(true),
+		},
+		HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
+			Protocol: LoadBalancerServiceProtocolHTTP,
+			Port:     Int(4711),
+			Interval: Duration(15 * time.Second),
+			Timeout:  Duration(10 * time.Second),
+			Retries:  Int(3),
+			HTTP: &LoadBalancerUpdateServiceOptsHealthCheckHTTP{
+				Domain: String("example.com"),
+				Path:   String("/"),
+			},
+		},
+	}
+	action, _, err := env.Client.LoadBalancer.UpdateService(ctx, loadBalancer, 4711, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
 }
 
 func TestLoadBalancerDeleteService(t *testing.T) {
@@ -1037,8 +569,12 @@ func TestLoadBalancerDeleteService(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if reqBody.ListenPort != 4711 {
-			t.Errorf("unexpected ListenPort %v", reqBody.ListenPort)
+		expectedReqBody := schema.LoadBalancerDeleteServiceRequest{
+			ListenPort: 4711,
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
 		}
 		json.NewEncoder(w).Encode(schema.LoadBalancerDeleteServiceResponse{
 			Action: schema.Action{
@@ -1051,6 +587,7 @@ func TestLoadBalancerDeleteService(t *testing.T) {
 		ctx          = context.Background()
 		loadBalancer = &LoadBalancer{ID: 1}
 	)
+
 	action, _, err := env.Client.LoadBalancer.DeleteService(ctx, loadBalancer, 4711)
 	if err != nil {
 		t.Fatal(err)
@@ -1061,11 +598,6 @@ func TestLoadBalancerDeleteService(t *testing.T) {
 }
 
 func TestLoadBalancerClientChangeAlgorithm(t *testing.T) {
-	var (
-		ctx          = context.Background()
-		loadBalancer = &LoadBalancer{ID: 1}
-	)
-
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -1077,8 +609,12 @@ func TestLoadBalancerClientChangeAlgorithm(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if reqBody.Type != "round_robin" {
-			t.Errorf("unexpected type: %v", reqBody.Type)
+		expectedReqBody := schema.LoadBalancerActionChangeAlgorithmRequest{
+			Type: string(LoadBalancerAlgorithmTypeRoundRobin),
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
 		}
 		json.NewEncoder(w).Encode(schema.LoadBalancerActionChangeAlgorithmResponse{
 			Action: schema.Action{
@@ -1087,6 +623,11 @@ func TestLoadBalancerClientChangeAlgorithm(t *testing.T) {
 		})
 	})
 
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
+
 	opts := LoadBalancerChangeAlgorithmOpts{
 		Type: LoadBalancerAlgorithmTypeRoundRobin,
 	}
@@ -1094,100 +635,58 @@ func TestLoadBalancerClientChangeAlgorithm(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	if action.ID != 1 {
 		t.Errorf("unexpected action ID: %v", action.ID)
 	}
-
 }
 
 func TestLoadBalancerClientAttachToNetwork(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers/1/actions/attach_to_network", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.LoadBalancerActionAttachToNetworkRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		expectedReqBody := schema.LoadBalancerActionAttachToNetworkRequest{
+			Network: 1,
+			IP:      String("10.0.1.1"),
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionAttachToNetworkResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
 	var (
 		ctx          = context.Background()
 		loadBalancer = &LoadBalancer{ID: 1}
+		network      = &Network{ID: 1}
 	)
 
-	t.Run("attach to network", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/load_balancers/1/actions/attach_to_network", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionAttachToNetworkRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Network != 1 {
-				t.Errorf("unexpected Network: %v", reqBody.Network)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionAttachToNetworkResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := LoadBalancerAttachToNetworkOpts{
-			Network: &Network{ID: 1},
-		}
-		action, _, err := env.Client.LoadBalancer.AttachToNetwork(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
-		}
-	})
-
-	t.Run("attach to network with additional parameters", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/load_balancers/1/actions/attach_to_network", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.LoadBalancerActionAttachToNetworkRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Network != 1 {
-				t.Errorf("unexpected Network: %v", reqBody.Network)
-			}
-			if reqBody.IP == nil || *reqBody.IP != "10.0.1.1" {
-				t.Errorf("unexpected IP: %v", *reqBody.IP)
-			}
-			json.NewEncoder(w).Encode(schema.LoadBalancerActionAttachToNetworkResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-		ip := net.ParseIP("10.0.1.1")
-		opts := LoadBalancerAttachToNetworkOpts{
-			Network: &Network{ID: 1},
-			IP:      ip,
-		}
-		action, _, err := env.Client.LoadBalancer.AttachToNetwork(ctx, loadBalancer, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %v", action.ID)
-		}
-	})
+	opts := LoadBalancerAttachToNetworkOpts{
+		Network: network,
+		IP:      net.ParseIP("10.0.1.1"),
+	}
+	action, _, err := env.Client.LoadBalancer.AttachToNetwork(ctx, loadBalancer, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
 }
 
 func TestLoadBalancerClientDetachFromNetwork(t *testing.T) {
-	var (
-		ctx          = context.Background()
-		loadBalancer = &LoadBalancer{ID: 1}
-	)
-
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -1199,8 +698,12 @@ func TestLoadBalancerClientDetachFromNetwork(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if reqBody.Network != 1 {
-			t.Errorf("unexpected Network: %v", reqBody.Network)
+		expectedReqBody := schema.LoadBalancerActionDetachFromNetworkRequest{
+			Network: 1,
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
 		}
 		json.NewEncoder(w).Encode(schema.LoadBalancerActionDetachFromNetworkResponse{
 			Action: schema.Action{
@@ -1209,14 +712,19 @@ func TestLoadBalancerClientDetachFromNetwork(t *testing.T) {
 		})
 	})
 
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+		network      = &Network{ID: 1}
+	)
+
 	opts := LoadBalancerDetachFromNetworkOpts{
-		Network: &Network{ID: 1},
+		Network: network,
 	}
 	action, _, err := env.Client.LoadBalancer.DetachFromNetwork(ctx, loadBalancer, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
-
 	if action.ID != 1 {
 		t.Errorf("unexpected action ID: %v", action.ID)
 	}
@@ -1226,11 +734,6 @@ func TestLoadBalancerClientEnablePublicInterface(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	var (
-		ctx          = context.Background()
-		loadBalancer = &LoadBalancer{ID: 1}
-	)
-
 	env.Mux.HandleFunc("/load_balancers/1/actions/enable_public_interface", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(schema.LoadBalancerActionEnablePublicInterfaceResponse{
 			Action: schema.Action{
@@ -1238,6 +741,11 @@ func TestLoadBalancerClientEnablePublicInterface(t *testing.T) {
 			},
 		})
 	})
+
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
 
 	action, _, err := env.Client.LoadBalancer.EnablePublicInterface(ctx, loadBalancer)
 	if err != nil {
@@ -1252,11 +760,6 @@ func TestLoadBalancerClientDisablePublicInterface(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	var (
-		ctx          = context.Background()
-		loadBalancer = &LoadBalancer{ID: 1}
-	)
-
 	env.Mux.HandleFunc("/load_balancers/1/actions/disable_public_interface", func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(schema.LoadBalancerActionDisablePublicInterfaceResponse{
 			Action: schema.Action{
@@ -1264,6 +767,11 @@ func TestLoadBalancerClientDisablePublicInterface(t *testing.T) {
 			},
 		})
 	})
+
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
 
 	action, _, err := env.Client.LoadBalancer.DisablePublicInterface(ctx, loadBalancer)
 	if err != nil {

@@ -59,10 +59,13 @@ type Client struct {
 	debugWriter        io.Writer
 
 	Action           ActionClient
+	Certificate      CertificateClient
 	Datacenter       DatacenterClient
 	FloatingIP       FloatingIPClient
 	Image            ImageClient
 	ISO              ISOClient
+	LoadBalancer     LoadBalancerClient
+	LoadBalancerType LoadBalancerTypeClient
 	Location         LocationClient
 	Network          NetworkClient
 	Pricing          PricingClient
@@ -70,9 +73,6 @@ type Client struct {
 	ServerType       ServerTypeClient
 	SSHKey           SSHKeyClient
 	Volume           VolumeClient
-	LoadBalancer     LoadBalancerClient
-	LoadBalancerType LoadBalancerTypeClient
-	Certificate      CertificateClient
 }
 
 // A ClientOption is used to configure a Client.

@@ -31,7 +31,7 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 			t.Fatal("no load balancer type")
 		}
 		if loadBalancerType.ID != 1 {
-			t.Errorf("unexpected loadBalancerType ID: %v", loadBalancerType.ID)
+			t.Errorf("unexpected load balancer type ID: %v", loadBalancerType.ID)
 		}
 
 		t.Run("via Get", func(t *testing.T) {
@@ -43,7 +43,7 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 				t.Fatal("no load balancer type")
 			}
 			if loadBalancerType.ID != 1 {
-				t.Errorf("unexpected loadBalancerType ID: %v", loadBalancerType.ID)
+				t.Errorf("unexpected load balancer type ID: %v", loadBalancerType.ID)
 			}
 		})
 	})
@@ -68,7 +68,7 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 			t.Fatal(err)
 		}
 		if loadBalancerType != nil {
-			t.Fatal("expected no loadBalancerType")
+			t.Fatal("expected no load balancer type")
 		}
 	})
 
@@ -95,10 +95,10 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 			t.Fatal(err)
 		}
 		if loadBalancerType == nil {
-			t.Fatal("no loadBalancerType")
+			t.Fatal("no load balancer type")
 		}
 		if loadBalancerType.ID != 1 {
-			t.Errorf("unexpected loadBalancerType ID: %v", loadBalancerType.ID)
+			t.Errorf("unexpected load balancer type ID: %v", loadBalancerType.ID)
 		}
 
 		t.Run("via Get", func(t *testing.T) {
@@ -107,10 +107,10 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 				t.Fatal(err)
 			}
 			if loadBalancerType == nil {
-				t.Fatal("no loadBalancerType")
+				t.Fatal("no load balancer type")
 			}
 			if loadBalancerType.ID != 1 {
-				t.Errorf("unexpected loadBalancerType ID: %v", loadBalancerType.ID)
+				t.Errorf("unexpected load balancer type ID: %v", loadBalancerType.ID)
 			}
 		})
 	})
@@ -134,7 +134,7 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 			t.Fatal(err)
 		}
 		if loadBalancerType != nil {
-			t.Fatal("unexpected loadBalancerType")
+			t.Fatal("unexpected load balancer type")
 		}
 	})
 
@@ -167,7 +167,7 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 			t.Fatal(err)
 		}
 		if len(loadBalancerTypes) != 2 {
-			t.Fatal("expected 2 loadBalancerTypes")
+			t.Fatal("expected 2 load balancer type")
 		}
 	})
 

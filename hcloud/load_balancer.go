@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -30,40 +29,40 @@ type LoadBalancer struct {
 	Created          time.Time
 }
 
-// LoadBalancerPublicNet represents a Load Balancers public network.
+// LoadBalancerPublicNet represents a Load Balancer's public network.
 type LoadBalancerPublicNet struct {
 	Enabled bool
 	IPv4    LoadBalancerPublicNetIPv4
 	IPv6    LoadBalancerPublicNetIPv6
 }
 
-// LoadBalancerPublicNetIPv4 represents a Load Balancers public IPv4 address.
+// LoadBalancerPublicNetIPv4 represents a Load Balancer's public IPv4 address.
 type LoadBalancerPublicNetIPv4 struct {
 	IP net.IP
 }
 
-// LoadBalancerPublicNetIPv6 represents a Load Balancers public IPv6 address.
+// LoadBalancerPublicNetIPv6 represents a Load Balancer's public IPv6 address.
 type LoadBalancerPublicNetIPv6 struct {
 	IP net.IP
 }
 
-// LoadBalancerPrivateNet defines the schema of a Load Balancers private network information.
+// LoadBalancerPrivateNet represents a Load Balancer's private network.
 type LoadBalancerPrivateNet struct {
 	Network *Network
 	IP      net.IP
 }
 
-// LoadBalancerService represents a service of a Load Balancer.
+// LoadBalancerService represents a Load Balancer service.
 type LoadBalancerService struct {
 	Protocol        LoadBalancerServiceProtocol
 	ListenPort      int
 	DestinationPort int
-	ProxyProtocol   bool
-	HTTP            *LoadBalancerServiceHTTP
-	HealthCheck     *LoadBalancerServiceHealthCheck
+	Proxyprotocol   bool
+	HTTP            LoadBalancerServiceHTTP
+	HealthCheck     LoadBalancerServiceHealthCheck
 }
 
-// LoadBalancerServiceHTTP represents HTTP specific options for a service of a Load Balancer
+// LoadBalancerServiceHTTP stores configuration for a service using the HTTP protocol.
 type LoadBalancerServiceHTTP struct {
 	CookieName     string
 	CookieLifetime time.Duration
@@ -72,7 +71,7 @@ type LoadBalancerServiceHTTP struct {
 	StickySessions bool
 }
 
-// LoadBalancerServiceHealthCheck represents Health Check specific options for a service of a Load Balancer
+// LoadBalancerServiceHealthCheck stores configuration for a service health check.
 type LoadBalancerServiceHealthCheck struct {
 	Protocol LoadBalancerServiceProtocol
 	Port     int
@@ -82,7 +81,8 @@ type LoadBalancerServiceHealthCheck struct {
 	HTTP     *LoadBalancerServiceHealthCheckHTTP
 }
 
-// LoadBalancerServiceHealthCheckHTTP represents HTTP specific options for a Health Check of a Load Balancer
+// LoadBalancerServiceHealthCheckHTTP stores configuration for a service health check
+// using the HTTP protocol.
 type LoadBalancerServiceHealthCheckHTTP struct {
 	Domain      string
 	Path        string
@@ -91,42 +91,46 @@ type LoadBalancerServiceHealthCheckHTTP struct {
 	TLS         bool
 }
 
-// LoadBalancerAlgorithm represents Algorithm option of a Load Balancer
+// LoadBalancerAlgorithmType specifies the algorithm type a Load Balancer
+// uses for distributing requests.
+type LoadBalancerAlgorithmType string
+
+const (
+	// LoadBalancerAlgorithmTypeRoundRobin is an algorithm which distributes
+	// requests to targets in a round robin fashion.
+	LoadBalancerAlgorithmTypeRoundRobin LoadBalancerAlgorithmType = "round_robin"
+	// LoadBalancerAlgorithmTypeLeastConnections is an algorithm which distributes
+	// requests to targets with the least number of connections.
+	LoadBalancerAlgorithmTypeLeastConnections LoadBalancerAlgorithmType = "least_connections"
+)
+
+// LoadBalancerAlgorithm configures the algorithm a Load Balancer uses
+// for distributing requests.
 type LoadBalancerAlgorithm struct {
 	Type LoadBalancerAlgorithmType
 }
 
-// LoadBalancerTargetType specifies a load balancer target type.
+// LoadBalancerTargetType specifies the type of a Load Balancer target.
 type LoadBalancerTargetType string
 
 const (
-	// LoadBalancerTargetTypeServer is the type when a cloud server should be linked directly.
+	// LoadBalancerTargetTypeServer is a target type which points to a specific server.
 	LoadBalancerTargetTypeServer LoadBalancerTargetType = "server"
 )
 
-// LoadBalancerServiceProtocol specifies a load balancer service protocol.
+// LoadBalancerServiceProtocol specifies the protocol of a Load Balancer service.
 type LoadBalancerServiceProtocol string
 
 const (
-	// LoadBalancerServiceProtocolTCP is the protocol when the Load Balancer is used as TCP Load Balancer.
+	// LoadBalancerServiceProtocolTCP specifies a TCP service.
 	LoadBalancerServiceProtocolTCP LoadBalancerServiceProtocol = "tcp"
-	// LoadBalancerServiceProtocolHTTP is the protocol when the Load Balancer is used as HTTP Load Balancer.
+	// LoadBalancerServiceProtocolHTTP specifies an HTTP service.
 	LoadBalancerServiceProtocolHTTP LoadBalancerServiceProtocol = "http"
-	// LoadBalancerServiceProtocolHTTPS is the protocol when the Load Balancer is used as HTTP Load Balancer with SSL Termination.
+	// LoadBalancerServiceProtocolHTTPS specifies an HTTPS service.
 	LoadBalancerServiceProtocolHTTPS LoadBalancerServiceProtocol = "https"
 )
 
-// LoadBalancerAlgorithmType specifies a load balancer service protocol.
-type LoadBalancerAlgorithmType string
-
-const (
-	// LoadBalancerAlgorithmTypeRoundRobin represents a RoundRobin algorithm.
-	LoadBalancerAlgorithmTypeRoundRobin LoadBalancerAlgorithmType = "round_robin"
-	// LoadBalancerAlgorithmTypeLeastConnections represents a Least Connection algorithm.
-	LoadBalancerAlgorithmTypeLeastConnections LoadBalancerAlgorithmType = "least_connections"
-)
-
-// LoadBalancerTarget represents target of a Load Balancer
+// LoadBalancerTarget represents a Load Balancer target.
 type LoadBalancerTarget struct {
 	Type         LoadBalancerTargetType
 	Server       *LoadBalancerTargetServer
@@ -135,24 +139,25 @@ type LoadBalancerTarget struct {
 	UsePrivateIP bool
 }
 
-// LoadBalancerTargetServer represents server target of a Load Balancer
+// LoadBalancerTargetServer configures a Load Balancer target
+// pointing to a specific server.
 type LoadBalancerTargetServer struct {
 	Server *Server
 }
 
-// LoadBalancerTargetHealthStatusStatus specifies the health status status of a target of a Load Balancer.
+// LoadBalancerTargetHealthStatusStatus describes a target's health status.
 type LoadBalancerTargetHealthStatusStatus string
 
 const (
-	// LoadBalancerTargetHealthStatusStatusUnknown is the status when the Load Balancer target health status is unknown.
+	// LoadBalancerTargetHealthStatusStatusUnknown denotes that the health status is unknown.
 	LoadBalancerTargetHealthStatusStatusUnknown LoadBalancerTargetHealthStatusStatus = "unknown"
-	// LoadBalancerTargetHealthStatusStatusHealthy is the status when the Load Balancer target health status is healthy.
+	// LoadBalancerTargetHealthStatusStatusHealthy denotes a healthy target.
 	LoadBalancerTargetHealthStatusStatusHealthy LoadBalancerTargetHealthStatusStatus = "healthy"
-	// LoadBalancerTargetHealthStatusStatusUnHealthy is the status when the Load Balancer target health status is unhealthy.
-	LoadBalancerTargetHealthStatusStatusUnHealthy LoadBalancerTargetHealthStatusStatus = "unhealthy"
+	// LoadBalancerTargetHealthStatusStatusUnhealthy denotes an unhealthy target.
+	LoadBalancerTargetHealthStatusStatusUnhealthy LoadBalancerTargetHealthStatusStatus = "unhealthy"
 )
 
-// LoadBalancerTargetHealthStatus represents target health status of a Load Balancer
+// LoadBalancerTargetHealthStatus describes a target's health for a specific service.
 type LoadBalancerTargetHealthStatus struct {
 	ListenPort int
 	Status     LoadBalancerTargetHealthStatusStatus
@@ -289,8 +294,9 @@ type LoadBalancerUpdateOpts struct {
 
 // Update updates a Load Balancer.
 func (c *LoadBalancerClient) Update(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerUpdateOpts) (*LoadBalancer, *Response, error) {
-	reqBody := schema.LoadBalancerUpdateRequest{
-		Name: opts.Name,
+	reqBody := schema.LoadBalancerUpdateRequest{}
+	if opts.Name != "" {
+		reqBody.Name = &opts.Name
 	}
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
@@ -322,32 +328,66 @@ type LoadBalancerCreateOpts struct {
 	Location         *Location
 	NetworkZone      NetworkZone
 	Labels           map[string]string
-	Targets          []LoadBalancerTarget
-	Services         []LoadBalancerService
+	Targets          []LoadBalancerCreateOptsTarget
+	Services         []LoadBalancerCreateOptsService
 	PublicInterface  *bool
 	Network          *Network
 }
 
-// Validate checks if options are valid.
-func (o LoadBalancerCreateOpts) Validate() error {
-	if o.Name == "" {
-		return errors.New("missing name")
-	}
-	if o.LoadBalancerType == nil || (o.LoadBalancerType.ID == 0 && o.LoadBalancerType.Name == "") {
-		return errors.New("missing load balancer type")
-	}
-	if o.Network != nil && o.Network.ID == 0 {
-		{
-			return errors.New("missing network id")
-		}
-	}
-	if o.Location == nil && o.NetworkZone == "" {
-		return errors.New("one of location and network_zone must be set")
-	}
-	if o.Location != nil && o.NetworkZone != "" {
-		return errors.New("location and network_zone are mutually exclusive")
-	}
-	return nil
+// LoadBalancerCreateOptsTarget holds options for specifying a target
+// when creating a new Load Balancer.
+type LoadBalancerCreateOptsTarget struct {
+	Type         LoadBalancerTargetType
+	Server       LoadBalancerCreateOptsTargetServer
+	UsePrivateIP *bool
+}
+
+// LoadBalancerCreateOptsTargetServer holds options for specifying a server target
+// when creating a new Load Balancer.
+type LoadBalancerCreateOptsTargetServer struct {
+	Server *Server
+}
+
+// LoadBalancerCreateOptsService holds options for specifying a service
+// when creating a new Load Balancer.
+type LoadBalancerCreateOptsService struct {
+	Protocol        LoadBalancerServiceProtocol
+	ListenPort      *int
+	DestinationPort *int
+	Proxyprotocol   *bool
+	HTTP            *LoadBalancerCreateOptsServiceHTTP
+	HealthCheck     *LoadBalancerCreateOptsServiceHealthCheck
+}
+
+// LoadBalancerCreateOptsServiceHTTP holds options for specifying an HTTP service
+// when creating a new Load Balancer.
+type LoadBalancerCreateOptsServiceHTTP struct {
+	CookieName     *string
+	CookieLifetime *time.Duration
+	Certificates   []*Certificate
+	RedirectHTTP   *bool
+	StickySessions *bool
+}
+
+// LoadBalancerCreateOptsServiceHealthCheck holds options for specifying a service
+// health check when creating a new Load Balancer.
+type LoadBalancerCreateOptsServiceHealthCheck struct {
+	Protocol LoadBalancerServiceProtocol
+	Port     *int
+	Interval *time.Duration
+	Timeout  *time.Duration
+	Retries  *int
+	HTTP     *LoadBalancerCreateOptsServiceHealthCheckHTTP
+}
+
+// LoadBalancerCreateOptsServiceHealthCheckHTTP holds options for specifying a service
+// HTTP health check when creating a new Load Balancer.
+type LoadBalancerCreateOptsServiceHealthCheckHTTP struct {
+	Domain      *string
+	Path        *string
+	Response    *string
+	StatusCodes []string
+	TLS         *bool
 }
 
 // LoadBalancerCreateResult is the result of a create Load Balancer call.
@@ -358,76 +398,7 @@ type LoadBalancerCreateResult struct {
 
 // Create creates a new Load Balancer.
 func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreateOpts) (LoadBalancerCreateResult, *Response, error) {
-	if err := opts.Validate(); err != nil {
-		return LoadBalancerCreateResult{}, nil, err
-	}
-	reqBody := schema.LoadBalancerCreateRequest{
-		Name: opts.Name,
-	}
-	if opts.Algorithm != nil {
-		reqBody.Algorithm = &schema.LoadBalancerAlgorithm{
-			Type: string(opts.Algorithm.Type),
-		}
-	}
-	if opts.LoadBalancerType.ID != 0 {
-		reqBody.LoadBalancerType = opts.LoadBalancerType.ID
-	} else if opts.LoadBalancerType.Name != "" {
-		reqBody.LoadBalancerType = opts.LoadBalancerType.Name
-	}
-
-	if opts.Location != nil {
-		if opts.Location.ID != 0 {
-			reqBody.Location = strconv.Itoa(opts.Location.ID)
-		} else {
-			reqBody.Location = opts.Location.Name
-		}
-	}
-	if opts.NetworkZone != "" {
-		reqBody.NetworkZone = string(opts.NetworkZone)
-	}
-
-	if opts.Labels != nil {
-		reqBody.Labels = &opts.Labels
-	}
-
-	if opts.Network != nil {
-		reqBody.Network = &opts.Network.ID
-	}
-
-	if opts.PublicInterface != nil {
-		reqBody.PublicInterface = opts.PublicInterface
-	}
-
-	for _, target := range opts.Targets {
-		schemaTarget := schema.LoadBalancerTarget{}
-		switch target.Type {
-		case LoadBalancerTargetTypeServer:
-			schemaTarget.Type = string(LoadBalancerTargetTypeServer)
-			schemaTarget.Server = &schema.LoadBalancerTargetServer{ID: target.Server.Server.ID}
-		}
-		reqBody.Targets = append(reqBody.Targets, schemaTarget)
-	}
-
-	for _, service := range opts.Services {
-		schemaService := schema.LoadBalancerService{
-			Protocol:        string(service.Protocol),
-			ListenPort:      service.ListenPort,
-			DestinationPort: service.DestinationPort,
-			Proxyprotocol:   service.ProxyProtocol,
-		}
-		if service.Protocol == LoadBalancerServiceProtocolHTTP || service.Protocol == LoadBalancerServiceProtocolHTTPS {
-			schemaService.HTTP = &schema.LoadBalancerServiceHTTP{
-				CookieName:     service.HTTP.CookieName,
-				CookieLifetime: int(service.HTTP.CookieLifetime.Seconds()),
-				RedirectHTTP:   service.HTTP.RedirectHTTP,
-				StickySessions: service.HTTP.StickySessions,
-			}
-			for _, certificate := range service.HTTP.Certificates {
-				schemaService.HTTP.Certificates = append(schemaService.HTTP.Certificates, certificate.ID)
-			}
-		}
-		reqBody.Services = append(reqBody.Services, schemaService)
-	}
+	reqBody := loadBalancerCreateOptsToSchema(opts)
 	reqBodyData, err := json.Marshal(reqBody)
 
 	if err != nil {
@@ -470,7 +441,7 @@ func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBa
 		return nil, nil, err
 	}
 
-	var respBody schema.LoadBalancerActionTargetResponse
+	var respBody schema.LoadBalancerActionAddTargetResponse
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
@@ -490,7 +461,7 @@ func (c *LoadBalancerClient) removeTarget(ctx context.Context, loadBalancer *Loa
 		return nil, nil, err
 	}
 
-	var respBody schema.LoadBalancerActionTargetResponse
+	var respBody schema.LoadBalancerActionRemoveTargetResponse
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
@@ -498,14 +469,21 @@ func (c *LoadBalancerClient) removeTarget(ctx context.Context, loadBalancer *Loa
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
+// LoadBalancerAddServerTargetOpts specifies options for adding a server target
+// to a Load Balancer.
+type LoadBalancerAddServerTargetOpts struct {
+	Server       *Server
+	UsePrivateIP *bool
+}
+
 // AddServerTarget adds a server target to a Load Balancer.
-func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server *Server, usePrivateIP bool) (*Action, *Response, error) {
+func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddServerTargetOpts) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionAddTargetRequest{
 		Type: string(LoadBalancerTargetTypeServer),
-		Server: &schema.LoadBalancerTargetServer{
-			ID: server.ID,
+		Server: &schema.LoadBalancerActionAddTargetRequestServer{
+			ID: opts.Server.ID,
 		},
-		UsePrivateIP: usePrivateIP,
+		UsePrivateIP: opts.UsePrivateIP,
 	}
 	return c.addTarget(ctx, loadBalancer, reqBody)
 }
@@ -514,63 +492,57 @@ func (c *LoadBalancerClient) AddServerTarget(ctx context.Context, loadBalancer *
 func (c *LoadBalancerClient) RemoveServerTarget(ctx context.Context, loadBalancer *LoadBalancer, server *Server) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionRemoveTargetRequest{
 		Type: string(LoadBalancerTargetTypeServer),
-		Server: &schema.LoadBalancerTargetServer{
+		Server: &schema.LoadBalancerActionRemoveTargetRequestServer{
 			ID: server.ID,
 		},
 	}
 	return c.removeTarget(ctx, loadBalancer, reqBody)
 }
 
-// LoadBalancerAddServiceOpts specifies options for adding service to a Load Balancer.
+// LoadBalancerAddServiceOpts specifies options for adding a service to a Load Balancer.
 type LoadBalancerAddServiceOpts struct {
 	Protocol        LoadBalancerServiceProtocol
-	ListenPort      int
-	DestinationPort int
-	ProxyProtocol   *bool
-	HTTP            *LoadBalancerServiceHTTP
-	HealthCheck     *LoadBalancerServiceHealthCheck
+	ListenPort      *int
+	DestinationPort *int
+	Proxyprotocol   *bool
+	HTTP            *LoadBalancerAddServiceOptsHTTP
+	HealthCheck     *LoadBalancerAddServiceOptsHealthCheck
+}
+
+// LoadBalancerAddServiceOptsHTTP holds options for specifying an HTTP service
+// when adding a service to a Load Balancer.
+type LoadBalancerAddServiceOptsHTTP struct {
+	CookieName     *string
+	CookieLifetime *time.Duration
+	Certificates   []*Certificate
+	RedirectHTTP   *bool
+	StickySessions *bool
+}
+
+// LoadBalancerAddServiceOptsHealthCheck holds options for specifying an health check
+// when adding a service to a Load Balancer.
+type LoadBalancerAddServiceOptsHealthCheck struct {
+	Protocol LoadBalancerServiceProtocol
+	Port     *int
+	Interval *time.Duration
+	Timeout  *time.Duration
+	Retries  *int
+	HTTP     *LoadBalancerAddServiceOptsHealthCheckHTTP
+}
+
+// LoadBalancerAddServiceOptsHealthCheckHTTP holds options for specifying an
+// HTTP health check when adding a service to a Load Balancer.
+type LoadBalancerAddServiceOptsHealthCheckHTTP struct {
+	Domain      *string
+	Path        *string
+	Response    *string
+	StatusCodes []string
+	TLS         *bool
 }
 
 // AddService adds a service to a Load Balancer.
 func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddServiceOpts) (*Action, *Response, error) {
-	reqBody := schema.LoadBalancerActionAddServiceRequest{
-		Protocol:        string(opts.Protocol),
-		ListenPort:      opts.ListenPort,
-		DestinationPort: opts.DestinationPort,
-		ProxyProtocol:   opts.ProxyProtocol,
-	}
-
-	if opts.HTTP != nil {
-		reqBody.HTTP = &schema.LoadBalancerServiceHTTP{
-			CookieName:     opts.HTTP.CookieName,
-			CookieLifetime: int(opts.HTTP.CookieLifetime.Seconds()),
-			RedirectHTTP:   opts.HTTP.RedirectHTTP,
-			StickySessions: opts.HTTP.StickySessions,
-		}
-		for _, certificate := range opts.HTTP.Certificates {
-			reqBody.HTTP.Certificates = append(reqBody.HTTP.Certificates, certificate.ID)
-		}
-	}
-
-	if opts.HealthCheck != nil {
-		reqBody.HealthCheck = &schema.LoadBalancerServiceHealthCheck{
-			Protocol: string(opts.HealthCheck.Protocol),
-			Port:     opts.HealthCheck.Port,
-			Interval: int(opts.HealthCheck.Interval.Seconds()),
-			Timeout:  int(opts.HealthCheck.Timeout.Seconds()),
-			Retries:  opts.HealthCheck.Retries,
-		}
-		if opts.HealthCheck.HTTP != nil {
-			reqBody.HealthCheck.HTTP = &schema.LoadBalancerServiceHealthCheckHTTP{
-				Domain:      opts.HealthCheck.HTTP.Domain,
-				Path:        opts.HealthCheck.HTTP.Path,
-				Response:    opts.HealthCheck.HTTP.Response,
-				StatusCodes: opts.HealthCheck.HTTP.StatusCodes,
-				TLS:         opts.HealthCheck.HTTP.TLS,
-			}
-		}
-	}
-
+	reqBody := loadBalancerAddServiceOptsToSchema(opts)
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, nil, err
@@ -590,66 +562,49 @@ func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadB
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-// LoadBalancerUpdateServiceOpts specifies options for updating service to a Load Balancer.
+// LoadBalancerUpdateServiceOpts specifies options for updating a service.
 type LoadBalancerUpdateServiceOpts struct {
 	Protocol        LoadBalancerServiceProtocol
-	ListenPort      int
 	DestinationPort *int
-	ProxyProtocol   *bool
-	HTTP            *LoadBalancerUpdateServiceHTTPOpts
-	HealthCheck     *LoadBalancerServiceHealthCheck
+	Proxyprotocol   *bool
+	HTTP            *LoadBalancerUpdateServiceOptsHTTP
+	HealthCheck     *LoadBalancerUpdateServiceOptsHealthCheck
 }
 
-// LoadBalancerUpdateServiceHTTPOpts represents HTTP specific options for updating a service of a Load Balancer
-type LoadBalancerUpdateServiceHTTPOpts struct {
-	CookieName     string
-	CookieLifetime time.Duration
+// LoadBalancerUpdateServiceOptsHTTP specifies options for updating an HTTP(S) service.
+type LoadBalancerUpdateServiceOptsHTTP struct {
+	CookieName     *string
+	CookieLifetime *time.Duration
 	Certificates   []*Certificate
 	RedirectHTTP   *bool
 	StickySessions *bool
 }
 
-// UpdateService adds a service to a Load Balancer.
-func (c *LoadBalancerClient) UpdateService(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerUpdateServiceOpts) (*Action, *Response, error) {
-	reqBody := schema.LoadBalancerActionUpdateServiceRequest{
-		ListenPort:      opts.ListenPort,
-		DestinationPort: opts.DestinationPort,
-		ProxyProtocol:   opts.ProxyProtocol,
-	}
-	if opts.Protocol != "" {
-		reqBody.Protocol = string(opts.Protocol)
-	}
-	if opts.HTTP != nil {
-		reqBody.HTTP = &schema.LoadBalancerUpdateServiceHTTP{
-			CookieName:     opts.HTTP.CookieName,
-			CookieLifetime: int(opts.HTTP.CookieLifetime.Seconds()),
-			RedirectHTTP:   opts.HTTP.RedirectHTTP,
-			StickySessions: opts.HTTP.StickySessions,
-		}
-		for _, certificate := range opts.HTTP.Certificates {
-			reqBody.HTTP.Certificates = append(reqBody.HTTP.Certificates, certificate.ID)
-		}
-	}
+// LoadBalancerUpdateServiceOptsHealthCheck specifies options for updating
+// a service's health check.
+type LoadBalancerUpdateServiceOptsHealthCheck struct {
+	Protocol LoadBalancerServiceProtocol
+	Port     *int
+	Interval *time.Duration
+	Timeout  *time.Duration
+	Retries  *int
+	HTTP     *LoadBalancerUpdateServiceOptsHealthCheckHTTP
+}
 
-	if opts.HealthCheck != nil {
-		reqBody.HealthCheck = &schema.LoadBalancerServiceHealthCheck{
-			Protocol: string(opts.HealthCheck.Protocol),
-			Port:     opts.HealthCheck.Port,
-			Interval: int(opts.HealthCheck.Interval.Seconds()),
-			Timeout:  int(opts.HealthCheck.Timeout.Seconds()),
-			Retries:  opts.HealthCheck.Retries,
-		}
-		if opts.HealthCheck.HTTP != nil {
-			reqBody.HealthCheck.HTTP = &schema.LoadBalancerServiceHealthCheckHTTP{
-				Domain:      opts.HealthCheck.HTTP.Domain,
-				Path:        opts.HealthCheck.HTTP.Path,
-				Response:    opts.HealthCheck.HTTP.Response,
-				StatusCodes: opts.HealthCheck.HTTP.StatusCodes,
-				TLS:         opts.HealthCheck.HTTP.TLS,
-			}
-		}
-	}
+// LoadBalancerUpdateServiceOptsHealthCheckHTTP specifies options for updating
+// the HTTP-specific settings of a service's health check.
+type LoadBalancerUpdateServiceOptsHealthCheckHTTP struct {
+	Domain      *string
+	Path        *string
+	Response    *string
+	StatusCodes []string
+	TLS         *bool
+}
 
+// UpdateService updates a Load Balancer service.
+func (c *LoadBalancerClient) UpdateService(ctx context.Context, loadBalancer *LoadBalancer, listenPort int, opts LoadBalancerUpdateServiceOpts) (*Action, *Response, error) {
+	reqBody := loadBalancerUpdateServiceOptsToSchema(opts)
+	reqBody.ListenPort = listenPort
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, nil, err
@@ -669,7 +624,7 @@ func (c *LoadBalancerClient) UpdateService(ctx context.Context, loadBalancer *Lo
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-// DeleteService removes a server from a Load Balancer.
+// DeleteService deletes a Load Balancer service.
 func (c *LoadBalancerClient) DeleteService(ctx context.Context, loadBalancer *LoadBalancer, listenPort int) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerDeleteServiceRequest{
 		ListenPort: listenPort,
@@ -757,7 +712,7 @@ type LoadBalancerAttachToNetworkOpts struct {
 	IP      net.IP
 }
 
-// AttachToNetwork attaches a load balancer to a network.
+// AttachToNetwork attaches a Load Balancer to a network.
 func (c *LoadBalancerClient) AttachToNetwork(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAttachToNetworkOpts) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionAttachToNetworkRequest{
 		Network: opts.Network.ID,
@@ -813,7 +768,7 @@ func (c *LoadBalancerClient) DetachFromNetwork(ctx context.Context, loadBalancer
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
-// EnablePublicInterface enables the public interface from a Load Balancer.
+// EnablePublicInterface enables the Load Balancer's public network interface.
 func (c *LoadBalancerClient) EnablePublicInterface(ctx context.Context, loadBalancer *LoadBalancer) (*Action, *Response, error) {
 	path := fmt.Sprintf("/load_balancers/%d/actions/enable_public_interface", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "POST", path, nil)
@@ -828,7 +783,7 @@ func (c *LoadBalancerClient) EnablePublicInterface(ctx context.Context, loadBala
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
-// DisablePublicInterface enables the public interface from a Load Balancer.
+// DisablePublicInterface disables the Load Balancer's public network interface.
 func (c *LoadBalancerClient) DisablePublicInterface(ctx context.Context, loadBalancer *LoadBalancer) (*Action, *Response, error) {
 	path := fmt.Sprintf("/load_balancers/%d/actions/disable_public_interface", loadBalancer.ID)
 	req, err := c.client.NewRequest(ctx, "POST", path, nil)

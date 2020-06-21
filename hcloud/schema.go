@@ -2,13 +2,14 @@ package hcloud
 
 import (
 	"net"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 // This file provides converter functions to convert models in the
-// schema package to models in the hcloud package.
+// schema package to models in the hcloud package and vice versa.
 
 // ActionFromSchema converts a schema.Action to an Action.
 func ActionFromSchema(s schema.Action) *Action {
@@ -457,12 +458,11 @@ func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) LoadBalancerSer
 		Protocol:        LoadBalancerServiceProtocol(s.Protocol),
 		ListenPort:      s.ListenPort,
 		DestinationPort: s.DestinationPort,
-		ProxyProtocol:   s.Proxyprotocol,
+		Proxyprotocol:   s.Proxyprotocol,
 		HealthCheck:     LoadBalancerServiceHealthCheckFromSchema(s.HealthCheck),
 	}
-
 	if s.HTTP != nil {
-		ls.HTTP = &LoadBalancerServiceHTTP{
+		ls.HTTP = LoadBalancerServiceHTTP{
 			CookieName:     s.HTTP.CookieName,
 			CookieLifetime: time.Duration(s.HTTP.CookieLifetime) * time.Second,
 			RedirectHTTP:   s.HTTP.RedirectHTTP,
@@ -476,7 +476,7 @@ func LoadBalancerServiceFromSchema(s schema.LoadBalancerService) LoadBalancerSer
 }
 
 // LoadBalancerServiceHealthCheckFromSchema converts a schema.LoadBalancerServiceHealthCheck to a LoadBalancerServiceHealthCheck.
-func LoadBalancerServiceHealthCheckFromSchema(s *schema.LoadBalancerServiceHealthCheck) *LoadBalancerServiceHealthCheck {
+func LoadBalancerServiceHealthCheckFromSchema(s *schema.LoadBalancerServiceHealthCheck) LoadBalancerServiceHealthCheck {
 	lsh := LoadBalancerServiceHealthCheck{
 		Protocol: LoadBalancerServiceProtocol(s.Protocol),
 		Port:     s.Port,
@@ -484,7 +484,6 @@ func LoadBalancerServiceHealthCheckFromSchema(s *schema.LoadBalancerServiceHealt
 		Retries:  s.Retries,
 		Timeout:  time.Duration(s.Timeout) * time.Second,
 	}
-
 	if s.HTTP != nil {
 		lsh.HTTP = &LoadBalancerServiceHealthCheckHTTP{
 			Domain:      s.HTTP.Domain,
@@ -494,7 +493,7 @@ func LoadBalancerServiceHealthCheckFromSchema(s *schema.LoadBalancerServiceHealt
 			TLS:         s.HTTP.TLS,
 		}
 	}
-	return &lsh
+	return lsh
 }
 
 // LoadBalancerTargetFromSchema converts a schema.LoadBalancerTarget to a LoadBalancerTarget.
@@ -503,7 +502,6 @@ func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarge
 		Type:         LoadBalancerTargetType(s.Type),
 		UsePrivateIP: s.UsePrivateIP,
 	}
-
 	if s.Server != nil {
 		lt.Server = &LoadBalancerTargetServer{
 			Server: &Server{ID: s.Server.ID},
@@ -665,4 +663,205 @@ func PricingFromSchema(s schema.Pricing) Pricing {
 		})
 	}
 	return p
+}
+
+func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBalancerCreateRequest {
+	req := schema.LoadBalancerCreateRequest{
+		Name:            opts.Name,
+		PublicInterface: opts.PublicInterface,
+	}
+	if opts.Algorithm != nil {
+		req.Algorithm = &schema.LoadBalancerCreateRequestAlgorithm{
+			Type: string(opts.Algorithm.Type),
+		}
+	}
+	if opts.LoadBalancerType.ID != 0 {
+		req.LoadBalancerType = opts.LoadBalancerType.ID
+	} else if opts.LoadBalancerType.Name != "" {
+		req.LoadBalancerType = opts.LoadBalancerType.Name
+	}
+	if opts.Location != nil {
+		if opts.Location.ID != 0 {
+			req.Location = String(strconv.Itoa(opts.Location.ID))
+		} else {
+			req.Location = String(opts.Location.Name)
+		}
+	}
+	if opts.NetworkZone != "" {
+		req.NetworkZone = String(string(opts.NetworkZone))
+	}
+	if opts.Labels != nil {
+		req.Labels = &opts.Labels
+	}
+	if opts.Network != nil {
+		req.Network = Int(opts.Network.ID)
+	}
+	for _, target := range opts.Targets {
+		schemaTarget := schema.LoadBalancerCreateRequestTarget{}
+		switch target.Type {
+		case LoadBalancerTargetTypeServer:
+			schemaTarget.Type = string(LoadBalancerTargetTypeServer)
+			schemaTarget.Server = &schema.LoadBalancerCreateRequestTargetServer{ID: target.Server.Server.ID}
+		}
+		req.Targets = append(req.Targets, schemaTarget)
+	}
+	for _, service := range opts.Services {
+		schemaService := schema.LoadBalancerCreateRequestService{
+			Protocol:        string(service.Protocol),
+			ListenPort:      service.ListenPort,
+			DestinationPort: service.DestinationPort,
+			Proxyprotocol:   service.Proxyprotocol,
+		}
+		switch service.Protocol {
+		case LoadBalancerServiceProtocolHTTP, LoadBalancerServiceProtocolHTTPS:
+			schemaService.HTTP = &schema.LoadBalancerCreateRequestServiceHTTP{
+				RedirectHTTP:   service.HTTP.RedirectHTTP,
+				StickySessions: service.HTTP.StickySessions,
+				CookieName:     service.HTTP.CookieName,
+			}
+			if sec := service.HTTP.CookieLifetime.Seconds(); sec != 0 {
+				schemaService.HTTP.CookieLifetime = Int(int(sec))
+			}
+			if service.HTTP.Certificates != nil {
+				certificates := []int{}
+				for _, certificate := range service.HTTP.Certificates {
+					certificates = append(certificates, certificate.ID)
+				}
+				schemaService.HTTP.Certificates = &certificates
+			}
+		}
+		if service.HealthCheck != nil {
+			schemaHealthCheck := &schema.LoadBalancerCreateRequestServiceHealthCheck{
+				Protocol: string(service.HealthCheck.Protocol),
+				Port:     service.HealthCheck.Port,
+				Retries:  service.HealthCheck.Retries,
+			}
+			if service.HealthCheck.Interval != nil {
+				schemaHealthCheck.Interval = Int(int(service.HealthCheck.Interval.Seconds()))
+			}
+			if service.HealthCheck.Timeout != nil {
+				schemaHealthCheck.Timeout = Int(int(service.HealthCheck.Timeout.Seconds()))
+			}
+			if service.HealthCheck.HTTP != nil {
+				schemaHealthCheckHTTP := &schema.LoadBalancerCreateRequestServiceHealthCheckHTTP{
+					Domain:   service.HealthCheck.HTTP.Domain,
+					Path:     service.HealthCheck.HTTP.Path,
+					Response: service.HealthCheck.HTTP.Response,
+					TLS:      service.HealthCheck.HTTP.TLS,
+				}
+				if service.HealthCheck.HTTP.StatusCodes != nil {
+					schemaHealthCheckHTTP.StatusCodes = &service.HealthCheck.HTTP.StatusCodes
+				}
+				schemaHealthCheck.HTTP = schemaHealthCheckHTTP
+			}
+			schemaService.HealthCheck = schemaHealthCheck
+		}
+		req.Services = append(req.Services, schemaService)
+	}
+	return req
+}
+
+func loadBalancerAddServiceOptsToSchema(opts LoadBalancerAddServiceOpts) schema.LoadBalancerActionAddServiceRequest {
+	req := schema.LoadBalancerActionAddServiceRequest{
+		Protocol:        string(opts.Protocol),
+		ListenPort:      opts.ListenPort,
+		DestinationPort: opts.DestinationPort,
+		Proxyprotocol:   opts.Proxyprotocol,
+	}
+	if opts.HTTP != nil {
+		req.HTTP = &schema.LoadBalancerActionAddServiceRequestHTTP{
+			CookieName:     opts.HTTP.CookieName,
+			RedirectHTTP:   opts.HTTP.RedirectHTTP,
+			StickySessions: opts.HTTP.StickySessions,
+		}
+		if opts.HTTP.CookieLifetime != nil {
+			req.HTTP.CookieLifetime = Int(int(opts.HTTP.CookieLifetime.Seconds()))
+		}
+		if opts.HTTP.Certificates != nil {
+			certificates := []int{}
+			for _, certificate := range opts.HTTP.Certificates {
+				certificates = append(certificates, certificate.ID)
+			}
+			req.HTTP.Certificates = &certificates
+		}
+	}
+	if opts.HealthCheck != nil {
+		req.HealthCheck = &schema.LoadBalancerActionAddServiceRequestHealthCheck{
+			Protocol: string(opts.HealthCheck.Protocol),
+			Port:     opts.HealthCheck.Port,
+			Retries:  opts.HealthCheck.Retries,
+		}
+		if opts.HealthCheck.Interval != nil {
+			req.HealthCheck.Interval = Int(int(opts.HealthCheck.Interval.Seconds()))
+		}
+		if opts.HealthCheck.Timeout != nil {
+			req.HealthCheck.Timeout = Int(int(opts.HealthCheck.Timeout.Seconds()))
+		}
+		if opts.HealthCheck.HTTP != nil {
+			req.HealthCheck.HTTP = &schema.LoadBalancerActionAddServiceRequestHealthCheckHTTP{
+				Domain:   opts.HealthCheck.HTTP.Domain,
+				Path:     opts.HealthCheck.HTTP.Path,
+				Response: opts.HealthCheck.HTTP.Response,
+				TLS:      opts.HealthCheck.HTTP.TLS,
+			}
+			if opts.HealthCheck.HTTP.StatusCodes != nil {
+				req.HealthCheck.HTTP.StatusCodes = &opts.HealthCheck.HTTP.StatusCodes
+			}
+		}
+	}
+	return req
+}
+
+func loadBalancerUpdateServiceOptsToSchema(opts LoadBalancerUpdateServiceOpts) schema.LoadBalancerActionUpdateServiceRequest {
+	req := schema.LoadBalancerActionUpdateServiceRequest{
+		DestinationPort: opts.DestinationPort,
+		Proxyprotocol:   opts.Proxyprotocol,
+	}
+	if opts.Protocol != "" {
+		req.Protocol = String(string(opts.Protocol))
+	}
+	if opts.HTTP != nil {
+		req.HTTP = &schema.LoadBalancerActionUpdateServiceRequestHTTP{
+			CookieName:     opts.HTTP.CookieName,
+			RedirectHTTP:   opts.HTTP.RedirectHTTP,
+			StickySessions: opts.HTTP.StickySessions,
+		}
+		if opts.HTTP.CookieLifetime != nil {
+			req.HTTP.CookieLifetime = Int(int(opts.HTTP.CookieLifetime.Seconds()))
+		}
+		if opts.HTTP.Certificates != nil {
+			certificates := []int{}
+			for _, certificate := range opts.HTTP.Certificates {
+				certificates = append(certificates, certificate.ID)
+			}
+			req.HTTP.Certificates = &certificates
+		}
+	}
+	if opts.HealthCheck != nil {
+		req.HealthCheck = &schema.LoadBalancerActionUpdateServiceRequestHealthCheck{
+			Port:    opts.HealthCheck.Port,
+			Retries: opts.HealthCheck.Retries,
+		}
+		if opts.HealthCheck.Interval != nil {
+			req.HealthCheck.Interval = Int(int(opts.HealthCheck.Interval.Seconds()))
+		}
+		if opts.HealthCheck.Timeout != nil {
+			req.HealthCheck.Timeout = Int(int(opts.HealthCheck.Timeout.Seconds()))
+		}
+		if opts.HealthCheck.Protocol != "" {
+			req.HealthCheck.Protocol = String(string(opts.HealthCheck.Protocol))
+		}
+		if opts.HealthCheck.HTTP != nil {
+			req.HealthCheck.HTTP = &schema.LoadBalancerActionUpdateServiceRequestHealthCheckHTTP{
+				Domain:   opts.HealthCheck.HTTP.Domain,
+				Path:     opts.HealthCheck.HTTP.Path,
+				Response: opts.HealthCheck.HTTP.Response,
+				TLS:      opts.HealthCheck.HTTP.TLS,
+			}
+			if opts.HealthCheck.HTTP.StatusCodes != nil {
+				req.HealthCheck.HTTP.StatusCodes = &opts.HealthCheck.HTTP.StatusCodes
+			}
+		}
+	}
+	return req
 }
