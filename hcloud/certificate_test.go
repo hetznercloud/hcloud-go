@@ -197,6 +197,21 @@ func TestCertificateClientGetByNameNotFound(t *testing.T) {
 	}
 }
 
+func TestCertificateClientGetByNameEmpty(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	ctx := context.Background()
+
+	certficate, _, err := env.Client.Certificate.GetByName(ctx, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if certficate != nil {
+		t.Fatal("unexpected certficate")
+	}
+}
+
 func TestCertificateCreate(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

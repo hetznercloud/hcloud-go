@@ -46,6 +46,9 @@ func (c *LocationClient) GetByID(ctx context.Context, id int) (*Location, *Respo
 
 // GetByName retrieves an location by its name. If the location does not exist, nil is returned.
 func (c *LocationClient) GetByName(ctx context.Context, name string) (*Location, *Response, error) {
+	if name == "" {
+		return nil, nil, nil
+	}
 	locations, response, err := c.List(ctx, LocationListOpts{Name: name})
 	if len(locations) == 0 {
 		return nil, response, err

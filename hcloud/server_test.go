@@ -139,6 +139,20 @@ func TestServerClientGetByNameNotFound(t *testing.T) {
 	}
 }
 
+func TestServerClientGetByNameEmpty(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	ctx := context.Background()
+	server, _, err := env.Client.Server.GetByName(ctx, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if server != nil {
+		t.Fatal("unexpected server")
+	}
+}
+
 func TestServersList(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

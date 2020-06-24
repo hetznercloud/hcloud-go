@@ -60,6 +60,9 @@ func (c *ISOClient) GetByID(ctx context.Context, id int) (*ISO, *Response, error
 
 // GetByName retrieves an ISO by its name.
 func (c *ISOClient) GetByName(ctx context.Context, name string) (*ISO, *Response, error) {
+	if name == "" {
+		return nil, nil, nil
+	}
 	isos, response, err := c.List(ctx, ISOListOpts{Name: name})
 	if len(isos) == 0 {
 		return nil, response, err

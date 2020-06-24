@@ -157,6 +157,20 @@ func TestISOClient(t *testing.T) {
 		}
 	})
 
+	t.Run("GetByName (empty)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		ctx := context.Background()
+		iso, _, err := env.Client.ISO.GetByName(ctx, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if iso != nil {
+			t.Fatal("unexpected iso")
+		}
+	})
+
 	t.Run("List", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

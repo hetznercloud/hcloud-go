@@ -91,6 +91,9 @@ func (c *ImageClient) GetByID(ctx context.Context, id int) (*Image, *Response, e
 
 // GetByName retrieves an image by its name. If the image does not exist, nil is returned.
 func (c *ImageClient) GetByName(ctx context.Context, name string) (*Image, *Response, error) {
+	if name == "" {
+		return nil, nil, nil
+	}
 	images, response, err := c.List(ctx, ImageListOpts{Name: name})
 	if len(images) == 0 {
 		return nil, response, err

@@ -180,6 +180,20 @@ func TestVolumeClientGetByNameNotFound(t *testing.T) {
 	}
 }
 
+func TestVolumeClientGetByNameEmpty(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	ctx := context.Background()
+	volume, _, err := env.Client.Volume.GetByName(ctx, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if volume != nil {
+		t.Fatal("unexpected volume")
+	}
+}
+
 func TestVolumeClientDelete(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
