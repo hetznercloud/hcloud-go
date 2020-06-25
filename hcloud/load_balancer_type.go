@@ -46,6 +46,9 @@ func (c *LoadBalancerTypeClient) GetByID(ctx context.Context, id int) (*LoadBala
 
 // GetByName retrieves a Load Balancer type by its name. If the Load Balancer type does not exist, nil is returned.
 func (c *LoadBalancerTypeClient) GetByName(ctx context.Context, name string) (*LoadBalancerType, *Response, error) {
+	if name == "" {
+		return nil, nil, nil
+	}
 	LoadBalancerTypes, response, err := c.List(ctx, LoadBalancerTypeListOpts{Name: name})
 	if len(LoadBalancerTypes) == 0 {
 		return nil, response, err

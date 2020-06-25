@@ -146,6 +146,21 @@ func TestLoadBalancerClientGetByNameNotFound(t *testing.T) {
 	}
 }
 
+func TestLoadBalancerClientGetByNameEmpty(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	ctx := context.Background()
+
+	loadBalancer, _, err := env.Client.LoadBalancer.GetByName(ctx, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if loadBalancer != nil {
+		t.Fatal("unexpected load balancer")
+	}
+}
+
 func TestLoadBalancerCreate(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

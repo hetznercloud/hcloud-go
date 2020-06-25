@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Make all `GetByName` methods return `nil` when an empty name is provided
+
 ## v1.18.0
 
 * Add `Status` field to `Volume`

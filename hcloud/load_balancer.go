@@ -193,6 +193,9 @@ func (c *LoadBalancerClient) GetByID(ctx context.Context, id int) (*LoadBalancer
 
 // GetByName retrieves a Load Balancer by its name. If the Load Balancer does not exist, nil is returned.
 func (c *LoadBalancerClient) GetByName(ctx context.Context, name string) (*LoadBalancer, *Response, error) {
+	if name == "" {
+		return nil, nil, nil
+	}
 	LoadBalancer, response, err := c.List(ctx, LoadBalancerListOpts{Name: name})
 	if len(LoadBalancer) == 0 {
 		return nil, response, err

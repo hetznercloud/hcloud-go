@@ -138,6 +138,20 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 		}
 	})
 
+	t.Run("GetByName (empty)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		ctx := context.Background()
+		loadBalancerType, _, err := env.Client.LoadBalancerType.GetByName(ctx, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if loadBalancerType != nil {
+			t.Fatal("unexpected load balancer type")
+		}
+	})
+
 	t.Run("List", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

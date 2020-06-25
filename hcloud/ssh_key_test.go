@@ -143,6 +143,20 @@ func TestSSHKeyClientGetByNameNotFound(t *testing.T) {
 	}
 }
 
+func TestSSHKeyClientGetByNameEmpty(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	ctx := context.Background()
+	sshKey, _, err := env.Client.SSHKey.GetByName(ctx, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if sshKey != nil {
+		t.Fatal("unexpected SSH key")
+	}
+}
+
 func TestSSHKeyClientGetByFingerprint(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

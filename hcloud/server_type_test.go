@@ -138,6 +138,20 @@ func TestServerTypeClient(t *testing.T) {
 		}
 	})
 
+	t.Run("GetByName (empty)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		ctx := context.Background()
+		serverType, _, err := env.Client.ServerType.GetByName(ctx, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if serverType != nil {
+			t.Fatal("unexpected server type")
+		}
+	})
+
 	t.Run("List", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

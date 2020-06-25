@@ -138,6 +138,20 @@ func TestDatacenterClient(t *testing.T) {
 		}
 	})
 
+	t.Run("GetByName (empty)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		ctx := context.Background()
+		datacenter, _, err := env.Client.Datacenter.GetByName(ctx, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if datacenter != nil {
+			t.Fatal("unexpected datacenter")
+		}
+	})
+
 	t.Run("List", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

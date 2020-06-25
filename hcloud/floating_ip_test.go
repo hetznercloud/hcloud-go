@@ -149,6 +149,19 @@ func TestFloatingIPClientGetByNameNotFound(t *testing.T) {
 	})
 }
 
+func TestFloatingIPClientGetByNameEmpty(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	floatingIP, _, err := env.Client.FloatingIP.GetByName(context.Background(), "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if floatingIP != nil {
+		t.Fatal("unexpected Floating IP")
+	}
+}
+
 func TestFloatingIPClientList(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

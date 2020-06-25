@@ -138,6 +138,20 @@ func TestLocationClient(t *testing.T) {
 		}
 	})
 
+	t.Run("GetByName (empty)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		ctx := context.Background()
+		location, _, err := env.Client.Location.GetByName(ctx, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if location != nil {
+			t.Fatal("unexpected location")
+		}
+	})
+
 	t.Run("List", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

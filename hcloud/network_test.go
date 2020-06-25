@@ -139,6 +139,20 @@ func TestNetworkClientGetByNameNotFound(t *testing.T) {
 	}
 }
 
+func TestNetworkClientGetByNameEmpty(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	ctx := context.Background()
+	network, _, err := env.Client.Network.GetByName(ctx, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if network != nil {
+		t.Fatal("unexpected network")
+	}
+}
+
 func TestNetworkCreate(t *testing.T) {
 	var (
 		ctx           = context.Background()

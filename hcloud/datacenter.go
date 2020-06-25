@@ -49,6 +49,9 @@ func (c *DatacenterClient) GetByID(ctx context.Context, id int) (*Datacenter, *R
 
 // GetByName retrieves an datacenter by its name. If the datacenter does not exist, nil is returned.
 func (c *DatacenterClient) GetByName(ctx context.Context, name string) (*Datacenter, *Response, error) {
+	if name == "" {
+		return nil, nil, nil
+	}
 	datacenters, response, err := c.List(ctx, DatacenterListOpts{Name: name})
 	if len(datacenters) == 0 {
 		return nil, response, err

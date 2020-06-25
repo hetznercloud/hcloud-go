@@ -157,6 +157,20 @@ func TestImageClient(t *testing.T) {
 		}
 	})
 
+	t.Run("GetByName (empty)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		ctx := context.Background()
+		image, _, err := env.Client.Image.GetByName(ctx, "")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if image != nil {
+			t.Fatal("unexpected image")
+		}
+	})
+
 	t.Run("List", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

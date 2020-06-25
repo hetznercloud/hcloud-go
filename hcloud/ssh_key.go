@@ -48,6 +48,9 @@ func (c *SSHKeyClient) GetByID(ctx context.Context, id int) (*SSHKey, *Response,
 
 // GetByName retrieves a SSH key by its name. If the SSH key does not exist, nil is returned.
 func (c *SSHKeyClient) GetByName(ctx context.Context, name string) (*SSHKey, *Response, error) {
+	if name == "" {
+		return nil, nil, nil
+	}
 	sshKeys, response, err := c.List(ctx, SSHKeyListOpts{Name: name})
 	if len(sshKeys) == 0 {
 		return nil, response, err
