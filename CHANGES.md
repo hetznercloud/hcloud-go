@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.18.1
 
 * Make all `GetByName` methods return `nil` when an empty name is provided
 * Clarify that filters specified in options for List() calls are not taken
