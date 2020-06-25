@@ -3,6 +3,9 @@
 ## master
 
 * Make all `GetByName` methods return `nil` when an empty name is provided
+* Clarify that filters specified in options for List() calls are not taken
+  into account when their value corresponds to their zero value or when
+  they are empty.
 
 ## v1.18.0
 

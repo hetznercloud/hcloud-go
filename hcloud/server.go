@@ -182,6 +182,9 @@ func (l ServerListOpts) values() url.Values {
 }
 
 // List returns a list of servers for a specific page.
+//
+// Please note that filters specified in opts are not taken into account
+// when their value corresponds to their zero value or when they are empty.
 func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server, *Response, error) {
 	path := "/servers?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)

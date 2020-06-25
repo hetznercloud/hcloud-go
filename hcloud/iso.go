@@ -93,6 +93,9 @@ func (l ISOListOpts) values() url.Values {
 }
 
 // List returns a list of ISOs for a specific page.
+//
+// Please note that filters specified in opts are not taken into account
+// when their value corresponds to their zero value or when they are empty.
 func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) ([]*ISO, *Response, error) {
 	path := "/isos?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)

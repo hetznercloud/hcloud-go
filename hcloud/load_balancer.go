@@ -227,6 +227,9 @@ func (l LoadBalancerListOpts) values() url.Values {
 }
 
 // List returns a list of Load Balancers for a specific page.
+//
+// Please note that filters specified in opts are not taken into account
+// when their value corresponds to their zero value or when they are empty.
 func (c *LoadBalancerClient) List(ctx context.Context, opts LoadBalancerListOpts) ([]*LoadBalancer, *Response, error) {
 	path := "/load_balancers?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
