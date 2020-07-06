@@ -712,7 +712,6 @@ func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBala
 			DestinationPort: service.DestinationPort,
 			Proxyprotocol:   service.Proxyprotocol,
 		}
-
 		if service.HTTP != nil {
 			schemaService.HTTP = &schema.LoadBalancerCreateRequestServiceHTTP{
 				RedirectHTTP:   service.HTTP.RedirectHTTP,
@@ -730,7 +729,6 @@ func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBala
 				schemaService.HTTP.Certificates = &certificates
 			}
 		}
-
 		if service.HealthCheck != nil {
 			schemaHealthCheck := &schema.LoadBalancerCreateRequestServiceHealthCheck{
 				Protocol: string(service.HealthCheck.Protocol),
