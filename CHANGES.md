@@ -2,7 +2,7 @@
 
 ## master
 
-* Retry all calls that triggered the API conflict error
+* Retry API requests on conflict error
 
 ## v1.18.1
 
