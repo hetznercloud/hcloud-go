@@ -1,5 +1,10 @@
 # Changes
 
+## master
+
+* Fix nil pointer dereference when creating a Load Balancer with HTTP(S)
+  service and not providing HTTP-specific options
+
 ## v1.18.2
 
 * Retry API requests on conflict error

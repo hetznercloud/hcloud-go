@@ -712,8 +712,7 @@ func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBala
 			DestinationPort: service.DestinationPort,
 			Proxyprotocol:   service.Proxyprotocol,
 		}
-		switch service.Protocol {
-		case LoadBalancerServiceProtocolHTTP, LoadBalancerServiceProtocolHTTPS:
+		if service.HTTP != nil {
 			schemaService.HTTP = &schema.LoadBalancerCreateRequestServiceHTTP{
 				RedirectHTTP:   service.HTTP.RedirectHTTP,
 				StickySessions: service.HTTP.StickySessions,
