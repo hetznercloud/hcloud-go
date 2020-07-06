@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Retry API requests on conflict error
+
 ## v1.18.1
 
 * Make all `GetByName` methods return `nil` when an empty name is provided
