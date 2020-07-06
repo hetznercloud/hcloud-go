@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Make http configuration optional when adding a service on Load Balancer create
+
 ## v1.18.2
 
 * Retry API requests on conflict error
