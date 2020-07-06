@@ -2,7 +2,8 @@
 
 ## master
 
-* Make http configuration optional when adding a service on Load Balancer create
+* Fix nil pointer dereference when creating a Load Balancer with HTTP(S)
+  service and not providing HTTP-specific options
 
 ## v1.18.2
 
