@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Retry all calls that triggered the API conflict error
+
 ## v1.18.1
 
 * Make all `GetByName` methods return `nil` when an empty name is provided
