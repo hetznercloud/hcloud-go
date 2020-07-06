@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.18.2
 
 * Retry API requests on conflict error
 
