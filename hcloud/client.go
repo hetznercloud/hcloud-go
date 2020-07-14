@@ -189,7 +189,7 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 	for {
 		if c.debugWriter != nil {
 			// To get the response body we need to read it before the request was actually send. https://github.com/golang/go/issues/29792
-			dumpReq, err := httputil.DumpRequest(r, true)
+			dumpReq, err := httputil.DumpRequestOut(r, true)
 			if err != nil {
 				return nil, err
 			}
