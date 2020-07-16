@@ -1317,6 +1317,27 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 					}
 				],
 				"use_private_ip": false
+			},
+			{
+				"type": "label_selector",
+				"label_selector": {
+					"selector": "lbt"
+				},
+				"targets": [
+					{
+						"type": "server",
+						"server": {
+							"id": 80
+						},
+						"health_status": [
+							{
+								"listen_port": 443,
+								"status": "healthy"
+							}
+						],
+						"use_private_ip": false
+					}
+				]
 			}
 		],
 		"algorithm": {
@@ -1365,7 +1386,7 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 	if len(loadBalancer.Services) != 1 {
 		t.Errorf("unexpected length of Services: %v", len(loadBalancer.Services))
 	}
-	if len(loadBalancer.Targets) != 1 {
+	if len(loadBalancer.Targets) != 2 {
 		t.Errorf("unexpected length of Targets: %v", len(loadBalancer.Targets))
 	}
 	if loadBalancer.Algorithm.Type != "round_robin" {
@@ -1511,6 +1532,9 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 		if loadBalancerTarget.Server == nil || loadBalancerTarget.Server.Server.ID != 80 {
 			t.Errorf("unexpected Server: %v", loadBalancerTarget.Server)
 		}
+		if loadBalancerTarget.LabelSelector != nil {
+			t.Errorf("unexpected LabelSelector.Selector: %v", loadBalancerTarget.LabelSelector)
+		}
 		if loadBalancerTarget.UsePrivateIP {
 			t.Errorf("unexpected UsePrivateIP: %v", loadBalancerTarget.UsePrivateIP)
 		}
@@ -1525,6 +1549,60 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 			}
 		}
 	})
+	t.Run("label_selector target", func(t *testing.T) {
+		data := []byte(`{
+			"type": "label_selector",
+			"label_selector": {
+				"selector": "lbt"
+			},
+			"targets": [
+				{
+					"type": "server",
+					"server": {
+						"id": 80
+					},
+					"health_status": [
+						{
+							"listen_port": 443,
+							"status": "healthy"
+						}
+					]
+				}
+			]
+		}`)
+		var s schema.LoadBalancerTarget
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+		loadBalancerTarget := LoadBalancerTargetFromSchema(s)
+		if loadBalancerTarget.Type != "label_selector" {
+			t.Errorf("unexpected Type: %v", loadBalancerTarget.Type)
+		}
+		if loadBalancerTarget.LabelSelector == nil || loadBalancerTarget.LabelSelector.Selector != "lbt" {
+			t.Errorf("unexpected LabelSelector: %v", loadBalancerTarget.LabelSelector)
+		}
+		if loadBalancerTarget.Server != nil {
+			t.Errorf("unexpected LabelSelector.Server: %v", loadBalancerTarget.Server)
+		}
+		if len(loadBalancerTarget.Targets) != 1 {
+			t.Errorf("unexpected Targets length: %v", len(loadBalancerTarget.Targets))
+		} else {
+			if loadBalancerTarget.Targets[0].Server == nil || loadBalancerTarget.Targets[0].Server.Server.ID != 80 {
+				t.Errorf("unexpected loadBalancerTarget.Targets[0].Server.Server.ID: %v", loadBalancerTarget.Targets[0].Server.Server.ID)
+			}
+			if len(loadBalancerTarget.Targets[0].HealthStatus) != 1 {
+				t.Errorf("unexpected Targets length: %v", len(loadBalancerTarget.Targets[0].HealthStatus))
+			} else {
+				if loadBalancerTarget.Targets[0].HealthStatus[0].ListenPort != 443 {
+					t.Errorf("unexpected HealthStatus[0].ListenPort: %v", loadBalancerTarget.Targets[0].HealthStatus[0].ListenPort)
+				}
+				if loadBalancerTarget.Targets[0].HealthStatus[0].Status != LoadBalancerTargetHealthStatusStatusHealthy {
+					t.Errorf("unexpected HealthStatus[0].Status: %v", loadBalancerTarget.Targets[0].HealthStatus[0].Status)
+				}
+			}
+		}
+	})
+
 }
 
 func TestCertificateFromSchema(t *testing.T) {
