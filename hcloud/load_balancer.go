@@ -27,6 +27,9 @@ type LoadBalancer struct {
 	Protection       LoadBalancerProtection
 	Labels           map[string]string
 	Created          time.Time
+	IncludedTraffic  uint64
+	OutgoingTraffic  uint64
+	IngoingTraffic   uint64
 }
 
 // LoadBalancerPublicNet represents a Load Balancer's public network.

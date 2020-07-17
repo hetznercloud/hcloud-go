@@ -15,6 +15,9 @@ type LoadBalancer struct {
 	Services         []LoadBalancerService    `json:"services"`
 	Targets          []LoadBalancerTarget     `json:"targets"`
 	Algorithm        LoadBalancerAlgorithm    `json:"algorithm"`
+	IncludedTraffic  uint64                   `json:"included_traffic"`
+	OutgoingTraffic  *uint64                  `json:"outgoing_traffic"`
+	IngoingTraffic   *uint64                  `json:"ingoing_traffic"`
 }
 
 type LoadBalancerPublicNet struct {
