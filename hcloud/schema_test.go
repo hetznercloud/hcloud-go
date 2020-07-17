@@ -1268,6 +1268,9 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 				}
 			]
 		},
+		"outgoing_traffic": 123456,
+		"ingoing_traffic": 7891011,
+		"included_traffic": 654321,
 		"protection": {
 			"delete": false
 		},
@@ -1367,6 +1370,15 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 	}
 	if loadBalancer.Algorithm.Type != "round_robin" {
 		t.Errorf("unexpected Algorithm.Type: %v", loadBalancer.Algorithm.Type)
+	}
+	if loadBalancer.IncludedTraffic != 654321 {
+		t.Errorf("unexpected included traffic: %v", loadBalancer.IncludedTraffic)
+	}
+	if loadBalancer.OutgoingTraffic != 123456 {
+		t.Errorf("unexpected outgoing traffic: %v", loadBalancer.OutgoingTraffic)
+	}
+	if loadBalancer.IngoingTraffic != 7891011 {
+		t.Errorf("unexpected ingoing traffic: %v", loadBalancer.IngoingTraffic)
 	}
 }
 
