@@ -796,3 +796,72 @@ func TestLoadBalancerClientDisablePublicInterface(t *testing.T) {
 		t.Errorf("unexpected action ID: %d", action.ID)
 	}
 }
+
+func TestLoadBalancerClientChangeType(t *testing.T) {
+	var (
+		ctx          = context.Background()
+		loadBalancer = &LoadBalancer{ID: 1}
+	)
+
+	t.Run("with server type ID", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/load_balancers/1/actions/change_type", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.LoadBalancerActionChangeTypeRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if id, ok := reqBody.LoadBalancerType.(float64); !ok || id != 1 {
+				t.Errorf("unexpected Load Balancer type ID: %v", reqBody.LoadBalancerType)
+			}
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionChangeTypeResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := LoadBalancerChangeTypeOpts{
+			LoadBalancerType: &LoadBalancerType{ID: 1},
+		}
+		action, _, err := env.Client.LoadBalancer.ChangeType(ctx, loadBalancer, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
+
+	t.Run("with server type name", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/load_balancers/1/actions/change_type", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.LoadBalancerActionChangeTypeRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if name, ok := reqBody.LoadBalancerType.(string); !ok || name != "type" {
+				t.Errorf("unexpected Load Balancer type name: %v", reqBody.LoadBalancerType)
+			}
+			json.NewEncoder(w).Encode(schema.LoadBalancerActionChangeTypeResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := LoadBalancerChangeTypeOpts{
+			LoadBalancerType: &LoadBalancerType{Name: "type"},
+		}
+		action, _, err := env.Client.LoadBalancer.ChangeType(ctx, loadBalancer, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
+}
