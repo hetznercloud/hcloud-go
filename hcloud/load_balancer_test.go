@@ -803,7 +803,7 @@ func TestLoadBalancerClientChangeType(t *testing.T) {
 		loadBalancer = &LoadBalancer{ID: 1}
 	)
 
-	t.Run("with server type ID", func(t *testing.T) {
+	t.Run("with Load Balancer type ID", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
 
@@ -834,7 +834,7 @@ func TestLoadBalancerClientChangeType(t *testing.T) {
 		}
 	})
 
-	t.Run("with server type name", func(t *testing.T) {
+	t.Run("with Load Balancer type name", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
 
