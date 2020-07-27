@@ -335,3 +335,11 @@ type LoadBalancerActionDisablePublicInterfaceRequest struct{}
 type LoadBalancerActionDisablePublicInterfaceResponse struct {
 	Action Action `json:"action"`
 }
+
+type LoadBalancerActionChangeTypeRequest struct {
+	LoadBalancerType interface{} `json:"load_balancer_type"` // int or string
+}
+
+type LoadBalancerActionChangeTypeResponse struct {
+	Action Action `json:"action"`
+}

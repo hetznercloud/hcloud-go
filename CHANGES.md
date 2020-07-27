@@ -5,6 +5,7 @@
 * Fix nil pointer dereference when creating a Load Balancer with HTTP(S)
   service and not providing HTTP-specific options
 * Add `IncludedTraffic`, `OutgoingTraffic` and `IngoingTraffic` fields to `LoadBalancer`
+* Add `ChangeType()` method to the Load Balancer client
 
 ## v1.18.2
 

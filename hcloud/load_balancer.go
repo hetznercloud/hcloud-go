@@ -806,3 +806,35 @@ func (c *LoadBalancerClient) DisablePublicInterface(ctx context.Context, loadBal
 	}
 	return ActionFromSchema(respBody.Action), resp, err
 }
+
+// LoadBalancerChangeTypeOpts specifies options for changing a Load Balancer's type.
+type LoadBalancerChangeTypeOpts struct {
+	LoadBalancerType *LoadBalancerType // new Load Balancer type
+}
+
+// ChangeType changes a Load Balancer's type.
+func (c *LoadBalancerClient) ChangeType(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerChangeTypeOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionChangeTypeRequest{}
+	if opts.LoadBalancerType.ID != 0 {
+		reqBody.LoadBalancerType = opts.LoadBalancerType.ID
+	} else {
+		reqBody.LoadBalancerType = opts.LoadBalancerType.Name
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/change_type", loadBalancer.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.LoadBalancerActionChangeTypeResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
