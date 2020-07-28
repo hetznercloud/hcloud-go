@@ -1,9 +1,11 @@
 package hcloud
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -260,6 +262,60 @@ func TestClientDo(t *testing.T) {
 	_, err := env.Client.Do(request, nil)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
+	}
+	if callCount != 2 {
+		t.Fatalf("unexpected callCount: %v", callCount)
+	}
+}
+
+func TestClientDoPost(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Client.debugWriter = new(bytes.Buffer)
+	callCount := 0
+	env.Mux.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		callCount++
+		w.Header().Set("Content-Type", "application/json")
+		var dat map[string]interface{}
+		body, err := ioutil.ReadAll(r.Body)
+		r.Body.Close()
+		if err != nil {
+			t.Error(err)
+		}
+		if err := json.Unmarshal(body, &dat); err != nil {
+			t.Error(err)
+		}
+		switch callCount {
+		case 1:
+			if dat["test"] != "abcd" {
+				t.Errorf("unexpected payload: %v", dat)
+			}
+			w.WriteHeader(http.StatusConflict)
+			json.NewEncoder(w).Encode(schema.ErrorResponse{
+				Error: schema.Error{
+					Code:    string(ErrorCodeConflict),
+					Message: "conflict",
+				},
+			})
+		case 2:
+			if dat["test"] != "abcd" {
+				t.Errorf("unexpected payload: %v", dat)
+			}
+			fmt.Fprintln(w, "{}")
+		default:
+			t.Errorf("unexpected number of calls to the test server: %v", callCount)
+		}
+	})
+
+	ctx := context.Background()
+	request, _ := env.Client.NewRequest(ctx, http.MethodPost, "/test", strings.NewReader(`{"test": "abcd"}`))
+	_, err := env.Client.Do(request, nil)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if callCount != 2 {
+		t.Fatalf("unexpected callCount: %v", callCount)
 	}
 }
 
