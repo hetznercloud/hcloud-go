@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.19.0
 
 * Fix nil pointer dereference when creating a Load Balancer with HTTP(S)
   service and not providing HTTP-specific options
