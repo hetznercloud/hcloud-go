@@ -1603,6 +1603,26 @@ func TestLoadBalancerTargetFromSchema(t *testing.T) {
 		}
 	})
 
+	t.Run("ip target", func(t *testing.T) {
+		var s schema.LoadBalancerTarget
+
+		data := []byte(`{
+			"type": "ip",
+			"ip": {
+				"ip": "1.2.3.4"
+			}
+		}`)
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+		lbTgt := LoadBalancerTargetFromSchema(s)
+		if lbTgt.Type != LoadBalancerTargetTypeIP {
+			t.Errorf("unexpected Type: %s", lbTgt.Type)
+		}
+		if lbTgt.IP.IP != "1.2.3.4" {
+			t.Errorf("unexpected IP: %s", lbTgt.IP.IP)
+		}
+	})
 }
 
 func TestCertificateFromSchema(t *testing.T) {
@@ -1938,6 +1958,10 @@ func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
 							Server: &Server{ID: 5},
 						},
 					},
+					{
+						Type: LoadBalancerTargetTypeIP,
+						IP:   LoadBalancerCreateOptsTargetIP{IP: "1.2.3.4"},
+					},
 				},
 			},
 			Request: schema.LoadBalancerCreateRequest{
@@ -1986,6 +2010,12 @@ func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
 						Type: "server",
 						Server: &schema.LoadBalancerCreateRequestTargetServer{
 							ID: 5,
+						},
+					},
+					{
+						Type: "ip",
+						IP: &schema.LoadBalancerCreateRequestTargetIP{
+							IP: "1.2.3.4",
 						},
 					},
 				},

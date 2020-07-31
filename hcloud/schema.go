@@ -519,6 +519,9 @@ func LoadBalancerTargetFromSchema(s schema.LoadBalancerTarget) LoadBalancerTarge
 			Selector: s.LabelSelector.Selector,
 		}
 	}
+	if s.IP != nil {
+		lt.IP = &LoadBalancerTargetIP{IP: s.IP.IP}
+	}
 
 	for _, healthStatus := range s.HealthStatus {
 		lt.HealthStatus = append(lt.HealthStatus, LoadBalancerTargetHealthStatusFromSchema(healthStatus))
@@ -721,7 +724,9 @@ func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBala
 		case LoadBalancerTargetTypeLabelSelector:
 			schemaTarget.Type = string(LoadBalancerTargetTypeLabelSelector)
 			schemaTarget.LabelSelector = &schema.LoadBalancerCreateRequestTargetLabelSelector{Selector: target.LabelSelector.Selector}
-
+		case LoadBalancerTargetTypeIP:
+			schemaTarget.Type = string(LoadBalancerTargetTypeIP)
+			schemaTarget.IP = &schema.LoadBalancerCreateRequestTargetIP{IP: target.IP.IP}
 		}
 		req.Targets = append(req.Targets, schemaTarget)
 	}

@@ -943,3 +943,76 @@ func TestLoadBalancerClientRemoveLabelSelectorTarget(t *testing.T) {
 	}
 
 }
+
+func TestLoadBalancerClientAddIPTarget(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers/1/actions/add_target", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.LoadBalancerActionAddTargetRequest
+
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.Type != string(LoadBalancerTargetTypeIP) {
+			t.Errorf("unexpected type %v", reqBody.Type)
+		}
+		if reqBody.IP.IP != "1.2.3.4" {
+			t.Errorf("unexpected IP target %v", reqBody.IP)
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionAddTargetResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	action, _, err := env.Client.LoadBalancer.AddIPTarget(ctx, &LoadBalancer{ID: 1}, LoadBalancerAddIPTargetOpts{
+		IP: "1.2.3.4",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}
+
+func TestLoadBalancerClientRemoveIPTarget(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers/1/actions/remove_target", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.LoadBalancerActionRemoveTargetRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.Type != string(LoadBalancerTargetTypeIP) {
+			t.Errorf("unexpected type %v", reqBody.Type)
+		}
+		if reqBody.IP.IP != "1.2.3.4" {
+			t.Errorf("unexpected IP %v", reqBody.IP)
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerActionRemoveTargetResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
+
+	ctx := context.Background()
+	action, _, err := env.Client.LoadBalancer.RemoveIPTarget(ctx, &LoadBalancer{ID: 1}, "1.2.3.4")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
+}

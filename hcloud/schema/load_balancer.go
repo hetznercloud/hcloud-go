@@ -85,6 +85,7 @@ type LoadBalancerTarget struct {
 	Type          string                           `json:"type"`
 	Server        *LoadBalancerTargetServer        `json:"server"`
 	LabelSelector *LoadBalancerTargetLabelSelector `json:"label_selector"`
+	IP            *LoadBalancerTargetIP            `json:"ip"`
 	HealthStatus  []LoadBalancerTargetHealthStatus `json:"health_status"`
 	UsePrivateIP  bool                             `json:"use_private_ip"`
 	Targets       []LoadBalancerTarget             `json:"targets,omitempty"`
@@ -98,8 +99,13 @@ type LoadBalancerTargetHealthStatus struct {
 type LoadBalancerTargetServer struct {
 	ID int `json:"id"`
 }
+
 type LoadBalancerTargetLabelSelector struct {
 	Selector string `json:"selector"`
+}
+
+type LoadBalancerTargetIP struct {
+	IP string `json:"ip"`
 }
 
 type LoadBalancerListResponse struct {
@@ -114,6 +120,7 @@ type LoadBalancerActionAddTargetRequest struct {
 	Type          string                                           `json:"type"`
 	Server        *LoadBalancerActionAddTargetRequestServer        `json:"server,omitempty"`
 	LabelSelector *LoadBalancerActionAddTargetRequestLabelSelector `json:"label_selector,omitempty"`
+	IP            *LoadBalancerActionAddTargetRequestIP            `json:"ip,omitempty"`
 	UsePrivateIP  *bool                                            `json:"use_private_ip,omitempty"`
 }
 
@@ -125,6 +132,10 @@ type LoadBalancerActionAddTargetRequestLabelSelector struct {
 	Selector string `json:"selector"`
 }
 
+type LoadBalancerActionAddTargetRequestIP struct {
+	IP string `json:"ip"`
+}
+
 type LoadBalancerActionAddTargetResponse struct {
 	Action Action `json:"action"`
 }
@@ -133,13 +144,19 @@ type LoadBalancerActionRemoveTargetRequest struct {
 	Type          string                                              `json:"type"`
 	Server        *LoadBalancerActionRemoveTargetRequestServer        `json:"server,omitempty"`
 	LabelSelector *LoadBalancerActionRemoveTargetRequestLabelSelector `json:"label_selector,omitempty"`
+	IP            *LoadBalancerActionRemoveTargetRequestIP            `json:"ip,omitempty"`
 }
 
 type LoadBalancerActionRemoveTargetRequestServer struct {
 	ID int `json:"id"`
 }
+
 type LoadBalancerActionRemoveTargetRequestLabelSelector struct {
 	Selector string `json:"selector"`
+}
+
+type LoadBalancerActionRemoveTargetRequestIP struct {
+	IP string `json:"ip"`
 }
 
 type LoadBalancerActionRemoveTargetResponse struct {
@@ -251,15 +268,22 @@ type LoadBalancerCreateRequestTarget struct {
 	Type          string                                        `json:"type"`
 	Server        *LoadBalancerCreateRequestTargetServer        `json:"server,omitempty"`
 	LabelSelector *LoadBalancerCreateRequestTargetLabelSelector `json:"label_selector,omitempty"`
+	IP            *LoadBalancerCreateRequestTargetIP            `json:"ip,omitempty"`
 	UsePrivateIP  *bool                                         `json:"use_private_ip,omitempty"`
 }
 
 type LoadBalancerCreateRequestTargetServer struct {
 	ID int `json:"id"`
 }
+
 type LoadBalancerCreateRequestTargetLabelSelector struct {
 	Selector string `json:"selector"`
 }
+
+type LoadBalancerCreateRequestTargetIP struct {
+	IP string `json:"ip"`
+}
+
 type LoadBalancerCreateRequestService struct {
 	Protocol        string                                       `json:"protocol"`
 	ListenPort      *int                                         `json:"listen_port,omitempty"`
