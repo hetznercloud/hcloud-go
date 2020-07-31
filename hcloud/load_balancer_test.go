@@ -972,7 +972,7 @@ func TestLoadBalancerClientAddIPTarget(t *testing.T) {
 
 	ctx := context.Background()
 	action, _, err := env.Client.LoadBalancer.AddIPTarget(ctx, &LoadBalancer{ID: 1}, LoadBalancerAddIPTargetOpts{
-		IP: "1.2.3.4",
+		IP: net.ParseIP("1.2.3.4"),
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -1008,7 +1008,7 @@ func TestLoadBalancerClientRemoveIPTarget(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	action, _, err := env.Client.LoadBalancer.RemoveIPTarget(ctx, &LoadBalancer{ID: 1}, "1.2.3.4")
+	action, _, err := env.Client.LoadBalancer.RemoveIPTarget(ctx, &LoadBalancer{ID: 1}, net.ParseIP("1.2.3.4"))
 	if err != nil {
 		t.Fatal(err)
 	}

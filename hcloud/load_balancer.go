@@ -588,24 +588,24 @@ func (c *LoadBalancerClient) RemoveLabelSelectorTarget(ctx context.Context, load
 // LoadBalancerAddIPTargetOpts specifies options for adding a label selector target
 // to a Load Balancer.
 type LoadBalancerAddIPTargetOpts struct {
-	IP string
+	IP net.IP
 }
 
 // AddIPTarget adds a label selector target to a Load Balancer.
 func (c *LoadBalancerClient) AddIPTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddIPTargetOpts) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionAddTargetRequest{
 		Type: string(LoadBalancerTargetTypeIP),
-		IP:   &schema.LoadBalancerActionAddTargetRequestIP{IP: opts.IP},
+		IP:   &schema.LoadBalancerActionAddTargetRequestIP{IP: opts.IP.String()},
 	}
 	return c.addTarget(ctx, loadBalancer, reqBody)
 }
 
 // RemoveIPTarget removes a label selector target from a Load Balancer.
-func (c *LoadBalancerClient) RemoveIPTarget(ctx context.Context, loadBalancer *LoadBalancer, ip string) (*Action, *Response, error) {
+func (c *LoadBalancerClient) RemoveIPTarget(ctx context.Context, loadBalancer *LoadBalancer, ip net.IP) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionRemoveTargetRequest{
 		Type: string(LoadBalancerTargetTypeIP),
 		IP: &schema.LoadBalancerActionRemoveTargetRequestIP{
-			IP: ip,
+			IP: ip.String(),
 		},
 	}
 	return c.removeTarget(ctx, loadBalancer, reqBody)
