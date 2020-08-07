@@ -1,6 +1,6 @@
 # Changes
 
-## Master
+## v1.20.0
 
 * Add support for Load Balancer Label Selector targets
 * Add support for Load Balancer IP targets
