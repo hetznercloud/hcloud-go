@@ -905,7 +905,6 @@ func TestLoadBalancerClientAddLabelSelectorTarget(t *testing.T) {
 	if action.ID != 1 {
 		t.Errorf("unexpected action ID: %d", action.ID)
 	}
-
 }
 
 func TestLoadBalancerClientRemoveLabelSelectorTarget(t *testing.T) {
@@ -941,7 +940,6 @@ func TestLoadBalancerClientRemoveLabelSelectorTarget(t *testing.T) {
 	if action.ID != 1 {
 		t.Errorf("unexpected action ID: %d", action.ID)
 	}
-
 }
 
 func TestLoadBalancerClientAddIPTarget(t *testing.T) {
