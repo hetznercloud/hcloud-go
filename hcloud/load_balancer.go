@@ -117,8 +117,16 @@ type LoadBalancerAlgorithm struct {
 type LoadBalancerTargetType string
 
 const (
-	// LoadBalancerTargetTypeServer is a target type which points to a specific server.
+	// LoadBalancerTargetTypeServer is a target type which points to a specific
+	// server.
 	LoadBalancerTargetTypeServer LoadBalancerTargetType = "server"
+
+	// LoadBalancerTargetTypeLabelSelector is a target type which selects the
+	// servers a Load Balancer points to using labels assigned to the servers.
+	LoadBalancerTargetTypeLabelSelector LoadBalancerTargetType = "label_selector"
+
+	// LoadBalancerTargetTypeIP is a target type which points to an IP.
+	LoadBalancerTargetTypeIP LoadBalancerTargetType = "ip"
 )
 
 // LoadBalancerServiceProtocol specifies the protocol of a Load Balancer service.
@@ -135,17 +143,32 @@ const (
 
 // LoadBalancerTarget represents a Load Balancer target.
 type LoadBalancerTarget struct {
-	Type         LoadBalancerTargetType
-	Server       *LoadBalancerTargetServer
-	HealthStatus []LoadBalancerTargetHealthStatus
-	Targets      []LoadBalancerTarget
-	UsePrivateIP bool
+	Type          LoadBalancerTargetType
+	Server        *LoadBalancerTargetServer
+	LabelSelector *LoadBalancerTargetLabelSelector
+	IP            *LoadBalancerTargetIP
+	HealthStatus  []LoadBalancerTargetHealthStatus
+	Targets       []LoadBalancerTarget
+	UsePrivateIP  bool
 }
 
 // LoadBalancerTargetServer configures a Load Balancer target
-// pointing to a specific server.
+// pointing at a specific server.
 type LoadBalancerTargetServer struct {
 	Server *Server
+}
+
+// LoadBalancerTargetLabelSelector configures a Load Balancer target pointing
+// at the servers matching the selector. This includes the target pointing at
+// nothing, if no servers match the Selector.
+type LoadBalancerTargetLabelSelector struct {
+	Selector string
+}
+
+// LoadBalancerTargetIP configures a Load Balancer target pointing to a Hetzner
+// Online IP address.
+type LoadBalancerTargetIP struct {
+	IP string
 }
 
 // LoadBalancerTargetHealthStatusStatus describes a target's health status.
@@ -346,15 +369,29 @@ type LoadBalancerCreateOpts struct {
 // LoadBalancerCreateOptsTarget holds options for specifying a target
 // when creating a new Load Balancer.
 type LoadBalancerCreateOptsTarget struct {
-	Type         LoadBalancerTargetType
-	Server       LoadBalancerCreateOptsTargetServer
-	UsePrivateIP *bool
+	Type          LoadBalancerTargetType
+	Server        LoadBalancerCreateOptsTargetServer
+	LabelSelector LoadBalancerCreateOptsTargetLabelSelector
+	IP            LoadBalancerCreateOptsTargetIP
+	UsePrivateIP  *bool
 }
 
 // LoadBalancerCreateOptsTargetServer holds options for specifying a server target
 // when creating a new Load Balancer.
 type LoadBalancerCreateOptsTargetServer struct {
 	Server *Server
+}
+
+// LoadBalancerCreateOptsTargetLabelSelector holds options for specifying a label selector target
+// when creating a new Load Balancer.
+type LoadBalancerCreateOptsTargetLabelSelector struct {
+	Selector string
+}
+
+// LoadBalancerCreateOptsTargetIP holds options for specifying an IP target
+// when creating a new Load Balancer.
+type LoadBalancerCreateOptsTargetIP struct {
+	IP string
 }
 
 // LoadBalancerCreateOptsService holds options for specifying a service
@@ -503,6 +540,62 @@ func (c *LoadBalancerClient) RemoveServerTarget(ctx context.Context, loadBalance
 		Type: string(LoadBalancerTargetTypeServer),
 		Server: &schema.LoadBalancerActionRemoveTargetRequestServer{
 			ID: server.ID,
+		},
+	}
+	return c.removeTarget(ctx, loadBalancer, reqBody)
+}
+
+// LoadBalancerAddLabelSelectorTargetOpts specifies options for adding a label selector target
+// to a Load Balancer.
+type LoadBalancerAddLabelSelectorTargetOpts struct {
+	Selector     string
+	UsePrivateIP *bool
+}
+
+// AddLabelSelectorTarget adds a label selector target to a Load Balancer.
+func (c *LoadBalancerClient) AddLabelSelectorTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddLabelSelectorTargetOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionAddTargetRequest{
+		Type: string(LoadBalancerTargetTypeLabelSelector),
+		LabelSelector: &schema.LoadBalancerActionAddTargetRequestLabelSelector{
+			Selector: opts.Selector,
+		},
+		UsePrivateIP: opts.UsePrivateIP,
+	}
+	return c.addTarget(ctx, loadBalancer, reqBody)
+}
+
+// RemoveLabelSelectorTarget removes a label selector target from a Load Balancer.
+func (c *LoadBalancerClient) RemoveLabelSelectorTarget(ctx context.Context, loadBalancer *LoadBalancer, labelSelector string) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionRemoveTargetRequest{
+		Type: string(LoadBalancerTargetTypeLabelSelector),
+		LabelSelector: &schema.LoadBalancerActionRemoveTargetRequestLabelSelector{
+			Selector: labelSelector,
+		},
+	}
+	return c.removeTarget(ctx, loadBalancer, reqBody)
+}
+
+// LoadBalancerAddIPTargetOpts specifies options for adding an IP target to a
+// Load Balancer.
+type LoadBalancerAddIPTargetOpts struct {
+	IP net.IP
+}
+
+// AddIPTarget adds an IP target to a Load Balancer.
+func (c *LoadBalancerClient) AddIPTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddIPTargetOpts) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionAddTargetRequest{
+		Type: string(LoadBalancerTargetTypeIP),
+		IP:   &schema.LoadBalancerActionAddTargetRequestIP{IP: opts.IP.String()},
+	}
+	return c.addTarget(ctx, loadBalancer, reqBody)
+}
+
+// RemoveIPTarget removes an IP target from a Load Balancer.
+func (c *LoadBalancerClient) RemoveIPTarget(ctx context.Context, loadBalancer *LoadBalancer, ip net.IP) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionRemoveTargetRequest{
+		Type: string(LoadBalancerTargetTypeIP),
+		IP: &schema.LoadBalancerActionRemoveTargetRequestIP{
+			IP: ip.String(),
 		},
 	}
 	return c.removeTarget(ctx, loadBalancer, reqBody)

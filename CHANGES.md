@@ -1,5 +1,10 @@
 # Changes
 
+## Master
+
+* Add support for Load Balancer Label Selector targets
+* Add support for Load Balancer IP targets
+
 ## v1.19.0
 
 * Fix nil pointer dereference when creating a Load Balancer with HTTP(S)
