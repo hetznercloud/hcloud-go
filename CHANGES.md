@@ -7,6 +7,8 @@
 * Add `IncludedTraffic`, `OutgoingTraffic` and `IngoingTraffic` fields to `LoadBalancer`
 * Add `ChangeType()` method to the Load Balancer client
 * Fix retrying of requests that contain a body
+* Add support for Load Balancer Label Selector targets
+* Add support for Load Balancer IP Selector targets
 
 ## v1.18.2
 
