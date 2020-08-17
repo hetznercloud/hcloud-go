@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Add `IncludeDeprecated` Field to `ImageListOpts`
+
 ## v1.20.0
 
 * Add support for Load Balancer Label Selector targets

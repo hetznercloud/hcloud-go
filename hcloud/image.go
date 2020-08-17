@@ -113,11 +113,12 @@ func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Respon
 // ImageListOpts specifies options for listing images.
 type ImageListOpts struct {
 	ListOpts
-	Type    []ImageType
-	BoundTo *Server
-	Name    string
-	Sort    []string
-	Status  []ImageStatus
+	Type              []ImageType
+	BoundTo           *Server
+	Name              string
+	Sort              []string
+	Status            []ImageStatus
+	IncludeDeprecated bool
 }
 
 func (l ImageListOpts) values() url.Values {
@@ -130,6 +131,9 @@ func (l ImageListOpts) values() url.Values {
 	}
 	if l.Name != "" {
 		vals.Add("name", l.Name)
+	}
+	if l.IncludeDeprecated {
+		vals.Add("include_deprecated", strconv.FormatBool(l.IncludeDeprecated))
 	}
 	for _, sort := range l.Sort {
 		vals.Add("sort", sort)
