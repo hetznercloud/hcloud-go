@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Don't send `Authorization` Header when `WithToken` was not called 
+
 ## v1.21.0
 
 * Add `IncludeDeprecated` Field to `ImageListOpts`
