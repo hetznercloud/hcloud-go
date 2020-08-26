@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Add `PrimaryDiskSize` Field to `Server`
+
 ## v1.21.1
 
 * Don't send `Authorization` Header when `WithToken` was not called 
