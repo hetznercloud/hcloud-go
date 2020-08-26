@@ -1,6 +1,6 @@
 # Changes
 
-## master
+## v1.22.0
 
 * Add `PrimaryDiskSize` Field to `Server`
 
