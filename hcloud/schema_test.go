@@ -392,6 +392,7 @@ func TestServerFromSchema(t *testing.T) {
 		"included_traffic": 654321,
 		"backup_window": "22-02",
 		"rescue_enabled": true,
+		"primary_disk_size": 20,
 		"image": {
 			"id": 4711,
 			"type": "system",
@@ -478,6 +479,9 @@ func TestServerFromSchema(t *testing.T) {
 	}
 	if server.BackupWindow != "22-02" {
 		t.Errorf("unexpected backup window: %v", server.BackupWindow)
+	}
+	if server.PrimaryDiskSize != 20 {
+		t.Errorf("unexpected primary disk size: %v", server.PrimaryDiskSize)
 	}
 	if !server.RescueEnabled {
 		t.Errorf("unexpected rescue enabled state: %v", server.RescueEnabled)
