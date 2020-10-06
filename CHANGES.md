@@ -4,6 +4,7 @@
 
 * Add missing constants for all resource specific error codes
 * Expose metrics for Servers and Load Balancers
+* Add support for vSwitch Subnetworks
 
 ## v1.22.0
 

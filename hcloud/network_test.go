@@ -460,6 +460,53 @@ func TestNetworkClientAddSubnet(t *testing.T) {
 			t.Errorf("unexpected action ID: %d", action.ID)
 		}
 	})
+
+	t.Run("type vswitch with ip range", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/networks/1/actions/add_subnet", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.NetworkActionAddSubnetRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.Type != "vswitch" {
+				t.Errorf("unexpected Type: %v", reqBody.Type)
+			}
+			if reqBody.IPRange != "10.0.1.0/24" {
+				t.Errorf("unexpected IPRange: %v", reqBody.IPRange)
+			}
+			if reqBody.NetworkZone != "eu-central" {
+				t.Errorf("unexpected NetworkZone: %v", reqBody.NetworkZone)
+			}
+			if reqBody.VSwitchID != 123 {
+				t.Errorf("unexpected VSwitchID: %v", reqBody.VSwitchID)
+			}
+			json.NewEncoder(w).Encode(schema.NetworkActionAddSubnetResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+			})
+		})
+
+		ctx := context.Background()
+		_, ipRange, _ := net.ParseCIDR("10.0.1.0/24")
+		opts := NetworkAddSubnetOpts{
+			Subnet: NetworkSubnet{
+				Type:        NetworkSubnetTypeVSwitch,
+				IPRange:     ipRange,
+				NetworkZone: NetworkZoneEUCentral,
+				VSwitchID:   123,
+			},
+		}
+		action, _, err := env.Client.Network.AddSubnet(ctx, &Network{ID: 1}, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", action.ID)
+		}
+	})
 }
 
 func TestNetworkClientDeleteSubnet(t *testing.T) {
