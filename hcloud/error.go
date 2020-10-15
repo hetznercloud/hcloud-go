@@ -32,7 +32,7 @@ const (
 
 	// Load Balancer related error codes
 	ErrorCodeIPNotOwned                       ErrorCode = "ip_not_owned"                          // The IP you are trying to add as a target is not owned by the Project owner
-	ErrorCodeSourcePortAlreadyUses            ErrorCode = "source_port_already_used"              // The source port you are trying to add is already in use
+	ErrorCodeSourcePortAlreadyUsed            ErrorCode = "source_port_already_used"              // The source port you are trying to add is already in use
 	ErrorCodeCloudResourceIPNotAllowed        ErrorCode = "cloud_resource_ip_not_allowed"         // The IP you are trying to add as a target belongs to a Hetzner Cloud resource
 	ErrorCodeServerNotAttachedToNetwork       ErrorCode = "server_not_attached_to_network"        // The server you are trying to add as a target is not attached to the same network as the Load Balancer
 	ErrorCodeTargetAlreadyDefined             ErrorCode = "target_already_defined"                // The Load Balancer target you are trying to define is already defined
