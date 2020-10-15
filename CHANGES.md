@@ -1,5 +1,9 @@
 # Changes
 
+## master
+
+* Add missing constants for all resource specific error codes
+
 ## v1.22.0
 
 * Add `PrimaryDiskSize` Field to `Server`
