@@ -2244,3 +2244,344 @@ func TestLoadBalancerUpdateServiceOptsToSchema(t *testing.T) {
 		})
 	}
 }
+
+func TestServerMetricsFromSchema(t *testing.T) {
+	tests := []struct {
+		name        string
+		respFn      func() *schema.ServerGetMetricsResponse
+		expected    *ServerMetrics
+		expectedErr string
+	}{
+		{
+			name: "values not tuples",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []interface{}{"some value"},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "failed to convert value to tuple: some value",
+		},
+		{
+			name: "invalid tuple size",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []interface{}{
+							[]interface{}{1435781471.622, "43", "something else"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "invalid tuple size: 3: [1.435781471622e+09 43 something else]",
+		},
+		{
+			name: "invalid time stamp",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []interface{}{
+							[]interface{}{"1435781471.622", "43"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "convert to float64: 1435781471.622",
+		},
+		{
+			name: "invalid value",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []interface{}{
+							[]interface{}{1435781471.622, 43},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "not a string: 43",
+		},
+		{
+			name: "valid response",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []interface{}{
+							[]interface{}{1435781470.622, "42"},
+							[]interface{}{1435781471.622, "43"},
+						},
+					},
+					"disk.0.iops.read": {
+						Values: []interface{}{
+							[]interface{}{1435781480.622, "100"},
+							[]interface{}{1435781481.622, "150"},
+						},
+					},
+					"disk.0.iops.write": {
+						Values: []interface{}{
+							[]interface{}{1435781480.622, "50"},
+							[]interface{}{1435781481.622, "55"},
+						},
+					},
+					"network.0.pps.in": {
+						Values: []interface{}{
+							[]interface{}{1435781490.622, "70"},
+							[]interface{}{1435781491.622, "75"},
+						},
+					},
+					"network.0.pps.out": {
+						Values: []interface{}{
+							[]interface{}{1435781590.622, "60"},
+							[]interface{}{1435781591.622, "65"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expected: &ServerMetrics{
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				TimeSeries: map[string][]ServerMetricsValue{
+					"cpu": {
+						{Timestamp: 1435781470.622, Value: "42"},
+						{Timestamp: 1435781471.622, Value: "43"},
+					},
+					"disk.0.iops.read": {
+						{Timestamp: 1435781480.622, Value: "100"},
+						{Timestamp: 1435781481.622, Value: "150"},
+					},
+					"disk.0.iops.write": {
+						{Timestamp: 1435781480.622, Value: "50"},
+						{Timestamp: 1435781481.622, Value: "55"},
+					},
+					"network.0.pps.in": {
+						{Timestamp: 1435781490.622, Value: "70"},
+						{Timestamp: 1435781491.622, Value: "75"},
+					},
+					"network.0.pps.out": {
+						{Timestamp: 1435781590.622, Value: "60"},
+						{Timestamp: 1435781591.622, Value: "65"},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			resp := tt.respFn()
+			actual, err := serverMetricsFromSchema(resp)
+			if err != nil && tt.expectedErr == "" {
+				t.Fatalf("expected no error; got: %v", err)
+			}
+			if err != nil && tt.expectedErr != err.Error() {
+				t.Fatalf("expected error: %s; got: %v", tt.expectedErr, err)
+			}
+			if !cmp.Equal(tt.expected, actual) {
+				t.Errorf("unexpected result:\n%s", cmp.Diff(tt.expected, actual))
+			}
+		})
+	}
+
+}
+
+func TestLoadBalancerMetricsFromSchema(t *testing.T) {
+	tests := []struct {
+		name        string
+		respFn      func() *schema.LoadBalancerGetMetricsResponse
+		expected    *LoadBalancerMetrics
+		expectedErr string
+	}{
+		{
+			name: "values not tuples",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []interface{}{"some value"},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "failed to convert value to tuple: some value",
+		},
+		{
+			name: "invalid tuple size",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []interface{}{
+							[]interface{}{1435781471.622, "43", "something else"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "invalid tuple size: 3: [1.435781471622e+09 43 something else]",
+		},
+		{
+			name: "invalid time stamp",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []interface{}{
+							[]interface{}{"1435781471.622", "43"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "convert to float64: 1435781471.622",
+		},
+		{
+			name: "invalid value",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []interface{}{
+							[]interface{}{1435781471.622, 43},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "not a string: 43",
+		},
+		{
+			name: "valid response",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []interface{}{
+							[]interface{}{1435781470.622, "42"},
+							[]interface{}{1435781471.622, "43"},
+						},
+					},
+					"connections_per_second": {
+						Values: []interface{}{
+							[]interface{}{1435781480.622, "100"},
+							[]interface{}{1435781481.622, "150"},
+						},
+					},
+					"requests_per_second": {
+						Values: []interface{}{
+							[]interface{}{1435781480.622, "50"},
+							[]interface{}{1435781481.622, "55"},
+						},
+					},
+					"bandwidth.in": {
+						Values: []interface{}{
+							[]interface{}{1435781490.622, "70"},
+							[]interface{}{1435781491.622, "75"},
+						},
+					},
+					"bandwidth.out": {
+						Values: []interface{}{
+							[]interface{}{1435781590.622, "60"},
+							[]interface{}{1435781591.622, "65"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expected: &LoadBalancerMetrics{
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				TimeSeries: map[string][]LoadBalancerMetricsValue{
+					"open_connections": {
+						{Timestamp: 1435781470.622, Value: "42"},
+						{Timestamp: 1435781471.622, Value: "43"},
+					},
+					"connections_per_second": {
+						{Timestamp: 1435781480.622, Value: "100"},
+						{Timestamp: 1435781481.622, Value: "150"},
+					},
+					"requests_per_second": {
+						{Timestamp: 1435781480.622, Value: "50"},
+						{Timestamp: 1435781481.622, Value: "55"},
+					},
+					"bandwidth.in": {
+						{Timestamp: 1435781490.622, Value: "70"},
+						{Timestamp: 1435781491.622, Value: "75"},
+					},
+					"bandwidth.out": {
+						{Timestamp: 1435781590.622, Value: "60"},
+						{Timestamp: 1435781591.622, Value: "65"},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			resp := tt.respFn()
+			actual, err := loadBalancerMetricsFromSchema(resp)
+			if err != nil && tt.expectedErr == "" {
+				t.Fatalf("expected no error; got: %v", err)
+			}
+			if err != nil && tt.expectedErr != err.Error() {
+				t.Fatalf("expected error: %s; got: %v", tt.expectedErr, err)
+			}
+			if !cmp.Equal(tt.expected, actual) {
+				t.Errorf("unexpected result:\n%s", cmp.Diff(tt.expected, actual))
+			}
+		})
+	}
+}

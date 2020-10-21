@@ -3,6 +3,7 @@
 ## master
 
 * Add missing constants for all resource specific error codes
+* Expose metrics for Servers and Load Balancers
 
 ## v1.22.0
 
@@ -10,7 +11,7 @@
 
 ## v1.21.1
 
-* Don't send `Authorization` Header when `WithToken` was not called 
+* Don't send `Authorization` Header when `WithToken` was not called
 
 ## v1.21.0
 

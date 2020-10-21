@@ -3,10 +3,15 @@ package hcloud
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net"
 	"net/http"
+	"net/url"
+	"strconv"
 	"testing"
+	"time"
 
+	"github.com/google/go-cmp/cmp"
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
@@ -1745,4 +1750,282 @@ func TestServerClientChangeAliasIP(t *testing.T) {
 	if action.ID != 1 {
 		t.Errorf("unexpected action ID: %v", action.ID)
 	}
+}
+
+func TestServerGetMetrics(t *testing.T) {
+	tests := []struct {
+		name        string
+		server      *Server
+		opts        ServerGetMetricsOpts
+		respStatus  int
+		respFn      func() schema.ServerGetMetricsResponse
+		expected    ServerMetrics
+		expectedErr string
+	}{
+		{
+			name:   "cpu metrics",
+			server: &Server{ID: 1},
+			opts: ServerGetMetricsOpts{
+				Types: []ServerMetricType{ServerMetricCPU},
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+			},
+			respFn: func() schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []interface{}{
+							[]interface{}{1435781470.622, "42"},
+							[]interface{}{1435781471.622, "43"},
+						},
+					},
+				}
+
+				return resp
+			},
+			expected: ServerMetrics{
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				TimeSeries: map[string][]ServerMetricsValue{
+					"cpu": {
+						{Timestamp: 1435781470.622, Value: "42"},
+						{Timestamp: 1435781471.622, Value: "43"},
+					},
+				},
+			},
+		},
+		{
+			name:   "all metrics",
+			server: &Server{ID: 2},
+			opts: ServerGetMetricsOpts{
+				Types: []ServerMetricType{
+					ServerMetricCPU,
+					ServerMetricDisk,
+					ServerMetricNetwork,
+				},
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+			},
+			respFn: func() schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []interface{}{
+							[]interface{}{1435781470.622, "42"},
+							[]interface{}{1435781471.622, "43"},
+						},
+					},
+					"disk.0.iops.read": {
+						Values: []interface{}{
+							[]interface{}{1435781480.622, "100"},
+							[]interface{}{1435781481.622, "150"},
+						},
+					},
+					"disk.0.iops.write": {
+						Values: []interface{}{
+							[]interface{}{1435781480.622, "50"},
+							[]interface{}{1435781481.622, "55"},
+						},
+					},
+					"network.0.pps.in": {
+						Values: []interface{}{
+							[]interface{}{1435781490.622, "70"},
+							[]interface{}{1435781491.622, "75"},
+						},
+					},
+					"network.0.pps.out": {
+						Values: []interface{}{
+							[]interface{}{1435781590.622, "60"},
+							[]interface{}{1435781591.622, "65"},
+						},
+					},
+				}
+
+				return resp
+			},
+			expected: ServerMetrics{
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				TimeSeries: map[string][]ServerMetricsValue{
+					"cpu": {
+						{Timestamp: 1435781470.622, Value: "42"},
+						{Timestamp: 1435781471.622, Value: "43"},
+					},
+					"disk.0.iops.read": {
+						{Timestamp: 1435781480.622, Value: "100"},
+						{Timestamp: 1435781481.622, Value: "150"},
+					},
+					"disk.0.iops.write": {
+						{Timestamp: 1435781480.622, Value: "50"},
+						{Timestamp: 1435781481.622, Value: "55"},
+					},
+					"network.0.pps.in": {
+						{Timestamp: 1435781490.622, Value: "70"},
+						{Timestamp: 1435781491.622, Value: "75"},
+					},
+					"network.0.pps.out": {
+						{Timestamp: 1435781590.622, Value: "60"},
+						{Timestamp: 1435781591.622, Value: "65"},
+					},
+				},
+			},
+		},
+		{
+			name:   "missing metrics types",
+			server: &Server{ID: 3},
+			opts: ServerGetMetricsOpts{
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+			},
+			expectedErr: "add query params: no metric types specified",
+		},
+		{
+			name:   "no start time",
+			server: &Server{ID: 4},
+			opts: ServerGetMetricsOpts{
+				Types: []ServerMetricType{ServerMetricCPU},
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+			},
+			expectedErr: "add query params: no start time specified",
+		},
+		{
+			name:   "no end time",
+			server: &Server{ID: 5},
+			opts: ServerGetMetricsOpts{
+				Types: []ServerMetricType{ServerMetricCPU},
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+			},
+			expectedErr: "add query params: no end time specified",
+		},
+		{
+			name:   "call to backend API fails",
+			server: &Server{ID: 6},
+			opts: ServerGetMetricsOpts{
+				Types: []ServerMetricType{ServerMetricCPU},
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+			},
+			respStatus:  http.StatusInternalServerError,
+			expectedErr: "get metrics: hcloud: server responded with status code 500",
+		},
+		{
+			name: "no server passed",
+			opts: ServerGetMetricsOpts{
+				Types: []ServerMetricType{ServerMetricCPU},
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+			},
+			expectedErr: "illegal argument: server is nil",
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			env := newTestEnv()
+			defer env.Teardown()
+
+			if tt.server != nil {
+				path := fmt.Sprintf("/servers/%d/metrics", tt.server.ID)
+				env.Mux.HandleFunc(path, func(rw http.ResponseWriter, r *http.Request) {
+					if r.Method != "GET" {
+						t.Errorf("expected GET; got %s", r.Method)
+					}
+					opts := serverMetricsOptsFromURL(t, r.URL)
+					if !cmp.Equal(tt.opts, opts) {
+						t.Errorf("unexpected opts: url: %s\n%v", r.URL.String(), cmp.Diff(tt.opts, opts))
+					}
+
+					status := tt.respStatus
+					if status == 0 {
+						status = http.StatusOK
+					}
+					rw.WriteHeader(status)
+
+					if tt.respFn != nil {
+						resp := tt.respFn()
+						if err := json.NewEncoder(rw).Encode(resp); err != nil {
+							t.Errorf("failed to encode response: %v", err)
+						}
+					}
+				})
+			}
+
+			ctx := context.Background()
+			actual, _, err := env.Client.Server.GetMetrics(ctx, tt.server, tt.opts)
+			if tt.expectedErr != "" {
+				if tt.expectedErr != err.Error() {
+					t.Errorf("expected err: %v; got: %v", tt.expectedErr, err)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("failed to get server metrics: %v", err)
+			}
+			if !cmp.Equal(&tt.expected, actual) {
+				t.Errorf("Actual metrics did not equal expected: %s", cmp.Diff(&tt.expected, actual))
+			}
+		})
+	}
+}
+
+func serverMetricsOptsFromURL(t *testing.T, u *url.URL) ServerGetMetricsOpts {
+	var opts ServerGetMetricsOpts
+
+	for k, vs := range u.Query() {
+		switch k {
+		case "type":
+			for _, v := range vs {
+				opts.Types = append(opts.Types, ServerMetricType(v))
+			}
+		case "start":
+			if len(vs) != 1 {
+				t.Errorf("expected one value for start; got %d: %v", len(vs), vs)
+				continue
+			}
+			v, err := time.Parse(time.RFC3339, vs[0])
+			if err != nil {
+				t.Errorf("parse start as RFC3339: %v", err)
+			}
+			opts.Start = v
+		case "end":
+			if len(vs) != 1 {
+				t.Errorf("expected one value for end; got %d: %v", len(vs), vs)
+				continue
+			}
+			v, err := time.Parse(time.RFC3339, vs[0])
+			if err != nil {
+				t.Errorf("parse end as RFC3339: %v", err)
+			}
+			opts.End = v
+		case "step":
+			if len(vs) != 1 {
+				t.Errorf("expected one value for step; got %d: %v", len(vs), vs)
+				continue
+			}
+			v, err := strconv.Atoi(vs[0])
+			if err != nil {
+				t.Errorf("invalid step: %v", err)
+			}
+			opts.Step = v
+		}
+	}
+
+	return opts
+}
+
+func mustParseTime(t *testing.T, layout, value string) time.Time {
+	t.Helper()
+
+	ts, err := time.Parse(layout, value)
+	if err != nil {
+		t.Fatalf("parse time: layout %v: value %v", layout, value)
+	}
+	return ts
 }
