@@ -42,8 +42,9 @@ const (
 	ErrorCodeLoadBalancerNotAttachedToNetwork ErrorCode = "load_balancer_not_attached_to_network" // The Load Balancer is not attached to a network
 
 	// Network related error codes
-	ErrorCodeIPNotAvailable    ErrorCode = "ip_not_available"    // The provided Network IP is not available
-	ErrorCodeNoSubnetAvailable ErrorCode = "no_subnet_available" // No Subnet or IP is available for the Load Balancer/Server within the network
+	ErrorCodeIPNotAvailable     ErrorCode = "ip_not_available"        // The provided Network IP is not available
+	ErrorCodeNoSubnetAvailable  ErrorCode = "no_subnet_available"     // No Subnet or IP is available for the Load Balancer/Server within the network
+	ErrorCodeVSwitchAlreadyUsed ErrorCode = "vswitch_id_already_used" // The given Robot vSwitch ID is already registered in another network
 
 	// Volume related error codes
 	ErrorCodeNoSpaceLeftInLocation ErrorCode = "no_space_left_in_location" // There is no volume space left in the given location

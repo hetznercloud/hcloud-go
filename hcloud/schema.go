@@ -372,6 +372,7 @@ func NetworkSubnetFromSchema(s schema.NetworkSubnet) NetworkSubnet {
 		Type:        NetworkSubnetType(s.Type),
 		NetworkZone: NetworkZone(s.NetworkZone),
 		Gateway:     net.ParseIP(s.Gateway),
+		VSwitchID:   s.VSwitchID,
 	}
 	_, sn.IPRange, _ = net.ParseCIDR(s.IPRange)
 	return sn

@@ -1132,6 +1132,39 @@ func TestNetworkSubnetFromSchema(t *testing.T) {
 		if networkSubnet.Gateway.String() != "10.0.0.1" {
 			t.Errorf("unexpected Gateway: %v", networkSubnet.Gateway)
 		}
+		if networkSubnet.VSwitchID != 0 {
+			t.Errorf("unexpected VSwitchID: %v", networkSubnet.VSwitchID)
+		}
+	})
+
+	t.Run("type vswitch", func(t *testing.T) {
+		data := []byte(`{
+			"type": "vswitch",
+			"ip_range": "10.0.1.0/24",
+			"network_zone": "eu-central",
+			"gateway": "10.0.0.1",
+			"vswitch_id": 123
+		}`)
+		var s schema.NetworkSubnet
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+		networkSubnet := NetworkSubnetFromSchema(s)
+		if networkSubnet.NetworkZone != "eu-central" {
+			t.Errorf("unexpected NetworkZone: %v", networkSubnet.NetworkZone)
+		}
+		if networkSubnet.Type != "vswitch" {
+			t.Errorf("unexpected Type: %v", networkSubnet.Type)
+		}
+		if networkSubnet.IPRange.String() != "10.0.1.0/24" {
+			t.Errorf("unexpected IPRange: %v", networkSubnet.IPRange)
+		}
+		if networkSubnet.Gateway.String() != "10.0.0.1" {
+			t.Errorf("unexpected Gateway: %v", networkSubnet.Gateway)
+		}
+		if networkSubnet.VSwitchID != 123 {
+			t.Errorf("unexpected VSwitchID: %v", networkSubnet.VSwitchID)
+		}
 	})
 }
 
