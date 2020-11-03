@@ -1,5 +1,8 @@
 # Changes
 
+## v1.23.1
+* Add removed `ErrorCodeServerAlreadyAttached` again
+
 ## v1.23.0
 
 * Add missing constants for all resource specific error codes
