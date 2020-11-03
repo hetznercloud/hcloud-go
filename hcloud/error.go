@@ -25,10 +25,11 @@ const (
 	ErrorUnsupportedError          ErrorCode = "unsupported_error"       // The gives resource does not support this
 
 	// Server related error codes
-	ErrorCodeInvalidServerType ErrorCode = "invalid_server_type" // The server type does not fit for the given server or is deprecated
-	ErrorCodeServerNotStopped  ErrorCode = "server_not_stopped"  // The action requires a stopped server
-	ErrorCodeNetworksOverlap   ErrorCode = "networks_overlap"    // The network IP range overlaps with one of the server networks
-	ErrorCodePlacementError    ErrorCode = "placement_error"     // An error during the placement occurred
+	ErrorCodeInvalidServerType     ErrorCode = "invalid_server_type"     // The server type does not fit for the given server or is deprecated
+	ErrorCodeServerNotStopped      ErrorCode = "server_not_stopped"      // The action requires a stopped server
+	ErrorCodeNetworksOverlap       ErrorCode = "networks_overlap"        // The network IP range overlaps with one of the server networks
+	ErrorCodePlacementError        ErrorCode = "placement_error"         // An error during the placement occurred
+	ErrorCodeServerAlreadyAttached ErrorCode = "server_already_attached" // The server is already attached to the resource
 
 	// Load Balancer related error codes
 	ErrorCodeIPNotOwned                       ErrorCode = "ip_not_owned"                          // The IP you are trying to add as a target is not owned by the Project owner
