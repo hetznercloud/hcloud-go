@@ -1,5 +1,9 @@
 # Changes
 
+## Unreleased
+
+* Fix Authorization header being included in debug output
+
 ## v1.23.1
 * Add removed `ErrorCodeServerAlreadyAttached` again
 

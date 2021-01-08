@@ -204,8 +204,7 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 		}
 
 		if c.debugWriter != nil {
-			// To get the response body we need to read it before the request was actually send. https://github.com/golang/go/issues/29792
-			dumpReq, err := httputil.DumpRequestOut(r, true)
+			dumpReq, err := dumpRequest(r)
 			if err != nil {
 				return nil, err
 			}
@@ -299,6 +298,25 @@ func (c *Client) buildUserAgent() {
 	default:
 		c.userAgent = UserAgent
 	}
+}
+
+func dumpRequest(r *http.Request) ([]byte, error) {
+	// Duplicate the request, so we can redact the auth header
+	rDuplicate := r.Clone(context.Background())
+	rDuplicate.Header.Set("Authorization", "REDACTED")
+
+	// To get the request body we need to read it before the request was actually sent.
+	// See https://github.com/golang/go/issues/29792
+	dumpReq, err := httputil.DumpRequestOut(rDuplicate, true)
+	if err != nil {
+		return nil, err
+	}
+
+	// Set original request body to the duplicate created by DumpRequestOut. The request body is not duplicated
+	// by .Clone() and instead just referenced, so it would be completely read otherwise.
+	r.Body = rDuplicate.Body
+
+	return dumpReq, nil
 }
 
 func errorFromResponse(resp *http.Response, body []byte) error {
