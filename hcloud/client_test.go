@@ -272,9 +272,16 @@ func TestClientDoPost(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	env.Client.debugWriter = new(bytes.Buffer)
+	debugLog := new(bytes.Buffer)
+
+	env.Client.debugWriter = debugLog
 	callCount := 0
 	env.Mux.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
+		auth := r.Header.Get("Authorization")
+		if auth != "Bearer token" {
+			t.Errorf("unexpected auth header: %q, expected %q", auth, "Bearer token")
+		}
+
 		callCount++
 		w.Header().Set("Content-Type", "application/json")
 		var dat map[string]interface{}
@@ -316,6 +323,10 @@ func TestClientDoPost(t *testing.T) {
 	}
 	if callCount != 2 {
 		t.Fatalf("unexpected callCount: %v", callCount)
+	}
+
+	if strings.Contains(debugLog.String(), "token") {
+		t.Errorf("debug log did contain token, although it shouldn't")
 	}
 }
 
