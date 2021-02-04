@@ -293,9 +293,7 @@ func TestImageClient(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
 
-		env.Mux.HandleFunc("/images/1", func(w http.ResponseWriter, r *http.Request) {
-			return
-		})
+		env.Mux.HandleFunc("/images/1", func(w http.ResponseWriter, r *http.Request) {})
 
 		var (
 			ctx   = context.Background()

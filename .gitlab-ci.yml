@@ -1,0 +1,27 @@
+stages:
+  - test
+
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+
+test:golangci-lint:
+  stage: test
+  image: golangci/golangci-lint:v1.36
+  script:
+    - golangci-lint run -v
+  except:
+    - tags
+    - master
+  tags:
+    - hc-bladerunner
+
+test:tests:
+  stage: test
+  image: golang:1.15
+  script:
+    - go test -v -race ./...
+  except:
+    - tags
+    - master
+  tags:
+    - hc-bladerunner

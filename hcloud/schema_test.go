@@ -166,7 +166,6 @@ func TestFloatingIPFromSchema(t *testing.T) {
 		if !floatingIP.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
 			t.Errorf("unexpected created date: %v", floatingIP.Created)
 		}
-
 	})
 
 	t.Run("IPv4", func(t *testing.T) {
@@ -795,7 +794,7 @@ func TestErrorFromSchema(t *testing.T) {
 	t.Run("service_error", func(t *testing.T) {
 		data := []byte(`{
 			"code": "service_error",
-			"message": "An error occured",
+			"message": "An error occurred",
 			"details": {}
 		}`)
 
@@ -808,7 +807,7 @@ func TestErrorFromSchema(t *testing.T) {
 		if err.Code != "service_error" {
 			t.Errorf("unexpected code: %v", err.Code)
 		}
-		if err.Message != "An error occured" {
+		if err.Message != "An error occurred" {
 			t.Errorf("unexpected message: %v", err.Message)
 		}
 	})
@@ -2290,8 +2289,8 @@ func TestServerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.ServerGetMetricsResponse {
 				var resp schema.ServerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
 					"cpu": {
 						Values: []interface{}{"some value"},
@@ -2307,8 +2306,8 @@ func TestServerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.ServerGetMetricsResponse {
 				var resp schema.ServerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
 					"cpu": {
 						Values: []interface{}{
@@ -2326,8 +2325,8 @@ func TestServerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.ServerGetMetricsResponse {
 				var resp schema.ServerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
 					"cpu": {
 						Values: []interface{}{
@@ -2345,8 +2344,8 @@ func TestServerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.ServerGetMetricsResponse {
 				var resp schema.ServerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
 					"cpu": {
 						Values: []interface{}{
@@ -2364,8 +2363,8 @@ func TestServerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.ServerGetMetricsResponse {
 				var resp schema.ServerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
 					"cpu": {
 						Values: []interface{}{
@@ -2402,8 +2401,8 @@ func TestServerMetricsFromSchema(t *testing.T) {
 				return &resp
 			},
 			expected: &ServerMetrics{
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 				TimeSeries: map[string][]ServerMetricsValue{
 					"cpu": {
 						{Timestamp: 1435781470.622, Value: "42"},
@@ -2446,7 +2445,6 @@ func TestServerMetricsFromSchema(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestLoadBalancerMetricsFromSchema(t *testing.T) {
@@ -2461,8 +2459,8 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.LoadBalancerGetMetricsResponse {
 				var resp schema.LoadBalancerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
 					"open_connections": {
 						Values: []interface{}{"some value"},
@@ -2478,8 +2476,8 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.LoadBalancerGetMetricsResponse {
 				var resp schema.LoadBalancerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
 					"open_connections": {
 						Values: []interface{}{
@@ -2497,8 +2495,8 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.LoadBalancerGetMetricsResponse {
 				var resp schema.LoadBalancerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
 					"open_connections": {
 						Values: []interface{}{
@@ -2516,8 +2514,8 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.LoadBalancerGetMetricsResponse {
 				var resp schema.LoadBalancerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
 					"open_connections": {
 						Values: []interface{}{
@@ -2535,8 +2533,8 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 			respFn: func() *schema.LoadBalancerGetMetricsResponse {
 				var resp schema.LoadBalancerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
 					"open_connections": {
 						Values: []interface{}{
@@ -2573,8 +2571,8 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 				return &resp
 			},
 			expected: &LoadBalancerMetrics{
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 				TimeSeries: map[string][]LoadBalancerMetricsValue{
 					"open_connections": {
 						{Timestamp: 1435781470.622, Value: "42"},

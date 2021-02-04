@@ -141,7 +141,7 @@ func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
 	opts := ActionListOpts{}
 	opts.PerPage = 50
 
-	_, err := c.client.all(func(page int) (*Response, error) {
+	err := c.client.all(func(page int) (*Response, error) {
 		opts.Page = page
 		actions, resp, err := c.List(ctx, opts)
 		if err != nil {
@@ -194,7 +194,6 @@ func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-cha
 			switch a.Status {
 			case ActionStatusRunning:
 				sendProgress(a.Progress)
-				break
 			case ActionStatusSuccess:
 				sendProgress(100)
 				errCh <- nil

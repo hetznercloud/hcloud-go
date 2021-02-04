@@ -215,7 +215,7 @@ func (c *ServerClient) All(ctx context.Context) ([]*Server, error) {
 func (c *ServerClient) AllWithOpts(ctx context.Context, opts ServerListOpts) ([]*Server, error) {
 	allServers := []*Server{}
 
-	_, err := c.client.all(func(page int) (*Response, error) {
+	err := c.client.all(func(page int) (*Response, error) {
 		opts.Page = page
 		servers, resp, err := c.List(ctx, opts)
 		if err != nil {

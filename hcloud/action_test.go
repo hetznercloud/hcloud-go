@@ -15,7 +15,7 @@ func TestActionClientGetByID(t *testing.T) {
 	defer env.Teardown()
 
 	env.Mux.HandleFunc("/actions/1", func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(schema.ActionGetResponse{
+		_ = json.NewEncoder(w).Encode(schema.ActionGetResponse{
 			Action: schema.Action{
 				ID:       1,
 				Status:   "running",
@@ -46,7 +46,7 @@ func TestActionClientGetByIDNotFound(t *testing.T) {
 	env.Mux.HandleFunc("/actions/1", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(schema.ErrorResponse{
+		_ = json.NewEncoder(w).Encode(schema.ErrorResponse{
 			Error: schema.Error{
 				Code: string(ErrorCodeNotFound),
 			},
@@ -101,7 +101,7 @@ func TestActionClientList(t *testing.T) {
 				t.Errorf("expected sort[2] to be command:asc; got %q", sort[2])
 			}
 		}
-		json.NewEncoder(w).Encode(schema.ActionListResponse{
+		_ = json.NewEncoder(w).Encode(schema.ActionListResponse{
 			Actions: []schema.Action{
 				{ID: 1},
 				{ID: 2},
@@ -131,7 +131,7 @@ func TestActionClientAll(t *testing.T) {
 
 	env.Mux.HandleFunc("/actions", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(struct {
+		_ = json.NewEncoder(w).Encode(struct {
 			Actions []schema.Action `json:"actions"`
 			Meta    schema.Meta     `json:"meta"`
 		}{
@@ -174,7 +174,7 @@ func TestActionClientWatchProgress(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch callCount {
 		case 1:
-			json.NewEncoder(w).Encode(schema.ActionGetResponse{
+			_ = json.NewEncoder(w).Encode(schema.ActionGetResponse{
 				Action: schema.Action{
 					ID:       1,
 					Status:   "running",
@@ -183,7 +183,7 @@ func TestActionClientWatchProgress(t *testing.T) {
 			})
 		case 2:
 			w.WriteHeader(http.StatusTooManyRequests)
-			json.NewEncoder(w).Encode(schema.ErrorResponse{
+			_ = json.NewEncoder(w).Encode(schema.ErrorResponse{
 				Error: schema.Error{
 					Code:    string(ErrorCodeRateLimitExceeded),
 					Message: "ratelimited",
@@ -191,7 +191,7 @@ func TestActionClientWatchProgress(t *testing.T) {
 			})
 			return
 		case 3:
-			json.NewEncoder(w).Encode(schema.ActionGetResponse{
+			_ = json.NewEncoder(w).Encode(schema.ActionGetResponse{
 				Action: schema.Action{
 					ID:       1,
 					Status:   "error",
@@ -247,7 +247,7 @@ func TestActionClientWatchProgressError(t *testing.T) {
 	env.Mux.HandleFunc("/actions/1", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnprocessableEntity)
-		json.NewEncoder(w).Encode(schema.ErrorResponse{
+		_ = json.NewEncoder(w).Encode(schema.ErrorResponse{
 			Error: schema.Error{
 				Code:    string(ErrorCodeServiceError),
 				Message: "service error",
