@@ -269,9 +269,7 @@ func TestCertificateDelete(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	env.Mux.HandleFunc("/certificates/1", func(w http.ResponseWriter, r *http.Request) {
-		return
-	})
+	env.Mux.HandleFunc("/certificates/1", func(w http.ResponseWriter, r *http.Request) {})
 
 	var (
 		ctx        = context.Background()

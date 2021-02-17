@@ -60,7 +60,7 @@ func TestClientError(t *testing.T) {
 		json.NewEncoder(w).Encode(schema.ErrorResponse{
 			Error: schema.Error{
 				Code:    "service_error",
-				Message: "An error occured",
+				Message: "An error occurred",
 			},
 		})
 	})
@@ -81,7 +81,7 @@ func TestClientError(t *testing.T) {
 	if apiError.Code != "service_error" {
 		t.Errorf("unexpected error code: %q", apiError.Code)
 	}
-	if apiError.Message != "An error occured" {
+	if apiError.Message != "An error occurred" {
 		t.Errorf("unexpected error message: %q", apiError.Message)
 	}
 }
@@ -210,7 +210,7 @@ func TestClientAll(t *testing.T) {
 		json.NewEncoder(w).Encode(respBody)
 	})
 
-	env.Client.all(func(page int) (*Response, error) {
+	_ = env.Client.all(func(page int) (*Response, error) {
 		if page != expectedPage {
 			t.Fatalf("expected page %d, but called for %d", expectedPage, page)
 		}

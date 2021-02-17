@@ -40,9 +40,9 @@ func ActionFromSchema(s schema.Action) *Action {
 
 // ActionsFromSchema converts a slice of schema.Action to a slice of Action.
 func ActionsFromSchema(s []schema.Action) []*Action {
-	var actions []*Action
-	for _, a := range s {
-		actions = append(actions, ActionFromSchema(a))
+	actions := make([]*Action, len(s))
+	for i, a := range s {
+		actions[i] = ActionFromSchema(a)
 	}
 	return actions
 }
@@ -583,8 +583,7 @@ func ErrorFromSchema(s schema.Error) Error {
 		Message: s.Message,
 	}
 
-	switch d := s.Details.(type) {
-	case schema.ErrorDetailsInvalidInput:
+	if d, ok := s.Details.(schema.ErrorDetailsInvalidInput); ok {
 		details := ErrorDetailsInvalidInput{
 			Fields: []ErrorDetailsInvalidInputField{},
 		}

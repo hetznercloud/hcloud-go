@@ -240,12 +240,10 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 			err = errorFromResponse(resp, body)
 			if err == nil {
 				err = fmt.Errorf("hcloud: server responded with status code %d", resp.StatusCode)
-			} else {
-				if isRetryable(err) {
-					c.backoff(retries)
-					retries++
-					continue
-				}
+			} else if isRetryable(err) {
+				c.backoff(retries)
+				retries++
+				continue
 			}
 			return response, err
 		}
@@ -273,17 +271,17 @@ func (c *Client) backoff(retries int) {
 	time.Sleep(c.backoffFunc(retries))
 }
 
-func (c *Client) all(f func(int) (*Response, error)) (*Response, error) {
+func (c *Client) all(f func(int) (*Response, error)) error {
 	var (
 		page = 1
 	)
 	for {
 		resp, err := f(page)
 		if err != nil {
-			return nil, err
+			return err
 		}
 		if resp.Meta.Pagination == nil || resp.Meta.Pagination.NextPage == 0 {
-			return resp, nil
+			return nil
 		}
 		page = resp.Meta.Pagination.NextPage
 	}

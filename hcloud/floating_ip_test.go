@@ -317,9 +317,7 @@ func TestFloatingIPClientDelete(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	env.Mux.HandleFunc("/floating_ips/1", func(w http.ResponseWriter, r *http.Request) {
-		return
-	})
+	env.Mux.HandleFunc("/floating_ips/1", func(w http.ResponseWriter, r *http.Request) {})
 
 	var (
 		ctx        = context.Background()
