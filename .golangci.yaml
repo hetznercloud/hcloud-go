@@ -2,6 +2,24 @@
 linters-settings:
   errcheck:
     exclude: ./.errcheck_excludes.txt
+  exhaustive:
+    default-signifies-exhaustive: true
+  gomodguard:
+    blocked:
+      modules:
+        - github.com/tj/assert:
+            recommendations:
+              - github.com/stretchr/testify/assert
+            reason: |
+              One assertion library is enough and we use testify/assert
+              everywhere.
+        - github.com/magiconair/properties:
+            recommendations:
+              - github.com/stretchr/testify/assert
+            reason: >
+              We do not currently need to parse properties files. At the same
+              time this module has an assert package which tends to get
+              imported by accident. It is therefore blocked.
   misspell:
     locale: "US"
 
@@ -12,9 +30,11 @@ linters:
     - deadcode
     - depguard
     - errcheck
+    - exhaustive
     - gocritic
     - goimports
     - golint
+    - gomodguard
     - gosec
     - gosimple
     - govet

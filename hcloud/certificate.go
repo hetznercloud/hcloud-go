@@ -13,6 +13,15 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
+// CertificateType is the type of available certificate types.
+type CertificateType string
+
+// Available certificate types.
+const (
+	CertificateTypeUploaded CertificateType = "uploaded"
+	CertificateTypeManaged  CertificateType = "managed"
+)
+
 // CertificateUsedByRef points to a resource that uses this certificate.
 type CertificateUsedByRef struct {
 	ID   int
@@ -40,6 +49,12 @@ type Certificate struct {
 	Fingerprint    string
 	Status         CertificateStatus
 	UsedBy         []CertificateUsedByRef
+}
+
+// CertificateCreateResult is the result of creating a certificate.
+type CertificateCreateResult struct {
+	Certificate *Certificate
+	Action      *Action
 }
 
 // CertificateClient is a client for the Certificates API.
@@ -169,9 +184,11 @@ func (c *CertificateClient) AllWithOpts(ctx context.Context, opts CertificateLis
 // CertificateCreateOpts specifies options for creating a new Certificate.
 type CertificateCreateOpts struct {
 	Name        string
+	Type        CertificateType
 	Certificate string
 	PrivateKey  string
 	Labels      map[string]string
+	DomainNames []string
 }
 
 // Validate checks if options are valid.
@@ -179,6 +196,24 @@ func (o CertificateCreateOpts) Validate() error {
 	if o.Name == "" {
 		return errors.New("missing name")
 	}
+	switch o.Type {
+	case "", CertificateTypeUploaded:
+		return o.validateUploaded()
+	case CertificateTypeManaged:
+		return o.validateManaged()
+	default:
+		return fmt.Errorf("invalid type: %s", o.Type)
+	}
+}
+
+func (o CertificateCreateOpts) validateManaged() error {
+	if len(o.DomainNames) == 0 {
+		return errors.New("no domain names")
+	}
+	return nil
+}
+
+func (o CertificateCreateOpts) validateUploaded() error {
 	if o.Certificate == "" {
 		return errors.New("missing certificate")
 	}
@@ -188,34 +223,71 @@ func (o CertificateCreateOpts) Validate() error {
 	return nil
 }
 
-// Create creates a new certificate.
+// Create creates a new certificate uploaded certificate.
+//
+// Create returns an error for certificates of any other type. Use
+// CreateCertificate to create such certificates.
 func (c *CertificateClient) Create(ctx context.Context, opts CertificateCreateOpts) (*Certificate, *Response, error) {
+	if !(opts.Type == "" || opts.Type == CertificateTypeUploaded) {
+		return nil, nil, fmt.Errorf("invalid certificate type: %s", opts.Type)
+	}
+	result, resp, err := c.CreateCertificate(ctx, opts)
+	if err != nil {
+		return nil, resp, err
+	}
+	return result.Certificate, resp, nil
+}
+
+// CreateCertificate creates a new certificate of any type.
+func (c *CertificateClient) CreateCertificate(
+	ctx context.Context, opts CertificateCreateOpts,
+) (CertificateCreateResult, *Response, error) {
+	var (
+		action  *Action
+		reqBody schema.CertificateCreateRequest
+	)
+
 	if err := opts.Validate(); err != nil {
-		return nil, nil, err
+		return CertificateCreateResult{}, nil, err
 	}
-	reqBody := schema.CertificateCreateRequest{
-		Name:        opts.Name,
-		Certificate: opts.Certificate,
-		PrivateKey:  opts.PrivateKey,
+
+	reqBody.Name = opts.Name
+
+	switch opts.Type {
+	case "", CertificateTypeUploaded:
+		reqBody.Type = string(CertificateTypeUploaded)
+		reqBody.Certificate = opts.Certificate
+		reqBody.PrivateKey = opts.PrivateKey
+	case CertificateTypeManaged:
+		reqBody.Type = string(CertificateTypeManaged)
+		reqBody.DomainNames = opts.DomainNames
+	default:
+		return CertificateCreateResult{}, nil, fmt.Errorf("invalid certificate type: %v", opts.Type)
 	}
+
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
-		return nil, nil, err
+		return CertificateCreateResult{}, nil, err
 	}
 	req, err := c.client.NewRequest(ctx, "POST", "/certificates", bytes.NewReader(reqBodyData))
 	if err != nil {
-		return nil, nil, err
+		return CertificateCreateResult{}, nil, err
 	}
 
 	respBody := schema.CertificateCreateResponse{}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
-		return nil, resp, err
+		return CertificateCreateResult{}, resp, err
 	}
-	return CertificateFromSchema(respBody.Certificate), resp, nil
+	cert := CertificateFromSchema(respBody.Certificate)
+	if respBody.Action != nil {
+		action = ActionFromSchema(*respBody.Action)
+	}
+
+	return CertificateCreateResult{Certificate: cert, Action: action}, resp, nil
 }
 
 // CertificateUpdateOpts specifies options for updating a Certificate.
