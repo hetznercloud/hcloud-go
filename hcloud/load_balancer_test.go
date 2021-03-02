@@ -1036,14 +1036,14 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 					LoadBalancerMetricRequestsPerSecond,
 					LoadBalancerMetricBandwidth,
 				},
-				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
 			},
 			respFn: func() schema.LoadBalancerGetMetricsResponse {
 				var resp schema.LoadBalancerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
 					"open_connections": {
 						Values: []interface{}{
@@ -1080,8 +1080,8 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				return resp
 			},
 			expected: LoadBalancerMetrics{
-				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
 				TimeSeries: map[string][]LoadBalancerMetricsValue{
 					"open_connections": {
 						{Timestamp: 1435781470.622, Value: "42"},
@@ -1110,8 +1110,8 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 			name: "missing metrics types",
 			lb:   &LoadBalancer{ID: 3},
 			opts: LoadBalancerGetMetricsOpts{
-				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
 			},
 			expectedErr: "add query params: no metric types specified",
 		},
@@ -1120,7 +1120,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 			lb:   &LoadBalancer{ID: 4},
 			opts: LoadBalancerGetMetricsOpts{
 				Types: []LoadBalancerMetricType{LoadBalancerMetricBandwidth},
-				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
 			},
 			expectedErr: "add query params: no start time specified",
 		},
@@ -1129,7 +1129,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 			lb:   &LoadBalancer{ID: 5},
 			opts: LoadBalancerGetMetricsOpts{
 				Types: []LoadBalancerMetricType{LoadBalancerMetricBandwidth},
-				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
 			},
 			expectedErr: "add query params: no end time specified",
 		},
@@ -1138,8 +1138,8 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 			lb:   &LoadBalancer{ID: 6},
 			opts: LoadBalancerGetMetricsOpts{
 				Types: []LoadBalancerMetricType{LoadBalancerMetricBandwidth},
-				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
 			},
 			respStatus:  http.StatusInternalServerError,
 			expectedErr: "get metrics: hcloud: server responded with status code 500",
@@ -1148,8 +1148,8 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 			name: "no load balancer passed",
 			opts: LoadBalancerGetMetricsOpts{
 				Types: []LoadBalancerMetricType{LoadBalancerMetricBandwidth},
-				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
 			},
 			expectedErr: "illegal argument: load balancer is nil",
 		},

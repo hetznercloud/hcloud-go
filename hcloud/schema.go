@@ -555,6 +555,7 @@ func CertificateFromSchema(s schema.Certificate) *Certificate {
 	c := &Certificate{
 		ID:             s.ID,
 		Name:           s.Name,
+		Type:           s.Type,
 		Certificate:    s.Certificate,
 		Created:        s.Created,
 		NotValidBefore: s.NotValidBefore,
@@ -562,12 +563,19 @@ func CertificateFromSchema(s schema.Certificate) *Certificate {
 		DomainNames:    s.DomainNames,
 		Fingerprint:    s.Fingerprint,
 	}
+	c.Status.Issuance = s.Status.Issuance
+	c.Status.Renewal = s.Status.Renewal
+	c.Status.FailureReason = s.Status.FailureReason
 	if len(s.Labels) > 0 {
-		c.Labels = make(map[string]string)
+		c.Labels = s.Labels
 	}
-	for key, value := range s.Labels {
-		c.Labels[key] = value
+	if len(s.UsedBy) > 0 {
+		c.UsedBy = make([]CertificateUsedByRef, len(s.UsedBy))
+		for i, ref := range s.UsedBy {
+			c.UsedBy[i] = CertificateUsedByRef{ID: ref.ID, Type: ref.Type}
+		}
 	}
+
 	return c
 }
 

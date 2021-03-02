@@ -13,17 +13,33 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
+// CertificateUsedByRef points to a resource that uses this certificate.
+type CertificateUsedByRef struct {
+	ID   int
+	Type string
+}
+
+// CertificateStatus indicates the status of a managed certificate.
+type CertificateStatus struct {
+	Issuance      string
+	Renewal       string
+	FailureReason string
+}
+
 // Certificate represents an certificate in the Hetzner Cloud.
 type Certificate struct {
 	ID             int
 	Name           string
 	Labels         map[string]string
+	Type           string
 	Certificate    string
 	Created        time.Time
 	NotValidBefore time.Time
 	NotValidAfter  time.Time
 	DomainNames    []string
 	Fingerprint    string
+	Status         CertificateStatus
+	UsedBy         []CertificateUsedByRef
 }
 
 // CertificateClient is a client for the Certificates API.
