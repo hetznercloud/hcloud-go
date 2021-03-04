@@ -2,6 +2,12 @@ package schema
 
 import "time"
 
+// CertificateUsedByRef defines the schema of a resource using a certificate.
+type CertificateUsedByRef struct {
+	ID   int    `json:"id"`
+	Type string `json:"type"`
+}
+
 // Certificate defines the schema of an certificate.
 type Certificate struct {
 	ID             int               `json:"id"`
@@ -19,10 +25,7 @@ type Certificate struct {
 		Renewal       string `json:"renewal"`
 		FailureReason string `json:"failure_reason"`
 	} `json:"status"`
-	UsedBy []struct {
-		ID   int    `json:"id"`
-		Type string `json:"type"`
-	} `json:"used_by"`
+	UsedBy []CertificateUsedByRef `json:"used_by"`
 }
 
 // CertificateListResponse defines the schema of the response when
