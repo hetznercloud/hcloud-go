@@ -63,3 +63,9 @@ type CertificateUpdateRequest struct {
 type CertificateUpdateResponse struct {
 	Certificate Certificate `json:"certificate"`
 }
+
+// CertificateIssuanceRetryResponse defines the schema for the response of the
+// retry issuance endpoint.
+type CertificateIssuanceRetryResponse struct {
+	Action Action `json:"action"`
+}

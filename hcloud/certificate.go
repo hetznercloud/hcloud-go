@@ -332,3 +332,19 @@ func (c *CertificateClient) Delete(ctx context.Context, certificate *Certificate
 	}
 	return c.client.Do(req, nil)
 }
+
+// RetryIssuance retries the issuance of a failed managed certificate.
+func (c *CertificateClient) RetryIssuance(ctx context.Context, certificate *Certificate) (*Action, *Response, error) {
+	var respBody schema.CertificateIssuanceRetryResponse
+
+	req, err := c.client.NewRequest(ctx, "POST", fmt.Sprintf("/certificates/%d/actions/retry", certificate.ID), nil)
+	if err != nil {
+		return nil, nil, err
+	}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, nil, err
+	}
+	action := ActionFromSchema(respBody.Action)
+	return action, resp, nil
+}

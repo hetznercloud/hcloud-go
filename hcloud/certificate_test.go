@@ -439,3 +439,22 @@ func TestCertificateClientUpdate(t *testing.T) {
 		t.Errorf("unexpected certficate ID: %v", updatedCertificate.ID)
 	}
 }
+
+func TestCertificateClient_RetryIssuance(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/certificates/1/actions/retry", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "POST", r.Method)
+
+		resp := schema.CertificateIssuanceRetryResponse{
+			Action: schema.Action{ID: 1},
+		}
+		err := json.NewEncoder(w).Encode(resp)
+		assert.NoError(t, err)
+	})
+
+	action, _, err := env.Client.Certificate.RetryIssuance(context.Background(), &Certificate{ID: 1})
+	assert.NoError(t, err)
+	assert.Equal(t, &Action{ID: 1, Resources: []*ActionResource{}}, action)
+}
