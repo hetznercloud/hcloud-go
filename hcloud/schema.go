@@ -812,8 +812,10 @@ func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBala
 				StickySessions: service.HTTP.StickySessions,
 				CookieName:     service.HTTP.CookieName,
 			}
-			if sec := service.HTTP.CookieLifetime.Seconds(); sec != 0 {
-				schemaService.HTTP.CookieLifetime = Int(int(sec))
+			if service.HTTP.CookieLifetime != nil {
+				if sec := service.HTTP.CookieLifetime.Seconds(); sec != 0 {
+					schemaService.HTTP.CookieLifetime = Int(int(sec))
+				}
 			}
 			if service.HTTP.Certificates != nil {
 				certificates := []int{}
