@@ -22,6 +22,13 @@ const (
 	CertificateTypeManaged  CertificateType = "managed"
 )
 
+// Possible certificate status.
+const (
+	CertificateStatusPending   = "pending"
+	CertificateStatusCompleted = "completed"
+	CertificateStatusFailed    = "failed"
+)
+
 // CertificateUsedByRef points to a resource that uses this certificate.
 type CertificateUsedByRef struct {
 	ID   int
