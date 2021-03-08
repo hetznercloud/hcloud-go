@@ -54,7 +54,7 @@ type Certificate struct {
 	NotValidAfter  time.Time
 	DomainNames    []string
 	Fingerprint    string
-	Status         CertificateStatus
+	Status         *CertificateStatus
 	UsedBy         []CertificateUsedByRef
 }
 

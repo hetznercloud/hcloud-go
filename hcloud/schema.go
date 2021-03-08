@@ -563,9 +563,13 @@ func CertificateFromSchema(s schema.Certificate) *Certificate {
 		DomainNames:    s.DomainNames,
 		Fingerprint:    s.Fingerprint,
 	}
-	c.Status.Issuance = s.Status.Issuance
-	c.Status.Renewal = s.Status.Renewal
-	c.Status.FailureReason = s.Status.FailureReason
+	if s.Status != nil {
+		c.Status = &CertificateStatus{
+			Issuance:      s.Status.Issuance,
+			Renewal:       s.Status.Renewal,
+			FailureReason: s.Status.FailureReason,
+		}
+	}
 	if len(s.Labels) > 0 {
 		c.Labels = s.Labels
 	}

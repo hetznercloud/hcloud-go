@@ -8,24 +8,26 @@ type CertificateUsedByRef struct {
 	Type string `json:"type"`
 }
 
+type CertificateStatusRef struct {
+	Issuance      string `json:"issuance"`
+	Renewal       string `json:"renewal"`
+	FailureReason string `json:"failure_reason"`
+}
+
 // Certificate defines the schema of an certificate.
 type Certificate struct {
-	ID             int               `json:"id"`
-	Name           string            `json:"name"`
-	Labels         map[string]string `json:"labels"`
-	Type           string            `json:"type"`
-	Certificate    string            `json:"certificate"`
-	Created        time.Time         `json:"created"`
-	NotValidBefore time.Time         `json:"not_valid_before"`
-	NotValidAfter  time.Time         `json:"not_valid_after"`
-	DomainNames    []string          `json:"domain_names"`
-	Fingerprint    string            `json:"fingerprint"`
-	Status         struct {
-		Issuance      string `json:"issuance"`
-		Renewal       string `json:"renewal"`
-		FailureReason string `json:"failure_reason"`
-	} `json:"status"`
-	UsedBy []CertificateUsedByRef `json:"used_by"`
+	ID             int                    `json:"id"`
+	Name           string                 `json:"name"`
+	Labels         map[string]string      `json:"labels"`
+	Type           string                 `json:"type"`
+	Certificate    string                 `json:"certificate"`
+	Created        time.Time              `json:"created"`
+	NotValidBefore time.Time              `json:"not_valid_before"`
+	NotValidAfter  time.Time              `json:"not_valid_after"`
+	DomainNames    []string               `json:"domain_names"`
+	Fingerprint    string                 `json:"fingerprint"`
+	Status         *CertificateStatusRef  `json:"status"`
+	UsedBy         []CertificateUsedByRef `json:"used_by"`
 }
 
 // CertificateListResponse defines the schema of the response when

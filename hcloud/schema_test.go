@@ -1749,7 +1749,7 @@ func TestCertificateFromSchema(t *testing.T) {
 				NotValidAfter:  mustParseTime(t, apiTimestampFormat, "2016-01-30T23:55:00+00:00"),
 				DomainNames:    []string{"example.com", "webmail.example.com", "www.example.com"},
 				Fingerprint:    "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
-				Status: CertificateStatus{
+				Status: &CertificateStatus{
 					Issuance:      "completed",
 					Renewal:       "failure",
 					FailureReason: "DNS validation failed",
