@@ -42,6 +42,13 @@ type CertificateStatus struct {
 	FailureReason string
 }
 
+// IsFailed returns true if either the Issuance or the Renewal of a certificate
+// failed. In this case the FailureReason field details the nature of the
+// failure.
+func (st *CertificateStatus) IsFailed() bool {
+	return st.Issuance == "failed" || st.Renewal == "failed"
+}
+
 // Certificate represents an certificate in the Hetzner Cloud.
 type Certificate struct {
 	ID             int
