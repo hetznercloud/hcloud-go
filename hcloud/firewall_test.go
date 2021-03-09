@@ -515,6 +515,10 @@ func TestFirewallApplyToResources(t *testing.T) {
 					Type:   "server",
 					Server: &schema.FirewallResourceServer{ID: 5},
 				},
+				{
+					Type:          "label_selector",
+					LabelSelector: &schema.FirewallResourceLabelSelector{Selector: "a=b"},
+				},
 			},
 		}
 		if !cmp.Equal(expectedReqBody, reqBody) {
@@ -539,6 +543,10 @@ func TestFirewallApplyToResources(t *testing.T) {
 		{
 			Type:   FirewallResourceTypeServer,
 			Server: &FirewallResourceServer{ID: 5},
+		},
+		{
+			Type:          FirewallResourceTypeLabelSelector,
+			LabelSelector: &FirewallResourceLabelSelector{Selector: "a=b"},
 		},
 	}
 
@@ -569,6 +577,10 @@ func TestFirewallRemoveFromResources(t *testing.T) {
 					Type:   "server",
 					Server: &schema.FirewallResourceServer{ID: 5},
 				},
+				{
+					Type:          "label_selector",
+					LabelSelector: &schema.FirewallResourceLabelSelector{Selector: "a=b"},
+				},
 			},
 		}
 		if !cmp.Equal(expectedReqBody, reqBody) {
@@ -593,6 +605,10 @@ func TestFirewallRemoveFromResources(t *testing.T) {
 		{
 			Type:   FirewallResourceTypeServer,
 			Server: &FirewallResourceServer{ID: 5},
+		},
+		{
+			Type:          FirewallResourceTypeLabelSelector,
+			LabelSelector: &FirewallResourceLabelSelector{Selector: "a=b"},
 		},
 	}
 
