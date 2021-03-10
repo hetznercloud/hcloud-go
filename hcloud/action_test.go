@@ -169,6 +169,7 @@ func TestActionClientWatchProgress(t *testing.T) {
 	defer env.Teardown()
 
 	callCount := 0
+
 	env.Mux.HandleFunc("/actions/1", func(w http.ResponseWriter, r *http.Request) {
 		callCount++
 		w.Header().Set("Content-Type", "application/json")

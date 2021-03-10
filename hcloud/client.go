@@ -61,6 +61,7 @@ type Client struct {
 	Action           ActionClient
 	Certificate      CertificateClient
 	Datacenter       DatacenterClient
+	Firewall         FirewallClient
 	FloatingIP       FloatingIPClient
 	Image            ImageClient
 	ISO              ISOClient
@@ -162,6 +163,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.LoadBalancer = LoadBalancerClient{client: client}
 	client.LoadBalancerType = LoadBalancerTypeClient{client: client}
 	client.Certificate = CertificateClient{client: client}
+	client.Firewall = FirewallClient{client: client}
 
 	return client
 }

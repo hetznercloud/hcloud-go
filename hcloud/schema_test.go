@@ -569,7 +569,13 @@ func TestServerPublicNetFromSchema(t *testing.T) {
 			"blocked": false,
 			"dns_ptr": []
 		},
-		"floating_ips": [4]
+		"floating_ips": [4],
+		"firewalls": [
+			{
+				"id": 23,
+				"status": "applied"
+			}
+		]
 	}`)
 
 	var s schema.ServerPublicNet
@@ -586,6 +592,9 @@ func TestServerPublicNetFromSchema(t *testing.T) {
 	}
 	if len(publicNet.FloatingIPs) != 1 || publicNet.FloatingIPs[0].ID != 4 {
 		t.Errorf("unexpected Floating IPs: %v", publicNet.FloatingIPs)
+	}
+	if len(publicNet.Firewalls) != 1 || publicNet.Firewalls[0].Firewall.ID != 23 || publicNet.Firewalls[0].Status != FirewallStatusApplied {
+		t.Errorf("unexpected Firewalls: %v", publicNet.Firewalls)
 	}
 }
 
@@ -1675,7 +1684,13 @@ func TestCertificateFromSchema(t *testing.T) {
 			"webmail.example.com",
 			"www.example.com"
 		],
-		"fingerprint": "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f"
+		"fingerprint": "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
+		"used_by": [
+			{
+			    "id": 42,
+			    "type": "server"
+			}
+		]
 	}
 `)
 	var s schema.Certificate
@@ -2633,5 +2648,88 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 				t.Errorf("unexpected result:\n%s", cmp.Diff(tt.expected, actual))
 			}
 		})
+	}
+}
+
+func TestFirewallFromSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 897,
+		"name": "my firewall",
+		"labels": {
+			"key": "value",
+			"key2": "value2"
+		},
+		"created": "2016-01-30T23:50:00+00:00",
+		"rules": [
+			{
+			  "direction": "in",
+			  "source_ips": [
+				"28.239.13.1/32",
+				"28.239.14.0/24",
+				"ff21:1eac:9a3b:ee58:5ca:990c:8bc9:c03b/128"
+			  ],
+			  "destination_ips": [
+				"28.239.13.1/32",
+				"28.239.14.0/24",
+				"ff21:1eac:9a3b:ee58:5ca:990c:8bc9:c03b/128"
+			  ],
+			  "protocol": "tcp",
+			  "port": "80"
+			}
+		],
+		"applied_to": [
+			{
+			 	"server": {
+					"id": 42
+				},
+				"type": "server"
+			}
+		  ]
+	}
+`)
+	var f schema.Firewall
+	if err := json.Unmarshal(data, &f); err != nil {
+		t.Fatal(err)
+	}
+	firewall := FirewallFromSchema(f)
+
+	if firewall.ID != 897 {
+		t.Errorf("unexpected ID: %v", firewall.ID)
+	}
+	if firewall.Name != "my firewall" {
+		t.Errorf("unexpected Name: %v", firewall.Name)
+	}
+	if firewall.Labels["key"] != "value" || firewall.Labels["key2"] != "value2" {
+		t.Errorf("unexpected Labels: %v", firewall.Labels)
+	}
+	if !firewall.Created.Equal(time.Date(2016, 01, 30, 23, 50, 00, 0, time.UTC)) {
+		t.Errorf("unexpected Created date: %v", firewall.Created)
+	}
+	if len(firewall.Rules) != 1 {
+		t.Errorf("unexpected Rules count: %d", len(firewall.Rules))
+	}
+	if firewall.Rules[0].Direction != FirewallRuleDirectionIn {
+		t.Errorf("unexpected Rule Direction: %s", firewall.Rules[0].Direction)
+	}
+	if len(firewall.Rules[0].SourceIPs) != 3 {
+		t.Errorf("unexpected Rule SourceIPs count: %d", len(firewall.Rules[0].SourceIPs))
+	}
+	if len(firewall.Rules[0].DestinationIPs) != 3 {
+		t.Errorf("unexpected Rule DestinationIPs count: %d", len(firewall.Rules[0].DestinationIPs))
+	}
+	if firewall.Rules[0].Protocol != FirewallRuleProtocolTCP {
+		t.Errorf("unexpected Rule Protocol: %s", firewall.Rules[0].Protocol)
+	}
+	if *firewall.Rules[0].Port != "80" {
+		t.Errorf("unexpected Rule Port: %s", *firewall.Rules[0].Port)
+	}
+	if len(firewall.AppliedTo) != 1 {
+		t.Errorf("unexpected UsedBy count: %d", len(firewall.AppliedTo))
+	}
+	if firewall.AppliedTo[0].Type != FirewallResourceTypeServer {
+		t.Errorf("unexpected UsedBy Type: %s", firewall.AppliedTo[0].Type)
+	}
+	if firewall.AppliedTo[0].Server.ID != 42 {
+		t.Errorf("unexpected UsedBy Server ID: %d", firewall.AppliedTo[0].Server.ID)
 	}
 }
