@@ -628,6 +628,14 @@ func PricingFromSchema(s schema.Pricing) Pricing {
 		ServerBackup: ServerBackupPricing{
 			Percentage: s.ServerBackup.Percentage,
 		},
+		Volume: VolumePricing{
+			PerGBMonthly: Price{
+				Currency: s.Currency,
+				VATRate:  s.VATRate,
+				Net:      s.Volume.PricePerGBPerMonth.Net,
+				Gross:    s.Volume.PricePerGBPerMonth.Gross,
+			},
+		},
 	}
 	for _, serverType := range s.ServerTypes {
 		var pricings []ServerTypeLocationPricing

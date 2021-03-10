@@ -1782,7 +1782,13 @@ func TestPricingFromSchema(t *testing.T) {
 					}
 				]
 			}
-		]
+		],
+		"volume": {
+			"price_per_gb_month": {
+				"net": "1",
+				"gross": "1.19"
+			}
+		}
 	}`)
 
 	var s schema.Pricing
@@ -1815,6 +1821,19 @@ func TestPricingFromSchema(t *testing.T) {
 	}
 	if pricing.FloatingIP.Monthly.Gross != "1.19" {
 		t.Errorf("unexpected FloatingIP.Monthly.Gross: %v", pricing.FloatingIP.Monthly.Gross)
+	}
+
+	if pricing.Volume.PerGBMonthly.Currency != "EUR" {
+		t.Errorf("unexpected Traffic.PerTB.Currency: %v", pricing.Volume.PerGBMonthly.Currency)
+	}
+	if pricing.Volume.PerGBMonthly.VATRate != "19.00" {
+		t.Errorf("unexpected Traffic.PerTB.VATRate: %v", pricing.Volume.PerGBMonthly.VATRate)
+	}
+	if pricing.Volume.PerGBMonthly.Net != "1" {
+		t.Errorf("unexpected Traffic.PerTB.Net: %v", pricing.Volume.PerGBMonthly.Net)
+	}
+	if pricing.Volume.PerGBMonthly.Gross != "1.19" {
+		t.Errorf("unexpected Traffic.PerTB.Gross: %v", pricing.Volume.PerGBMonthly.Gross)
 	}
 
 	if pricing.Traffic.PerTB.Currency != "EUR" {
