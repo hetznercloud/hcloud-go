@@ -1732,8 +1732,11 @@ func TestCertificateFromSchema(t *testing.T) {
 				"fingerprint": "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
 				"status": {
 					"issuance": "completed",
-					"renewal": "failure",
-					"failure_reason": "DNS validation failed"
+					"renewal": "failed",
+					"error": {
+						"code": "dns_zone_not_found",
+						"message": "DNS zone not found"
+					}
 				},
 				"used_by": [
 					{"id": 42, "type": "loadbalancer"}
@@ -1750,9 +1753,12 @@ func TestCertificateFromSchema(t *testing.T) {
 				DomainNames:    []string{"example.com", "webmail.example.com", "www.example.com"},
 				Fingerprint:    "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
 				Status: &CertificateStatus{
-					Issuance:      "completed",
-					Renewal:       "failure",
-					FailureReason: "DNS validation failed",
+					Issuance: CertificateStatusTypeCompleted,
+					Renewal:  CertificateStatusTypeFailed,
+					Error: &Error{
+						Code:    "dns_zone_not_found",
+						Message: "DNS zone not found",
+					},
 				},
 				UsedBy: []CertificateUsedByRef{
 					{ID: 42, Type: "loadbalancer"},

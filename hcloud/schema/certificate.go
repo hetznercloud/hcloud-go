@@ -9,9 +9,9 @@ type CertificateUsedByRef struct {
 }
 
 type CertificateStatusRef struct {
-	Issuance      string `json:"issuance"`
-	Renewal       string `json:"renewal"`
-	FailureReason string `json:"failure_reason"`
+	Issuance string `json:"issuance"`
+	Renewal  string `json:"renewal"`
+	Error    *Error `json:"error,omitempty"`
 }
 
 // Certificate defines the schema of an certificate.

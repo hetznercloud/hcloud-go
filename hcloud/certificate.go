@@ -22,11 +22,19 @@ const (
 	CertificateTypeManaged  CertificateType = "managed"
 )
 
+type CertificateStatusType string
+
 // Possible certificate status.
 const (
-	CertificateStatusPending   = "pending"
-	CertificateStatusCompleted = "completed"
-	CertificateStatusFailed    = "failed"
+	CertificateStatusTypePending CertificateStatusType = "pending"
+	CertificateStatusTypeFailed  CertificateStatusType = "failed"
+
+	// only in issuance
+	CertificateStatusTypeCompleted CertificateStatusType = "completed"
+
+	// only in renewal
+	CertificateStatusTypeScheduled   CertificateStatusType = "scheduled"
+	CertificateStatusTypeUnavailable CertificateStatusType = "unavailable"
 )
 
 // CertificateUsedByRef points to a resource that uses this certificate.
@@ -37,16 +45,16 @@ type CertificateUsedByRef struct {
 
 // CertificateStatus indicates the status of a managed certificate.
 type CertificateStatus struct {
-	Issuance      string
-	Renewal       string
-	FailureReason string
+	Issuance CertificateStatusType
+	Renewal  CertificateStatusType
+	Error    *Error
 }
 
 // IsFailed returns true if either the Issuance or the Renewal of a certificate
 // failed. In this case the FailureReason field details the nature of the
 // failure.
 func (st *CertificateStatus) IsFailed() bool {
-	return st.Issuance == "failed" || st.Renewal == "failed"
+	return st.Issuance == CertificateStatusTypeFailed || st.Renewal == CertificateStatusTypeFailed
 }
 
 // Certificate represents an certificate in the Hetzner Cloud.

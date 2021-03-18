@@ -565,9 +565,12 @@ func CertificateFromSchema(s schema.Certificate) *Certificate {
 	}
 	if s.Status != nil {
 		c.Status = &CertificateStatus{
-			Issuance:      s.Status.Issuance,
-			Renewal:       s.Status.Renewal,
-			FailureReason: s.Status.FailureReason,
+			Issuance: CertificateStatusType(s.Status.Issuance),
+			Renewal:  CertificateStatusType(s.Status.Renewal),
+		}
+		if s.Status.Error != nil {
+			certErr := ErrorFromSchema(*s.Status.Error)
+			c.Status.Error = &certErr
 		}
 	}
 	if len(s.Labels) > 0 {
