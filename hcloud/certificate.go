@@ -22,6 +22,8 @@ const (
 	CertificateTypeManaged  CertificateType = "managed"
 )
 
+// CertificateStatusType is defines the type for the various managed
+// certificate status.
 type CertificateStatusType string
 
 // Possible certificate status.
