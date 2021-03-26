@@ -579,7 +579,7 @@ func CertificateFromSchema(s schema.Certificate) *Certificate {
 	if len(s.UsedBy) > 0 {
 		c.UsedBy = make([]CertificateUsedByRef, len(s.UsedBy))
 		for i, ref := range s.UsedBy {
-			c.UsedBy[i] = CertificateUsedByRef{ID: ref.ID, Type: ref.Type}
+			c.UsedBy[i] = CertificateUsedByRef{ID: ref.ID, Type: CertificateUsedByRefType(ref.Type)}
 		}
 	}
 

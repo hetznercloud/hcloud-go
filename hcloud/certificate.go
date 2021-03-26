@@ -39,10 +39,19 @@ const (
 	CertificateStatusTypeUnavailable CertificateStatusType = "unavailable"
 )
 
+// CertificateUsedByRefType is the type of used by references for
+// certificates.
+type CertificateUsedByRefType string
+
+// Possible users of certificates.
+const (
+	CertificateUsedByRefTypeLoadBalancer CertificateUsedByRefType = "load_balancer"
+)
+
 // CertificateUsedByRef points to a resource that uses this certificate.
 type CertificateUsedByRef struct {
 	ID   int
-	Type string
+	Type CertificateUsedByRefType
 }
 
 // CertificateStatus indicates the status of a managed certificate.
