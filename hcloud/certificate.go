@@ -64,7 +64,7 @@ type Certificate struct {
 	ID             int
 	Name           string
 	Labels         map[string]string
-	Type           string
+	Type           CertificateType
 	Certificate    string
 	Created        time.Time
 	NotValidBefore time.Time

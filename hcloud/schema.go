@@ -555,7 +555,7 @@ func CertificateFromSchema(s schema.Certificate) *Certificate {
 	c := &Certificate{
 		ID:             s.ID,
 		Name:           s.Name,
-		Type:           s.Type,
+		Type:           CertificateType(s.Type),
 		Certificate:    s.Certificate,
 		Created:        s.Created,
 		NotValidBefore: s.NotValidBefore,
