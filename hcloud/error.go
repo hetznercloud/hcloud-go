@@ -58,6 +58,15 @@ const (
 	ErrorCodeResourceInUse           ErrorCode = "resource_in_use"           // Firewall must not be in use to be deleted
 	ErrorCodeServerAlreadyAdded      ErrorCode = "server_already_added"      // Server added more than one time to resource
 
+	// Certificate related error codes
+	ErrorCodeCAARecordDoesNotAllowCA                        ErrorCode = "caa_record_does_not_allow_ca"                          // CAA record does not allow certificate authority
+	ErrorCodeCADNSValidationFailed                          ErrorCode = "ca_dns_validation_failed"                              // Certificate Authority: DNS validation failed
+	ErrorCodeCATooManyAuthorizationsFailedRecently          ErrorCode = "ca_too_many_authorizations_failed_recently"            // Certificate Authority: Too many authorizations failed recently
+	ErrorCodeCATooManyCertificatedIssuedForRegisteredDomain ErrorCode = "ca_too_many_certificates_issued_for_registered_domain" // Certificate Authority: Too many certificates issued for registered domain
+	ErrorCodeCATooManyDuplicateCertificates                 ErrorCode = "ca_too_many_duplicate_certificates"                    // Certificate Authority: Too many duplicate certificates
+	ErrorCodeCloudNotVerifyDomainDelegatedToZone            ErrorCode = "could_not_verify_domain_delegated_to_zone"             // Could not verify domain delegated to zone
+	ErrorCodeDNSZoneNotFound                                ErrorCode = "dns_zone_not_found"                                    // DNS zone not found
+
 	// Deprecated error codes
 	// The actual value of this error code is limit_reached. The new error code
 	// rate_limit_exceeded for ratelimiting was introduced before Hetzner Cloud

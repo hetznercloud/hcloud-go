@@ -555,6 +555,7 @@ func CertificateFromSchema(s schema.Certificate) *Certificate {
 	c := &Certificate{
 		ID:             s.ID,
 		Name:           s.Name,
+		Type:           CertificateType(s.Type),
 		Certificate:    s.Certificate,
 		Created:        s.Created,
 		NotValidBefore: s.NotValidBefore,
@@ -562,12 +563,26 @@ func CertificateFromSchema(s schema.Certificate) *Certificate {
 		DomainNames:    s.DomainNames,
 		Fingerprint:    s.Fingerprint,
 	}
+	if s.Status != nil {
+		c.Status = &CertificateStatus{
+			Issuance: CertificateStatusType(s.Status.Issuance),
+			Renewal:  CertificateStatusType(s.Status.Renewal),
+		}
+		if s.Status.Error != nil {
+			certErr := ErrorFromSchema(*s.Status.Error)
+			c.Status.Error = &certErr
+		}
+	}
 	if len(s.Labels) > 0 {
-		c.Labels = make(map[string]string)
+		c.Labels = s.Labels
 	}
-	for key, value := range s.Labels {
-		c.Labels[key] = value
+	if len(s.UsedBy) > 0 {
+		c.UsedBy = make([]CertificateUsedByRef, len(s.UsedBy))
+		for i, ref := range s.UsedBy {
+			c.UsedBy[i] = CertificateUsedByRef{ID: ref.ID, Type: CertificateUsedByRefType(ref.Type)}
+		}
 	}
+
 	return c
 }
 
@@ -804,8 +819,10 @@ func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBala
 				StickySessions: service.HTTP.StickySessions,
 				CookieName:     service.HTTP.CookieName,
 			}
-			if sec := service.HTTP.CookieLifetime.Seconds(); sec != 0 {
-				schemaService.HTTP.CookieLifetime = Int(int(sec))
+			if service.HTTP.CookieLifetime != nil {
+				if sec := service.HTTP.CookieLifetime.Seconds(); sec != 0 {
+					schemaService.HTTP.CookieLifetime = Int(int(sec))
+				}
 			}
 			if service.HTTP.Certificates != nil {
 				certificates := []int{}

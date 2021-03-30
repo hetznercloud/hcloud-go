@@ -220,6 +220,8 @@ func (c *ActionClient) WatchOverallProgress(ctx context.Context, actions []*Acti
 
 			for _, a := range as {
 				switch a.Status {
+				case ActionStatusRunning:
+					continue
 				case ActionStatusSuccess:
 					delete(watchIDs, a.ID)
 					successIDs := append(successIDs, a.ID)

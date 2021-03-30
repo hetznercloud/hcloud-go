@@ -7,61 +7,127 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestCertificateCreateOptsValidate(t *testing.T) {
-	testCases := map[string]struct {
-		Opts  CertificateCreateOpts
-		Valid bool
+func TestCertificateCreateOptsValidate_Uploaded(t *testing.T) {
+	tests := []struct {
+		name   string
+		opts   CertificateCreateOpts
+		errMsg string
 	}{
-		"empty": {
-			Opts:  CertificateCreateOpts{},
-			Valid: false,
-		},
-		"all set": {
-			Opts: CertificateCreateOpts{
-				Name:        "name",
+		{
+			name: "missing name",
+			opts: CertificateCreateOpts{
 				Certificate: "cert",
 				PrivateKey:  "key",
 				Labels:      map[string]string{},
 			},
-			Valid: true,
+			errMsg: "missing name",
 		},
-		"no name": {
-			Opts: CertificateCreateOpts{
-				Certificate: "cert",
-				PrivateKey:  "key",
-				Labels:      map[string]string{},
-			},
-			Valid: false,
-		},
-		"no certificate": {
-			Opts: CertificateCreateOpts{
+		{
+			name: "no certificate",
+			opts: CertificateCreateOpts{
 				Name:       "name",
 				PrivateKey: "key",
 				Labels:     map[string]string{},
 			},
-			Valid: false,
+			errMsg: "missing certificate",
 		},
-		"no private key": {
-			Opts: CertificateCreateOpts{
+		{
+			name: "no private key",
+			opts: CertificateCreateOpts{
 				Name:        "name",
 				Certificate: "cert",
 				Labels:      map[string]string{},
 			},
-			Valid: false,
+			errMsg: "missing private key",
+		},
+		{
+			name: "valid without type",
+			opts: CertificateCreateOpts{
+				Name:        "name",
+				Certificate: "cert",
+				PrivateKey:  "key",
+				Labels:      map[string]string{},
+			},
+		},
+		{
+			name: "valid with type",
+			opts: CertificateCreateOpts{
+				Name:        "name",
+				Type:        "uploaded",
+				Certificate: "cert",
+				PrivateKey:  "key",
+				Labels:      map[string]string{},
+			},
 		},
 	}
-	for name, testCase := range testCases {
-		t.Run(name, func(t *testing.T) {
-			err := testCase.Opts.Validate()
-			if err == nil && !testCase.Valid || err != nil && testCase.Valid {
-				t.FailNow()
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.opts.Validate()
+			if tt.errMsg != "" {
+				assert.EqualError(t, err, tt.errMsg)
+				return
 			}
+			assert.NoError(t, err)
 		})
 	}
+}
+
+func TestCertificateCreateOptsValidate_Managed(t *testing.T) {
+	tests := []struct {
+		name   string
+		opts   CertificateCreateOpts
+		errMsg string
+	}{
+		{
+			name: "missing name",
+			opts: CertificateCreateOpts{
+				Type:        "managed",
+				DomainNames: []string{"*.example.com", "example.com"},
+			},
+			errMsg: "missing name",
+		},
+		{
+			name: "missing domains",
+			opts: CertificateCreateOpts{
+				Name: "I have no domains",
+				Type: "managed",
+			},
+			errMsg: "no domain names",
+		},
+		{
+			name: "valid certificate",
+			opts: CertificateCreateOpts{
+				Name:        "valid",
+				Type:        "managed",
+				DomainNames: []string{"*.example.com", "example.com"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		tt := tt
+		t.Run(tt.name, func(t *testing.T) {
+			err := tt.opts.Validate()
+			if tt.errMsg != "" {
+				assert.EqualError(t, err, tt.errMsg)
+				return
+			}
+			assert.NoError(t, err)
+		})
+	}
+}
+
+func TestCertificateCreateOptsValidate_InvalidType(t *testing.T) {
+	opts := CertificateCreateOpts{Name: "invalid type", Type: "invalid"}
+	err := opts.Validate()
+	assert.EqualError(t, err, "invalid type: invalid")
 }
 
 func TestCertificateClientGetByID(t *testing.T) {
@@ -212,7 +278,7 @@ func TestCertificateClientGetByNameEmpty(t *testing.T) {
 	}
 }
 
-func TestCertificateCreate(t *testing.T) {
+func TestCertificateCreate_Uploaded(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -223,6 +289,7 @@ func TestCertificateCreate(t *testing.T) {
 		}
 		expectedReqBody := schema.CertificateCreateRequest{
 			Name:        "my-cert",
+			Type:        "uploaded",
 			Certificate: "-----BEGIN CERTIFICATE-----\n...",
 			PrivateKey:  "-----BEGIN PRIVATE KEY-----\n...",
 			Labels: func() *map[string]string {
@@ -251,6 +318,49 @@ func TestCertificateCreate(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
+
+func TestCertificateCreate_Managed(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/certificates", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.CertificateCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		expectedReqBody := schema.CertificateCreateRequest{
+			Name:        "my-cert",
+			Type:        "managed",
+			DomainNames: []string{"*.example.com", "example.com"},
+			Labels: func() *map[string]string {
+				labels := map[string]string{"key": "value"}
+				return &labels
+			}(),
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
+		}
+		json.NewEncoder(w).Encode(schema.CertificateCreateResponse{
+			Certificate: schema.Certificate{ID: 1},
+			Action:      &schema.Action{ID: 14},
+		})
+	})
+
+	ctx := context.Background()
+	opts := CertificateCreateOpts{
+		Name:        "my-cert",
+		Type:        "managed",
+		DomainNames: []string{"*.example.com", "example.com"},
+		Labels:      map[string]string{"key": "value"},
+	}
+
+	result, resp, err := env.Client.Certificate.CreateCertificate(ctx, opts)
+	assert.NoError(t, err)
+	assert.NotNil(t, resp, "no response returned")
+	assert.NotNil(t, result.Certificate, "no certificate returned")
+	assert.NotNil(t, result.Action, "no action returned")
 }
 
 func TestCertificateCreateValidation(t *testing.T) {
@@ -328,4 +438,23 @@ func TestCertificateClientUpdate(t *testing.T) {
 	if updatedCertificate.ID != 1 {
 		t.Errorf("unexpected certficate ID: %v", updatedCertificate.ID)
 	}
+}
+
+func TestCertificateClient_RetryIssuance(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/certificates/1/actions/retry", func(w http.ResponseWriter, r *http.Request) {
+		assert.Equal(t, "POST", r.Method)
+
+		resp := schema.CertificateIssuanceRetryResponse{
+			Action: schema.Action{ID: 1},
+		}
+		err := json.NewEncoder(w).Encode(resp)
+		assert.NoError(t, err)
+	})
+
+	action, _, err := env.Client.Certificate.RetryIssuance(context.Background(), &Certificate{ID: 1})
+	assert.NoError(t, err)
+	assert.Equal(t, &Action{ID: 1, Resources: []*ActionResource{}}, action)
 }
