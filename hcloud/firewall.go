@@ -54,6 +54,10 @@ const (
 	FirewallRuleProtocolUDP FirewallRuleProtocol = "udp"
 	// FirewallRuleProtocolICMP specifies an ICMP rule.
 	FirewallRuleProtocolICMP FirewallRuleProtocol = "icmp"
+	// FirewallRuleProtocolESP specifies an esp rule.
+	FirewallRuleProtocolESP FirewallRuleProtocol = "esp"
+	// FirewallRuleProtocolGRE specifies an gre rule.
+	FirewallRuleProtocolGRE FirewallRuleProtocol = "gre"
 )
 
 // FirewallResourceType specifies the resource to apply a Firewall on.
