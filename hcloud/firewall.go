@@ -62,17 +62,25 @@ type FirewallResourceType string
 const (
 	// FirewallResourceTypeServer specifies a Server.
 	FirewallResourceTypeServer FirewallResourceType = "server"
+	// FirewallResourceTypeLabelSelector specifies a LabelSelector.
+	FirewallResourceTypeLabelSelector FirewallResourceType = "label_selector"
 )
 
 // FirewallResource represents a resource to apply the new Firewall on.
 type FirewallResource struct {
-	Type   FirewallResourceType
-	Server *FirewallResourceServer
+	Type          FirewallResourceType
+	Server        *FirewallResourceServer
+	LabelSelector *FirewallResourceLabelSelector
 }
 
 // FirewallResourceServer represents a Server to apply a Firewall on.
 type FirewallResourceServer struct {
 	ID int
+}
+
+// FirewallResourceLabelSelector represents a LabelSelector to apply a Firewall on.
+type FirewallResourceLabelSelector struct {
+	Selector string
 }
 
 // FirewallClient is a client for the Firewalls API.

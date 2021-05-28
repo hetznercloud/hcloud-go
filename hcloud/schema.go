@@ -729,7 +729,10 @@ func FirewallFromSchema(s schema.Firewall) *Firewall {
 	}
 	for _, res := range s.AppliedTo {
 		r := FirewallResource{Type: FirewallResourceType(res.Type)}
-		if r.Type == FirewallResourceTypeServer {
+		switch r.Type {
+		case FirewallResourceTypeLabelSelector:
+			r.LabelSelector = &FirewallResourceLabelSelector{Selector: res.LabelSelector.Selector}
+		case FirewallResourceTypeServer:
 			r.Server = &FirewallResourceServer{ID: res.Server.ID}
 		}
 		f.AppliedTo = append(f.AppliedTo, r)
@@ -999,10 +1002,13 @@ func firewallCreateOptsToSchema(opts FirewallCreateOpts) schema.FirewallCreateRe
 		schemaFirewallResource := schema.FirewallResource{
 			Type: string(res.Type),
 		}
-		if res.Type == FirewallResourceTypeServer {
+		switch res.Type {
+		case FirewallResourceTypeServer:
 			schemaFirewallResource.Server = &schema.FirewallResourceServer{
 				ID: res.Server.ID,
 			}
+		case FirewallResourceTypeLabelSelector:
+			schemaFirewallResource.LabelSelector = &schema.FirewallResourceLabelSelector{Selector: res.LabelSelector.Selector}
 		}
 
 		req.ApplyTo = append(req.ApplyTo, schemaFirewallResource)
@@ -1039,7 +1045,10 @@ func firewallResourceToSchema(resource FirewallResource) schema.FirewallResource
 	s := schema.FirewallResource{
 		Type: string(resource.Type),
 	}
-	if resource.Type == FirewallResourceTypeServer {
+	switch resource.Type {
+	case FirewallResourceTypeLabelSelector:
+		s.LabelSelector = &schema.FirewallResourceLabelSelector{Selector: resource.LabelSelector.Selector}
+	case FirewallResourceTypeServer:
 		s.Server = &schema.FirewallResourceServer{ID: resource.Server.ID}
 	}
 	return s

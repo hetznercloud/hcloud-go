@@ -2727,6 +2727,12 @@ func TestFirewallFromSchema(t *testing.T) {
 					"id": 42
 				},
 				"type": "server"
+			},
+			{
+			 	"label_selector": {
+					"selector": "a=b"
+				},
+				"type": "label_selector"
 			}
 		  ]
 	}
@@ -2767,7 +2773,7 @@ func TestFirewallFromSchema(t *testing.T) {
 	if *firewall.Rules[0].Port != "80" {
 		t.Errorf("unexpected Rule Port: %s", *firewall.Rules[0].Port)
 	}
-	if len(firewall.AppliedTo) != 1 {
+	if len(firewall.AppliedTo) != 2 {
 		t.Errorf("unexpected UsedBy count: %d", len(firewall.AppliedTo))
 	}
 	if firewall.AppliedTo[0].Type != FirewallResourceTypeServer {
@@ -2775,5 +2781,11 @@ func TestFirewallFromSchema(t *testing.T) {
 	}
 	if firewall.AppliedTo[0].Server.ID != 42 {
 		t.Errorf("unexpected UsedBy Server ID: %d", firewall.AppliedTo[0].Server.ID)
+	}
+	if firewall.AppliedTo[1].Type != FirewallResourceTypeLabelSelector {
+		t.Errorf("unexpected UsedBy Type: %s", firewall.AppliedTo[0].Type)
+	}
+	if firewall.AppliedTo[1].LabelSelector.Selector != "a=b" {
+		t.Errorf("unexpected UsedBy Label Selector: %s", firewall.AppliedTo[1].LabelSelector.Selector)
 	}
 }
