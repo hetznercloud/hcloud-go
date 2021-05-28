@@ -1,8 +1,6 @@
 # Changes
 
-## Unreleased
-
-* Fix Authorization header being included in debug output
+As of release v1.24.0 we moved the release notes to Github Releases: https://github.com/hetznercloud/hcloud-go/releases
 
 ## v1.23.1
 * Add removed `ErrorCodeServerAlreadyAttached` again
