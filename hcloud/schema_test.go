@@ -925,6 +925,7 @@ func TestImageFromSchema(t *testing.T) {
 			"delete": true
 		},
 		"deprecated": "2018-02-28T00:00:00+00:00",
+		"deleted": "2016-01-30T23:55:01+00:00",
 		"labels": {
 			"key": "value",
 			"key2": "value2"
@@ -960,6 +961,9 @@ func TestImageFromSchema(t *testing.T) {
 	}
 	if !image.Created.Equal(time.Date(2016, 1, 30, 23, 55, 1, 0, time.UTC)) {
 		t.Errorf("unexpected Created: %v", image.Created)
+	}
+	if !image.Deleted.Equal(time.Date(2016, 1, 30, 23, 55, 1, 0, time.UTC)) {
+		t.Errorf("unexpected Deleted: %v", image.Deleted)
 	}
 	if image.CreatedFrom == nil || image.CreatedFrom.ID != 1 || image.CreatedFrom.Name != "my-server1" {
 		t.Errorf("unexpected CreatedFrom: %v", image.CreatedFrom)
