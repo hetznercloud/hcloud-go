@@ -60,6 +60,8 @@ const (
 	ImageTypeBackup ImageType = "backup"
 	// ImageTypeSystem represents a system image.
 	ImageTypeSystem ImageType = "system"
+	// ImageTypeApp represents a one click app image.
+	ImageTypeApp ImageType = "app"
 )
 
 // ImageStatus specifies the status of an image.
