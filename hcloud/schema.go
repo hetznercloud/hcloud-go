@@ -765,6 +765,18 @@ func FirewallFromSchema(s schema.Firewall) *Firewall {
 	return f
 }
 
+func PlacementGroupFromSchema(s schema.PlacementGroup) *PlacementGroup {
+	g := &PlacementGroup{
+		ID:      s.ID,
+		Name:    s.Name,
+		Labels:  map[string]string{},
+		Created: s.Created,
+		Servers: s.Servers,
+		Type:    PlacementGroupType(s.Type),
+	}
+	return g
+}
+
 func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBalancerCreateRequest {
 	req := schema.LoadBalancerCreateRequest{
 		Name:            opts.Name,

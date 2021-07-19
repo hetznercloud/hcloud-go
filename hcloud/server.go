@@ -1070,3 +1070,40 @@ func (c *ServerClient) GetMetrics(ctx context.Context, server *Server, opts Serv
 	}
 	return ms, resp, nil
 }
+
+func (c *ServerClient) AddToPlacementGroup(ctx context.Context, server *Server, placementGroup string) (*Action, *Response, error) {
+	reqBody := schema.ServerActionAddToPlacementGroup{
+		PlacementGroup: placementGroup,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+	path := fmt.Sprintf("/servers/%d/actions/add_to_placement_group", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.Action{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody), resp, err
+}
+
+func (c *ServerClient) RemoveFromPlacementGroup(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/remove_from_placement_group", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.Action{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody), resp, err
+}

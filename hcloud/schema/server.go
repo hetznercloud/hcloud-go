@@ -395,3 +395,7 @@ type ServerGetMetricsResponse struct {
 type ServerTimeSeriesVals struct {
 	Values []interface{} `json:"values"`
 }
+
+type ServerActionAddToPlacementGroup struct {
+	PlacementGroup string `json:"placement_group"`
+}
