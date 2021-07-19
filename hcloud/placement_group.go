@@ -12,6 +12,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
+// PlacementGroup represents a Placement Group in the Hetzner Cloud.
 type PlacementGroup struct {
 	ID      int
 	Name    string
@@ -21,17 +22,20 @@ type PlacementGroup struct {
 	Type    PlacementGroupType
 }
 
+// PlacementGroupType specifies the type of a Placement Group
 type PlacementGroupType string
 
 const (
+	// PlacementGroupTypeSpread spreads all servers in the group on different vhosts
 	PlacementGroupTypeSpread PlacementGroupType = "spread"
 )
 
-// FirewallClient is a client for the Placement Groups API.
+// PlacementGroupClient is a client for the Placement Groups API.
 type PlacementGroupClient struct {
 	client *Client
 }
 
+// GetByID retrieves a PlacementGroup by its ID. If the PlacementGroup does not exist, nil is returned.
 func (c *PlacementGroupClient) GetByID(ctx context.Context, id int) (*PlacementGroup, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/placement_groups/%d", id), nil)
 	if err != nil {
@@ -49,6 +53,7 @@ func (c *PlacementGroupClient) GetByID(ctx context.Context, id int) (*PlacementG
 	return PlacementGroupFromSchema(body.PlacementGroup), resp, nil
 }
 
+// GetByName retrieves a PlacementGroup by its name. If the PlacementGroup does not exist, nil is returned.
 func (c *PlacementGroupClient) GetByName(ctx context.Context, name string) (*PlacementGroup, *Response, error) {
 	if name == "" {
 		return nil, nil, nil
@@ -60,6 +65,8 @@ func (c *PlacementGroupClient) GetByName(ctx context.Context, name string) (*Pla
 	return placementGroups[0], response, err
 }
 
+// Get retrieves a PlacementGroup by its ID if the input can be parsed as an integer, otherwise it
+// retrieves a PlacementGroup by its name. If the PlacementGroup does not exist, nil is returned.
 func (c *PlacementGroupClient) Get(ctx context.Context, idOrName string) (*PlacementGroup, *Response, error) {
 	if id, err := strconv.Atoi(idOrName); err == nil {
 		return c.GetByID(ctx, int(id))
@@ -67,6 +74,7 @@ func (c *PlacementGroupClient) Get(ctx context.Context, idOrName string) (*Place
 	return c.GetByName(ctx, idOrName)
 }
 
+// PlacementGroupListOpts specifies options for listing PlacementGroup.
 type PlacementGroupListOpts struct {
 	ListOpts
 	Name string
@@ -84,6 +92,10 @@ func (l PlacementGroupListOpts) values() url.Values {
 	return vals
 }
 
+// List returns a list of PlacementGroups for a specific page.
+//
+// Please note that filters specified in opts are not taken into account
+// when their value corresponds to their zero value or when they are empty.
 func (c *PlacementGroupClient) List(ctx context.Context, opts PlacementGroupListOpts) ([]*PlacementGroup, *Response, error) {
 	path := "/placement_groups?" + opts.values().Encode()
 	req, err := c.client.NewRequest(ctx, "GET", path, nil)
@@ -103,6 +115,7 @@ func (c *PlacementGroupClient) List(ctx context.Context, opts PlacementGroupList
 	return placementGroups, resp, nil
 }
 
+// All returns all PlacementGroups.
 func (c *PlacementGroupClient) All(ctx context.Context) ([]*PlacementGroup, error) {
 	opts := PlacementGroupListOpts{}
 	opts.PerPage = 50
@@ -110,8 +123,9 @@ func (c *PlacementGroupClient) All(ctx context.Context) ([]*PlacementGroup, erro
 	return c.AllWithOpts(ctx, opts)
 }
 
+// AllWithOpts returns all PlacementGroups for the given options.
 func (c *PlacementGroupClient) AllWithOpts(ctx context.Context, opts PlacementGroupListOpts) ([]*PlacementGroup, error) {
-	allPlacmentGroups := []*PlacementGroup{}
+	allPlacementGroups := []*PlacementGroup{}
 
 	err := c.client.all(func(page int) (*Response, error) {
 		opts.Page = page
@@ -119,21 +133,23 @@ func (c *PlacementGroupClient) AllWithOpts(ctx context.Context, opts PlacementGr
 		if err != nil {
 			return resp, err
 		}
-		allPlacmentGroups = append(allPlacmentGroups, placementGroups...)
+		allPlacementGroups = append(allPlacementGroups, placementGroups...)
 		return resp, nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return allPlacmentGroups, nil
+	return allPlacementGroups, nil
 }
 
+// PlacementGroupUpdateOpts specifies options for updating a PlacementGroup.
 type PlacementGroupUpdateOpts struct {
 	Name   string
 	Labels map[string]string
 }
 
+// Update updates a PlacementGroup.
 func (c *PlacementGroupClient) Update(ctx context.Context, placementGroup *PlacementGroup, opts PlacementGroupUpdateOpts) (*PlacementGroup, *Response, error) {
 	reqBody := schema.PlacementGroupUpdateRequest{}
 	if opts.Name != "" {
@@ -162,6 +178,7 @@ func (c *PlacementGroupClient) Update(ctx context.Context, placementGroup *Place
 	return PlacementGroupFromSchema(respBody.PlacementGroup), resp, nil
 }
 
+// Delete deletes a PlacementGroup.
 func (c *PlacementGroupClient) Delete(ctx context.Context, placementGroup *PlacementGroup) (*Response, error) {
 	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/placement_groups/%d", placementGroup.ID), nil)
 	if err != nil {
