@@ -2062,3 +2062,75 @@ func serverMetricsOptsFromURL(t *testing.T, u *url.URL) ServerGetMetricsOpts {
 
 	return opts
 }
+
+func TestServerAddToPlacementGroup(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	const (
+		serverID       = 1
+		actionID       = 42
+		placementGroup = "my_placement_group"
+	)
+
+	env.Mux.HandleFunc(fmt.Sprintf("/servers/%v/actions/add_to_placement_group", serverID), func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.ServerActionAddToPlacementGroup
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.PlacementGroup != placementGroup {
+			t.Errorf("unexpected PlacementGroup: %v", reqBody.PlacementGroup)
+		}
+		json.NewEncoder(w).Encode(schema.Action{
+			ID: actionID,
+		})
+	})
+
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: serverID}
+	)
+
+	action, _, err := env.Client.Server.AddToPlacementGroup(ctx, server, placementGroup)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != actionID {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
+}
+
+func TestServerRemoveFromPlacementGroup(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	const (
+		serverID = 1
+		actionID = 42
+	)
+
+	env.Mux.HandleFunc(fmt.Sprintf("/servers/%v/actions/remove_from_placement_group", serverID), func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		json.NewEncoder(w).Encode(schema.Action{
+			ID: actionID,
+		})
+	})
+
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: serverID}
+	)
+
+	action, _, err := env.Client.Server.RemoveFromPlacementGroup(ctx, server)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != actionID {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
+}
