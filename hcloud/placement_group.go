@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -70,6 +71,17 @@ type PlacementGroupListOpts struct {
 	ListOpts
 	Name string
 	Type PlacementGroupType
+}
+
+func (l PlacementGroupListOpts) values() url.Values {
+	vals := l.ListOpts.values()
+	if l.Name != "" {
+		vals.Add("name", l.Name)
+	}
+	if l.Type != "" {
+		vals.Add("type", string(l.Type))
+	}
+	return vals
 }
 
 func (c *PlacementGroupClient) List(ctx context.Context, opts PlacementGroupListOpts) ([]*PlacementGroup, *Response, error) {
@@ -151,7 +163,7 @@ func (c *PlacementGroupClient) Update(ctx context.Context, placementGroup *Place
 }
 
 func (c *PlacementGroupClient) Delete(ctx context.Context, placementGroup *PlacementGroup) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/firewalls/%d", placementGroup.ID), nil)
+	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/placement_groups/%d", placementGroup.ID), nil)
 	if err != nil {
 		return nil, err
 	}
