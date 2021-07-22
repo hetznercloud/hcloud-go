@@ -37,6 +37,7 @@ type Server struct {
 	Labels          map[string]string
 	Volumes         []*Volume
 	PrimaryDiskSize int
+	PlacementGroup  *PlacementGroup
 }
 
 // ServerProtection represents the protection level of a server.

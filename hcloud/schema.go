@@ -172,6 +172,9 @@ func ServerFromSchema(s schema.Server) *Server {
 	for _, privNet := range s.PrivateNet {
 		server.PrivateNet = append(server.PrivateNet, ServerPrivateNetFromSchema(privNet))
 	}
+	if s.PlacementGroup != nil {
+		server.PlacementGroup = PlacementGroupFromSchema(*s.PlacementGroup)
+	}
 	return server
 }
 

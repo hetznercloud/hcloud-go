@@ -767,6 +767,9 @@ func TestServerCreateWithPlacementGroup(t *testing.T) {
 		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
 			Server: schema.Server{
 				ID: 1,
+				PlacementGroup: &schema.PlacementGroup{
+					ID: 123,
+				},
 			},
 			NextActions: []schema.Action{
 				{ID: 2},
@@ -792,6 +795,9 @@ func TestServerCreateWithPlacementGroup(t *testing.T) {
 	}
 	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
 		t.Errorf("unexpected next actions: %v", result.NextActions)
+	}
+	if result.Server.PlacementGroup.ID != 123 {
+		t.Errorf("unexpected placement group ID: %v", result.Server.PlacementGroup.ID)
 	}
 }
 

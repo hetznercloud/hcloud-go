@@ -24,6 +24,7 @@ type Server struct {
 	Labels          map[string]string  `json:"labels"`
 	Volumes         []int              `json:"volumes"`
 	PrimaryDiskSize int                `json:"primary_disk_size"`
+	PlacementGroup  *PlacementGroup    `json:"placement_group"`
 }
 
 // ServerProtection defines the schema of a server's resource protection.
