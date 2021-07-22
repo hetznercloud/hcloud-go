@@ -772,7 +772,7 @@ func PlacementGroupFromSchema(s schema.PlacementGroup) *PlacementGroup {
 	g := &PlacementGroup{
 		ID:      s.ID,
 		Name:    s.Name,
-		Labels:  map[string]string{},
+		Labels:  s.Labels,
 		Created: s.Created,
 		Servers: s.Servers,
 		Type:    PlacementGroupType(s.Type),

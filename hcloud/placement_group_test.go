@@ -17,7 +17,7 @@ func TestPlacementGroupClientGebByID(t *testing.T) {
 
 	const id = 1
 
-	env.Mux.HandleFunc(fmt.Sprintf("/placement_groups/%v", id), func(w http.ResponseWriter, r *http.Request) {
+	env.Mux.HandleFunc(fmt.Sprintf("/placement_groups/%d", id), func(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(schema.PlacementGroupGetResponse{
 			PlacementGroup: schema.PlacementGroup{
 				ID: id,
@@ -30,10 +30,10 @@ func TestPlacementGroupClientGebByID(t *testing.T) {
 			t.Fatal(err)
 		}
 		if placementGroup == nil {
-			t.Fatal("no placment group")
+			t.Fatal("no placement group")
 		}
 		if placementGroup.ID != id {
-			t.Errorf("unexpected placment group ID: %v", placementGroup.ID)
+			t.Errorf("unexpected placement group ID: %v", placementGroup.ID)
 		}
 	}
 
@@ -71,7 +71,7 @@ func TestPlacementGroupClientGebByIDNotFound(t *testing.T) {
 		t.Fatal(err)
 	}
 	if placementGroup != nil {
-		t.Fatal("expected no placment_group")
+		t.Fatal("expected no placement_group")
 	}
 }
 
@@ -85,7 +85,7 @@ func TestPlacementGroupClientGetByName(t *testing.T) {
 	)
 
 	env.Mux.HandleFunc("/placement_groups", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.RawQuery != fmt.Sprintf("name=%v", name) {
+		if r.URL.RawQuery != fmt.Sprintf("name=%s", name) {
 			t.Fatal("missing name query")
 		}
 		json.NewEncoder(w).Encode(schema.PlacementGroupListResponse{
@@ -103,10 +103,10 @@ func TestPlacementGroupClientGetByName(t *testing.T) {
 			t.Fatal(err)
 		}
 		if placementGroup == nil {
-			t.Fatal("no placment group")
+			t.Fatal("no placement group")
 		}
 		if placementGroup.ID != id {
-			t.Errorf("unexpected placment group ID: %v", placementGroup.ID)
+			t.Errorf("unexpected placement group ID: %v", placementGroup.ID)
 		}
 		if placementGroup.Name != name {
 			t.Errorf("unexpected placement group Name: %v", placementGroup.Name)
@@ -133,7 +133,7 @@ func TestPlacementGroupClientGebByNameNotFound(t *testing.T) {
 	const name = "my_placement_group"
 
 	env.Mux.HandleFunc("/placement_groups", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.RawQuery != fmt.Sprintf("name=%v", name) {
+		if r.URL.RawQuery != fmt.Sprintf("name=%s", name) {
 			t.Fatal("missing name query")
 		}
 		json.NewEncoder(w).Encode(schema.PlacementGroupListResponse{
@@ -148,7 +148,7 @@ func TestPlacementGroupClientGebByNameNotFound(t *testing.T) {
 		t.Fatal(err)
 	}
 	if placementGroup != nil {
-		t.Fatal("expected no placment_group")
+		t.Fatal("expected no placement_group")
 	}
 }
 
@@ -163,7 +163,7 @@ func TestPlacementGroupClientGebByNameEmpty(t *testing.T) {
 		t.Fatal(err)
 	}
 	if placementGroup != nil {
-		t.Fatal("expected no placment_group")
+		t.Fatal("expected no placement_group")
 	}
 }
 
@@ -173,14 +173,14 @@ func TestPlacementGroupDelete(t *testing.T) {
 
 	const id = 1
 
-	env.Mux.HandleFunc(fmt.Sprintf("/placement_groups/%v", id), func(w http.ResponseWriter, r *http.Request) {})
+	env.Mux.HandleFunc(fmt.Sprintf("/placement_groups/%d", id), func(w http.ResponseWriter, r *http.Request) {})
 
 	var (
-		ctx           = context.Background()
-		placmentGroup = &PlacementGroup{ID: id}
+		ctx            = context.Background()
+		placementGroup = &PlacementGroup{ID: id}
 	)
 
-	_, err := env.Client.PlacementGroup.Delete(ctx, placmentGroup)
+	_, err := env.Client.PlacementGroup.Delete(ctx, placementGroup)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -193,9 +193,9 @@ func TestPlacementGroupUpdate(t *testing.T) {
 	const id = 1
 
 	var (
-		ctx           = context.Background()
-		placmentGroup = &PlacementGroup{ID: id}
-		opts          = PlacementGroupUpdateOpts{
+		ctx            = context.Background()
+		placementGroup = &PlacementGroup{ID: id}
+		opts           = PlacementGroupUpdateOpts{
 			Name:   "test",
 			Labels: map[string]string{"key": "value"},
 		}
@@ -224,14 +224,14 @@ func TestPlacementGroupUpdate(t *testing.T) {
 		})
 	})
 
-	updatedPlacementGroup, _, err := env.Client.PlacementGroup.Update(ctx, placmentGroup, opts)
+	updatedPlacementGroup, _, err := env.Client.PlacementGroup.Update(ctx, placementGroup, opts)
 	if err != nil {
 		t.Fatal(err)
 	}
 	if updatedPlacementGroup == nil {
-		t.Fatal("no placment group")
+		t.Fatal("no placement group")
 	}
 	if updatedPlacementGroup.ID != id {
-		t.Errorf("unexpected placment group ID: %v", updatedPlacementGroup.ID)
+		t.Errorf("unexpected placement group ID: %v", updatedPlacementGroup.ID)
 	}
 }

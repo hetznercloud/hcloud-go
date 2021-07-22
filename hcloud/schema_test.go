@@ -441,7 +441,20 @@ func TestServerFromSchema(t *testing.T) {
 			"key": "value",
 			"key2": "value2"
 		},
-		"volumes": [123, 456, 789]
+		"volumes": [123, 456, 789],
+		"placement_group": {
+			"created": "2019-01-08T12:10:00+00:00",
+			"id": 897,
+			"labels": {
+			  "key": "value"
+			},
+			"name": "my Placement Group",
+			"servers": [
+			  4711,
+			  4712
+			],
+			"type": "spread"
+		}
 	}`)
 
 	var s schema.Server
@@ -518,6 +531,9 @@ func TestServerFromSchema(t *testing.T) {
 	}
 	if server.PrivateNet[0].Network.ID != 4711 {
 		t.Errorf("unexpected first private net: %v", server.PrivateNet[0])
+	}
+	if server.PlacementGroup.ID != 897 {
+		t.Errorf("unexpected placement group: %d", server.PlacementGroup.ID)
 	}
 }
 
@@ -2795,5 +2811,46 @@ func TestFirewallFromSchema(t *testing.T) {
 	}
 	if firewall.AppliedTo[1].LabelSelector.Selector != "a=b" {
 		t.Errorf("unexpected UsedBy Label Selector: %s", firewall.AppliedTo[1].LabelSelector.Selector)
+	}
+}
+
+func TestPlacementGroupFromSchema(t *testing.T) {
+	data := []byte(`{
+		"created": "2019-01-08T12:10:00+00:00",
+		"id": 897,
+		"labels": {
+		  "key": "value"
+		},
+		"name": "my Placement Group",
+		"servers": [
+		  4711,
+		  4712
+		],
+		"type": "spread"
+	}
+`)
+
+	var g schema.PlacementGroup
+	if err := json.Unmarshal(data, &g); err != nil {
+		t.Fatal(err)
+	}
+	placementGroup := PlacementGroupFromSchema(g)
+	if placementGroup.ID != 897 {
+		t.Errorf("unexpected ID %d", placementGroup.ID)
+	}
+	if placementGroup.Name != "my Placement Group" {
+		t.Errorf("unexpected Name %s", placementGroup.Name)
+	}
+	if placementGroup.Labels["key"] != "value" {
+		t.Errorf("unexpected Labels: %v", placementGroup.Labels)
+	}
+	if !placementGroup.Created.Equal(time.Date(2019, 01, 8, 12, 10, 00, 0, time.UTC)) {
+		t.Errorf("unexpected Created date: %v", placementGroup.Created)
+	}
+	if len(placementGroup.Servers) != 2 {
+		t.Errorf("unexpected Servers %v", placementGroup.Servers)
+	}
+	if placementGroup.Type != PlacementGroupTypeSpread {
+		t.Errorf("unexpected Type %s", placementGroup.Type)
 	}
 }

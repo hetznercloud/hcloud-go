@@ -791,13 +791,13 @@ func TestServerCreateWithPlacementGroup(t *testing.T) {
 		t.Fatal("no server")
 	}
 	if result.Server.ID != 1 {
-		t.Errorf("unexpected server ID: %v", result.Server.ID)
+		t.Errorf("unexpected server ID: %d", result.Server.ID)
 	}
 	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
 		t.Errorf("unexpected next actions: %v", result.NextActions)
 	}
 	if result.Server.PlacementGroup.ID != 123 {
-		t.Errorf("unexpected placement group ID: %v", result.Server.PlacementGroup.ID)
+		t.Errorf("unexpected placement group ID: %d", result.Server.PlacementGroup.ID)
 	}
 }
 
@@ -2122,7 +2122,7 @@ func TestServerAddToPlacementGroup(t *testing.T) {
 		placementGroupID = 123
 	)
 
-	env.Mux.HandleFunc(fmt.Sprintf("/servers/%v/actions/add_to_placement_group", serverID), func(w http.ResponseWriter, r *http.Request) {
+	env.Mux.HandleFunc(fmt.Sprintf("/servers/%d/actions/add_to_placement_group", serverID), func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			t.Error("expected POST")
 		}
@@ -2162,7 +2162,7 @@ func TestServerRemoveFromPlacementGroup(t *testing.T) {
 		actionID = 42
 	)
 
-	env.Mux.HandleFunc(fmt.Sprintf("/servers/%v/actions/remove_from_placement_group", serverID), func(w http.ResponseWriter, r *http.Request) {
+	env.Mux.HandleFunc(fmt.Sprintf("/servers/%d/actions/remove_from_placement_group", serverID), func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			t.Error("expected POST")
 		}
