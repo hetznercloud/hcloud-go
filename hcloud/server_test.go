@@ -752,6 +752,49 @@ func TestServersCreateWithoutStarting(t *testing.T) {
 	}
 }
 
+func TestServerCreateWithPlacementGroup(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.ServerCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.PlacementGroup != 123 {
+			t.Errorf("unexpected placement group id %d", reqBody.PlacementGroup)
+		}
+		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
+			Server: schema.Server{
+				ID: 1,
+			},
+			NextActions: []schema.Action{
+				{ID: 2},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+		Name:           "test",
+		ServerType:     &ServerType{ID: 1},
+		Image:          &Image{ID: 2},
+		PlacementGroup: &PlacementGroup{ID: 123},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Server == nil {
+		t.Fatal("no server")
+	}
+	if result.Server.ID != 1 {
+		t.Errorf("unexpected server ID: %v", result.Server.ID)
+	}
+	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
+		t.Errorf("unexpected next actions: %v", result.NextActions)
+	}
+}
+
 func TestServersDelete(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
@@ -2068,20 +2111,20 @@ func TestServerAddToPlacementGroup(t *testing.T) {
 	defer env.Teardown()
 
 	const (
-		serverID       = 1
-		actionID       = 42
-		placementGroup = "my_placement_group"
+		serverID         = 1
+		actionID         = 42
+		placementGroupID = 123
 	)
 
 	env.Mux.HandleFunc(fmt.Sprintf("/servers/%v/actions/add_to_placement_group", serverID), func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != "POST" {
 			t.Error("expected POST")
 		}
-		var reqBody schema.ServerActionAddToPlacementGroup
+		var reqBody schema.ServerActionAddToPlacementGroupRequest
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if reqBody.PlacementGroup != placementGroup {
+		if reqBody.PlacementGroup != placementGroupID {
 			t.Errorf("unexpected PlacementGroup: %v", reqBody.PlacementGroup)
 		}
 		json.NewEncoder(w).Encode(schema.Action{
@@ -2090,8 +2133,9 @@ func TestServerAddToPlacementGroup(t *testing.T) {
 	})
 
 	var (
-		ctx    = context.Background()
-		server = &Server{ID: serverID}
+		ctx            = context.Background()
+		server         = &Server{ID: serverID}
+		placementGroup = &PlacementGroup{ID: placementGroupID}
 	)
 
 	action, _, err := env.Client.Server.AddToPlacementGroup(ctx, server, placementGroup)

@@ -107,6 +107,7 @@ type ServerCreateRequest struct {
 	Volumes          []int                   `json:"volumes,omitempty"`
 	Networks         []int                   `json:"networks,omitempty"`
 	Firewalls        []ServerCreateFirewalls `json:"firewalls,omitempty"`
+	PlacementGroup   int                     `json:"placement_group,omitempty"`
 }
 
 // ServerCreateFirewall defines which Firewalls to apply when creating a Server.
@@ -396,6 +397,8 @@ type ServerTimeSeriesVals struct {
 	Values []interface{} `json:"values"`
 }
 
-type ServerActionAddToPlacementGroup struct {
-	PlacementGroup string `json:"placement_group"`
+// ServerActionAddToPlacementGroupRequest defines the schema for the request to
+// add a server to a placement group.
+type ServerActionAddToPlacementGroupRequest struct {
+	PlacementGroup int `json:"placement_group"`
 }

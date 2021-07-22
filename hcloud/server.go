@@ -265,6 +265,7 @@ type ServerCreateOpts struct {
 	Volumes          []*Volume
 	Networks         []*Network
 	Firewalls        []*ServerCreateFirewall
+	PlacementGroup   *PlacementGroup
 }
 
 // ServerCreateFirewall defines which Firewalls to apply when creating a Server.
@@ -348,6 +349,9 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		} else {
 			reqBody.Datacenter = opts.Datacenter.Name
 		}
+	}
+	if opts.PlacementGroup != nil {
+		reqBody.PlacementGroup = opts.PlacementGroup.ID
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -1071,9 +1075,9 @@ func (c *ServerClient) GetMetrics(ctx context.Context, server *Server, opts Serv
 	return ms, resp, nil
 }
 
-func (c *ServerClient) AddToPlacementGroup(ctx context.Context, server *Server, placementGroup string) (*Action, *Response, error) {
-	reqBody := schema.ServerActionAddToPlacementGroup{
-		PlacementGroup: placementGroup,
+func (c *ServerClient) AddToPlacementGroup(ctx context.Context, server *Server, placementGroup *PlacementGroup) (*Action, *Response, error) {
+	reqBody := schema.ServerActionAddToPlacementGroupRequest{
+		PlacementGroup: placementGroup.ID,
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
