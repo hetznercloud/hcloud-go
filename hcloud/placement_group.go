@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/url"
 	"strconv"
@@ -141,6 +142,54 @@ func (c *PlacementGroupClient) AllWithOpts(ctx context.Context, opts PlacementGr
 	}
 
 	return allPlacementGroups, nil
+}
+
+// PlacementGroupCreateOpts specifies options for creating a new PlacementGroup.
+type PlacementGroupCreateOpts struct {
+	Name   string
+	Labels map[string]string
+	Type   PlacementGroupType
+}
+
+// Validate checks if options are valid
+func (o PlacementGroupCreateOpts) Validate() error {
+	if o.Name == "" {
+		return errors.New("missing name")
+	}
+	return nil
+}
+
+// PlacementGroupCreateResult is the result of a create PlacementGroup call.
+type PlacementGroupCreateResult struct {
+	PlacementGroup *PlacementGroup
+	Action         *Action
+}
+
+// Create creates a new PlacementGroup
+func (c *PlacementGroupClient) Create(ctx context.Context, opts PlacementGroupCreateOpts) (PlacementGroupCreateResult, *Response, error) {
+	if err := opts.Validate(); err != nil {
+		return PlacementGroupCreateResult{}, nil, err
+	}
+	reqBody := placementGroupCreateOptsToSchema(opts)
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return PlacementGroupCreateResult{}, nil, err
+	}
+	req, err := c.client.NewRequest(ctx, "POST", "/placement_groups", bytes.NewReader(reqBodyData))
+	if err != nil {
+		return PlacementGroupCreateResult{}, nil, err
+	}
+
+	respBody := schema.PlacementGroupCreateResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return PlacementGroupCreateResult{}, nil, err
+	}
+	result := PlacementGroupCreateResult{
+		PlacementGroup: PlacementGroupFromSchema(respBody.PlacementGroup),
+		Action:         ActionFromSchema(respBody.Action),
+	}
+	return result, resp, nil
 }
 
 // PlacementGroupUpdateOpts specifies options for updating a PlacementGroup.

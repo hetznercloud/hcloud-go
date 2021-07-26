@@ -768,6 +768,7 @@ func FirewallFromSchema(s schema.Firewall) *Firewall {
 	return f
 }
 
+// PlacementGroupFromSchema converts a schema.PlacementGroup to a PlacementGroup.
 func PlacementGroupFromSchema(s schema.PlacementGroup) *PlacementGroup {
 	g := &PlacementGroup{
 		ID:      s.ID,
@@ -778,6 +779,17 @@ func PlacementGroupFromSchema(s schema.PlacementGroup) *PlacementGroup {
 		Type:    PlacementGroupType(s.Type),
 	}
 	return g
+}
+
+func placementGroupCreateOptsToSchema(opts PlacementGroupCreateOpts) schema.PlacementGroupCreateRequest {
+	req := schema.PlacementGroupCreateRequest{
+		Name: opts.Name,
+		Type: string(opts.Type),
+	}
+	if opts.Labels != nil {
+		req.Labels = &opts.Labels
+	}
+	return req
 }
 
 func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBalancerCreateRequest {

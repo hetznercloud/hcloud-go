@@ -167,6 +167,57 @@ func TestPlacementGroupClientGebByNameEmpty(t *testing.T) {
 	}
 }
 
+func TestPlacementGroupCreate(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	const id = 1
+
+	var (
+		ctx  = context.Background()
+		opts = PlacementGroupCreateOpts{
+			Name:   "test",
+			Labels: map[string]string{"key": "value"},
+			Type:   PlacementGroupTypeSpread,
+		}
+	)
+
+	env.Mux.HandleFunc("/placement_groups", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.PlacementGroupCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		expectedReqBody := schema.PlacementGroupCreateRequest{
+			Name:   opts.Name,
+			Labels: &opts.Labels,
+			Type:   string(opts.Type),
+		}
+		if !cmp.Equal(expectedReqBody, reqBody) {
+			t.Log(cmp.Diff(expectedReqBody, reqBody))
+			t.Error("unexpected request body")
+		}
+		json.NewEncoder(w).Encode(schema.PlacementGroupCreateResponse{
+			PlacementGroup: schema.PlacementGroup{
+				ID: id,
+			},
+		})
+	})
+
+	createdPlacementGroup, _, err := env.Client.PlacementGroup.Create(ctx, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if createdPlacementGroup.PlacementGroup == nil {
+		t.Fatal("no placement group")
+	}
+	if createdPlacementGroup.PlacementGroup.ID != id {
+		t.Errorf("unexpected placement group ID: %v", createdPlacementGroup.PlacementGroup.ID)
+	}
+}
+
 func TestPlacementGroupDelete(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
