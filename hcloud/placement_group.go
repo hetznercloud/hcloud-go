@@ -118,15 +118,18 @@ func (c *PlacementGroupClient) List(ctx context.Context, opts PlacementGroupList
 
 // All returns all PlacementGroups.
 func (c *PlacementGroupClient) All(ctx context.Context) ([]*PlacementGroup, error) {
-	opts := PlacementGroupListOpts{}
-	opts.PerPage = 50
+	opts := PlacementGroupListOpts{
+		ListOpts: ListOpts{
+			PerPage: 50,
+		},
+	}
 
 	return c.AllWithOpts(ctx, opts)
 }
 
 // AllWithOpts returns all PlacementGroups for the given options.
 func (c *PlacementGroupClient) AllWithOpts(ctx context.Context, opts PlacementGroupListOpts) ([]*PlacementGroup, error) {
-	allPlacementGroups := []*PlacementGroup{}
+	var allPlacementGroups []*PlacementGroup
 
 	err := c.client.all(func(page int) (*Response, error) {
 		opts.Page = page

@@ -11,7 +11,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
-func TestPlacementGroupClientGebByID(t *testing.T) {
+func TestPlacementGroupClientGetByID(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -50,7 +50,7 @@ func TestPlacementGroupClientGebByID(t *testing.T) {
 	})
 }
 
-func TestPlacementGroupClientGebByIDNotFound(t *testing.T) {
+func TestPlacementGroupClientGetByIDNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -126,7 +126,7 @@ func TestPlacementGroupClientGetByName(t *testing.T) {
 	})
 }
 
-func TestPlacementGroupClientGebByNameNotFound(t *testing.T) {
+func TestPlacementGroupClientGetByNameNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
@@ -152,7 +152,7 @@ func TestPlacementGroupClientGebByNameNotFound(t *testing.T) {
 	}
 }
 
-func TestPlacementGroupClientGebByNameEmpty(t *testing.T) {
+func TestPlacementGroupClientGetByNameEmpty(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
