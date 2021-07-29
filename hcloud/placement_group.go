@@ -190,8 +190,11 @@ func (c *PlacementGroupClient) Create(ctx context.Context, opts PlacementGroupCr
 	}
 	result := PlacementGroupCreateResult{
 		PlacementGroup: PlacementGroupFromSchema(respBody.PlacementGroup),
-		Action:         ActionFromSchema(respBody.Action),
 	}
+	if respBody.Action != nil {
+		result.Action = ActionFromSchema(*respBody.Action)
+	}
+
 	return result, resp, nil
 }
 

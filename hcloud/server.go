@@ -1090,12 +1090,12 @@ func (c *ServerClient) AddToPlacementGroup(ctx context.Context, server *Server, 
 		return nil, nil, err
 	}
 
-	respBody := schema.Action{}
+	respBody := schema.ServerActionAddToPlacementGroupResponse{}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody), resp, err
+	return ActionFromSchema(respBody.Action), resp, err
 }
 
 func (c *ServerClient) RemoveFromPlacementGroup(ctx context.Context, server *Server) (*Action, *Response, error) {
@@ -1105,10 +1105,10 @@ func (c *ServerClient) RemoveFromPlacementGroup(ctx context.Context, server *Ser
 		return nil, nil, err
 	}
 
-	respBody := schema.Action{}
+	respBody := schema.ServerActionRemoveFromPlacementGroupResponse{}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody), resp, err
+	return ActionFromSchema(respBody.Action), resp, err
 }

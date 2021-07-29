@@ -403,3 +403,15 @@ type ServerTimeSeriesVals struct {
 type ServerActionAddToPlacementGroupRequest struct {
 	PlacementGroup int `json:"placement_group"`
 }
+
+// ServerActionAddToPlacementGroupResponse defines the schema of the response when
+// creating an add_to_placement_group server action.
+type ServerActionAddToPlacementGroupResponse struct {
+	Action Action `json:"action"`
+}
+
+// ServerActionRemoveFromPlacementGroupResponse defines the schema of the response when
+// creating a remove_from_placement_group server action.
+type ServerActionRemoveFromPlacementGroupResponse struct {
+	Action Action `json:"action"`
+}

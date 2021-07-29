@@ -2133,8 +2133,10 @@ func TestServerAddToPlacementGroup(t *testing.T) {
 		if reqBody.PlacementGroup != placementGroupID {
 			t.Errorf("unexpected PlacementGroup: %v", reqBody.PlacementGroup)
 		}
-		json.NewEncoder(w).Encode(schema.Action{
-			ID: actionID,
+		json.NewEncoder(w).Encode(schema.ServerActionAddToPlacementGroupResponse{
+			Action: schema.Action{
+				ID: actionID,
+			},
 		})
 	})
 
@@ -2166,8 +2168,10 @@ func TestServerRemoveFromPlacementGroup(t *testing.T) {
 		if r.Method != "POST" {
 			t.Error("expected POST")
 		}
-		json.NewEncoder(w).Encode(schema.Action{
-			ID: actionID,
+		json.NewEncoder(w).Encode(schema.ServerActionRemoveFromPlacementGroupResponse{
+			Action: schema.Action{
+				ID: actionID,
+			},
 		})
 	})
 

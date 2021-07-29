@@ -27,7 +27,7 @@ type PlacementGroupCreateRequest struct {
 
 type PlacementGroupCreateResponse struct {
 	PlacementGroup PlacementGroup `json:"placement_group"`
-	Action         Action         `json:"action"`
+	Action         *Action        `json:"action"`
 }
 
 type PlacementGroupUpdateRequest struct {
