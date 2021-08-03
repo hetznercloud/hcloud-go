@@ -19,6 +19,7 @@ type FirewallRule struct {
 	DestinationIPs []string `json:"destination_ips,omitempty"`
 	Protocol       string   `json:"protocol"`
 	Port           *string  `json:"port,omitempty"`
+	Description    *string  `json:"description,omitempty"`
 }
 
 // FirewallListResponse defines the schema of the response when listing Firewalls.

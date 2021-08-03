@@ -317,19 +317,16 @@ func TestFirewallClientUpdate(t *testing.T) {
 }
 
 func TestFirewallSetRules(t *testing.T) {
-	t.Run("direction in", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
+	description := "allow icmp out"
 
-		env.Mux.HandleFunc("/firewalls/1/actions/set_rules", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.FirewallActionSetRulesRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			expectedReqBody := schema.FirewallActionSetRulesRequest{
+	tests := []struct {
+		name            string
+		expectedReqBody schema.FirewallActionSetRulesRequest
+		opts            FirewallSetRulesOpts
+	}{
+		{
+			name: "direction in",
+			expectedReqBody: schema.FirewallActionSetRulesRequest{
 				Rules: []schema.FirewallRule{
 					{
 						Direction: "in",
@@ -337,65 +334,29 @@ func TestFirewallSetRules(t *testing.T) {
 						Protocol:  "icmp",
 					},
 				},
-			}
-			if !cmp.Equal(expectedReqBody, reqBody) {
-				t.Log(cmp.Diff(expectedReqBody, reqBody))
-				t.Error("unexpected request body")
-			}
-			json.NewEncoder(w).Encode(schema.FirewallActionSetRulesResponse{
-				Actions: []schema.Action{
+			},
+			opts: FirewallSetRulesOpts{
+				Rules: []FirewallRule{
 					{
-						ID: 1,
-					},
-				},
-			})
-		})
-
-		var (
-			ctx      = context.Background()
-			firewall = &Firewall{ID: 1}
-		)
-
-		opts := FirewallSetRulesOpts{
-			Rules: []FirewallRule{
-				{
-					Direction: FirewallRuleDirectionIn,
-					SourceIPs: []net.IPNet{
-						{
-							IP:   net.ParseIP("10.0.0.5"),
-							Mask: net.CIDRMask(32, 32),
+						Direction: FirewallRuleDirectionIn,
+						SourceIPs: []net.IPNet{
+							{
+								IP:   net.ParseIP("10.0.0.5"),
+								Mask: net.CIDRMask(32, 32),
+							},
+							{
+								IP:   net.ParseIP("10.0.0.6"),
+								Mask: net.CIDRMask(32, 32),
+							},
 						},
-						{
-							IP:   net.ParseIP("10.0.0.6"),
-							Mask: net.CIDRMask(32, 32),
-						},
+						Protocol: FirewallRuleProtocolICMP,
 					},
-					Protocol: FirewallRuleProtocolICMP,
 				},
 			},
-		}
-
-		actions, _, err := env.Client.Firewall.SetRules(ctx, firewall, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(actions) != 1 || actions[0].ID != 1 {
-			t.Errorf("unexpected actions: %v", actions)
-		}
-	})
-	t.Run("direction out", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/firewalls/1/actions/set_rules", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "POST" {
-				t.Error("expected POST")
-			}
-			var reqBody schema.FirewallActionSetRulesRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			expectedReqBody := schema.FirewallActionSetRulesRequest{
+		},
+		{
+			name: "direction out",
+			expectedReqBody: schema.FirewallActionSetRulesRequest{
 				Rules: []schema.FirewallRule{
 					{
 						Direction:      "out",
@@ -403,97 +364,108 @@ func TestFirewallSetRules(t *testing.T) {
 						Protocol:       "icmp",
 					},
 				},
-			}
-			if !cmp.Equal(expectedReqBody, reqBody) {
-				t.Log(cmp.Diff(expectedReqBody, reqBody))
-				t.Error("unexpected request body")
-			}
-			json.NewEncoder(w).Encode(schema.FirewallActionSetRulesResponse{
-				Actions: []schema.Action{
+			},
+			opts: FirewallSetRulesOpts{
+				Rules: []FirewallRule{
 					{
-						ID: 1,
+						Direction: FirewallRuleDirectionOut,
+						DestinationIPs: []net.IPNet{
+							{
+								IP:   net.ParseIP("10.0.0.5"),
+								Mask: net.CIDRMask(32, 32),
+							},
+							{
+								IP:   net.ParseIP("10.0.0.6"),
+								Mask: net.CIDRMask(32, 32),
+							},
+						},
+						Protocol: FirewallRuleProtocolICMP,
 					},
 				},
+			},
+		},
+		{
+			name: "empty",
+			expectedReqBody: schema.FirewallActionSetRulesRequest{
+				Rules: []schema.FirewallRule{},
+			},
+			opts: FirewallSetRulesOpts{
+				Rules: []FirewallRule{},
+			},
+		},
+		{
+			name: "description",
+			expectedReqBody: schema.FirewallActionSetRulesRequest{
+				Rules: []schema.FirewallRule{
+					{
+						Direction:      "out",
+						DestinationIPs: []string{"10.0.0.5/32", "10.0.0.6/32"},
+						Protocol:       "icmp",
+						Description:    &description,
+					},
+				},
+			},
+			opts: FirewallSetRulesOpts{
+				Rules: []FirewallRule{
+					{
+						Direction: FirewallRuleDirectionOut,
+						DestinationIPs: []net.IPNet{
+							{
+								IP:   net.ParseIP("10.0.0.5"),
+								Mask: net.CIDRMask(32, 32),
+							},
+							{
+								IP:   net.ParseIP("10.0.0.6"),
+								Mask: net.CIDRMask(32, 32),
+							},
+						},
+						Protocol:    FirewallRuleProtocolICMP,
+						Description: &description,
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			env := newTestEnv()
+			defer env.Teardown()
+
+			env.Mux.HandleFunc("/firewalls/1/actions/set_rules", func(w http.ResponseWriter, r *http.Request) {
+				if r.Method != "POST" {
+					t.Error("expected POST")
+				}
+				var reqBody schema.FirewallActionSetRulesRequest
+				if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+					t.Fatal(err)
+				}
+				if !cmp.Equal(tt.expectedReqBody, reqBody) {
+					t.Log(cmp.Diff(tt.expectedReqBody, reqBody))
+					t.Error("unexpected request body")
+				}
+				json.NewEncoder(w).Encode(schema.FirewallActionSetRulesResponse{
+					Actions: []schema.Action{
+						{
+							ID: 1,
+						},
+					},
+				})
 			})
+
+			var (
+				ctx      = context.Background()
+				firewall = &Firewall{ID: 1}
+			)
+
+			actions, _, err := env.Client.Firewall.SetRules(ctx, firewall, tt.opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if len(actions) != 1 || actions[0].ID != 1 {
+				t.Errorf("unexpected actions: %v", actions)
+			}
 		})
-
-		var (
-			ctx      = context.Background()
-			firewall = &Firewall{ID: 1}
-		)
-
-		opts := FirewallSetRulesOpts{
-			Rules: []FirewallRule{
-				{
-					Direction: FirewallRuleDirectionOut,
-					DestinationIPs: []net.IPNet{
-						{
-							IP:   net.ParseIP("10.0.0.5"),
-							Mask: net.CIDRMask(32, 32),
-						},
-						{
-							IP:   net.ParseIP("10.0.0.6"),
-							Mask: net.CIDRMask(32, 32),
-						},
-					},
-					Protocol: FirewallRuleProtocolICMP,
-				},
-			},
-		}
-
-		actions, _, err := env.Client.Firewall.SetRules(ctx, firewall, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if len(actions) != 1 || actions[0].ID != 1 {
-			t.Errorf("unexpected actions: %v", actions)
-		}
-	})
-}
-
-func TestFirewallSetRulesEmpty(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/firewalls/1/actions/set_rules", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "POST" {
-			t.Error("expected POST")
-		}
-		var reqBody schema.FirewallActionSetRulesRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			t.Fatal(err)
-		}
-		expectedReqBody := schema.FirewallActionSetRulesRequest{
-			Rules: []schema.FirewallRule{},
-		}
-		if !cmp.Equal(expectedReqBody, reqBody) {
-			t.Log(cmp.Diff(expectedReqBody, reqBody))
-			t.Error("unexpected request body")
-		}
-		json.NewEncoder(w).Encode(schema.FirewallActionSetRulesResponse{
-			Actions: []schema.Action{
-				{
-					ID: 1,
-				},
-			},
-		})
-	})
-
-	var (
-		ctx      = context.Background()
-		firewall = &Firewall{ID: 1}
-	)
-
-	opts := FirewallSetRulesOpts{
-		Rules: []FirewallRule{},
-	}
-
-	actions, _, err := env.Client.Firewall.SetRules(ctx, firewall, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(actions) != 1 || actions[0].ID != 1 {
-		t.Errorf("unexpected actions: %v", actions)
 	}
 }
 

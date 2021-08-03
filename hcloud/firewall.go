@@ -31,6 +31,7 @@ type FirewallRule struct {
 	DestinationIPs []net.IPNet
 	Protocol       FirewallRuleProtocol
 	Port           *string
+	Description    *string
 }
 
 // FirewallRuleDirection specifies the direction of a Firewall rule.
