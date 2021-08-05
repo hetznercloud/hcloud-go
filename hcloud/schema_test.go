@@ -2722,7 +2722,8 @@ func TestFirewallFromSchema(t *testing.T) {
 				"ff21:1eac:9a3b:ee58:5ca:990c:8bc9:c03b/128"
 			  ],
 			  "protocol": "tcp",
-			  "port": "80"
+			  "port": "80",
+			  "description": "allow http in"
 			}
 		],
 		"applied_to": [
@@ -2776,6 +2777,9 @@ func TestFirewallFromSchema(t *testing.T) {
 	}
 	if *firewall.Rules[0].Port != "80" {
 		t.Errorf("unexpected Rule Port: %s", *firewall.Rules[0].Port)
+	}
+	if *firewall.Rules[0].Description != "allow http in" {
+		t.Errorf("unexpected Rule Description: %s", *firewall.Rules[0].Description)
 	}
 	if len(firewall.AppliedTo) != 2 {
 		t.Errorf("unexpected UsedBy count: %d", len(firewall.AppliedTo))

@@ -759,6 +759,7 @@ func FirewallFromSchema(s schema.Firewall) *Firewall {
 			DestinationIPs: destinationIPs,
 			Protocol:       FirewallRuleProtocol(rule.Protocol),
 			Port:           rule.Port,
+			Description:    rule.Description,
 		})
 	}
 	return f
