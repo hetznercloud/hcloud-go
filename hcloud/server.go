@@ -37,6 +37,7 @@ type Server struct {
 	Labels          map[string]string
 	Volumes         []*Volume
 	PrimaryDiskSize int
+	PlacementGroup  *PlacementGroup
 }
 
 // ServerProtection represents the protection level of a server.
@@ -265,6 +266,7 @@ type ServerCreateOpts struct {
 	Volumes          []*Volume
 	Networks         []*Network
 	Firewalls        []*ServerCreateFirewall
+	PlacementGroup   *PlacementGroup
 }
 
 // ServerCreateFirewall defines which Firewalls to apply when creating a Server.
@@ -348,6 +350,9 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		} else {
 			reqBody.Datacenter = opts.Datacenter.Name
 		}
+	}
+	if opts.PlacementGroup != nil {
+		reqBody.PlacementGroup = opts.PlacementGroup.ID
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -1069,4 +1074,41 @@ func (c *ServerClient) GetMetrics(ctx context.Context, server *Server, opts Serv
 		return nil, nil, fmt.Errorf("convert response body: %v", err)
 	}
 	return ms, resp, nil
+}
+
+func (c *ServerClient) AddToPlacementGroup(ctx context.Context, server *Server, placementGroup *PlacementGroup) (*Action, *Response, error) {
+	reqBody := schema.ServerActionAddToPlacementGroupRequest{
+		PlacementGroup: placementGroup.ID,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+	path := fmt.Sprintf("/servers/%d/actions/add_to_placement_group", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionAddToPlacementGroupResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
+}
+
+func (c *ServerClient) RemoveFromPlacementGroup(ctx context.Context, server *Server) (*Action, *Response, error) {
+	path := fmt.Sprintf("/servers/%d/actions/remove_from_placement_group", server.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionRemoveFromPlacementGroupResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, err
 }

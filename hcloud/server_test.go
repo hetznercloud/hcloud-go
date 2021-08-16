@@ -752,6 +752,55 @@ func TestServersCreateWithoutStarting(t *testing.T) {
 	}
 }
 
+func TestServerCreateWithPlacementGroup(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.ServerCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.PlacementGroup != 123 {
+			t.Errorf("unexpected placement group id %d", reqBody.PlacementGroup)
+		}
+		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
+			Server: schema.Server{
+				ID: 1,
+				PlacementGroup: &schema.PlacementGroup{
+					ID: 123,
+				},
+			},
+			NextActions: []schema.Action{
+				{ID: 2},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+		Name:           "test",
+		ServerType:     &ServerType{ID: 1},
+		Image:          &Image{ID: 2},
+		PlacementGroup: &PlacementGroup{ID: 123},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Server == nil {
+		t.Fatal("no server")
+	}
+	if result.Server.ID != 1 {
+		t.Errorf("unexpected server ID: %d", result.Server.ID)
+	}
+	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
+		t.Errorf("unexpected next actions: %v", result.NextActions)
+	}
+	if result.Server.PlacementGroup.ID != 123 {
+		t.Errorf("unexpected placement group ID: %d", result.Server.PlacementGroup.ID)
+	}
+}
+
 func TestServersDelete(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
@@ -2061,4 +2110,81 @@ func serverMetricsOptsFromURL(t *testing.T, u *url.URL) ServerGetMetricsOpts {
 	}
 
 	return opts
+}
+
+func TestServerAddToPlacementGroup(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	const (
+		serverID         = 1
+		actionID         = 42
+		placementGroupID = 123
+	)
+
+	env.Mux.HandleFunc(fmt.Sprintf("/servers/%d/actions/add_to_placement_group", serverID), func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		var reqBody schema.ServerActionAddToPlacementGroupRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.PlacementGroup != placementGroupID {
+			t.Errorf("unexpected PlacementGroup: %v", reqBody.PlacementGroup)
+		}
+		json.NewEncoder(w).Encode(schema.ServerActionAddToPlacementGroupResponse{
+			Action: schema.Action{
+				ID: actionID,
+			},
+		})
+	})
+
+	var (
+		ctx            = context.Background()
+		server         = &Server{ID: serverID}
+		placementGroup = &PlacementGroup{ID: placementGroupID}
+	)
+
+	action, _, err := env.Client.Server.AddToPlacementGroup(ctx, server, placementGroup)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != actionID {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
+}
+
+func TestServerRemoveFromPlacementGroup(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	const (
+		serverID = 1
+		actionID = 42
+	)
+
+	env.Mux.HandleFunc(fmt.Sprintf("/servers/%d/actions/remove_from_placement_group", serverID), func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "POST" {
+			t.Error("expected POST")
+		}
+		json.NewEncoder(w).Encode(schema.ServerActionRemoveFromPlacementGroupResponse{
+			Action: schema.Action{
+				ID: actionID,
+			},
+		})
+	})
+
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: serverID}
+	)
+
+	action, _, err := env.Client.Server.RemoveFromPlacementGroup(ctx, server)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != actionID {
+		t.Errorf("unexpected action ID: %v", action.ID)
+	}
 }

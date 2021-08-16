@@ -172,6 +172,9 @@ func ServerFromSchema(s schema.Server) *Server {
 	for _, privNet := range s.PrivateNet {
 		server.PrivateNet = append(server.PrivateNet, ServerPrivateNetFromSchema(privNet))
 	}
+	if s.PlacementGroup != nil {
+		server.PlacementGroup = PlacementGroupFromSchema(*s.PlacementGroup)
+	}
 	return server
 }
 
@@ -763,6 +766,30 @@ func FirewallFromSchema(s schema.Firewall) *Firewall {
 		})
 	}
 	return f
+}
+
+// PlacementGroupFromSchema converts a schema.PlacementGroup to a PlacementGroup.
+func PlacementGroupFromSchema(s schema.PlacementGroup) *PlacementGroup {
+	g := &PlacementGroup{
+		ID:      s.ID,
+		Name:    s.Name,
+		Labels:  s.Labels,
+		Created: s.Created,
+		Servers: s.Servers,
+		Type:    PlacementGroupType(s.Type),
+	}
+	return g
+}
+
+func placementGroupCreateOptsToSchema(opts PlacementGroupCreateOpts) schema.PlacementGroupCreateRequest {
+	req := schema.PlacementGroupCreateRequest{
+		Name: opts.Name,
+		Type: string(opts.Type),
+	}
+	if opts.Labels != nil {
+		req.Labels = &opts.Labels
+	}
+	return req
 }
 
 func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBalancerCreateRequest {
