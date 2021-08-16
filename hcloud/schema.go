@@ -663,6 +663,22 @@ func PricingFromSchema(s schema.Pricing) Pricing {
 			},
 		},
 	}
+	for _, floatingIPType := range s.FloatingIPs {
+		var pricings []FloatingIPTypeLocationPricing
+		for _, price := range floatingIPType.Prices {
+			p := FloatingIPTypeLocationPricing{
+				Location: &Location{Name: price.Location},
+				Monthly: Price{
+					Currency: s.Currency,
+					VATRate:  s.VATRate,
+					Net:      price.PriceMonthly.Net,
+					Gross:    price.PriceMonthly.Gross,
+				},
+			}
+			pricings = append(pricings, p)
+		}
+		p.FloatingIPs = append(p.FloatingIPs, FloatingIPTypePricing{Type: FloatingIPType(floatingIPType.Type), Pricings: pricings})
+	}
 	for _, serverType := range s.ServerTypes {
 		var pricings []ServerTypeLocationPricing
 		for _, price := range serverType.Prices {

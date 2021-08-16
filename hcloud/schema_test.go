@@ -1815,6 +1815,20 @@ func TestPricingFromSchema(t *testing.T) {
 				"gross": "1.19"
 			}
 		},
+		"floating_ips": [
+			  {
+				"prices": [
+				  {
+					"location": "fsn1",
+					"price_monthly": {
+					  "gross": "1.19",
+					  "net": "1"
+					}
+				  }
+				],
+				"type": "ipv4"
+			  }
+			],
 		"traffic": {
 			"price_per_tb": {
 				"net": "1",
@@ -1900,6 +1914,35 @@ func TestPricingFromSchema(t *testing.T) {
 	}
 	if pricing.FloatingIP.Monthly.Gross != "1.19" {
 		t.Errorf("unexpected FloatingIP.Monthly.Gross: %v", pricing.FloatingIP.Monthly.Gross)
+	}
+
+	if len(pricing.FloatingIPs) != 1 {
+		t.Errorf("unexpected number of Floating IPs: %d", len(pricing.FloatingIPs))
+	} else {
+		p := pricing.FloatingIPs[0]
+
+		if p.Type != FloatingIPTypeIPv4 {
+			t.Errorf("unexpected .Type: %s", p.Type)
+		}
+		if len(p.Pricings) != 1 {
+			t.Errorf("unexpected number of prices: %d", len(p.Pricings))
+		} else {
+			if p.Pricings[0].Location.Name != "fsn1" {
+				t.Errorf("unexpected Location.Name: %v", p.Pricings[0].Location.Name)
+			}
+			if p.Pricings[0].Monthly.Currency != "EUR" {
+				t.Errorf("unexpected Monthly.Currency: %v", p.Pricings[0].Monthly.Currency)
+			}
+			if p.Pricings[0].Monthly.VATRate != "19.00" {
+				t.Errorf("unexpected Monthly.VATRate: %v", p.Pricings[0].Monthly.VATRate)
+			}
+			if p.Pricings[0].Monthly.Net != "1" {
+				t.Errorf("unexpected Monthly.Net: %v", p.Pricings[0].Monthly.Net)
+			}
+			if p.Pricings[0].Monthly.Gross != "1.19" {
+				t.Errorf("unexpected Monthly.Gross: %v", p.Pricings[0].Monthly.Gross)
+			}
+		}
 	}
 
 	if pricing.Volume.PerGBMonthly.Currency != "EUR" {
