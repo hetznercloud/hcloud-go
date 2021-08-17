@@ -1292,10 +1292,12 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 		"name": "Web Frontend",
 		"public_net": {
 			"ipv4": {
-				"ip": "131.232.99.1"
+				"ip": "131.232.99.1",
+				"dns_ptr": "example.org"
 			},
 			"ipv6": {
-				"ip": "2001:db8::1"
+				"ip": "2001:db8::1",
+				"dns_ptr": "example.com"
 			}
 		},
 		"private_net": [
@@ -1424,8 +1426,14 @@ func TestLoadBalancerFromSchema(t *testing.T) {
 	if loadBalancer.PublicNet.IPv4.IP.String() != "131.232.99.1" {
 		t.Errorf("unexpected IPv4: %v", loadBalancer.PublicNet.IPv4.IP)
 	}
+	if loadBalancer.PublicNet.IPv4.DNSPtr != "example.org" {
+		t.Errorf("unexpected IPv4.DNSPtr: %v", loadBalancer.PublicNet.IPv4.DNSPtr)
+	}
 	if loadBalancer.PublicNet.IPv6.IP.String() != "2001:db8::1" {
 		t.Errorf("unexpected IPv6: %v", loadBalancer.PublicNet.IPv6)
+	}
+	if loadBalancer.PublicNet.IPv6.DNSPtr != "example.com" {
+		t.Errorf("unexpected IPv6.DNSPtr: %v", loadBalancer.PublicNet.IPv6.DNSPtr)
 	}
 	if len(loadBalancer.PrivateNet) != 1 {
 		t.Errorf("unexpected length of PrivateNet: %v", len(loadBalancer.PrivateNet))

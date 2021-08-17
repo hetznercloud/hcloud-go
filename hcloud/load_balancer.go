@@ -42,12 +42,14 @@ type LoadBalancerPublicNet struct {
 
 // LoadBalancerPublicNetIPv4 represents a Load Balancer's public IPv4 address.
 type LoadBalancerPublicNetIPv4 struct {
-	IP net.IP
+	IP     net.IP
+	DNSPtr string
 }
 
 // LoadBalancerPublicNetIPv6 represents a Load Balancer's public IPv6 address.
 type LoadBalancerPublicNetIPv6 struct {
-	IP net.IP
+	IP     net.IP
+	DNSPtr string
 }
 
 // LoadBalancerPrivateNet represents a Load Balancer's private network.
@@ -1023,4 +1025,30 @@ func (c *LoadBalancerClient) GetMetrics(
 		return nil, nil, fmt.Errorf("convert response body: %v", err)
 	}
 	return ms, resp, nil
+}
+
+// ChangeDNSPtr changes or resets the reverse DNS pointer for a Load Balancer.
+// Pass a nil ptr to reset the reverse DNS pointer to its default value.
+func (c *LoadBalancerClient) ChangeDNSPtr(ctx context.Context, lb *LoadBalancer, ip string, ptr *string) (*Action, *Response, error) {
+	reqBody := schema.LoadBalancerActionChangeDNSPtrRequest{
+		IP:     ip,
+		DNSPtr: ptr,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/load_balancers/%d/actions/change_dns_ptr", lb.ID)
+	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.LoadBalancerActionChangeDNSPtrResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
 }

@@ -433,10 +433,12 @@ func LoadBalancerFromSchema(s schema.LoadBalancer) *LoadBalancer {
 		PublicNet: LoadBalancerPublicNet{
 			Enabled: s.PublicNet.Enabled,
 			IPv4: LoadBalancerPublicNetIPv4{
-				IP: net.ParseIP(s.PublicNet.IPv4.IP),
+				IP:     net.ParseIP(s.PublicNet.IPv4.IP),
+				DNSPtr: s.PublicNet.IPv4.DNSPtr,
 			},
 			IPv6: LoadBalancerPublicNetIPv6{
-				IP: net.ParseIP(s.PublicNet.IPv6.IP),
+				IP:     net.ParseIP(s.PublicNet.IPv6.IP),
+				DNSPtr: s.PublicNet.IPv6.DNSPtr,
 			},
 		},
 		Location:         LocationFromSchema(s.Location),
