@@ -141,6 +141,44 @@ const (
 	ServerRescueTypeFreeBSD64 ServerRescueType = "freebsd64"
 )
 
+// changeDNSPtr changes or resets the reverse DNS pointer for a IP address.
+// Pass a nil ptr to reset the reverse DNS pointer to its default value.
+func (s *Server) changeDNSPtr(ctx context.Context, client *Client, ip net.IP, ptr *string) (*Action, *Response, error) {
+	reqBody := schema.ServerActionChangeDNSPtrRequest{
+		IP:     ip.String(),
+		DNSPtr: ptr,
+	}
+	reqBodyData, err := json.Marshal(reqBody)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	path := fmt.Sprintf("/servers/%d/actions/change_dns_ptr", s.ID)
+	req, err := client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	respBody := schema.ServerActionChangeDNSPtrResponse{}
+	resp, err := client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// GetDNSPtrForIP searches for the dns assigned to the given IP address.
+// It returns an error if there is no dns set for the given IP address.
+func (s *Server) GetDNSPtrForIP(ip net.IP) (string, error) {
+	if net.IP.Equal(s.PublicNet.IPv4.IP, ip) {
+		return s.PublicNet.IPv4.DNSPtr, nil
+	} else if dns, ok := s.PublicNet.IPv6.DNSPtr[ip.String()]; ok {
+		return dns, nil
+	}
+
+	return "", fmt.Errorf("dns for ip %s not found", ip.String())
+}
+
 // ServerClient is a client for the servers API.
 type ServerClient struct {
 	client *Client
@@ -808,27 +846,11 @@ func (c *ServerClient) ChangeType(ctx context.Context, server *Server, opts Serv
 // ChangeDNSPtr changes or resets the reverse DNS pointer for a server IP address.
 // Pass a nil ptr to reset the reverse DNS pointer to its default value.
 func (c *ServerClient) ChangeDNSPtr(ctx context.Context, server *Server, ip string, ptr *string) (*Action, *Response, error) {
-	reqBody := schema.ServerActionChangeDNSPtrRequest{
-		IP:     ip,
-		DNSPtr: ptr,
+	netIP := net.ParseIP(ip)
+	if netIP == nil {
+		return nil, nil, fmt.Errorf("could not parse ip address %s", ip)
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	path := fmt.Sprintf("/servers/%d/actions/change_dns_ptr", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	respBody := schema.ServerActionChangeDNSPtrResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return nil, resp, err
-	}
-	return ActionFromSchema(respBody.Action), resp, nil
+	return server.changeDNSPtr(ctx, c.client, net.ParseIP(ip), ptr)
 }
 
 // ServerChangeProtectionOpts specifies options for changing the resource protection level of a server.
