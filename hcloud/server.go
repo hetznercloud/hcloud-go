@@ -176,7 +176,7 @@ func (s *Server) GetDNSPtrForIP(ip net.IP) (string, error) {
 		return dns, nil
 	}
 
-	return "", fmt.Errorf("dns for ip %s not found", ip.String())
+	return "", DNSNotFoundError{ip}
 }
 
 // ServerClient is a client for the servers API.
@@ -848,7 +848,7 @@ func (c *ServerClient) ChangeType(ctx context.Context, server *Server, opts Serv
 func (c *ServerClient) ChangeDNSPtr(ctx context.Context, server *Server, ip string, ptr *string) (*Action, *Response, error) {
 	netIP := net.ParseIP(ip)
 	if netIP == nil {
-		return nil, nil, fmt.Errorf("could not parse ip address %s", ip)
+		return nil, nil, InvalidIPError{ip}
 	}
 	return server.changeDNSPtr(ctx, c.client, net.ParseIP(ip), ptr)
 }

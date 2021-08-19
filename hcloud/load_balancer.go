@@ -232,7 +232,7 @@ func (lb *LoadBalancer) GetDNSPtrForIP(ip net.IP) (string, error) {
 		return lb.PublicNet.IPv6.DNSPtr, nil
 	}
 
-	return "", fmt.Errorf("dns for ip %s not found", ip.String())
+	return "", DNSNotFoundError{ip}
 }
 
 // LoadBalancerClient is a client for the Load Balancers API.
@@ -1070,7 +1070,7 @@ func (c *LoadBalancerClient) GetMetrics(
 func (c *LoadBalancerClient) ChangeDNSPtr(ctx context.Context, lb *LoadBalancer, ip string, ptr *string) (*Action, *Response, error) {
 	netIP := net.ParseIP(ip)
 	if netIP == nil {
-		return nil, nil, fmt.Errorf("could not parse ip address %s", ip)
+		return nil, nil, InvalidIPError{ip}
 	}
 	return lb.changeDNSPtr(ctx, c.client, net.ParseIP(ip), ptr)
 }

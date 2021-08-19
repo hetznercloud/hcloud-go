@@ -80,11 +80,12 @@ func (f *FloatingIP) changeDNSPtr(ctx context.Context, client *Client, ip net.IP
 // GetDNSPtrForIP searches for the dns assigned to the given IP address.
 // It returns an error if there is no dns set for the given IP address.
 func (f *FloatingIP) GetDNSPtrForIP(ip net.IP) (string, error) {
-	if dns, ok := f.DNSPtr[ip.String()]; ok {
-		return dns, nil
+	dns, ok := f.DNSPtr[ip.String()]
+	if !ok {
+		return "", DNSNotFoundError{ip}
 	}
 
-	return "", fmt.Errorf("dns for ip %s not found", ip.String())
+	return dns, nil
 }
 
 // FloatingIPClient is a client for the Floating IP API.
@@ -364,7 +365,7 @@ func (c *FloatingIPClient) Unassign(ctx context.Context, floatingIP *FloatingIP)
 func (c *FloatingIPClient) ChangeDNSPtr(ctx context.Context, floatingIP *FloatingIP, ip string, ptr *string) (*Action, *Response, error) {
 	netIP := net.ParseIP(ip)
 	if netIP == nil {
-		return nil, nil, fmt.Errorf("could not parse ip address %s", ip)
+		return nil, nil, InvalidIPError{ip}
 	}
 	return floatingIP.changeDNSPtr(ctx, c.client, net.ParseIP(ip), ptr)
 }
