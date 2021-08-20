@@ -1,6 +1,9 @@
 package hcloud
 
-import "fmt"
+import (
+	"fmt"
+	"net"
+)
 
 // ErrorCode represents an error code returned from the API.
 type ErrorCode string
@@ -102,4 +105,20 @@ type ErrorDetailsInvalidInputField struct {
 func IsError(err error, code ErrorCode) bool {
 	apiErr, ok := err.(Error)
 	return ok && apiErr.Code == code
+}
+
+type InvalidIPError struct {
+	IP string
+}
+
+func (e InvalidIPError) Error() string {
+	return fmt.Sprintf("could not parse ip address %s", e.IP)
+}
+
+type DNSNotFoundError struct {
+	IP net.IP
+}
+
+func (e DNSNotFoundError) Error() string {
+	return fmt.Sprintf("dns for ip %s not found", e.IP.String())
 }

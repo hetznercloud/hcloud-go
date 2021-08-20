@@ -75,6 +75,7 @@ type Client struct {
 	SSHKey           SSHKeyClient
 	Volume           VolumeClient
 	PlacementGroup   PlacementGroupClient
+	RDNS             RDNSClient
 }
 
 // A ClientOption is used to configure a Client.
@@ -166,6 +167,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.Certificate = CertificateClient{client: client}
 	client.Firewall = FirewallClient{client: client}
 	client.PlacementGroup = PlacementGroupClient{client: client}
+	client.RDNS = RDNSClient{client: client}
 
 	return client
 }
