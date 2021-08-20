@@ -15,7 +15,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/hcloud/internal/instrumentation"
+
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 // Endpoint is the base URL of the API.
@@ -48,15 +51,16 @@ func ExponentialBackoff(b float64, d time.Duration) BackoffFunc {
 
 // Client is a client for the Hetzner Cloud API.
 type Client struct {
-	endpoint           string
-	token              string
-	pollInterval       time.Duration
-	backoffFunc        BackoffFunc
-	httpClient         *http.Client
-	applicationName    string
-	applicationVersion string
-	userAgent          string
-	debugWriter        io.Writer
+	endpoint                string
+	token                   string
+	pollInterval            time.Duration
+	backoffFunc             BackoffFunc
+	httpClient              *http.Client
+	applicationName         string
+	applicationVersion      string
+	userAgent               string
+	debugWriter             io.Writer
+	instrumentationRegistry *prometheus.Registry
 
 	Action           ActionClient
 	Certificate      CertificateClient
@@ -135,6 +139,13 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 	}
 }
 
+// WithInstrumentation configures a Client to collect metrics about the performed HTTP requests.
+func WithInstrumentation(registry *prometheus.Registry) ClientOption {
+	return func(client *Client) {
+		client.instrumentationRegistry = registry
+	}
+}
+
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
@@ -149,6 +160,10 @@ func NewClient(options ...ClientOption) *Client {
 	}
 
 	client.buildUserAgent()
+	if client.instrumentationRegistry != nil {
+		i := instrumentation.New("api", client.instrumentationRegistry)
+		client.httpClient.Transport = i.InstrumentedRoundTripper()
+	}
 
 	client.Action = ActionClient{client: client}
 	client.Datacenter = DatacenterClient{client: client}

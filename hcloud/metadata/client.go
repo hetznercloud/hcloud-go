@@ -6,6 +6,9 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/internal/instrumentation"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 const Endpoint = "http://169.254.169.254/hetzner/v1/metadata"
@@ -14,7 +17,8 @@ const Endpoint = "http://169.254.169.254/hetzner/v1/metadata"
 type Client struct {
 	endpoint string
 
-	httpClient *http.Client
+	httpClient              *http.Client
+	instrumentationRegistry *prometheus.Registry
 }
 
 // A ClientOption is used to configure a Client.
@@ -34,6 +38,13 @@ func WithHTTPClient(httpClient *http.Client) ClientOption {
 	}
 }
 
+// WithInstrumentation configures a Client to collect metrics about the performed HTTP requests.
+func WithInstrumentation(registry *prometheus.Registry) ClientOption {
+	return func(client *Client) {
+		client.instrumentationRegistry = registry
+	}
+}
+
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
@@ -43,6 +54,11 @@ func NewClient(options ...ClientOption) *Client {
 
 	for _, option := range options {
 		option(client)
+	}
+
+	if client.instrumentationRegistry != nil {
+		i := instrumentation.New("metadata", client.instrumentationRegistry)
+		client.httpClient.Transport = i.InstrumentedRoundTripper()
 	}
 	return client
 }
