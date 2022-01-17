@@ -225,6 +225,203 @@ func TestFloatingIPFromSchema(t *testing.T) {
 	})
 }
 
+func TestPrimaryIPFromSchema(t *testing.T) {
+	t.Run("IPv6", func(t *testing.T) {
+		data := []byte(`{
+		"assignee_id": 17,
+		"assignee_type": "server",
+		"auto_delete": true,
+		"blocked": true,
+		"created": "2017-08-16T17:29:14+00:00",
+		"datacenter": {
+			"description": "Falkenstein DC Park 8",
+			"id": 42,
+			"location": {
+				"city": "Falkenstein",
+				"country": "DE",
+				"description": "Falkenstein DC Park 1",
+				"id": 1,
+				"latitude": 50.47612,
+				"longitude": 12.370071,
+				"name": "fsn1",
+				"network_zone": "eu-central"
+			},
+			"name": "fsn1-dc8",
+			"server_types": {
+				"available": [],
+				"available_for_migration": [],
+				"supported": []
+			}
+		},
+		"dns_ptr": [
+			{
+				"dns_ptr": "server.example.com",
+				"ip": "fe80::"
+			}
+		],
+		"id": 4711,
+		"ip": "fe80::/64",
+		"labels": {
+			"key": "value",
+			"key2": "value2"
+		},
+		"name": "Web Frontend",
+		"protection": {
+			"delete": true
+		},
+		"type": "ipv6"
+  }`)
+
+		var s schema.PrimaryIP
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+		primaryIP := PrimaryIPFromSchema(s)
+
+		if primaryIP.ID != 4711 {
+			t.Errorf("unexpected ID: %v", primaryIP.ID)
+		}
+		if !primaryIP.Blocked {
+			t.Errorf("unexpected value for Blocked: %v", primaryIP.Blocked)
+		}
+		if !primaryIP.AutoDelete {
+			t.Errorf("unexpected value for AutoDelete: %v", primaryIP.AutoDelete)
+		}
+		if primaryIP.Name != "Web Frontend" {
+			t.Errorf("unexpected name: %v", primaryIP.Name)
+		}
+
+		if primaryIP.IP.String() != "fe80::" {
+			t.Errorf("unexpected IP: %v", primaryIP.IP)
+		}
+		if primaryIP.Type != PrimaryIPTypeIPv6 {
+			t.Errorf("unexpected Type: %v", primaryIP.Type)
+		}
+		if primaryIP.AssigneeType != "server" {
+			t.Errorf("unexpected AssigneeType: %v", primaryIP.AssigneeType)
+		}
+		if primaryIP.AssigneeID != 17 {
+			t.Errorf("unexpected AssigneeID: %v", primaryIP.AssigneeID)
+		}
+		dnsPTR, err := primaryIP.GetDNSPtrForIP(primaryIP.IP)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if primaryIP.DNSPtr == nil || dnsPTR == "" {
+			t.Errorf("unexpected DNS ptr: %v", primaryIP.DNSPtr)
+		}
+		if primaryIP.Datacenter.Name != "fsn1-dc8" {
+			t.Errorf("unexpected datacenter: %v", primaryIP.Datacenter)
+		}
+		if !primaryIP.Protection.Delete {
+			t.Errorf("unexpected Protection.Delete: %v", primaryIP.Protection.Delete)
+		}
+		if primaryIP.Labels["key"] != "value" || primaryIP.Labels["key2"] != "value2" {
+			t.Errorf("unexpected Labels: %v", primaryIP.Labels)
+		}
+		if !primaryIP.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
+			t.Errorf("unexpected created date: %v", primaryIP.Created)
+		}
+	})
+	t.Run("IPv4", func(t *testing.T) {
+		data := []byte(`{
+		"assignee_id": 17,
+		"assignee_type": "server",
+		"auto_delete": true,
+		"blocked": true,
+		"created": "2017-08-16T17:29:14+00:00",
+		"datacenter": {
+			"description": "Falkenstein DC Park 8",
+			"id": 42,
+			"location": {
+				"city": "Falkenstein",
+				"country": "DE",
+				"description": "Falkenstein DC Park 1",
+				"id": 1,
+				"latitude": 50.47612,
+				"longitude": 12.370071,
+				"name": "fsn1",
+				"network_zone": "eu-central"
+			},
+			"name": "fsn1-dc8",
+			"server_types": {
+				"available": [],
+				"available_for_migration": [],
+				"supported": []
+			}
+		},
+		"dns_ptr": [
+			{
+				"dns_ptr": "server.example.com",
+				"ip": "127.0.0.1"
+			}
+		],
+		"id": 4711,
+		"ip": "127.0.0.1",
+		"labels": {
+			"key": "value",
+			"key2": "value2"
+		},
+		"name": "Web Frontend",
+		"protection": {
+			"delete": true
+		},
+		"type": "ipv4"
+  }`)
+
+		var s schema.PrimaryIP
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+		primaryIP := PrimaryIPFromSchema(s)
+
+		if primaryIP.ID != 4711 {
+			t.Errorf("unexpected ID: %v", primaryIP.ID)
+		}
+		if !primaryIP.Blocked {
+			t.Errorf("unexpected value for Blocked: %v", primaryIP.Blocked)
+		}
+		if !primaryIP.AutoDelete {
+			t.Errorf("unexpected value for AutoDelete: %v", primaryIP.AutoDelete)
+		}
+		if primaryIP.Name != "Web Frontend" {
+			t.Errorf("unexpected name: %v", primaryIP.Name)
+		}
+
+		if primaryIP.IP.String() != "127.0.0.1" {
+			t.Errorf("unexpected IP: %v", primaryIP.IP)
+		}
+		if primaryIP.Type != PrimaryIPTypeIPv4 {
+			t.Errorf("unexpected Type: %v", primaryIP.Type)
+		}
+		if primaryIP.AssigneeType != "server" {
+			t.Errorf("unexpected AssigneeType: %v", primaryIP.AssigneeType)
+		}
+		if primaryIP.AssigneeID != 17 {
+			t.Errorf("unexpected AssigneeID: %v", primaryIP.AssigneeID)
+		}
+		dnsPTR, err := primaryIP.GetDNSPtrForIP(primaryIP.IP)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if primaryIP.DNSPtr == nil || dnsPTR == "" {
+			t.Errorf("unexpected DNS ptr: %v", primaryIP.DNSPtr)
+		}
+		if primaryIP.Datacenter.Name != "fsn1-dc8" {
+			t.Errorf("unexpected datacenter: %v", primaryIP.Datacenter)
+		}
+		if !primaryIP.Protection.Delete {
+			t.Errorf("unexpected Protection.Delete: %v", primaryIP.Protection.Delete)
+		}
+		if primaryIP.Labels["key"] != "value" || primaryIP.Labels["key2"] != "value2" {
+			t.Errorf("unexpected Labels: %v", primaryIP.Labels)
+		}
+		if !primaryIP.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
+			t.Errorf("unexpected created date: %v", primaryIP.Created)
+		}
+	})
+}
+
 func TestISOFromSchema(t *testing.T) {
 	data := []byte(`{
 		"id": 4711,
@@ -359,11 +556,7 @@ func TestServerFromSchema(t *testing.T) {
 		"status": "running",
 		"created": "2017-08-16T17:29:14+00:00",
 		"public_net": {
-			"ipv4": {
-				"ip": "1.2.3.4",
-				"blocked": false,
-				"dns_ptr": "server01.example.com"
-			},
+			"ipv4": null,
 			"ipv6": {
 				"ip": "2a01:4f8:1c11:3400::/64",
 				"blocked": false,
@@ -475,8 +668,11 @@ func TestServerFromSchema(t *testing.T) {
 	if !server.Created.Equal(time.Date(2017, 8, 16, 17, 29, 14, 0, time.UTC)) {
 		t.Errorf("unexpected created date: %v", server.Created)
 	}
-	if server.PublicNet.IPv4.IP.String() != "1.2.3.4" {
-		t.Errorf("unexpected public net IPv4 IP: %v", server.PublicNet.IPv4.IP)
+	if !server.PublicNet.IPv4.IsUnspecified() {
+		t.Errorf("unexpected public net IPv4: %v", server.PublicNet.IPv4)
+	}
+	if server.PublicNet.IPv6.IP.String() != "2a01:4f8:1c11:3400::" {
+		t.Errorf("unexpected public net IPv6 IP: %v", server.PublicNet.IPv6.IP)
 	}
 	if server.ServerType.ID != 2 {
 		t.Errorf("unexpected server type ID: %v", server.ServerType.ID)
@@ -577,11 +773,13 @@ func TestServerFromSchemaNoTraffic(t *testing.T) {
 func TestServerPublicNetFromSchema(t *testing.T) {
 	data := []byte(`{
 		"ipv4": {
+			"id": 1,
 			"ip": "1.2.3.4",
 			"blocked": false,
 			"dns_ptr": "server.example.com"
 		},
 		"ipv6": {
+			"id": 2,
 			"ip": "2a01:4f8:1c19:1403::/64",
 			"blocked": false,
 			"dns_ptr": []
@@ -600,9 +798,14 @@ func TestServerPublicNetFromSchema(t *testing.T) {
 		t.Fatal(err)
 	}
 	publicNet := ServerPublicNetFromSchema(s)
-
+	if publicNet.IPv4.ID != 1 {
+		t.Errorf("unexpected IPv4 ID: %v", publicNet.IPv4.ID)
+	}
 	if publicNet.IPv4.IP.String() != "1.2.3.4" {
 		t.Errorf("unexpected IPv4 IP: %v", publicNet.IPv4.IP)
+	}
+	if publicNet.IPv6.ID != 2 {
+		t.Errorf("unexpected IPv6 ID: %v", publicNet.IPv6.ID)
 	}
 	if publicNet.IPv6.Network.String() != "2a01:4f8:1c19:1403::/64" {
 		t.Errorf("unexpected IPv6 IP: %v", publicNet.IPv6.IP)
@@ -1837,6 +2040,24 @@ func TestPricingFromSchema(t *testing.T) {
 				"type": "ipv4"
 			  }
 			],
+		"primary_ips": [
+			{
+				"prices": [
+				{
+					"datacenter": "fsn1-dc8",
+					"price_hourly": {
+					"gross": "1.1900000000000000",
+					"net": "1.0000000000"
+					},
+					"price_monthly": {
+					"gross": "1.1900000000000000",
+					"net": "1.0000000000"
+					}
+				}
+				],
+				"type": "ipv4"
+			}
+		],
 		"traffic": {
 			"price_per_tb": {
 				"net": "1",
@@ -1949,6 +2170,35 @@ func TestPricingFromSchema(t *testing.T) {
 			}
 			if p.Pricings[0].Monthly.Gross != "1.19" {
 				t.Errorf("unexpected Monthly.Gross: %v", p.Pricings[0].Monthly.Gross)
+			}
+		}
+	}
+
+	if len(pricing.PrimaryIPs) != 1 {
+		t.Errorf("unexpected number of Primary IPs: %d", len(pricing.PrimaryIPs))
+	} else {
+		ip := pricing.PrimaryIPs[0]
+
+		if ip.Type != "ipv4" {
+			t.Errorf("unexpected .Type: %s", ip.Type)
+		}
+		if len(ip.Pricings) != 1 {
+			t.Errorf("unexpected number of prices: %d", len(ip.Pricings))
+		} else {
+			if ip.Pricings[0].Datacenter != "fsn1-dc8" {
+				t.Errorf("unexpected Datacenter: %v", ip.Pricings[0].Datacenter)
+			}
+			if ip.Pricings[0].Monthly.Net != "1.0000000000" {
+				t.Errorf("unexpected Monthly.Net: %v", ip.Pricings[0].Monthly.Net)
+			}
+			if ip.Pricings[0].Monthly.Gross != "1.1900000000000000" {
+				t.Errorf("unexpected Monthly.Gross: %v", ip.Pricings[0].Monthly.Gross)
+			}
+			if ip.Pricings[0].Hourly.Net != "1.0000000000" {
+				t.Errorf("unexpected Hourly.Net: %v", ip.Pricings[0].Hourly.Net)
+			}
+			if ip.Pricings[0].Hourly.Gross != "1.1900000000000000" {
+				t.Errorf("unexpected Hourly.Gross: %v", ip.Pricings[0].Hourly.Gross)
 			}
 		}
 	}
