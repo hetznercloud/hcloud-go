@@ -34,6 +34,24 @@ func newTestEnv() testEnv {
 	}
 }
 
+func TestClient_Base(t *testing.T) {
+	env := newTestEnv()
+	env.Mux.HandleFunc("/ok", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("ok"))
+	})
+	env.Mux.HandleFunc("/not-found", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(404)
+		w.Write([]byte("not found"))
+	})
+
+	if body, err := env.Client.get("/ok"); assert.NoError(t, err) {
+		assert.Equal(t, "ok", body)
+	}
+	if body, err := env.Client.get("/not-found"); assert.EqualError(t, err, "response status was 404") {
+		assert.Equal(t, "not found", body)
+	}
+}
+
 func TestClient_IsHcloudServer(t *testing.T) {
 	env := newTestEnv()
 	env.Mux.HandleFunc("/hostname", func(w http.ResponseWriter, r *http.Request) {
