@@ -362,13 +362,31 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		reqBody.Labels = &opts.Labels
 	}
 	for _, sshKey := range opts.SSHKeys {
-		reqBody.SSHKeys = append(reqBody.SSHKeys, sshKey.ID)
+		var value interface{}
+		if sshKey.ID != 0 {
+			value = strconv.Itoa(sshKey.ID)
+		} else if sshKey.Name != "" {
+			value = sshKey.Name
+		}
+		reqBody.SSHKeys = append(reqBody.SSHKeys, value)
 	}
 	for _, volume := range opts.Volumes {
-		reqBody.Volumes = append(reqBody.Volumes, volume.ID)
+		var value interface{}
+		if volume.ID != 0 {
+			value = strconv.Itoa(volume.ID)
+		} else if volume.Name != "" {
+			value = volume.Name
+		}
+		reqBody.Volumes = append(reqBody.Volumes, value)
 	}
 	for _, network := range opts.Networks {
-		reqBody.Networks = append(reqBody.Networks, network.ID)
+		var value interface{}
+		if network.ID != 0 {
+			value = strconv.Itoa(network.ID)
+		} else if network.Name != "" {
+			value = network.Name
+		}
+		reqBody.Networks = append(reqBody.Networks, value)
 	}
 	for _, firewall := range opts.Firewalls {
 		reqBody.Firewalls = append(reqBody.Firewalls, schema.ServerCreateFirewalls{
