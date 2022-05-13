@@ -96,7 +96,7 @@ func TestImageClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.RawQuery != "name=my+image" {
+			if r.URL.RawQuery != "include_deprecated=true&name=my+image" {
 				t.Fatal("missing name query")
 			}
 			json.NewEncoder(w).Encode(schema.ImageListResponse{
@@ -139,7 +139,7 @@ func TestImageClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.RawQuery != "name=my+image" {
+			if r.URL.RawQuery != "include_deprecated=true&name=my+image" {
 				t.Fatal("missing name query")
 			}
 			json.NewEncoder(w).Encode(schema.ImageListResponse{

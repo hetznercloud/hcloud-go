@@ -102,7 +102,7 @@ func (c *ImageClient) GetByName(ctx context.Context, name string) (*Image, *Resp
 	if name == "" {
 		return nil, nil, nil
 	}
-	images, response, err := c.List(ctx, ImageListOpts{Name: name})
+	images, response, err := c.List(ctx, ImageListOpts{Name: name, IncludeDeprecated: true})
 	if len(images) == 0 {
 		return nil, response, err
 	}
