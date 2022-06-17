@@ -86,6 +86,25 @@ func TestClientError(t *testing.T) {
 	}
 }
 
+func TestClientInvalidToken(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Client = NewClient(
+		WithEndpoint(env.Server.URL),
+		WithToken("invalid token\n"),
+	)
+
+	ctx := context.Background()
+	_, err := env.Client.NewRequest(ctx, "GET", "/", nil)
+
+	if nil == err {
+		t.Error("Failed to trigger expected error")
+	} else if err.Error() != "Authorization token contains invalid characters" {
+		t.Fatalf("Invalid encoded authorization token triggered unexpected error message: %s", err)
+	}
+}
+
 func TestClientMeta(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
