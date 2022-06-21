@@ -136,9 +136,8 @@ type ServerRescueType string
 
 // List of rescue types.
 const (
-	ServerRescueTypeLinux32   ServerRescueType = "linux32"
-	ServerRescueTypeLinux64   ServerRescueType = "linux64"
-	ServerRescueTypeFreeBSD64 ServerRescueType = "freebsd64"
+	ServerRescueTypeLinux32 ServerRescueType = "linux32"
+	ServerRescueTypeLinux64 ServerRescueType = "linux64"
 )
 
 // changeDNSPtr changes or resets the reverse DNS pointer for a IP address.
