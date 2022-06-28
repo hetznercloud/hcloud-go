@@ -82,6 +82,7 @@ type Client struct {
 	Volume           VolumeClient
 	PlacementGroup   PlacementGroupClient
 	RDNS             RDNSClient
+	PrimaryIP        PrimaryIPClient
 }
 
 // A ClientOption is used to configure a Client.
@@ -187,6 +188,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.Firewall = FirewallClient{client: client}
 	client.PlacementGroup = PlacementGroupClient{client: client}
 	client.RDNS = RDNSClient{client: client}
+	client.PrimaryIP = PrimaryIPClient{client: client}
 
 	return client
 }

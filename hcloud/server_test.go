@@ -461,6 +461,156 @@ func TestServersCreateWithNetworks(t *testing.T) {
 	}
 }
 
+func TestServersCreateWithPrivateNetworkOnly(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.ServerCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if len(reqBody.Networks) != 2 || reqBody.Networks[0] != 1 || reqBody.Networks[1] != 2 {
+			t.Errorf("unexpected Networks: %v", reqBody.Networks)
+		}
+		if reqBody.PublicNet.EnableIPv4 != false {
+			t.Errorf("unexpected PublicNet.EnableIPv4: %v", reqBody.PublicNet.EnableIPv4)
+		}
+		if reqBody.PublicNet.EnableIPv6 != false {
+			t.Errorf("unexpected PublicNet.EnableIPv6: %v", reqBody.PublicNet.EnableIPv6)
+		}
+		if reqBody.PublicNet.IPv4ID != 0 {
+			t.Errorf("unexpected PublicNet.IPv4: %v", reqBody.PublicNet.IPv4ID)
+		}
+		if reqBody.PublicNet.IPv6ID != 0 {
+			t.Errorf("unexpected PublicNet.IPv6: %v", reqBody.PublicNet.IPv6ID)
+		}
+		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
+			Server: schema.Server{
+				ID: 1,
+			},
+			NextActions: []schema.Action{
+				{ID: 2},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+		Name:       "test",
+		ServerType: &ServerType{ID: 1},
+		Image:      &Image{ID: 2},
+		Networks: []*Network{
+			{ID: 1},
+			{ID: 2},
+		},
+		PublicNet: &ServerCreatePublicNet{
+			EnableIPv4: false,
+			EnableIPv6: false,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Server == nil {
+		t.Fatal("no server")
+	}
+	if result.Server.ID != 1 {
+		t.Errorf("unexpected server ID: %v", result.Server.ID)
+	}
+	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
+		t.Errorf("unexpected next actions: %v", result.NextActions)
+	}
+}
+
+func TestServersCreateWithIPv6Only(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.ServerCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.PublicNet.EnableIPv4 != false {
+			t.Errorf("unexpected PublicNet.EnableIPv4: %v", reqBody.PublicNet.EnableIPv4)
+		}
+		if reqBody.PublicNet.EnableIPv6 != true {
+			t.Errorf("unexpected PublicNet.EnableIPv6: %v", reqBody.PublicNet.EnableIPv6)
+		}
+		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
+			Server: schema.Server{
+				ID: 1,
+			},
+			NextActions: []schema.Action{
+				{ID: 2},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+		Name:       "test",
+		ServerType: &ServerType{ID: 1},
+		Image:      &Image{ID: 2},
+		PublicNet:  &ServerCreatePublicNet{EnableIPv4: false, EnableIPv6: true},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Server == nil {
+		t.Fatal("no server")
+	}
+	if result.Server.ID != 1 {
+		t.Errorf("unexpected server ID: %v", result.Server.ID)
+	}
+	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
+		t.Errorf("unexpected next actions: %v", result.NextActions)
+	}
+}
+
+func TestServersCreateWithDefaultPublicNet(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.ServerCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.PublicNet != nil {
+			t.Errorf("unexpected PublicNet: %v", reqBody.PublicNet)
+		}
+		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
+			Server: schema.Server{
+				ID: 1,
+			},
+			NextActions: []schema.Action{
+				{ID: 2},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+		Name:       "test",
+		ServerType: &ServerType{ID: 1},
+		Image:      &Image{ID: 2},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Server == nil {
+		t.Fatal("no server")
+	}
+	if result.Server.ID != 1 {
+		t.Errorf("unexpected server ID: %v", result.Server.ID)
+	}
+	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
+		t.Errorf("unexpected next actions: %v", result.NextActions)
+	}
+}
+
 func TestServersCreateWithDatacenterID(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

@@ -17,7 +17,7 @@ test:golangci-lint:
 
 test:tests:
   stage: test
-  image: golang:1.17
+  image: golang:1.18
   script:
     - go test -v -race ./...
   except:
