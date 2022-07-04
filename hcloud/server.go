@@ -349,7 +349,7 @@ func (o ServerCreateOpts) Validate() error {
 	}
 	if o.PublicNet != nil {
 		if !o.PublicNet.EnableIPv4 && !o.PublicNet.EnableIPv6 &&
-			len(o.Networks) == 0 && (o.StartAfterCreate == nil || *o.StartAfterCreate == true) {
+			len(o.Networks) == 0 && (o.StartAfterCreate == nil || *o.StartAfterCreate) {
 			return errors.New("missing networks or StartAfterCreate == false when EnableIPv4 and EnableIPv6 is false")
 		}
 	}
