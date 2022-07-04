@@ -893,6 +893,10 @@ func TestServersCreateWithoutStarting(t *testing.T) {
 		ServerType:       &ServerType{ID: 1},
 		Image:            &Image{ID: 2},
 		StartAfterCreate: Bool(false),
+		PublicNet: &ServerCreatePublicNet{
+			EnableIPv4: false,
+			EnableIPv6: false,
+		},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -948,6 +952,55 @@ func TestServerCreateWithPlacementGroup(t *testing.T) {
 	}
 	if result.Server.PlacementGroup.ID != 123 {
 		t.Errorf("unexpected placement group ID: %d", result.Server.PlacementGroup.ID)
+	}
+}
+
+func TestServerCreateWithoutPrimaryIPsButNetwork(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
+		var reqBody schema.ServerCreateRequest
+		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+			t.Fatal(err)
+		}
+		if reqBody.PublicNet.EnableIPv4 != false && reqBody.PublicNet.EnableIPv6 != false {
+			t.Errorf("unexpected public net %v", reqBody.PublicNet)
+		}
+		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
+			Server: schema.Server{
+				ID: 1,
+			},
+			NextActions: []schema.Action{
+				{ID: 2},
+			},
+		})
+	})
+
+	ctx := context.Background()
+	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+		Name:       "test",
+		ServerType: &ServerType{ID: 1},
+		Image:      &Image{ID: 2},
+		Networks: []*Network{
+			{ID: 1},
+		},
+		PublicNet: &ServerCreatePublicNet{
+			EnableIPv4: false,
+			EnableIPv6: false,
+		},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if result.Server == nil {
+		t.Fatal("no server")
+	}
+	if result.Server.ID != 1 {
+		t.Errorf("unexpected server ID: %d", result.Server.ID)
+	}
+	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
+		t.Errorf("unexpected next actions: %v", result.NextActions)
 	}
 }
 
