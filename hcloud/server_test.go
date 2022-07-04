@@ -906,6 +906,24 @@ func TestServersCreateWithoutStarting(t *testing.T) {
 	}
 }
 
+func TestServersCreateFailIfNoIPsAndNetworksAssigned(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+	ctx := context.Background()
+	_, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
+		Name:       "test",
+		ServerType: &ServerType{ID: 1},
+		Image:      &Image{ID: 2},
+		PublicNet: &ServerCreatePublicNet{
+			EnableIPv4: false,
+			EnableIPv6: false,
+		},
+	})
+	if err == nil {
+		t.Fatal(err)
+	}
+}
+
 func TestServerCreateWithPlacementGroup(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
