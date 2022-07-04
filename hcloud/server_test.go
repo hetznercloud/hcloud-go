@@ -893,10 +893,6 @@ func TestServersCreateWithoutStarting(t *testing.T) {
 		ServerType:       &ServerType{ID: 1},
 		Image:            &Image{ID: 2},
 		StartAfterCreate: Bool(false),
-		PublicNet: &ServerCreatePublicNet{
-			EnableIPv4: false,
-			EnableIPv6: false,
-		},
 	})
 	if err != nil {
 		t.Fatal(err)
