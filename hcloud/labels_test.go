@@ -13,6 +13,7 @@ func TestCheckLabels(t *testing.T) {
 			"label2.de/hallo":           "1correct2.de",
 			"label3-test.de/hallo.welt": "233344444443",
 			"d/d":                       "d",
+			"empty/label":               "",
 		}
 
 		ok, err := ValidateResourceLabels(labelMap)
