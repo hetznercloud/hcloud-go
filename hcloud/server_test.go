@@ -1022,15 +1022,24 @@ func TestServersDelete(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {})
+	env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerDeleteResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
+		})
+	})
 
 	var (
 		ctx    = context.Background()
 		server = &Server{ID: 1}
 	)
-	_, err := env.Client.Server.Delete(ctx, server)
+	action, _, err := env.Client.Server.Delete(ctx, server)
 	if err != nil {
 		t.Fatalf("Server.Delete failed: %s", err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
 	}
 }
 

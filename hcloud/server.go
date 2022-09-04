@@ -459,12 +459,18 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 }
 
 // Delete deletes a server.
-func (c *ServerClient) Delete(ctx context.Context, server *Server) (*Response, error) {
+func (c *ServerClient) Delete(ctx context.Context, server *Server) (*Action, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/servers/%d", server.ID), nil)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
-	return c.client.Do(req, nil)
+
+	respBody := schema.ServerDeleteResponse{}
+	resp, err := c.client.Do(req, &respBody)
+	if err != nil {
+		return nil, resp, err
+	}
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // ServerUpdateOpts specifies options for updating a server.
