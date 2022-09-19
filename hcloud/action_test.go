@@ -183,11 +183,11 @@ func TestActionClientWatchProgress(t *testing.T) {
 				},
 			})
 		case 2:
-			w.WriteHeader(http.StatusTooManyRequests)
+			w.WriteHeader(http.StatusConflict)
 			_ = json.NewEncoder(w).Encode(schema.ErrorResponse{
 				Error: schema.Error{
-					Code:    string(ErrorCodeRateLimitExceeded),
-					Message: "ratelimited",
+					Code:    string(ErrorCodeConflict),
+					Message: "conflict",
 				},
 			})
 			return

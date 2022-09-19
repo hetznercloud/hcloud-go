@@ -183,7 +183,7 @@ func TestClientAll(t *testing.T) {
 
 	var (
 		ctx          = context.Background()
-		ratelimited  bool
+		conflicting  bool
 		expectedPage = 1
 	)
 
@@ -205,13 +205,13 @@ func TestClientAll(t *testing.T) {
 			respBody.Meta.Pagination.Page = 1
 			respBody.Meta.Pagination.NextPage = 2
 		case "2":
-			if !ratelimited {
-				ratelimited = true
-				w.WriteHeader(http.StatusTooManyRequests)
+			if !conflicting {
+				conflicting = true
+				w.WriteHeader(http.StatusConflict)
 				json.NewEncoder(w).Encode(schema.ErrorResponse{
 					Error: schema.Error{
-						Code:    string(ErrorCodeRateLimitExceeded),
-						Message: "ratelimited",
+						Code:    string(ErrorCodeConflict),
+						Message: "conflict",
 					},
 				})
 				return
@@ -262,11 +262,11 @@ func TestClientDo(t *testing.T) {
 		w.Header().Set("Content-Type", "application/json")
 		switch callCount {
 		case 1:
-			w.WriteHeader(http.StatusTooManyRequests)
+			w.WriteHeader(http.StatusConflict)
 			json.NewEncoder(w).Encode(schema.ErrorResponse{
 				Error: schema.Error{
-					Code:    string(ErrorCodeRateLimitExceeded),
-					Message: "ratelimited",
+					Code:    string(ErrorCodeConflict),
+					Message: "conflict",
 				},
 			})
 		case 2:

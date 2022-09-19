@@ -270,7 +270,7 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 			err = errorFromResponse(resp, body)
 			if err == nil {
 				err = fmt.Errorf("hcloud: server responded with status code %d", resp.StatusCode)
-			} else if isRetryable(err) {
+			} else if isConflict(err) {
 				c.backoff(retries)
 				retries++
 				continue
@@ -289,12 +289,12 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 	}
 }
 
-func isRetryable(error error) bool {
+func isConflict(error error) bool {
 	err, ok := error.(Error)
 	if !ok {
 		return false
 	}
-	return err.Code == ErrorCodeRateLimitExceeded || err.Code == ErrorCodeConflict
+	return err.Code == ErrorCodeConflict
 }
 
 func (c *Client) backoff(retries int) {
