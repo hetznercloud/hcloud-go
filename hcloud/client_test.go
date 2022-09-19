@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -304,7 +304,7 @@ func TestClientDoPost(t *testing.T) {
 		callCount++
 		w.Header().Set("Content-Type", "application/json")
 		var dat map[string]interface{}
-		body, err := ioutil.ReadAll(r.Body)
+		body, err := io.ReadAll(r.Body)
 		r.Body.Close()
 		if err != nil {
 			t.Error(err)
