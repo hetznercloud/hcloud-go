@@ -1022,7 +1022,16 @@ func TestServersDelete(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {})
+	env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "DELETE" {
+			t.Error("expected DELETE")
+		}
+		json.NewEncoder(w).Encode(schema.ServerDeleteResponse{
+			Action: schema.Action{
+				ID: 2,
+			},
+		})
+	})
 
 	var (
 		ctx    = context.Background()
@@ -1031,6 +1040,34 @@ func TestServersDelete(t *testing.T) {
 	_, err := env.Client.Server.Delete(ctx, server)
 	if err != nil {
 		t.Fatalf("Server.Delete failed: %s", err)
+	}
+}
+
+func TestServersDeleteWithResult(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != "DELETE" {
+			t.Error("expected DELETE")
+		}
+		json.NewEncoder(w).Encode(schema.ServerDeleteResponse{
+			Action: schema.Action{
+				ID: 2,
+			},
+		})
+	})
+
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+	result, _, err := env.Client.Server.DeleteWithResult(ctx, server)
+	if err != nil {
+		t.Fatalf("Server.Delete failed: %s", err)
+	}
+	if result.Action.ID != 2 {
+		t.Errorf("unexpected action ID: %v", result.Action.ID)
 	}
 }
 
