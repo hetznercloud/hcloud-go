@@ -240,10 +240,12 @@ func (c *PrimaryIPClient) List(ctx context.Context, opts PrimaryIPListOpts) ([]*
 
 // All returns all Primary IPs.
 func (c *PrimaryIPClient) All(ctx context.Context) ([]*PrimaryIP, error) {
-	allPrimaryIPs := []*PrimaryIP{}
+	return c.AllWithOpts(ctx, PrimaryIPListOpts{ListOpts: ListOpts{PerPage: 50}})
+}
 
-	opts := PrimaryIPListOpts{}
-	opts.PerPage = 50
+// AllWithOpts returns all Primary IPs for the given options.
+func (c *PrimaryIPClient) AllWithOpts(ctx context.Context, opts PrimaryIPListOpts) ([]*PrimaryIP, error) {
+	var allPrimaryIPs []*PrimaryIP
 
 	err := c.client.all(func(page int) (*Response, error) {
 		opts.Page = page
