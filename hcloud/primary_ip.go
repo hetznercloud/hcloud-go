@@ -90,12 +90,6 @@ type PrimaryIPUpdateOpts struct {
 	Name       string             `json:"name,omitempty"`
 }
 
-// PrimaryIPUpdateResult defines the response
-// when updating a Primary IP.
-type PrimaryIPUpdateResult struct {
-	PrimaryIP PrimaryIP `json:"primary_ip"`
-}
-
 // PrimaryIPAssignOpts defines the request to
 // assign a Primary IP to an assignee (usually a server).
 type PrimaryIPAssignOpts struct {
@@ -313,12 +307,12 @@ func (c *PrimaryIPClient) Update(ctx context.Context, primaryIP *PrimaryIP, reqB
 		return nil, nil, err
 	}
 
-	respBody := PrimaryIPUpdateResult{}
+	var respBody schema.PrimaryIPUpdateResult
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return &respBody.PrimaryIP, resp, nil
+	return PrimaryIPFromSchema(respBody.PrimaryIP), resp, nil
 }
 
 // Assign a Primary IP to a resource
