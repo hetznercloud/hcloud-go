@@ -3,6 +3,7 @@ package hcloud
 import (
 	"context"
 	"encoding/json"
+	"net"
 	"net/http"
 	"testing"
 
@@ -333,8 +334,8 @@ func TestPrimaryIPClient(t *testing.T) {
 				t.Log(cmp.Diff(expectedReqBody, reqBody))
 				t.Error("unexpected request body")
 			}
-			json.NewEncoder(w).Encode(PrimaryIPUpdateResult{
-				PrimaryIP: PrimaryIP{ID: 1},
+			json.NewEncoder(w).Encode(schema.PrimaryIPUpdateResult{
+				PrimaryIP: schema.PrimaryIP{ID: 1, IP: "2001:db8::/64"},
 			})
 		})
 
@@ -347,11 +348,14 @@ func TestPrimaryIPClient(t *testing.T) {
 			Labels:     &labels,
 		}
 
-		primaryIP := PrimaryIP{ID: 1}
+		primaryIP := PrimaryIP{ID: 1, IP: net.ParseIP("2001:db8::")}
 		result, resp, err := env.Client.PrimaryIP.Update(ctx, &primaryIP, opts)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp, "no response returned")
-		assert.Equal(t, *result, primaryIP, "no primary IP returned")
+		if result.ID != 1 {
+			t.Errorf("unexpected Primary IP ID: %v", result.ID)
+		}
+		assert.Equal(t, primaryIP.IP, result.IP, "parsed the wrong IP")
 	})
 	t.Run("Assign", func(t *testing.T) {
 		env := newTestEnv()
