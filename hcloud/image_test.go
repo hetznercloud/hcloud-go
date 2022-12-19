@@ -338,7 +338,7 @@ func TestImageClientUpdate(t *testing.T) {
 		})
 
 		opts := ImageUpdateOpts{
-			Description: String("test"),
+			Description: Ptr("test"),
 			Type:        ImageTypeSnapshot,
 		}
 		updatedImage, _, err := env.Client.Image.Update(ctx, image, opts)
@@ -417,7 +417,7 @@ func TestImageClientChangeProtection(t *testing.T) {
 		})
 
 		opts := ImageChangeProtectionOpts{
-			Delete: Bool(true),
+			Delete: Ptr(true),
 		}
 		action, _, err := env.Client.Image.ChangeProtection(ctx, image, opts)
 		if err != nil {

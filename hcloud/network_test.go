@@ -622,7 +622,7 @@ func TestNetworkClientChangeProtection(t *testing.T) {
 		})
 
 		opts := NetworkChangeProtectionOpts{
-			Delete: Bool(true),
+			Delete: Ptr(true),
 		}
 		action, _, err := env.Client.Network.ChangeProtection(ctx, network, opts)
 		if err != nil {
