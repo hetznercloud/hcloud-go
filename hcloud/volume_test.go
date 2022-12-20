@@ -438,8 +438,8 @@ func TestVolumeClientCreateWithAutomount(t *testing.T) {
 		Size:      42,
 		Server:    &Server{ID: 1},
 		Labels:    map[string]string{"key": "value"},
-		Automount: Bool(true),
-		Format:    String("xfs"),
+		Automount: Ptr(true),
+		Format:    Ptr("xfs"),
 	}
 	result, _, err := env.Client.Volume.Create(ctx, opts)
 	if err != nil {
