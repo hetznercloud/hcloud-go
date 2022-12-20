@@ -36,6 +36,14 @@ func main() {
 }
 ```
 
+## Go Version Support
+
+The library supports the latest two Go minor versions, e.g. at the time Go 1.19 is released, it supports Go 1.18 and 1.19.
+
+This matches the official [Go Release Policy](https://go.dev/doc/devel/release#policy).
+
+When the minimum required Go version is changed, it is announced in the release notes for that version.
+
 ## License
 
 MIT license
