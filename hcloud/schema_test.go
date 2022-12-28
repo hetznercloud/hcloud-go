@@ -2044,7 +2044,7 @@ func TestPricingFromSchema(t *testing.T) {
 			{
 				"prices": [
 				{
-					"datacenter": "fsn1-dc8",
+					"location": "fsn1",
 					"price_hourly": {
 					"gross": "1.1900000000000000",
 					"net": "1.0000000000"
@@ -2185,8 +2185,8 @@ func TestPricingFromSchema(t *testing.T) {
 		if len(ip.Pricings) != 1 {
 			t.Errorf("unexpected number of prices: %d", len(ip.Pricings))
 		} else {
-			if ip.Pricings[0].Datacenter != "fsn1-dc8" {
-				t.Errorf("unexpected Datacenter: %v", ip.Pricings[0].Datacenter)
+			if ip.Pricings[0].Location != "fsn1" {
+				t.Errorf("unexpected Location: %v", ip.Pricings[0].Location)
 			}
 			if ip.Pricings[0].Monthly.Net != "1.0000000000" {
 				t.Errorf("unexpected Monthly.Net: %v", ip.Pricings[0].Monthly.Net)

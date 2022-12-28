@@ -721,7 +721,7 @@ func PricingFromSchema(s schema.Pricing) Pricing {
 		var pricings []PrimaryIPTypePricing
 		for _, price := range primaryIPType.Prices {
 			p := PrimaryIPTypePricing{
-				Datacenter: price.Datacenter,
+				Location: price.Location,
 				Monthly: PrimaryIPPrice{
 					Net:   price.PriceMonthly.Net,
 					Gross: price.PriceMonthly.Gross,
