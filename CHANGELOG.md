@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.39.0](https://github.com/hetznercloud/hcloud-go/compare/v1.38.0...v1.39.0) (2022-12-29)
+
+
+### Features
+
+* Use generics to get pointers to types ([#219](https://github.com/hetznercloud/hcloud-go/issues/219)) ([a5cd797](https://github.com/hetznercloud/hcloud-go/commit/a5cd79782dc849b3137e46ada2da6b319d4093c8))
+
+
+### Bug Fixes
+
+* deprecate PricingPrimaryIPTypePrice.Datacenter for Location ([#222](https://github.com/hetznercloud/hcloud-go/issues/222)) ([e0e5a1e](https://github.com/hetznercloud/hcloud-go/commit/e0e5a1e08fd7c0864fd94a787ee86714b5e9afc5))
+
 ## v1.24.0 - v1.38.0
 
 As of release v1.24.0 we moved the release notes to Github Releases: https://github.com/hetznercloud/hcloud-go/releases
