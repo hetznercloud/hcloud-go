@@ -1,4 +1,6 @@
-# Changes
+# Changelog
+
+## v1.24.0 - v1.38.0
 
 As of release v1.24.0 we moved the release notes to Github Releases: https://github.com/hetznercloud/hcloud-go/releases
 
