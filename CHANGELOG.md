@@ -12,9 +12,180 @@
 
 * deprecate PricingPrimaryIPTypePrice.Datacenter for Location ([#222](https://github.com/hetznercloud/hcloud-go/issues/222)) ([e0e5a1e](https://github.com/hetznercloud/hcloud-go/commit/e0e5a1e08fd7c0864fd94a787ee86714b5e9afc5))
 
-## v1.24.0 - v1.38.0
+## v1.38.0
 
-As of release v1.24.0 we moved the release notes to Github Releases: https://github.com/hetznercloud/hcloud-go/releases
+### What's Changed
+* feat(network): add new Network Zone us-west by @apricote in https://github.com/hetznercloud/hcloud-go/pull/217
+* chore: prepare v1.38.0 by @apricote in https://github.com/hetznercloud/hcloud-go/pull/218
+
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.37.0...v1.38.0
+
+## v1.37.0
+
+### What's Changed
+* PrimaryIPClient Add AllWithOpts by @LKaemmerling in https://github.com/hetznercloud/hcloud-go/pull/214
+* fix: error when updating IPv6 Primary IP by @apricote in https://github.com/hetznercloud/hcloud-go/pull/215
+
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.36.0...v1.37.0
+
+## v1.36.0
+
+### What's Changed
+* feat: add ServerClient.DeleteWithResult method by @apricote in https://github.com/hetznercloud/hcloud-go/pull/213
+
+### New Contributors
+* @apricote made their first contribution in https://github.com/hetznercloud/hcloud-go/pull/213
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.35.3...v1.36.0
+
+## v1.35.3
+
+### What's Changed
+* Drop support for Go < 1.17 and add official tests on go 1.19 by @LKaemmerling in https://github.com/hetznercloud/hcloud-go/pull/211
+* Stop automatic retrying on RateLimitExceeded by @LKaemmerling in https://github.com/hetznercloud/hcloud-go/pull/210
+
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.35.2...v1.35.3
+
+## v1.35.2
+
+### What's Changed
+* Allow empty labels by @4ND3R50N in https://github.com/hetznercloud/hcloud-go/pull/207
+
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.35.1...v1.35.2
+
+## v1.35.1
+
+### What's Changed
+* Accept no primary IPs with server create with StartAfterCreate = false by @4ND3R50N in https://github.com/hetznercloud/hcloud-go/pull/205
+
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.35.0...v1.35.1
+
+## v1.35.0
+
+### What's Changed
+* Catch invalid token values and error out without value exposure by @NotTheEvilOne in https://github.com/hetznercloud/hcloud-go/pull/194
+* Remove ServerRescueTypeFreeBSD64 by @LKaemmerling in https://github.com/hetznercloud/hcloud-go/pull/203
+* Add Primary IP Support by @LKaemmerling in https://github.com/hetznercloud/hcloud-go/pull/204
+
+### New Contributors
+* @NotTheEvilOne made their first contribution in https://github.com/hetznercloud/hcloud-go/pull/194
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.34.0...v1.35.0
+
+## v1.34.0
+
+### What's Changed
+* Test on Go 1.18 by @LKaemmerling in https://github.com/hetznercloud/hcloud-go/pull/202
+* Add support for sorting the response of all list calls by @LKaemmerling in https://github.com/hetznercloud/hcloud-go/pull/201
+* Set UsePrivateIP for targets when creating a LoadBalancer by @hakman in https://github.com/hetznercloud/hcloud-go/pull/198
+
+### New Contributors
+* @hakman made their first contribution in https://github.com/hetznercloud/hcloud-go/pull/198
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.33.2...v1.34.0
+
+## v1.33.2
+
+### What's Changed
+* Add constant for resource locked error code by @patrickschaffrath in https://github.com/hetznercloud/hcloud-go/pull/189
+* Fix metadata client error detection by @choffmeister in https://github.com/hetznercloud/hcloud-go/pull/193
+* Add labels.go to validate resource labels by @4ND3R50N in https://github.com/hetznercloud/hcloud-go/pull/197
+
+### New Contributors
+* @patrickschaffrath made their first contribution in https://github.com/hetznercloud/hcloud-go/pull/189
+* @choffmeister made their first contribution in https://github.com/hetznercloud/hcloud-go/pull/193
+* @4ND3R50N made their first contribution in https://github.com/hetznercloud/hcloud-go/pull/197
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.33.1...v1.33.2
+
+## v1.33.1
+
+### Changelog
+
+41fef2f Add constants for new firewall error code
+
+## v1.33.0
+
+### What's Changed
+* Add us-east network zone by @LKaemmerling in https://github.com/hetznercloud/hcloud-go/pull/187
+
+
+**Full Changelog**: https://github.com/hetznercloud/hcloud-go/compare/v1.32.0...v1.33.0
+
+## v1.32.0
+
+### Changelog
+
+785896c Add Metadata Client (#184)
+7778143 Bump version to 1.32.0
+eabe683 Make it possible to instrument the hcloud-go (#185)
+
+## v1.31.1
+
+### Changelog
+
+1cde0d7 Add RDNS client (#183)
+
+## v1.31.0
+
+### Changelog
+
+0656bf9 Add support for Load Balancer DNS PTRs (#182)
+9218970 Bump hcloud.Version
+ebf9f25 Test on/with go 1.17 (#181)
+
+## v1.30.0
+
+### Changelog
+
+592b198 Add new Floating IP Pricing structure (#180)
+c43897a Bump hcloud.Version
+ab0ebb2 Placement groups (#179)
+
+## v1.29.1
+
+### Changelog
+
+e951e99 Fix firewall rule description
+
+## v1.29.0
+
+### Changelog
+
+e3eca12 Add description field to firewall rules (#177)
+
+## v1.28.0
+
+### Changelog
+
+ae5e1b8 Add goreleaser (#175)
+4cf75f4 Add support for app images (#176)
+
+## v1.27.0
+
+Add support for firewall protocols ESP and GRE (#173) 
+
+## v1.26.2
+
+- Fix AppliedTo Field in FirewallCreateRequest
+- Add `deleted` and `IsDeleted()` to `Image` (https://github.com/hetznercloud/hcloud-go/pull/172)
+
+## v1.26.1
+
+- Fix validation error caused by firewall label selectors (https://github.com/hetznercloud/hcloud-go/pull/171)
+
+## v1.26.0
+
+- Add Firewall Resource Label Selector (#169)
+
+## v1.25.0
+
+* Support Hetzner Cloud managed Certificates (#167)
 
 ## v1.23.1
 * Add removed `ErrorCodeServerAlreadyAttached` again
