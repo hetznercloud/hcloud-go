@@ -35,6 +35,7 @@ func newTestEnv() testEnv {
 		WithEndpoint(server.URL),
 		WithToken("token"),
 		WithBackoffFunc(func(_ int) time.Duration { return 0 }),
+		WithPollBackoffFunc(func(r int) time.Duration { return 0 }),
 	)
 	return testEnv{
 		Server: server,
