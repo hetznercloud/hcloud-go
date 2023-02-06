@@ -4,6 +4,11 @@ linters-settings:
     exclude: ./.errcheck_excludes.txt
   exhaustive:
     default-signifies-exhaustive: true
+  gci:
+    sections:
+      - standard
+      - default
+      - prefix(github.com/hetznercloud)
   gomodguard:
     blocked:
       modules:
@@ -27,13 +32,15 @@ linters:
   disable-all: true
   enable:
     - bodyclose
-    - deadcode
     - depguard
     - errcheck
+    - errname
     - exhaustive
+    - exportloopref
+    - gci
     - gocritic
+    - godot
     - goimports
-    - golint
     - gomodguard
     - gosec
     - gosimple
@@ -41,14 +48,11 @@ linters:
     - ineffassign
     - misspell
     - prealloc
-    - rowserrcheck
-    - scopelint
+    - revive
     - staticcheck
-    - structcheck
     - typecheck
     - unparam
     - unused
-    - varcheck
     - whitespace
 
 issues:
@@ -56,8 +60,4 @@ issues:
     - path: _test\.go
       linters:
         - gosec
-        - scopelint
         - errcheck
-    - linters:
-        - gosec
-      text: "G204:"

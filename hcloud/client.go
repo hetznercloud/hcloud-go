@@ -15,10 +15,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/internal/instrumentation"
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/net/http/httpguts"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/internal/instrumentation"
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 // Endpoint is the base URL of the API.
@@ -42,7 +43,10 @@ func ConstantBackoff(d time.Duration) BackoffFunc {
 }
 
 // ExponentialBackoff returns a BackoffFunc which implements an exponential
-// backoff using the formula: b^retries * d
+// backoff.
+// It uses the formula:
+//
+//	b^retries * d
 func ExponentialBackoff(b float64, d time.Duration) BackoffFunc {
 	return func(retries int) time.Duration {
 		return time.Duration(math.Pow(b, float64(retries))) * d
