@@ -11,17 +11,13 @@ test:golangci-lint:
     - golangci-lint run -v
   except:
     - tags
-    - master
-  tags:
-    - hc-bladerunner
+    - main
 
 test:tests:
   stage: test
-  image: golang:1.18
+  image: golang:1.19
   script:
     - go test -v -race ./...
   except:
     - tags
-    - master
-  tags:
-    - hc-bladerunner
+    - main
