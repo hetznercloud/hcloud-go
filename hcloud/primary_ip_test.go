@@ -8,8 +8,9 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
 func TestPrimaryIPClient(t *testing.T) {

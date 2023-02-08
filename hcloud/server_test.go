@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+
 	"github.com/hetznercloud/hcloud-go/hcloud/schema"
 )
 
