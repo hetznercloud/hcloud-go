@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.40.0](https://github.com/hetznercloud/hcloud-go/compare/v1.39.0...v1.40.0) (2023-02-08)
+
+
+### Features
+
+* **action:** use configurable backoff to wait for action progress ([#227](https://github.com/hetznercloud/hcloud-go/issues/227)) ([8da6417](https://github.com/hetznercloud/hcloud-go/commit/8da6417cf7d87bf44117ede9cd2839d7dc055f66))
+* support go v1.20 and drop v1.18 ([#231](https://github.com/hetznercloud/hcloud-go/issues/231)) ([44af6e5](https://github.com/hetznercloud/hcloud-go/commit/44af6e5beade11432b5ca30575781875cbd08343))
+
 ## [1.39.0](https://github.com/hetznercloud/hcloud-go/compare/v1.38.0...v1.39.0) (2022-12-29)
 
 
