@@ -1522,6 +1522,83 @@ func TestServerClientRebuild(t *testing.T) {
 	})
 }
 
+func TestServerClientRebuildWithResult(t *testing.T) {
+	var (
+		ctx    = context.Background()
+		server = &Server{ID: 1}
+	)
+
+	t.Run("with image ID", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/rebuild", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.ServerActionRebuildRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if id, ok := reqBody.Image.(float64); !ok || id != 1 {
+				t.Errorf("unexpected image ID: %v", reqBody.Image)
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionRebuildResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+				RootPassword: Ptr("hetzner"),
+			})
+		})
+
+		opts := ServerRebuildOpts{
+			Image: &Image{ID: 1},
+		}
+		result, _, err := env.Client.Server.RebuildWithResult(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if result.Action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", result.Action.ID)
+		}
+		if result.RootPassword != "hetzner" {
+			t.Errorf("unexpected root password: %s", result.RootPassword)
+		}
+	})
+
+	t.Run("with image name", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/servers/1/actions/rebuild", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.ServerActionRebuildRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if name, ok := reqBody.Image.(string); !ok || name != "debian-9" {
+				t.Errorf("unexpected image name: %v", reqBody.Image)
+			}
+			json.NewEncoder(w).Encode(schema.ServerActionRebuildResponse{
+				Action: schema.Action{
+					ID: 1,
+				},
+				RootPassword: nil,
+			})
+		})
+
+		opts := ServerRebuildOpts{
+			Image: &Image{Name: "debian-9"},
+		}
+		result, _, err := env.Client.Server.RebuildWithResult(ctx, server, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if result.Action.ID != 1 {
+			t.Errorf("unexpected action ID: %d", result.Action.ID)
+		}
+		if result.RootPassword != "" {
+			t.Errorf("unexpected root password: %s", result.RootPassword)
+		}
+	})
+}
+
 func TestServerClientAttachISO(t *testing.T) {
 	var (
 		ctx    = context.Background()
