@@ -464,13 +464,14 @@ type ServerDeleteResult struct {
 }
 
 // Delete deletes a server.
-// This method is deprecated, use ServerClient.DeleteWithResult instead.
+//
+// Deprecated: Use [ServerClient.DeleteWithResult] instead.
 func (c *ServerClient) Delete(ctx context.Context, server *Server) (*Response, error) {
 	_, resp, err := c.DeleteWithResult(ctx, server)
 	return resp, err
 }
 
-// Delete deletes a server and returns the parsed response containing the action.
+// DeleteWithResult deletes a server and returns the parsed response containing the action.
 func (c *ServerClient) DeleteWithResult(ctx context.Context, server *Server) (*ServerDeleteResult, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/servers/%d", server.ID), nil)
 	if err != nil {
