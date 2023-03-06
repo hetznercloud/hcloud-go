@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.41.0](https://github.com/hetznercloud/hcloud-go/compare/v1.40.0...v1.41.0) (2023-03-06)
+
+
+### Features
+
+* add ServerClient.RebuildWithResult to return root password ([#245](https://github.com/hetznercloud/hcloud-go/issues/245)) ([82f97cf](https://github.com/hetznercloud/hcloud-go/commit/82f97cf48695848e2569b38f8ff24bb050966ee4))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/google/go-cmp to v0.5.9 ([#237](https://github.com/hetznercloud/hcloud-go/issues/237)) ([2237ff7](https://github.com/hetznercloud/hcloud-go/commit/2237ff795cbaf1e75759cdd396b3dfe5491c0e24))
+* **deps:** update module github.com/prometheus/client_golang to v1.14.0 ([#241](https://github.com/hetznercloud/hcloud-go/issues/241)) ([75a4a01](https://github.com/hetznercloud/hcloud-go/commit/75a4a0140216eb476990e50ab9b13b60881404be))
+* **deps:** update module github.com/stretchr/testify to v1.8.2 ([#242](https://github.com/hetznercloud/hcloud-go/issues/242)) ([4b51f1e](https://github.com/hetznercloud/hcloud-go/commit/4b51f1e8a13f1f859211910f1dce2daebb583b04))
+* **deps:** update module golang.org/x/net to v0.7.0 [security] ([#236](https://github.com/hetznercloud/hcloud-go/issues/236)) ([774a560](https://github.com/hetznercloud/hcloud-go/commit/774a560b3d167c5c55cd3cbc4f83872ecc878670))
+* **deps:** update module golang.org/x/net to v0.8.0 ([#243](https://github.com/hetznercloud/hcloud-go/issues/243)) ([8ae14f3](https://github.com/hetznercloud/hcloud-go/commit/8ae14f36021a32f5bab21a74d2467aa2487b348d))
+
 ## [1.40.0](https://github.com/hetznercloud/hcloud-go/compare/v1.39.0...v1.40.0) (2023-02-08)
 
 
