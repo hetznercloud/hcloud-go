@@ -428,6 +428,7 @@ func TestISOFromSchema(t *testing.T) {
 		"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
 		"description": "FreeBSD 11.0 x64",
 		"type": "public",
+		"architecture": "x86",
 		"deprecated": "2018-02-28T00:00:00+00:00"
 	}`)
 
@@ -447,6 +448,11 @@ func TestISOFromSchema(t *testing.T) {
 	}
 	if iso.Type != ISOTypePublic {
 		t.Errorf("unexpected type: %v", iso.Type)
+	}
+	if iso.Architecture == nil {
+		t.Errorf("unexpected empty architecture")
+	} else if *iso.Architecture != ArchitectureX86 {
+		t.Errorf("unexpected architecture: %s", *iso.Architecture)
 	}
 	if iso.Deprecated.IsZero() {
 		t.Errorf("unexpected value for deprecated: %v", iso.Deprecated)
@@ -914,6 +920,7 @@ func TestServerTypeFromSchema(t *testing.T) {
 		"disk": 20,
 		"storage_type": "local",
 		"cpu_type": "shared",
+		"architecture": "x86",
 		"prices": [
 			{
 				"location": "fsn1",
@@ -958,6 +965,9 @@ func TestServerTypeFromSchema(t *testing.T) {
 	}
 	if serverType.CPUType != CPUTypeShared {
 		t.Errorf("unexpected cpu type: %q", serverType.CPUType)
+	}
+	if serverType.Architecture != ArchitectureX86 {
+		t.Errorf("unexpected cpu architecture: %q", serverType.Architecture)
 	}
 	if len(serverType.Pricings) != 1 {
 		t.Errorf("unexpected number of pricings: %d", len(serverType.Pricings))
@@ -1139,6 +1149,7 @@ func TestImageFromSchema(t *testing.T) {
 		"bound_to": 1,
 		"os_flavor": "ubuntu",
 		"os_version": "16.04",
+		"architecture": "arm",
 		"rapid_deploy": false,
 		"protection": {
 			"delete": true
@@ -1195,6 +1206,9 @@ func TestImageFromSchema(t *testing.T) {
 	}
 	if image.OSFlavor != "ubuntu" {
 		t.Errorf("unexpected OSFlavor: %v", image.OSFlavor)
+	}
+	if image.Architecture != ArchitectureARM {
+		t.Errorf("unexpected architecture: %v", image.Architecture)
 	}
 	if image.RapidDeploy {
 		t.Errorf("unexpected RapidDeploy: %v", image.RapidDeploy)
