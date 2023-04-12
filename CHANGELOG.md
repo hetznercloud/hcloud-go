@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.42.0](https://github.com/hetznercloud/hcloud-go/compare/v1.41.0...v1.42.0) (2023-04-12)
+
+
+### Features
+
+* add support for ARM APIs ([#249](https://github.com/hetznercloud/hcloud-go/issues/249)) ([ce9859f](https://github.com/hetznercloud/hcloud-go/commit/ce9859f178078c99f3d15de41c7f0266c2e885e1))
+
+
+### Bug Fixes
+
+* **deps:** update module golang.org/x/net to v0.9.0 ([#247](https://github.com/hetznercloud/hcloud-go/issues/247)) ([962afeb](https://github.com/hetznercloud/hcloud-go/commit/962afebeed76560687103777efae20ff70fbcf16))
+
 ## [1.41.0](https://github.com/hetznercloud/hcloud-go/compare/v1.40.0...v1.41.0) (2023-03-06)
 
 
