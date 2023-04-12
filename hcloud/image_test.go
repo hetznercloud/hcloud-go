@@ -171,6 +171,86 @@ func TestImageClient(t *testing.T) {
 		}
 	})
 
+	t.Run("GetByNameAndArchitecture", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.RawQuery != "architecture=arm&include_deprecated=true&name=my+image" {
+				t.Fatal("unexpected query parameter")
+			}
+			json.NewEncoder(w).Encode(schema.ImageListResponse{
+				Images: []schema.Image{
+					{
+						ID: 1,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+		image, _, err := env.Client.Image.GetByNameAndArchitecture(ctx, "my image", ArchitectureARM)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if image == nil {
+			t.Fatal("no image")
+		}
+		if image.ID != 1 {
+			t.Errorf("unexpected image ID: %v", image.ID)
+		}
+
+		t.Run("via GetForArchitecture", func(t *testing.T) {
+			image, _, err := env.Client.Image.GetForArchitecture(ctx, "my image", ArchitectureARM)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if image == nil {
+				t.Fatal("no image")
+			}
+			if image.ID != 1 {
+				t.Errorf("unexpected image ID: %v", image.ID)
+			}
+		})
+	})
+
+	t.Run("GetByNameAndArchitecture (not found)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.RawQuery != "architecture=arm&include_deprecated=true&name=my+image" {
+				t.Fatal("unexpected query parameter")
+			}
+			json.NewEncoder(w).Encode(schema.ImageListResponse{
+				Images: []schema.Image{},
+			})
+		})
+
+		ctx := context.Background()
+		image, _, err := env.Client.Image.GetByNameAndArchitecture(ctx, "my image", ArchitectureARM)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if image != nil {
+			t.Fatal("unexpected image")
+		}
+	})
+
+	t.Run("GetByNameAndArchitecture (empty)", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		ctx := context.Background()
+		image, _, err := env.Client.Image.GetByNameAndArchitecture(ctx, "", ArchitectureARM)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if image != nil {
+			t.Fatal("unexpected image")
+		}
+	})
+
 	t.Run("List", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
