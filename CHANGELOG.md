@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.43.0](https://github.com/hetznercloud/hcloud-go/compare/v1.42.0...v1.43.0) (2023-04-26)
+
+
+### Features
+
+* **primary-ip:** implement RDNSSupporter ([#252](https://github.com/hetznercloud/hcloud-go/issues/252)) ([41a4c5a](https://github.com/hetznercloud/hcloud-go/commit/41a4c5a1d7f70fa6a279c6a2834830e806d456de))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/prometheus/client_golang to v1.15.0 ([#250](https://github.com/hetznercloud/hcloud-go/issues/250)) ([f10e804](https://github.com/hetznercloud/hcloud-go/commit/f10e8042ac12e6195824b80a791700ce857111bc))
+
 ## [1.42.0](https://github.com/hetznercloud/hcloud-go/compare/v1.41.0...v1.42.0) (2023-04-12)
 
 
