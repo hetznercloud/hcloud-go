@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.44.0](https://github.com/hetznercloud/hcloud-go/compare/v1.43.0...v1.44.0) (2023-05-05)
+
+
+### Features
+
+* **iso:** extend ISOClient by AllWithOpts method ([#254](https://github.com/hetznercloud/hcloud-go/issues/254)) ([c42f69b](https://github.com/hetznercloud/hcloud-go/commit/c42f69b05bf732b92561285874e4ac2b6cc01d1c))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/prometheus/client_golang to v1.15.1 ([#253](https://github.com/hetznercloud/hcloud-go/issues/253)) ([275f0fd](https://github.com/hetznercloud/hcloud-go/commit/275f0fd4d4316fed0acddd13400d8a3143889f49))
+
 ## [1.43.0](https://github.com/hetznercloud/hcloud-go/compare/v1.42.0...v1.43.0) (2023-04-26)
 
 
