@@ -242,4 +242,65 @@ func TestISOClient(t *testing.T) {
 			t.Errorf("unexpected isos")
 		}
 	})
+
+	t.Run("AllWithOpts", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/isos", func(w http.ResponseWriter, r *http.Request) {
+			if name := r.URL.Query().Get("name"); name != "my-iso" {
+				t.Errorf("unexpected name: %s", name)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			var isos []schema.ISO
+			var meta schema.Meta
+			if name := r.URL.Query().Get("page"); name == "1" {
+				isos = []schema.ISO{
+					{ID: 1},
+					{ID: 2},
+				}
+				meta = schema.Meta{
+					Pagination: &schema.MetaPagination{
+						Page:         1,
+						NextPage:     2,
+						LastPage:     2,
+						PerPage:      2,
+						TotalEntries: 3,
+					},
+				}
+			} else {
+				isos = []schema.ISO{
+					{ID: 3},
+				}
+				meta = schema.Meta{
+					Pagination: &schema.MetaPagination{
+						Page:         2,
+						LastPage:     2,
+						PerPage:      2,
+						TotalEntries: 3,
+					},
+				}
+			}
+			json.NewEncoder(w).Encode(struct {
+				ISOs []schema.ISO `json:"isos"`
+				Meta schema.Meta  `json:"meta"`
+			}{
+				ISOs: isos,
+				Meta: meta,
+			})
+		})
+
+		ctx := context.Background()
+		opts := ISOListOpts{Name: "my-iso"}
+		isos, err := env.Client.ISO.AllWithOpts(ctx, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(isos) != 3 {
+			t.Fatalf("expected 3 isos; got %d", len(isos))
+		}
+		if isos[0].ID != 1 || isos[1].ID != 2 || isos[2].ID != 3 {
+			t.Errorf("unexpected isos")
+		}
+	})
 }
