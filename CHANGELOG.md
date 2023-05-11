@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.45.0](https://github.com/hetznercloud/hcloud-go/compare/v1.44.0...v1.45.0) (2023-05-11)
+
+
+### Features
+
+* **servertype:** add field for included traffic ([#259](https://github.com/hetznercloud/hcloud-go/issues/259)) ([d3b012a](https://github.com/hetznercloud/hcloud-go/commit/d3b012a678ee7012a54bb6088c3ee3b3efb5978d))
+
 ## [1.44.0](https://github.com/hetznercloud/hcloud-go/compare/v1.43.0...v1.44.0) (2023-05-05)
 
 
