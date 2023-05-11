@@ -11,7 +11,7 @@ type ServerType struct {
 	StorageType     string                   `json:"storage_type"`
 	CPUType         string                   `json:"cpu_type"`
 	Architecture    string                   `json:"architecture"`
-	IncludedTraffic int                      `json:"included_traffic"`
+	IncludedTraffic int64                    `json:"included_traffic"`
 	Prices          []PricingServerTypePrice `json:"prices"`
 }
 
