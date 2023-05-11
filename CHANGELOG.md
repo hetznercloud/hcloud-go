@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.45.1](https://github.com/hetznercloud/hcloud-go/compare/v1.45.0...v1.45.1) (2023-05-11)
+
+
+### Bug Fixes
+
+* **servertype:** use int64 to fit TB sizes on 32-bit platforms ([#261](https://github.com/hetznercloud/hcloud-go/issues/261)) ([2b19245](https://github.com/hetznercloud/hcloud-go/commit/2b1924575148a8675de7ca65f5578aeb70ef750f))
+
 ## [1.45.0](https://github.com/hetznercloud/hcloud-go/compare/v1.44.0...v1.45.0) (2023-05-11)
 
 
