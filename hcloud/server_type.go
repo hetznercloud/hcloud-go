@@ -21,7 +21,7 @@ type ServerType struct {
 	CPUType      CPUType
 	Architecture Architecture
 	// IncludedTraffic is the free traffic per month in bytes
-	IncludedTraffic int
+	IncludedTraffic int64
 	Pricings        []ServerTypeLocationPricing
 }
 
