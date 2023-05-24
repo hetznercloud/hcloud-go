@@ -227,4 +227,47 @@ func TestLocationClient(t *testing.T) {
 			t.Errorf("unexpected locations")
 		}
 	})
+
+	t.Run("AllWithOpts", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/locations", func(w http.ResponseWriter, r *http.Request) {
+			if name := r.URL.Query().Get("name"); name != "my-location" {
+				t.Errorf("unexpected name: %s", name)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(struct {
+				Locations []schema.Location `json:"locations"`
+				Meta      schema.Meta       `json:"meta"`
+			}{
+				Locations: []schema.Location{
+					{ID: 1},
+					{ID: 2},
+					{ID: 3},
+				},
+				Meta: schema.Meta{
+					Pagination: &schema.MetaPagination{
+						Page:         1,
+						LastPage:     1,
+						PerPage:      3,
+						TotalEntries: 3,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+		opts := LocationListOpts{Name: "my-location"}
+		locations, err := env.Client.Location.AllWithOpts(ctx, opts)
+		if err != nil {
+			t.Fatalf("Location.List failed: %s", err)
+		}
+		if len(locations) != 3 {
+			t.Fatalf("expected 3 locations; got %d", len(locations))
+		}
+		if locations[0].ID != 1 || locations[1].ID != 2 || locations[2].ID != 3 {
+			t.Errorf("unexpected locations")
+		}
+	})
 }

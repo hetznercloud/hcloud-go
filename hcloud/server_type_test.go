@@ -223,4 +223,43 @@ func TestServerTypeClient(t *testing.T) {
 			t.Errorf("unexpected server types")
 		}
 	})
+
+	t.Run("AllWithOpts", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/server_types", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(struct {
+				ServerTypes []schema.ServerType `json:"server_types"`
+				Meta        schema.Meta         `json:"meta"`
+			}{
+				ServerTypes: []schema.ServerType{
+					{ID: 1},
+					{ID: 2},
+					{ID: 3},
+				},
+				Meta: schema.Meta{
+					Pagination: &schema.MetaPagination{
+						Page:         1,
+						LastPage:     3,
+						PerPage:      3,
+						TotalEntries: 3,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+		serverTypes, err := env.Client.ServerType.All(ctx)
+		if err != nil {
+			t.Fatalf("ServerTypes.List failed: %s", err)
+		}
+		if len(serverTypes) != 3 {
+			t.Fatalf("expected 3 server types; got %d", len(serverTypes))
+		}
+		if serverTypes[0].ID != 1 || serverTypes[1].ID != 2 || serverTypes[2].ID != 3 {
+			t.Errorf("unexpected server types")
+		}
+	})
 }

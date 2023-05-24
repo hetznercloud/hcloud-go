@@ -223,4 +223,47 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 			t.Errorf("unexpected load balancer types")
 		}
 	})
+
+	t.Run("AllWithOpts", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/load_balancer_types", func(w http.ResponseWriter, r *http.Request) {
+			if name := r.URL.Query().Get("name"); name != "my-load-balancer-type" {
+				t.Errorf("unexpected name: %s", name)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(struct {
+				LoadBalancerTypes []schema.LoadBalancerType `json:"load_balancer_types"`
+				Meta              schema.Meta               `json:"meta"`
+			}{
+				LoadBalancerTypes: []schema.LoadBalancerType{
+					{ID: 1},
+					{ID: 2},
+					{ID: 3},
+				},
+				Meta: schema.Meta{
+					Pagination: &schema.MetaPagination{
+						Page:         1,
+						LastPage:     1,
+						PerPage:      3,
+						TotalEntries: 3,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+		opts := LoadBalancerTypeListOpts{Name: "my-load-balancer-type"}
+		loadBalancerTypes, err := env.Client.LoadBalancerType.AllWithOpts(ctx, opts)
+		if err != nil {
+			t.Fatalf("LoadBalancerType.List failed: %s", err)
+		}
+		if len(loadBalancerTypes) != 3 {
+			t.Fatalf("expected 3 load balancer types; got %d", len(loadBalancerTypes))
+		}
+		if loadBalancerTypes[0].ID != 1 || loadBalancerTypes[1].ID != 2 || loadBalancerTypes[2].ID != 3 {
+			t.Errorf("unexpected load balancer types")
+		}
+	})
 }

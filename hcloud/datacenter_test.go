@@ -227,4 +227,47 @@ func TestDatacenterClient(t *testing.T) {
 			t.Errorf("unexpected datacenters")
 		}
 	})
+
+	t.Run("AllWithOpts", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/datacenters", func(w http.ResponseWriter, r *http.Request) {
+			if name := r.URL.Query().Get("name"); name != "my-datacenter" {
+				t.Errorf("unexpected name: %s", name)
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(struct {
+				Datacenters []schema.Datacenter `json:"datacenters"`
+				Meta        schema.Meta         `json:"meta"`
+			}{
+				Datacenters: []schema.Datacenter{
+					{ID: 1},
+					{ID: 2},
+					{ID: 3},
+				},
+				Meta: schema.Meta{
+					Pagination: &schema.MetaPagination{
+						Page:         1,
+						LastPage:     1,
+						PerPage:      3,
+						TotalEntries: 3,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+		opts := DatacenterListOpts{Name: "my-datacenter"}
+		datacenters, err := env.Client.Datacenter.AllWithOpts(ctx, opts)
+		if err != nil {
+			t.Fatalf("Datacenter.List failed: %s", err)
+		}
+		if len(datacenters) != 3 {
+			t.Fatalf("expected 3 datacenters; got %d", len(datacenters))
+		}
+		if datacenters[0].ID != 1 || datacenters[1].ID != 2 || datacenters[2].ID != 3 {
+			t.Errorf("unexpected datacenters")
+		}
+	})
 }
