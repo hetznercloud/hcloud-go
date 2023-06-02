@@ -921,6 +921,7 @@ func TestServerTypeFromSchema(t *testing.T) {
 		"storage_type": "local",
 		"cpu_type": "shared",
 		"architecture": "x86",
+		"deprecation": null,
 		"prices": [
 			{
 				"location": "fsn1",
@@ -968,6 +969,9 @@ func TestServerTypeFromSchema(t *testing.T) {
 	}
 	if serverType.Architecture != ArchitectureX86 {
 		t.Errorf("unexpected cpu architecture: %q", serverType.Architecture)
+	}
+	if serverType.Deprecation != nil {
+		t.Errorf("unexpected deprecation: %v", serverType.Deprecation)
 	}
 	if len(serverType.Pricings) != 1 {
 		t.Errorf("unexpected number of pricings: %d", len(serverType.Pricings))
@@ -3168,4 +3172,44 @@ func TestPlacementGroupFromSchema(t *testing.T) {
 	if placementGroup.Type != PlacementGroupTypeSpread {
 		t.Errorf("unexpected Type %s", placementGroup.Type)
 	}
+}
+
+func TestDeprecationFromSchema(t *testing.T) {
+	t.Run("Deprecated Resource", func(t *testing.T) {
+		data := []byte(`{
+			"deprecation": {
+				"announced": "2023-06-01T00:00:00+00:00",
+				"unavailable_after": "2023-09-01T00:00:00+00:00"
+			}
+		}`)
+
+		var d schema.DeprecatableResource
+		if err := json.Unmarshal(data, &d); err != nil {
+			t.Fatal(err)
+		}
+		deprecationInfo := DeprecationFromSchema(d.Deprecation)
+		if deprecationInfo == nil {
+			t.Fatal("unexpected nil DeprecationInfo")
+		}
+		if deprecationInfo.Announced != mustParseTime(t, apiTimestampFormat, "2023-06-01T00:00:00+00:00") {
+			t.Errorf("unexpected anounce time %s", deprecationInfo.Announced)
+		}
+		if deprecationInfo.UnavailableAfter != mustParseTime(t, apiTimestampFormat, "2023-09-01T00:00:00+00:00") {
+			t.Errorf("unexpected unavailable after time %s", deprecationInfo.UnavailableAfter)
+		}
+	})
+
+	t.Run("Not-deprecated Resource", func(t *testing.T) {
+		data := []byte(`{
+			"deprecation": null
+		}`)
+		var d schema.DeprecatableResource
+		if err := json.Unmarshal(data, &d); err != nil {
+			t.Fatal(err)
+		}
+		deprecationInfo := DeprecationFromSchema(d.Deprecation)
+		if deprecationInfo != nil {
+			t.Fatal("unexpected non-nil DeprecationInfo", deprecationInfo)
+		}
+	})
 }

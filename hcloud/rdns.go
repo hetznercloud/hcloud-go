@@ -7,7 +7,7 @@ import (
 )
 
 // RDNSSupporter defines functions to change and lookup reverse dns entries.
-// currently implemented by Server, FloatingIP and LoadBalancer.
+// currently implemented by Server, FloatingIP, PrimaryIP and LoadBalancer.
 type RDNSSupporter interface {
 	// changeDNSPtr changes or resets the reverse DNS pointer for a IP address.
 	// Pass a nil ptr to reset the reverse DNS pointer to its default value.
@@ -17,7 +17,7 @@ type RDNSSupporter interface {
 	GetDNSPtrForIP(ip net.IP) (string, error)
 }
 
-// RDNSClient simplifys the handling objects which support reverse dns entries.
+// RDNSClient simplifies the handling objects which support reverse dns entries.
 type RDNSClient struct {
 	client *Client
 }

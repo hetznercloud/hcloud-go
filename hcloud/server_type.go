@@ -23,6 +23,7 @@ type ServerType struct {
 	// IncludedTraffic is the free traffic per month in bytes
 	IncludedTraffic int64
 	Pricings        []ServerTypeLocationPricing
+	DeprecatableResource
 }
 
 // StorageType specifies the type of storage.

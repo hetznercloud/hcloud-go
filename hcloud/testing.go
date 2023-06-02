@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-const apiTimestampFormat = "2006-01-02T15:04:05-07:00"
+const apiTimestampFormat = time.RFC3339
 
 func mustParseTime(t *testing.T, layout, value string) time.Time {
 	t.Helper()
