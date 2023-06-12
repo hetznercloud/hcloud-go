@@ -6,7 +6,7 @@ variables:
 
 test:golangci-lint:
   stage: test
-  image: golangci/golangci-lint:latest
+  image: golangci/golangci-lint:v1.53.2
   script:
     - golangci-lint run -v
   except:
