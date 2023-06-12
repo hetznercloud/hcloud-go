@@ -44,3 +44,9 @@ func RDNSLookup(i interface{}, ip net.IP) (string, error) {
 
 	return rdns.GetDNSPtrForIP(ip)
 }
+
+// Make sure that all expected Resources actually implement the interface.
+var _ RDNSSupporter = &FloatingIP{}
+var _ RDNSSupporter = &PrimaryIP{}
+var _ RDNSSupporter = &Server{}
+var _ RDNSSupporter = &LoadBalancer{}
