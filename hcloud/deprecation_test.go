@@ -11,7 +11,7 @@ type TestDeprecatableResource struct {
 	DeprecatableResource
 }
 
-// Interface is implemented
+// Interface is implemented.
 var _ Deprecatable = TestDeprecatableResource{}
 
 func TestDeprecatableResource_IsDeprecated(t *testing.T) {
@@ -42,8 +42,8 @@ func TestDeprecatableResource_DeprecationAnnounced(t *testing.T) {
 			want:     time.Unix(0, 0)},
 		{
 			name:     "actual value is returned",
-			resource: TestDeprecatableResource{DeprecatableResource: DeprecatableResource{Deprecation: &DeprecationInfo{Announced: mustParseTime(t, apiTimestampFormat, "2023-06-01T00:00:00+00:00")}}},
-			want:     mustParseTime(t, apiTimestampFormat, "2023-06-01T00:00:00+00:00")},
+			resource: TestDeprecatableResource{DeprecatableResource: DeprecatableResource{Deprecation: &DeprecationInfo{Announced: mustParseTime(t, "2023-06-01T00:00:00+00:00")}}},
+			want:     mustParseTime(t, "2023-06-01T00:00:00+00:00")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -64,8 +64,8 @@ func TestDeprecatableResource_UnavailableAfter(t *testing.T) {
 			want:     time.Unix(0, 0)},
 		{
 			name:     "actual value is returned",
-			resource: TestDeprecatableResource{DeprecatableResource: DeprecatableResource{Deprecation: &DeprecationInfo{UnavailableAfter: mustParseTime(t, apiTimestampFormat, "2023-06-01T00:00:00+00:00")}}},
-			want:     mustParseTime(t, apiTimestampFormat, "2023-06-01T00:00:00+00:00")},
+			resource: TestDeprecatableResource{DeprecatableResource: DeprecatableResource{Deprecation: &DeprecationInfo{UnavailableAfter: mustParseTime(t, "2023-06-01T00:00:00+00:00")}}},
+			want:     mustParseTime(t, "2023-06-01T00:00:00+00:00")},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
