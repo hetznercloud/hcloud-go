@@ -2122,14 +2122,14 @@ func TestServerGetMetrics(t *testing.T) {
 			server: &Server{ID: 1},
 			opts: ServerGetMetricsOpts{
 				Types: []ServerMetricType{ServerMetricCPU},
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
 			respFn: func() schema.ServerGetMetricsResponse {
 				var resp schema.ServerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
 					"cpu": {
 						Values: []interface{}{
@@ -2142,8 +2142,8 @@ func TestServerGetMetrics(t *testing.T) {
 				return resp
 			},
 			expected: ServerMetrics{
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 				TimeSeries: map[string][]ServerMetricsValue{
 					"cpu": {
 						{Timestamp: 1435781470.622, Value: "42"},
@@ -2161,14 +2161,14 @@ func TestServerGetMetrics(t *testing.T) {
 					ServerMetricDisk,
 					ServerMetricNetwork,
 				},
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
 			respFn: func() schema.ServerGetMetricsResponse {
 				var resp schema.ServerGetMetricsResponse
 
-				resp.Metrics.Start = mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z")
-				resp.Metrics.End = mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z")
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
 					"cpu": {
 						Values: []interface{}{
@@ -2205,8 +2205,8 @@ func TestServerGetMetrics(t *testing.T) {
 				return resp
 			},
 			expected: ServerMetrics{
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 				TimeSeries: map[string][]ServerMetricsValue{
 					"cpu": {
 						{Timestamp: 1435781470.622, Value: "42"},
@@ -2235,8 +2235,8 @@ func TestServerGetMetrics(t *testing.T) {
 			name:   "missing metrics types",
 			server: &Server{ID: 3},
 			opts: ServerGetMetricsOpts{
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
 			expectedErr: "add query params: no metric types specified",
 		},
@@ -2245,7 +2245,7 @@ func TestServerGetMetrics(t *testing.T) {
 			server: &Server{ID: 4},
 			opts: ServerGetMetricsOpts{
 				Types: []ServerMetricType{ServerMetricCPU},
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
 			expectedErr: "add query params: no start time specified",
 		},
@@ -2254,7 +2254,7 @@ func TestServerGetMetrics(t *testing.T) {
 			server: &Server{ID: 5},
 			opts: ServerGetMetricsOpts{
 				Types: []ServerMetricType{ServerMetricCPU},
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 			},
 			expectedErr: "add query params: no end time specified",
 		},
@@ -2263,8 +2263,8 @@ func TestServerGetMetrics(t *testing.T) {
 			server: &Server{ID: 6},
 			opts: ServerGetMetricsOpts{
 				Types: []ServerMetricType{ServerMetricCPU},
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
 			respStatus:  http.StatusInternalServerError,
 			expectedErr: "get metrics: hcloud: server responded with status code 500",
@@ -2273,8 +2273,8 @@ func TestServerGetMetrics(t *testing.T) {
 			name: "no server passed",
 			opts: ServerGetMetricsOpts{
 				Types: []ServerMetricType{ServerMetricCPU},
-				Start: mustParseTime(t, time.RFC3339, "2017-01-01T00:00:00Z"),
-				End:   mustParseTime(t, time.RFC3339, "2017-01-01T23:00:00Z"),
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
 			expectedErr: "illegal argument: server is nil",
 		},
