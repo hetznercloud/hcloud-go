@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.46.0](https://github.com/hetznercloud/hcloud-go/compare/v1.45.1...v1.46.0) (2023-06-13)
+
+
+### Features
+
+* provide `.AllWithOpts` method for all clients ([#266](https://github.com/hetznercloud/hcloud-go/issues/266)) ([2a7249e](https://github.com/hetznercloud/hcloud-go/commit/2a7249ed646bf9b5d91890fc6698b04bfdaf7806))
+* **servertype:** implement new Deprecation api field ([#268](https://github.com/hetznercloud/hcloud-go/issues/268)) ([ac5ae2e](https://github.com/hetznercloud/hcloud-go/commit/ac5ae2e80c361775bd14c776e23ccec4ce5849e7))
+
 ## [1.45.1](https://github.com/hetznercloud/hcloud-go/compare/v1.45.0...v1.45.1) (2023-05-11)
 
 
