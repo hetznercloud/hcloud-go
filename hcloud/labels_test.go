@@ -29,6 +29,7 @@ func TestCheckLabels(t *testing.T) {
 			"incorrect.com-",
 			"incorr,ect.com-",
 			"incorrect-111111111111111111111111111111111111111111111111111111111111.com",
+			"63-characters-are-allowed-in-a-label__this-is-one-character-more",
 		}
 
 		for _, label := range incorrectLabels {
