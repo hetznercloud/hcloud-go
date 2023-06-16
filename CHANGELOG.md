@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.46.1](https://github.com/hetznercloud/hcloud-go/compare/v1.46.0...v1.46.1) (2023-06-16)
+
+
+### Bug Fixes
+
+* adjust label validation for max length of 63 characters ([#273](https://github.com/hetznercloud/hcloud-go/issues/273)) ([6382808](https://github.com/hetznercloud/hcloud-go/commit/63828086e89413115f4f5ee326835f93752cbb51))
+* **deps:** update module golang.org/x/net to v0.11.0 ([#258](https://github.com/hetznercloud/hcloud-go/issues/258)) ([7918f21](https://github.com/hetznercloud/hcloud-go/commit/7918f2172ac000f72a6ed52a2c69ae03c7b6513f))
+
 ## [1.46.0](https://github.com/hetznercloud/hcloud-go/compare/v1.45.1...v1.46.0) (2023-06-13)
 
 
