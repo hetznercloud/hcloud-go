@@ -213,6 +213,36 @@ func TestNetworkCreate(t *testing.T) {
 			t.Fatal(err)
 		}
 	})
+
+	t.Run("optional fields", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/networks", func(w http.ResponseWriter, r *http.Request) {
+			var reqBody schema.NetworkCreateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.ExposeRoutesToVSwitch != true {
+				t.Errorf("unexpected ExposeRoutesToVSwitch: %v", reqBody.ExposeRoutesToVSwitch)
+			}
+
+			json.NewEncoder(w).Encode(schema.NetworkCreateResponse{
+				Network: schema.Network{
+					ID: 1,
+				},
+			})
+		})
+		opts := NetworkCreateOpts{
+			Name:                  "my-network",
+			IPRange:               ipRange,
+			ExposeRoutesToVSwitch: true,
+		}
+		_, _, err := env.Client.Network.Create(ctx, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+	})
 }
 
 func TestNetworkDelete(t *testing.T) {
@@ -245,7 +275,7 @@ func TestNetworkClientUpdate(t *testing.T) {
 			if r.Method != "PUT" {
 				t.Error("expected PUT")
 			}
-			var reqBody schema.ServerUpdateRequest
+			var reqBody schema.NetworkUpdateRequest
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
@@ -280,7 +310,7 @@ func TestNetworkClientUpdate(t *testing.T) {
 			if r.Method != "PUT" {
 				t.Error("expected PUT")
 			}
-			var reqBody schema.ServerUpdateRequest
+			var reqBody schema.NetworkUpdateRequest
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
@@ -307,6 +337,41 @@ func TestNetworkClientUpdate(t *testing.T) {
 		}
 	})
 
+	t.Run("update expose routes to vswitch", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/networks/1", func(w http.ResponseWriter, r *http.Request) {
+			if r.Method != "PUT" {
+				t.Error("expected PUT")
+			}
+			var reqBody schema.NetworkUpdateRequest
+			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
+				t.Fatal(err)
+			}
+			if reqBody.ExposeRoutesToVSwitch == nil || *reqBody.ExposeRoutesToVSwitch != true {
+				t.Errorf("unexpected field in request: %v", reqBody.ExposeRoutesToVSwitch)
+			}
+			json.NewEncoder(w).Encode(schema.NetworkUpdateResponse{
+				Network: schema.Network{
+					ID: 1,
+				},
+			})
+		})
+
+		opts := NetworkUpdateOpts{
+			ExposeRoutesToVSwitch: Ptr(true),
+		}
+		updatedNetwork, _, err := env.Client.Network.Update(ctx, network, opts)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		if updatedNetwork.ID != 1 {
+			t.Errorf("unexpected network ID: %v", updatedNetwork.ID)
+		}
+	})
+
 	t.Run("no updates", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
@@ -315,7 +380,7 @@ func TestNetworkClientUpdate(t *testing.T) {
 			if r.Method != "PUT" {
 				t.Error("expected PUT")
 			}
-			var reqBody schema.ServerUpdateRequest
+			var reqBody schema.NetworkUpdateRequest
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
