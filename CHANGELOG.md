@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.47.0](https://github.com/hetznercloud/hcloud-go/compare/v1.46.1...v1.47.0) (2023-06-21)
+
+
+### Features
+
+* **network:** add field expose_routes_to_vswitch ([#277](https://github.com/hetznercloud/hcloud-go/issues/277)) ([e73c52d](https://github.com/hetznercloud/hcloud-go/commit/e73c52dce563e00c8ccba7528fd054936a52b64c))
+
 ## [1.46.1](https://github.com/hetznercloud/hcloud-go/compare/v1.46.0...v1.46.1) (2023-06-16)
 
 
