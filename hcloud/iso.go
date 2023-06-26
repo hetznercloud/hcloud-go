@@ -89,7 +89,11 @@ type ISOListOpts struct {
 	Architecture []Architecture
 	// IncludeWildcardArchitecture must be set to also return custom ISOs that have no architecture set, if you are
 	// also setting the Architecture field.
+	// Deprecated: Use the IncludeArchitectureWildcard field instead.
 	IncludeWildcardArchitecture bool
+	// IncludeWildcardArchitecture must be set to also return custom ISOs that have no architecture set, if you are
+	// also setting the Architecture field.
+	IncludeArchitectureWildcard bool
 }
 
 func (l ISOListOpts) values() url.Values {
@@ -103,7 +107,7 @@ func (l ISOListOpts) values() url.Values {
 	for _, arch := range l.Architecture {
 		vals.Add("architecture", string(arch))
 	}
-	if l.IncludeWildcardArchitecture {
+	if l.IncludeArchitectureWildcard || l.IncludeWildcardArchitecture {
 		vals.Add("include_architecture_wildcard", "true")
 	}
 	return vals
