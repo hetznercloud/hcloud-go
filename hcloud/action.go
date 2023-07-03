@@ -223,7 +223,7 @@ func (c *ActionClient) WatchOverallProgress(ctx context.Context, actions []*Acti
 					continue
 				case ActionStatusSuccess:
 					delete(watchIDs, a.ID)
-					successIDs := append(successIDs, a.ID)
+					successIDs = append(successIDs, a.ID)
 					sendProgress(progressCh, int(float64(len(actions)-len(successIDs))/float64(len(actions))*100))
 				case ActionStatusError:
 					delete(watchIDs, a.ID)
