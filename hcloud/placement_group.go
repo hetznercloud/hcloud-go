@@ -10,16 +10,16 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // PlacementGroup represents a Placement Group in the Hetzner Cloud.
 type PlacementGroup struct {
-	ID      int
+	ID      int64
 	Name    string
 	Labels  map[string]string
 	Created time.Time
-	Servers []int
+	Servers []int64
 	Type    PlacementGroupType
 }
 
@@ -37,7 +37,7 @@ type PlacementGroupClient struct {
 }
 
 // GetByID retrieves a PlacementGroup by its ID. If the PlacementGroup does not exist, nil is returned.
-func (c *PlacementGroupClient) GetByID(ctx context.Context, id int) (*PlacementGroup, *Response, error) {
+func (c *PlacementGroupClient) GetByID(ctx context.Context, id int64) (*PlacementGroup, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/placement_groups/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -69,8 +69,8 @@ func (c *PlacementGroupClient) GetByName(ctx context.Context, name string) (*Pla
 // Get retrieves a PlacementGroup by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a PlacementGroup by its name. If the PlacementGroup does not exist, nil is returned.
 func (c *PlacementGroupClient) Get(ctx context.Context, idOrName string) (*PlacementGroup, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
-		return c.GetByID(ctx, int(id))
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
 }

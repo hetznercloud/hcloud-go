@@ -4,9 +4,9 @@ import "time"
 
 // Volume defines the schema of a volume.
 type Volume struct {
-	ID          int               `json:"id"`
+	ID          int64             `json:"id"`
 	Name        string            `json:"name"`
-	Server      *int              `json:"server"`
+	Server      *int64            `json:"server"`
 	Status      string            `json:"status"`
 	Location    Location          `json:"location"`
 	Size        int               `json:"size"`
@@ -21,7 +21,7 @@ type Volume struct {
 type VolumeCreateRequest struct {
 	Name      string             `json:"name"`
 	Size      int                `json:"size"`
-	Server    *int               `json:"server,omitempty"`
+	Server    *int64             `json:"server,omitempty"`
 	Location  interface{}        `json:"location,omitempty"` // int, string, or nil
 	Labels    *map[string]string `json:"labels,omitempty"`
 	Automount *bool              `json:"automount,omitempty"`
@@ -79,7 +79,7 @@ type VolumeActionChangeProtectionResponse struct {
 // VolumeActionAttachVolumeRequest defines the schema of the request to
 // attach a volume to a server.
 type VolumeActionAttachVolumeRequest struct {
-	Server    int   `json:"server"`
+	Server    int64 `json:"server"`
 	Automount *bool `json:"automount,omitempty"`
 }
 

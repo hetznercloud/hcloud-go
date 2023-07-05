@@ -4,7 +4,7 @@ import "time"
 
 // Firewall defines the schema of a Firewall.
 type Firewall struct {
-	ID        int                `json:"id"`
+	ID        int64              `json:"id"`
 	Name      string             `json:"name"`
 	Labels    map[string]string  `json:"labels"`
 	Created   time.Time          `json:"created"`
@@ -54,7 +54,7 @@ type FirewallResourceLabelSelector struct {
 
 // FirewallResourceServer defines the schema of a Server to apply a Firewall on.
 type FirewallResourceServer struct {
-	ID int `json:"id"`
+	ID int64 `json:"id"`
 }
 
 // FirewallCreateResponse defines the schema of the response when creating a Firewall.

@@ -1,4 +1,4 @@
-module github.com/hetznercloud/hcloud-go
+module github.com/hetznercloud/hcloud-go/v2
 
 go 1.19
 

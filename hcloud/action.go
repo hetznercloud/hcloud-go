@@ -6,12 +6,12 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // Action represents an action in the Hetzner Cloud.
 type Action struct {
-	ID           int
+	ID           int64
 	Status       ActionStatus
 	Command      string
 	Progress     int
@@ -34,7 +34,7 @@ const (
 
 // ActionResource references other resources from an action.
 type ActionResource struct {
-	ID   int
+	ID   int64
 	Type ActionResourceType
 }
 
@@ -76,7 +76,7 @@ type ActionClient struct {
 }
 
 // GetByID retrieves an action by its ID. If the action does not exist, nil is returned.
-func (c *ActionClient) GetByID(ctx context.Context, id int) (*Action, *Response, error) {
+func (c *ActionClient) GetByID(ctx context.Context, id int64) (*Action, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/actions/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -96,7 +96,7 @@ func (c *ActionClient) GetByID(ctx context.Context, id int) (*Action, *Response,
 // ActionListOpts specifies options for listing actions.
 type ActionListOpts struct {
 	ListOpts
-	ID     []int
+	ID     []int64
 	Status []ActionStatus
 	Sort   []string
 }
@@ -189,8 +189,8 @@ func (c *ActionClient) WatchOverallProgress(ctx context.Context, actions []*Acti
 		defer close(errCh)
 		defer close(progressCh)
 
-		successIDs := make([]int, 0, len(actions))
-		watchIDs := make(map[int]struct{}, len(actions))
+		successIDs := make([]int64, 0, len(actions))
+		watchIDs := make(map[int64]struct{}, len(actions))
 		for _, action := range actions {
 			watchIDs[action.ID] = struct{}{}
 		}

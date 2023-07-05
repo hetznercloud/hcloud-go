@@ -6,12 +6,12 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // Location represents a location in the Hetzner Cloud.
 type Location struct {
-	ID          int
+	ID          int64
 	Name        string
 	Description string
 	Country     string
@@ -27,7 +27,7 @@ type LocationClient struct {
 }
 
 // GetByID retrieves a location by its ID. If the location does not exist, nil is returned.
-func (c *LocationClient) GetByID(ctx context.Context, id int) (*Location, *Response, error) {
+func (c *LocationClient) GetByID(ctx context.Context, id int64) (*Location, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/locations/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -59,8 +59,8 @@ func (c *LocationClient) GetByName(ctx context.Context, name string) (*Location,
 // Get retrieves a location by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a location by its name. If the location does not exist, nil is returned.
 func (c *LocationClient) Get(ctx context.Context, idOrName string) (*Location, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
-		return c.GetByID(ctx, int(id))
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
 }

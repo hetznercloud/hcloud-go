@@ -6,12 +6,12 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // ServerType represents a server type in the Hetzner Cloud.
 type ServerType struct {
-	ID           int
+	ID           int64
 	Name         string
 	Description  string
 	Cores        int
@@ -54,7 +54,7 @@ type ServerTypeClient struct {
 }
 
 // GetByID retrieves a server type by its ID. If the server type does not exist, nil is returned.
-func (c *ServerTypeClient) GetByID(ctx context.Context, id int) (*ServerType, *Response, error) {
+func (c *ServerTypeClient) GetByID(ctx context.Context, id int64) (*ServerType, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/server_types/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -86,8 +86,8 @@ func (c *ServerTypeClient) GetByName(ctx context.Context, name string) (*ServerT
 // Get retrieves a server type by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a server type by its name. If the server type does not exist, nil is returned.
 func (c *ServerTypeClient) Get(ctx context.Context, idOrName string) (*ServerType, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
-		return c.GetByID(ctx, int(id))
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
 }

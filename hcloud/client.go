@@ -18,8 +18,8 @@ import (
 	"github.com/prometheus/client_golang/prometheus"
 	"golang.org/x/net/http/httpguts"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/internal/instrumentation"
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/internal/instrumentation"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // Endpoint is the base URL of the API.

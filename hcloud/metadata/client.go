@@ -10,7 +10,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/internal/instrumentation"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/internal/instrumentation"
 )
 
 const Endpoint = "http://169.254.169.254/hetzner/v1/metadata"
@@ -104,12 +104,12 @@ func (c *Client) Hostname() (string, error) {
 }
 
 // InstanceID returns the ID of the server that did the request to the Metadata server.
-func (c *Client) InstanceID() (int, error) {
+func (c *Client) InstanceID() (int64, error) {
 	resp, err := c.get("/instance-id")
 	if err != nil {
 		return 0, err
 	}
-	return strconv.Atoi(resp)
+	return strconv.ParseInt(resp, 10, 64)
 }
 
 // PublicIPv4 returns the Public IPv4 of the server that did the request to the Metadata server.

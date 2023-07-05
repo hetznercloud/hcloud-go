@@ -8,7 +8,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 func TestActionFromSchema(t *testing.T) {
@@ -2429,7 +2429,7 @@ func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
 					return &labels
 				}(),
 				PublicInterface: Ptr(true),
-				Network:         Ptr(3),
+				Network:         Ptr(int64(3)),
 				Services: []schema.LoadBalancerCreateRequestService{
 					{
 						Protocol:        string(LoadBalancerServiceProtocolHTTP),
@@ -2440,7 +2440,7 @@ func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
 							CookieLifetime: Ptr(5 * 60),
 							RedirectHTTP:   Ptr(true),
 							StickySessions: Ptr(true),
-							Certificates:   Ptr([]int{1, 2}),
+							Certificates:   Ptr([]int64{1, 2}),
 						},
 						HealthCheck: &schema.LoadBalancerCreateRequestServiceHealthCheck{
 							Protocol: string(LoadBalancerServiceProtocolHTTP),
@@ -2535,7 +2535,7 @@ func TestLoadBalancerAddServiceOptsToSchema(t *testing.T) {
 					CookieLifetime: Ptr(5 * 60),
 					RedirectHTTP:   Ptr(true),
 					StickySessions: Ptr(true),
-					Certificates:   Ptr([]int{1, 2}),
+					Certificates:   Ptr([]int64{1, 2}),
 				},
 				HealthCheck: &schema.LoadBalancerActionAddServiceRequestHealthCheck{
 					Protocol: string(LoadBalancerServiceProtocolHTTP),
@@ -2575,7 +2575,7 @@ func TestLoadBalancerAddServiceOptsToSchema(t *testing.T) {
 					CookieLifetime: Ptr(5 * 60),
 					RedirectHTTP:   Ptr(true),
 					StickySessions: Ptr(true),
-					Certificates:   Ptr([]int{1, 2}),
+					Certificates:   Ptr([]int64{1, 2}),
 				},
 				HealthCheck: nil,
 			},
@@ -2637,7 +2637,7 @@ func TestLoadBalancerUpdateServiceOptsToSchema(t *testing.T) {
 					CookieLifetime: Ptr(5 * 60),
 					RedirectHTTP:   Ptr(true),
 					StickySessions: Ptr(true),
-					Certificates:   Ptr([]int{1, 2}),
+					Certificates:   Ptr([]int64{1, 2}),
 				},
 				HealthCheck: &schema.LoadBalancerActionUpdateServiceRequestHealthCheck{
 					Protocol: Ptr(string(LoadBalancerServiceProtocolHTTP)),
@@ -2677,7 +2677,7 @@ func TestLoadBalancerUpdateServiceOptsToSchema(t *testing.T) {
 					CookieLifetime: Ptr(5 * 60),
 					RedirectHTTP:   Ptr(true),
 					StickySessions: Ptr(true),
-					Certificates:   Ptr([]int{1, 2}),
+					Certificates:   Ptr([]int64{1, 2}),
 				},
 				HealthCheck: nil,
 			},

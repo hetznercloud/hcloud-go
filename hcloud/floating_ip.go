@@ -11,12 +11,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // FloatingIP represents a Floating IP in the Hetzner Cloud.
 type FloatingIP struct {
-	ID           int
+	ID           int64
 	Description  string
 	Created      time.Time
 	IP           net.IP
@@ -95,7 +95,7 @@ type FloatingIPClient struct {
 
 // GetByID retrieves a Floating IP by its ID. If the Floating IP does not exist,
 // nil is returned.
-func (c *FloatingIPClient) GetByID(ctx context.Context, id int) (*FloatingIP, *Response, error) {
+func (c *FloatingIPClient) GetByID(ctx context.Context, id int64) (*FloatingIP, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/floating_ips/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -127,7 +127,7 @@ func (c *FloatingIPClient) GetByName(ctx context.Context, name string) (*Floatin
 // Get retrieves a Floating IP by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Floating IP by its name. If the Floating IP does not exist, nil is returned.
 func (c *FloatingIPClient) Get(ctx context.Context, idOrName string) (*FloatingIP, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)

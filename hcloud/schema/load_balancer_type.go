@@ -2,7 +2,7 @@ package schema
 
 // LoadBalancerType defines the schema of a LoadBalancer type.
 type LoadBalancerType struct {
-	ID                      int                            `json:"id"`
+	ID                      int64                          `json:"id"`
 	Name                    string                         `json:"name"`
 	Description             string                         `json:"description"`
 	MaxConnections          int                            `json:"max_connections"`

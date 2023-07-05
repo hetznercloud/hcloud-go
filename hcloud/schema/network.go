@@ -4,13 +4,13 @@ import "time"
 
 // Network defines the schema of a network.
 type Network struct {
-	ID                    int               `json:"id"`
+	ID                    int64             `json:"id"`
 	Name                  string            `json:"name"`
 	Created               time.Time         `json:"created"`
 	IPRange               string            `json:"ip_range"`
 	Subnets               []NetworkSubnet   `json:"subnets"`
 	Routes                []NetworkRoute    `json:"routes"`
-	Servers               []int             `json:"servers"`
+	Servers               []int64           `json:"servers"`
 	Protection            NetworkProtection `json:"protection"`
 	Labels                map[string]string `json:"labels"`
 	ExposeRoutesToVSwitch bool              `json:"expose_routes_to_vswitch"`
@@ -22,7 +22,7 @@ type NetworkSubnet struct {
 	IPRange     string `json:"ip_range"`
 	NetworkZone string `json:"network_zone"`
 	Gateway     string `json:"gateway,omitempty"`
-	VSwitchID   int    `json:"vswitch_id,omitempty"`
+	VSwitchID   int64  `json:"vswitch_id,omitempty"`
 }
 
 // NetworkRoute represents a route of a network.
@@ -95,7 +95,7 @@ type NetworkActionAddSubnetRequest struct {
 	IPRange     string `json:"ip_range,omitempty"`
 	NetworkZone string `json:"network_zone"`
 	Gateway     string `json:"gateway"`
-	VSwitchID   int    `json:"vswitch_id,omitempty"`
+	VSwitchID   int64  `json:"vswitch_id,omitempty"`
 }
 
 // NetworkActionAddSubnetResponse defines the schema of the response when

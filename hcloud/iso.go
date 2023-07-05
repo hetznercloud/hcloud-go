@@ -7,12 +7,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // ISO represents an ISO image in the Hetzner Cloud.
 type ISO struct {
-	ID           int
+	ID           int64
 	Name         string
 	Description  string
 	Type         ISOType
@@ -42,7 +42,7 @@ type ISOClient struct {
 }
 
 // GetByID retrieves an ISO by its ID.
-func (c *ISOClient) GetByID(ctx context.Context, id int) (*ISO, *Response, error) {
+func (c *ISOClient) GetByID(ctx context.Context, id int64) (*ISO, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/isos/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -73,8 +73,8 @@ func (c *ISOClient) GetByName(ctx context.Context, name string) (*ISO, *Response
 
 // Get retrieves an ISO by its ID if the input can be parsed as an integer, otherwise it retrieves an ISO by its name.
 func (c *ISOClient) Get(ctx context.Context, idOrName string) (*ISO, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
-		return c.GetByID(ctx, int(id))
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
 }

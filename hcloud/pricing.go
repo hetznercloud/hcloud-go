@@ -3,7 +3,7 @@ package hcloud
 import (
 	"context"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // Pricing specifies pricing information for various resources.

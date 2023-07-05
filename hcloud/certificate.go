@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // CertificateType is the type of available certificate types.
@@ -50,7 +50,7 @@ const (
 
 // CertificateUsedByRef points to a resource that uses this certificate.
 type CertificateUsedByRef struct {
-	ID   int
+	ID   int64
 	Type CertificateUsedByRefType
 }
 
@@ -70,7 +70,7 @@ func (st *CertificateStatus) IsFailed() bool {
 
 // Certificate represents a certificate in the Hetzner Cloud.
 type Certificate struct {
-	ID             int
+	ID             int64
 	Name           string
 	Labels         map[string]string
 	Type           CertificateType
@@ -96,7 +96,7 @@ type CertificateClient struct {
 }
 
 // GetByID retrieves a Certificate by its ID. If the Certificate does not exist, nil is returned.
-func (c *CertificateClient) GetByID(ctx context.Context, id int) (*Certificate, *Response, error) {
+func (c *CertificateClient) GetByID(ctx context.Context, id int64) (*Certificate, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/certificates/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -128,7 +128,7 @@ func (c *CertificateClient) GetByName(ctx context.Context, name string) (*Certif
 // Get retrieves a Certificate by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Certificate by its name. If the Certificate does not exist, nil is returned.
 func (c *CertificateClient) Get(ctx context.Context, idOrName string) (*Certificate, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
