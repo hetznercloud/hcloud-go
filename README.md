@@ -51,7 +51,7 @@ To migrate to the new version, replace all your imports to reference the new mod
 
 ```diff
  import (
--  "github.com/hetznercloud/hcloud-go/v2/hcloud"
+-  "github.com/hetznercloud/hcloud-go/hcloud"
 +  "github.com/hetznercloud/hcloud-go/v2/hcloud"
  )
 ```
