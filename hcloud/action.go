@@ -102,7 +102,7 @@ type ActionListOpts struct {
 }
 
 func (l ActionListOpts) values() url.Values {
-	vals := l.ListOpts.values()
+	vals := l.ListOpts.Values()
 	for _, id := range l.ID {
 		vals.Add("id", fmt.Sprintf("%d", id))
 	}
