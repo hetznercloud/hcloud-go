@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.48.0](https://github.com/hetznercloud/hcloud-go/compare/v1.47.0...v1.48.0) (2023-07-12)
+
+
+### Features
+
+* make ListOpts.Values method public ([#285](https://github.com/hetznercloud/hcloud-go/issues/285)) ([c82ea59](https://github.com/hetznercloud/hcloud-go/commit/c82ea5971d94b812fd9302bfc4151f4ebfa43413))
+
+
+### Bug Fixes
+
+* **action:** show accurate progress in WatchOverallProgress ([#281](https://github.com/hetznercloud/hcloud-go/issues/281)) ([cae9e57](https://github.com/hetznercloud/hcloud-go/commit/cae9e5789b20bdb7d9213ba88897435ee1abce86))
+* **iso:** invalid field include_wildcard_architecture ([188b68a](https://github.com/hetznercloud/hcloud-go/commit/188b68ad674066d302b2614432cf4f7d5b47f41a))
+
 ## [1.47.0](https://github.com/hetznercloud/hcloud-go/compare/v1.46.1...v1.47.0) (2023-06-21)
 
 
