@@ -2,6 +2,8 @@ on:
   push:
     branches:
       - main
+      - release-1.x
+
 name: release-please
 
 jobs:
@@ -18,3 +20,6 @@ jobs:
           # we need to write it to a file that is included in the git tag.
           extra-files: |
             hcloud/hcloud.go
+
+          # Configuration for multiple active release branches
+          default-branch: ${{ github.ref_name }}
