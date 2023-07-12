@@ -61,7 +61,7 @@ type PricingServerBackup struct {
 
 // PricingServerType defines the schema of pricing information for a server type.
 type PricingServerType struct {
-	ID     int                      `json:"id"`
+	ID     int64                    `json:"id"`
 	Name   string                   `json:"name"`
 	Prices []PricingServerTypePrice `json:"prices"`
 }
@@ -76,7 +76,7 @@ type PricingServerTypePrice struct {
 
 // PricingLoadBalancerType defines the schema of pricing information for a Load Balancer type.
 type PricingLoadBalancerType struct {
-	ID     int                            `json:"id"`
+	ID     int64                          `json:"id"`
 	Name   string                         `json:"name"`
 	Prices []PricingLoadBalancerTypePrice `json:"prices"`
 }

@@ -6,12 +6,12 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // LoadBalancerType represents a LoadBalancer type in the Hetzner Cloud.
 type LoadBalancerType struct {
-	ID                      int
+	ID                      int64
 	Name                    string
 	Description             string
 	MaxConnections          int
@@ -27,7 +27,7 @@ type LoadBalancerTypeClient struct {
 }
 
 // GetByID retrieves a Load Balancer type by its ID. If the Load Balancer type does not exist, nil is returned.
-func (c *LoadBalancerTypeClient) GetByID(ctx context.Context, id int) (*LoadBalancerType, *Response, error) {
+func (c *LoadBalancerTypeClient) GetByID(ctx context.Context, id int64) (*LoadBalancerType, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/load_balancer_types/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -59,8 +59,8 @@ func (c *LoadBalancerTypeClient) GetByName(ctx context.Context, name string) (*L
 // Get retrieves a Load Balancer type by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Load Balancer type by its name. If the Load Balancer type does not exist, nil is returned.
 func (c *LoadBalancerTypeClient) Get(ctx context.Context, idOrName string) (*LoadBalancerType, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
-		return c.GetByID(ctx, int(id))
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
 }

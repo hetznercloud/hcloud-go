@@ -10,12 +10,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // PrimaryIP defines a Primary IP.
 type PrimaryIP struct {
-	ID           int
+	ID           int64
 	IP           net.IP
 	Network      *net.IPNet
 	Labels       map[string]string
@@ -23,7 +23,7 @@ type PrimaryIP struct {
 	Type         PrimaryIPType
 	Protection   PrimaryIPProtection
 	DNSPtr       map[string]string
-	AssigneeID   int
+	AssigneeID   int64
 	AssigneeType string
 	AutoDelete   bool
 	Blocked      bool
@@ -92,7 +92,7 @@ const (
 // PrimaryIPCreateOpts defines the request to
 // create a Primary IP.
 type PrimaryIPCreateOpts struct {
-	AssigneeID   *int              `json:"assignee_id,omitempty"`
+	AssigneeID   *int64            `json:"assignee_id,omitempty"`
 	AssigneeType string            `json:"assignee_type"`
 	AutoDelete   *bool             `json:"auto_delete,omitempty"`
 	Datacenter   string            `json:"datacenter,omitempty"`
@@ -119,8 +119,8 @@ type PrimaryIPUpdateOpts struct {
 // PrimaryIPAssignOpts defines the request to
 // assign a Primary IP to an assignee (usually a server).
 type PrimaryIPAssignOpts struct {
-	ID           int
-	AssigneeID   int    `json:"assignee_id"`
+	ID           int64
+	AssigneeID   int64  `json:"assignee_id"`
 	AssigneeType string `json:"assignee_type"`
 }
 
@@ -133,7 +133,7 @@ type PrimaryIPAssignResult struct {
 // PrimaryIPChangeDNSPtrOpts defines the request to
 // change a DNS PTR entry from a Primary IP.
 type PrimaryIPChangeDNSPtrOpts struct {
-	ID     int
+	ID     int64
 	DNSPtr string `json:"dns_ptr"`
 	IP     string `json:"ip"`
 }
@@ -147,7 +147,7 @@ type PrimaryIPChangeDNSPtrResult struct {
 // PrimaryIPChangeProtectionOpts defines the request to
 // change protection configuration of a Primary IP.
 type PrimaryIPChangeProtectionOpts struct {
-	ID     int
+	ID     int64
 	Delete bool `json:"delete"`
 }
 
@@ -163,7 +163,7 @@ type PrimaryIPClient struct {
 }
 
 // GetByID retrieves a Primary IP by its ID. If the Primary IP does not exist, nil is returned.
-func (c *PrimaryIPClient) GetByID(ctx context.Context, id int) (*PrimaryIP, *Response, error) {
+func (c *PrimaryIPClient) GetByID(ctx context.Context, id int64) (*PrimaryIP, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/primary_ips/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -207,8 +207,8 @@ func (c *PrimaryIPClient) GetByName(ctx context.Context, name string) (*PrimaryI
 // Get retrieves a Primary IP by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Primary IP by its name. If the Primary IP does not exist, nil is returned.
 func (c *PrimaryIPClient) Get(ctx context.Context, idOrName string) (*PrimaryIP, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
-		return c.GetByID(ctx, int(id))
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
 }
@@ -363,7 +363,7 @@ func (c *PrimaryIPClient) Assign(ctx context.Context, opts PrimaryIPAssignOpts) 
 }
 
 // Unassign a Primary IP from a resource.
-func (c *PrimaryIPClient) Unassign(ctx context.Context, id int) (*Action, *Response, error) {
+func (c *PrimaryIPClient) Unassign(ctx context.Context, id int64) (*Action, *Response, error) {
 	path := fmt.Sprintf("/primary_ips/%d/actions/unassign", id)
 	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader([]byte{}))
 	if err != nil {

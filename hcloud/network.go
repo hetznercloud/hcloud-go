@@ -11,7 +11,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // NetworkZone specifies a network zone.
@@ -36,7 +36,7 @@ const (
 
 // Network represents a network in the Hetzner Cloud.
 type Network struct {
-	ID         int
+	ID         int64
 	Name       string
 	Created    time.Time
 	IPRange    *net.IPNet
@@ -56,7 +56,7 @@ type NetworkSubnet struct {
 	IPRange     *net.IPNet
 	NetworkZone NetworkZone
 	Gateway     net.IP
-	VSwitchID   int
+	VSwitchID   int64
 }
 
 // NetworkRoute represents a route of a network.
@@ -76,7 +76,7 @@ type NetworkClient struct {
 }
 
 // GetByID retrieves a network by its ID. If the network does not exist, nil is returned.
-func (c *NetworkClient) GetByID(ctx context.Context, id int) (*Network, *Response, error) {
+func (c *NetworkClient) GetByID(ctx context.Context, id int64) (*Network, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/networks/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -108,8 +108,8 @@ func (c *NetworkClient) GetByName(ctx context.Context, name string) (*Network, *
 // Get retrieves a network by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a network by its name. If the network does not exist, nil is returned.
 func (c *NetworkClient) Get(ctx context.Context, idOrName string) (*Network, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
-		return c.GetByID(ctx, int(id))
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
 }

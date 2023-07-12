@@ -4,7 +4,7 @@ import "time"
 
 // Action defines the schema of an action.
 type Action struct {
-	ID        int                       `json:"id"`
+	ID        int64                     `json:"id"`
 	Status    string                    `json:"status"`
 	Command   string                    `json:"command"`
 	Progress  int                       `json:"progress"`
@@ -16,7 +16,7 @@ type Action struct {
 
 // ActionResourceReference defines the schema of an action resource reference.
 type ActionResourceReference struct {
-	ID   int    `json:"id"`
+	ID   int64  `json:"id"`
 	Type string `json:"type"`
 }
 

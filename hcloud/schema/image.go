@@ -4,7 +4,7 @@ import "time"
 
 // Image defines the schema of an image.
 type Image struct {
-	ID           int               `json:"id"`
+	ID           int64             `json:"id"`
 	Status       string            `json:"status"`
 	Type         string            `json:"type"`
 	Name         *string           `json:"name"`
@@ -13,7 +13,7 @@ type Image struct {
 	DiskSize     float32           `json:"disk_size"`
 	Created      time.Time         `json:"created"`
 	CreatedFrom  *ImageCreatedFrom `json:"created_from"`
-	BoundTo      *int              `json:"bound_to"`
+	BoundTo      *int64            `json:"bound_to"`
 	OSFlavor     string            `json:"os_flavor"`
 	OSVersion    *string           `json:"os_version"`
 	Architecture string            `json:"architecture"`
@@ -31,7 +31,7 @@ type ImageProtection struct {
 
 // ImageCreatedFrom defines the schema of the images created from reference.
 type ImageCreatedFrom struct {
-	ID   int    `json:"id"`
+	ID   int64  `json:"id"`
 	Name string `json:"name"`
 }
 

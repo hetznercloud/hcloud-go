@@ -4,12 +4,12 @@ import "time"
 
 // FloatingIP defines the schema of a Floating IP.
 type FloatingIP struct {
-	ID           int                  `json:"id"`
+	ID           int64                `json:"id"`
 	Description  *string              `json:"description"`
 	Created      time.Time            `json:"created"`
 	IP           string               `json:"ip"`
 	Type         string               `json:"type"`
-	Server       *int                 `json:"server"`
+	Server       *int64               `json:"server"`
 	DNSPtr       []FloatingIPDNSPtr   `json:"dns_ptr"`
 	HomeLocation Location             `json:"home_location"`
 	Blocked      bool                 `json:"blocked"`
@@ -59,7 +59,7 @@ type FloatingIPListResponse struct {
 type FloatingIPCreateRequest struct {
 	Type         string             `json:"type"`
 	HomeLocation *string            `json:"home_location,omitempty"`
-	Server       *int               `json:"server,omitempty"`
+	Server       *int64             `json:"server,omitempty"`
 	Description  *string            `json:"description,omitempty"`
 	Labels       *map[string]string `json:"labels,omitempty"`
 	Name         *string            `json:"name,omitempty"`
@@ -75,7 +75,7 @@ type FloatingIPCreateResponse struct {
 // FloatingIPActionAssignRequest defines the schema of the request to
 // create an assign Floating IP action.
 type FloatingIPActionAssignRequest struct {
-	Server int `json:"server"`
+	Server int64 `json:"server"`
 }
 
 // FloatingIPActionAssignResponse defines the schema of the response when

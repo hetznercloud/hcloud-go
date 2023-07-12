@@ -4,7 +4,7 @@ import "time"
 
 // CertificateUsedByRef defines the schema of a resource using a certificate.
 type CertificateUsedByRef struct {
-	ID   int    `json:"id"`
+	ID   int64  `json:"id"`
 	Type string `json:"type"`
 }
 
@@ -16,7 +16,7 @@ type CertificateStatusRef struct {
 
 // Certificate defines the schema of an certificate.
 type Certificate struct {
-	ID             int                    `json:"id"`
+	ID             int64                  `json:"id"`
 	Name           string                 `json:"name"`
 	Labels         map[string]string      `json:"labels"`
 	Type           string                 `json:"type"`

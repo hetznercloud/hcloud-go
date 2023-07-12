@@ -10,12 +10,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // SSHKey represents a SSH key in the Hetzner Cloud.
 type SSHKey struct {
-	ID          int
+	ID          int64
 	Name        string
 	Fingerprint string
 	PublicKey   string
@@ -29,7 +29,7 @@ type SSHKeyClient struct {
 }
 
 // GetByID retrieves a SSH key by its ID. If the SSH key does not exist, nil is returned.
-func (c *SSHKeyClient) GetByID(ctx context.Context, id int) (*SSHKey, *Response, error) {
+func (c *SSHKeyClient) GetByID(ctx context.Context, id int64) (*SSHKey, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/ssh_keys/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -70,8 +70,8 @@ func (c *SSHKeyClient) GetByFingerprint(ctx context.Context, fingerprint string)
 // Get retrieves a SSH key by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a SSH key by its name. If the SSH key does not exist, nil is returned.
 func (c *SSHKeyClient) Get(ctx context.Context, idOrName string) (*SSHKey, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
-		return c.GetByID(ctx, int(id))
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
 }

@@ -6,12 +6,12 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // Datacenter represents a datacenter in the Hetzner Cloud.
 type Datacenter struct {
-	ID          int
+	ID          int64
 	Name        string
 	Description string
 	Location    *Location
@@ -30,7 +30,7 @@ type DatacenterClient struct {
 }
 
 // GetByID retrieves a datacenter by its ID. If the datacenter does not exist, nil is returned.
-func (c *DatacenterClient) GetByID(ctx context.Context, id int) (*Datacenter, *Response, error) {
+func (c *DatacenterClient) GetByID(ctx context.Context, id int64) (*Datacenter, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/datacenters/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -62,8 +62,8 @@ func (c *DatacenterClient) GetByName(ctx context.Context, name string) (*Datacen
 // Get retrieves a datacenter by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a datacenter by its name. If the datacenter does not exist, nil is returned.
 func (c *DatacenterClient) Get(ctx context.Context, idOrName string) (*Datacenter, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
-		return c.GetByID(ctx, int(id))
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)
 }

@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // This file provides converter functions to convert models in the
@@ -893,7 +893,7 @@ func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBala
 	}
 	if opts.Location != nil {
 		if opts.Location.ID != 0 {
-			req.Location = Ptr(strconv.Itoa(opts.Location.ID))
+			req.Location = Ptr(strconv.FormatInt(opts.Location.ID, 10))
 		} else {
 			req.Location = Ptr(opts.Location.Name)
 		}
@@ -943,7 +943,7 @@ func loadBalancerCreateOptsToSchema(opts LoadBalancerCreateOpts) schema.LoadBala
 				}
 			}
 			if service.HTTP.Certificates != nil {
-				certificates := []int{}
+				certificates := []int64{}
 				for _, certificate := range service.HTTP.Certificates {
 					certificates = append(certificates, certificate.ID)
 				}
@@ -998,7 +998,7 @@ func loadBalancerAddServiceOptsToSchema(opts LoadBalancerAddServiceOpts) schema.
 			req.HTTP.CookieLifetime = Ptr(int(opts.HTTP.CookieLifetime.Seconds()))
 		}
 		if opts.HTTP.Certificates != nil {
-			certificates := []int{}
+			certificates := []int64{}
 			for _, certificate := range opts.HTTP.Certificates {
 				certificates = append(certificates, certificate.ID)
 			}
@@ -1050,7 +1050,7 @@ func loadBalancerUpdateServiceOptsToSchema(opts LoadBalancerUpdateServiceOpts) s
 			req.HTTP.CookieLifetime = Ptr(int(opts.HTTP.CookieLifetime.Seconds()))
 		}
 		if opts.HTTP.Certificates != nil {
-			certificates := []int{}
+			certificates := []int64{}
 			for _, certificate := range opts.HTTP.Certificates {
 				certificates = append(certificates, certificate.ID)
 			}

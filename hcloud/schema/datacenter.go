@@ -2,13 +2,13 @@ package schema
 
 // Datacenter defines the schema of a datacenter.
 type Datacenter struct {
-	ID          int      `json:"id"`
+	ID          int64    `json:"id"`
 	Name        string   `json:"name"`
 	Description string   `json:"description"`
 	Location    Location `json:"location"`
 	ServerTypes struct {
-		Supported []int `json:"supported"`
-		Available []int `json:"available"`
+		Supported []int64 `json:"supported"`
+		Available []int64 `json:"available"`
 	} `json:"server_types"`
 }
 

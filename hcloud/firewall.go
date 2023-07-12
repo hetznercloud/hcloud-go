@@ -11,12 +11,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/hetznercloud/hcloud-go/hcloud/schema"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 // Firewall represents a Firewall in the Hetzner Cloud.
 type Firewall struct {
-	ID        int
+	ID        int64
 	Name      string
 	Labels    map[string]string
 	Created   time.Time
@@ -80,7 +80,7 @@ type FirewallResource struct {
 
 // FirewallResourceServer represents a Server to apply a Firewall on.
 type FirewallResourceServer struct {
-	ID int
+	ID int64
 }
 
 // FirewallResourceLabelSelector represents a LabelSelector to apply a Firewall on.
@@ -94,7 +94,7 @@ type FirewallClient struct {
 }
 
 // GetByID retrieves a Firewall by its ID. If the Firewall does not exist, nil is returned.
-func (c *FirewallClient) GetByID(ctx context.Context, id int) (*Firewall, *Response, error) {
+func (c *FirewallClient) GetByID(ctx context.Context, id int64) (*Firewall, *Response, error) {
 	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/firewalls/%d", id), nil)
 	if err != nil {
 		return nil, nil, err
@@ -126,7 +126,7 @@ func (c *FirewallClient) GetByName(ctx context.Context, name string) (*Firewall,
 // Get retrieves a Firewall by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Firewall by its name. If the Firewall does not exist, nil is returned.
 func (c *FirewallClient) Get(ctx context.Context, idOrName string) (*Firewall, *Response, error) {
-	if id, err := strconv.Atoi(idOrName); err == nil {
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		return c.GetByID(ctx, id)
 	}
 	return c.GetByName(ctx, idOrName)

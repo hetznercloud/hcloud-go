@@ -3,11 +3,11 @@ package schema
 import "time"
 
 type PlacementGroup struct {
-	ID      int               `json:"id"`
+	ID      int64             `json:"id"`
 	Name    string            `json:"name"`
 	Labels  map[string]string `json:"labels"`
 	Created time.Time         `json:"created"`
-	Servers []int             `json:"servers"`
+	Servers []int64           `json:"servers"`
 	Type    string            `json:"type"`
 }
 
