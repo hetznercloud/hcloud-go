@@ -49,7 +49,7 @@ func WithInstrumentation(registry *prometheus.Registry) ClientOption {
 	}
 }
 
-// WithTimeout specifies a time limit for requests made by this [Client].
+// WithTimeout specifies a time limit for requests made by this [Client]. Defaults to 5 seconds.
 func WithTimeout(timeout time.Duration) ClientOption {
 	return func(client *Client) {
 		client.timeout = timeout
@@ -61,7 +61,7 @@ func NewClient(options ...ClientOption) *Client {
 	client := &Client{
 		endpoint:   Endpoint,
 		httpClient: &http.Client{},
-		timeout:    1 * time.Second,
+		timeout:    5 * time.Second,
 	}
 
 	for _, option := range options {
