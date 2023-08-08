@@ -145,7 +145,7 @@ func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
 
 // AllWithOpts returns all actions for the given options.
 func (c *ActionClient) AllWithOpts(ctx context.Context, opts ActionListOpts) ([]*Action, error) {
-	var allActions []*Action
+	allActions := []*Action{}
 
 	err := c.client.all(func(page int) (*Response, error) {
 		opts.Page = page
