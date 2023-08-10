@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.1.0](https://github.com/hetznercloud/hcloud-go/compare/v2.0.0...v2.1.0) (2023-08-08)
+
+
+### Features
+
+* **metadata:** add timeout option ([#293](https://github.com/hetznercloud/hcloud-go/issues/293)) ([913bf74](https://github.com/hetznercloud/hcloud-go/commit/913bf74071e03a9c79fd0f8a5a37b1e11b350ae1))
+
+
+### Bug Fixes
+
+* **action:** unexpected behaviour when watching non-existing Actions ([#298](https://github.com/hetznercloud/hcloud-go/issues/298)) ([0727d42](https://github.com/hetznercloud/hcloud-go/commit/0727d42e26a8112923a84b84bb506c980e07262d))
+* **instrumentation:** multiple instrumented clients cause panic ([#289](https://github.com/hetznercloud/hcloud-go/issues/289)) ([c0ef9b6](https://github.com/hetznercloud/hcloud-go/commit/c0ef9b6e6e3f36d8c2282c2b7aa9d8687141f291))
+
 ## [2.0.0](https://github.com/hetznercloud/hcloud-go/compare/v1.47.0...v2.0.0) (2023-07-12)
 
 
