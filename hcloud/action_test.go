@@ -281,7 +281,7 @@ func TestActionClientWatchOverallProgress(t *testing.T) {
 		t.Fatalf("expected hcloud.Error, but got: %#v", err)
 	}
 
-	expectedProgressUpdates := []int{50}
+	expectedProgressUpdates := []int{50, 100}
 	if !reflect.DeepEqual(progressUpdates, expectedProgressUpdates) {
 		t.Fatalf("expected progresses %v but received %v", expectedProgressUpdates, progressUpdates)
 	}

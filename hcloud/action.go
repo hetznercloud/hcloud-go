@@ -189,13 +189,14 @@ func (c *ActionClient) WatchOverallProgress(ctx context.Context, actions []*Acti
 		defer close(errCh)
 		defer close(progressCh)
 
-		successIDs := make([]int64, 0, len(actions))
+		completedIDs := make([]int64, 0, len(actions))
 		watchIDs := make(map[int64]struct{}, len(actions))
 		for _, action := range actions {
 			watchIDs[action.ID] = struct{}{}
 		}
 
 		retries := 0
+		previousProgress := 0
 
 		for {
 			select {
@@ -224,18 +225,25 @@ func (c *ActionClient) WatchOverallProgress(ctx context.Context, actions []*Acti
 				return
 			}
 
+			progress := 0
 			for _, a := range as {
 				switch a.Status {
 				case ActionStatusRunning:
-					continue
+					progress += a.Progress
 				case ActionStatusSuccess:
 					delete(watchIDs, a.ID)
-					successIDs = append(successIDs, a.ID)
-					sendProgress(progressCh, int(float64(len(actions)-len(successIDs))/float64(len(actions))*100))
+					completedIDs = append(completedIDs, a.ID)
 				case ActionStatusError:
 					delete(watchIDs, a.ID)
+					completedIDs = append(completedIDs, a.ID)
 					errCh <- fmt.Errorf("action %d failed: %w", a.ID, a.Error())
 				}
+			}
+
+			progress += (len(completedIDs) * 100)
+			if progress != 0 && progress != previousProgress {
+				sendProgress(progressCh, int(progress/len(actions)))
+				previousProgress = progress
 			}
 
 			if len(watchIDs) == 0 {
