@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.49.1](https://github.com/hetznercloud/hcloud-go/compare/v1.49.0...v1.49.1) (2023-08-17)
+
+
+### Bug Fixes
+
+* send more precise progress values ([#304](https://github.com/hetznercloud/hcloud-go/issues/304)) ([#306](https://github.com/hetznercloud/hcloud-go/issues/306)) ([298f1f9](https://github.com/hetznercloud/hcloud-go/commit/298f1f91a2775ba704c733b4a05b63cfaf330019))
+
 ## [1.49.0](https://github.com/hetznercloud/hcloud-go/compare/v1.48.0...v1.49.0) (2023-08-08)
 
 
