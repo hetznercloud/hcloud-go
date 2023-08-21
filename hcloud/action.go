@@ -197,9 +197,9 @@ func (c *ActionClient) WatchOverallProgress(ctx context.Context, actions []*Acti
 				}
 			}
 
-			progress += (len(completedIDs) * 100)
+			progress += len(completedIDs) * 100
 			if progress != 0 && progress != previousProgress {
-				sendProgress(progressCh, int(progress/len(actions)))
+				sendProgress(progressCh, progress/len(actions))
 				previousProgress = progress
 			}
 
@@ -276,6 +276,7 @@ func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-cha
 	return progressCh, errCh
 }
 
+// sendProgress allows the user to only read from the error channel and ignore any progress updates.
 func sendProgress(progressCh chan int, p int) {
 	select {
 	case progressCh <- p:
