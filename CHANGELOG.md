@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.2.0](https://github.com/hetznercloud/hcloud-go/compare/v2.1.1...v2.2.0) (2023-08-24)
+
+
+### Features
+
+* support resource-specific Action endpoints ([#295](https://github.com/hetznercloud/hcloud-go/issues/295)) ([ddc2ac4](https://github.com/hetznercloud/hcloud-go/commit/ddc2ac45489c48a7563806c425222236ab1f8aa0))
+
 ## [2.1.1](https://github.com/hetznercloud/hcloud-go/compare/v2.1.0...v2.1.1) (2023-08-15)
 
 
