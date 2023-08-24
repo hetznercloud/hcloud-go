@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.50.0](https://github.com/hetznercloud/hcloud-go/compare/v1.49.1...v1.50.0) (2023-08-24)
+
+
+### Features
+
+* support resource-specific Action endpoints ([#295](https://github.com/hetznercloud/hcloud-go/issues/295)) ([#309](https://github.com/hetznercloud/hcloud-go/issues/309)) ([b492d68](https://github.com/hetznercloud/hcloud-go/commit/b492d68b5345afd875ae11b31a29125df3775d26))
+
 ## [1.49.1](https://github.com/hetznercloud/hcloud-go/compare/v1.49.0...v1.49.1) (2023-08-17)
 
 
