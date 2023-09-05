@@ -16,6 +16,7 @@ const (
 	ErrorCodeNotFound              ErrorCode = "not_found"               // Resource not found
 	ErrorCodeInvalidInput          ErrorCode = "invalid_input"           // Validation error
 	ErrorCodeForbidden             ErrorCode = "forbidden"               // Insufficient permissions
+	ErrorCodeUnauthorized          ErrorCode = "unauthorized"            // Request was made with an invalid or unknown token
 	ErrorCodeJSONError             ErrorCode = "json_error"              // Invalid JSON in request
 	ErrorCodeLocked                ErrorCode = "locked"                  // Item is locked (Another action is running)
 	ErrorCodeResourceLimitExceeded ErrorCode = "resource_limit_exceeded" // Resource limit exceeded
