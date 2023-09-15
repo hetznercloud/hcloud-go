@@ -60,3 +60,6 @@ issues:
       linters:
         - gosec
         - errcheck
+    - path: hcloud/error.go
+      # False-positive in error codes
+      text: "G101: Potential hardcoded credentials" # gosec
