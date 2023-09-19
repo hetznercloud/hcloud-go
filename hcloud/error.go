@@ -94,6 +94,9 @@ type Error struct {
 	Code    ErrorCode
 	Message string
 	Details interface{}
+	// HTTPStatusCode is the status code of the response that included the error.
+	// It can be converted to a user readable string using net/http.StatusText().
+	HTTPStatusCode int
 }
 
 func (e Error) Error() string {

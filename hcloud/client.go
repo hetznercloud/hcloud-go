@@ -371,7 +371,10 @@ func errorFromResponse(resp *http.Response, body []byte) error {
 	if respBody.Error.Code == "" && respBody.Error.Message == "" {
 		return nil
 	}
-	return ErrorFromSchema(respBody.Error)
+
+	hcErr := ErrorFromSchema(respBody.Error)
+	hcErr.HTTPStatusCode = resp.StatusCode
+	return hcErr
 }
 
 // Response represents a response from the API. It embeds http.Response.
