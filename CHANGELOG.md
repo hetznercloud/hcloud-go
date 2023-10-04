@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.3.0](https://github.com/hetznercloud/hcloud-go/compare/v2.2.0...v2.3.0) (2023-10-04)
+
+
+### Features
+
+* add error code unauthorized  ([#313](https://github.com/hetznercloud/hcloud-go/issues/313)) ([b77d9e0](https://github.com/hetznercloud/hcloud-go/commit/b77d9e04ca903448cc1a22c242f440e67a81a028))
+* test with Go 1.21 ([#319](https://github.com/hetznercloud/hcloud-go/issues/319)) ([7ddb2ec](https://github.com/hetznercloud/hcloud-go/commit/7ddb2ec057d0e165abb5b8cbd74e95d5bb4add49))
+
+
+### Bug Fixes
+
+* ensure the pollBackoffFunc is correctly set ([#322](https://github.com/hetznercloud/hcloud-go/issues/322)) ([2b2f869](https://github.com/hetznercloud/hcloud-go/commit/2b2f8697aa09f67dd508c33fe36f7a59b9d3f192))
+
 ## [2.2.0](https://github.com/hetznercloud/hcloud-go/compare/v2.1.1...v2.2.0) (2023-08-24)
 
 
