@@ -125,7 +125,7 @@ func WithPollInterval(pollInterval time.Duration) ClientOption {
 // function when polling from the API.
 func WithPollBackoffFunc(f BackoffFunc) ClientOption {
 	return func(client *Client) {
-		client.backoffFunc = f
+		client.pollBackoffFunc = f
 	}
 }
 
