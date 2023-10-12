@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.4.0](https://github.com/hetznercloud/hcloud-go/compare/v2.3.0...v2.4.0) (2023-10-12)
+
+
+### Features
+
+* **iso:** support deprecation info API ([#331](https://github.com/hetznercloud/hcloud-go/issues/331)) ([b3a3621](https://github.com/hetznercloud/hcloud-go/commit/b3a36214b21ab1c5add94c2b1896a995342757b6))
+
 ## [2.3.0](https://github.com/hetznercloud/hcloud-go/compare/v2.2.0...v2.3.0) (2023-10-04)
 
 
