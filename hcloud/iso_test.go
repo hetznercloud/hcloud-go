@@ -20,7 +20,7 @@ func TestISOIsDeprecated(t *testing.T) {
 
 	t.Run("deprecated", func(t *testing.T) {
 		iso := &ISO{
-			Deprecated: time.Now(),
+			DeprecatableResource: DeprecatableResource{Deprecation: &DeprecationInfo{Announced: time.Now()}},
 		}
 		if !iso.IsDeprecated() {
 			t.Errorf("unexpected value for IsDeprecated: %v", iso.IsDeprecated())
