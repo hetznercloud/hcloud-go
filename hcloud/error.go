@@ -3,6 +3,7 @@ package hcloud
 import (
 	"fmt"
 	"net"
+	"net/http"
 )
 
 // ErrorCode represents an error code returned from the API.
@@ -94,13 +95,17 @@ type Error struct {
 	Code    ErrorCode
 	Message string
 	Details interface{}
-	// HTTPStatusCode is the status code of the response that included the error.
-	// It can be converted to a user readable string using net/http.StatusText().
-	HTTPStatusCode int
+
+	response *http.Response
 }
 
 func (e Error) Error() string {
 	return fmt.Sprintf("%s (%s)", e.Message, e.Code)
+}
+
+// Response returns the error underlying HTTP response.
+func (e Error) Response() *http.Response {
+	return e.response
 }
 
 // ErrorDetailsInvalidInput contains the details of an 'invalid_input' error.

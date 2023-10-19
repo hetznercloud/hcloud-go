@@ -373,7 +373,7 @@ func errorFromResponse(resp *http.Response, body []byte) error {
 	}
 
 	hcErr := ErrorFromSchema(respBody.Error)
-	hcErr.HTTPStatusCode = resp.StatusCode
+	hcErr.response = resp
 	return hcErr
 }
 
