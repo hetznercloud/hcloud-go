@@ -85,6 +85,9 @@ func TestClientError(t *testing.T) {
 	if apiError.Message != "An error occurred" {
 		t.Errorf("unexpected error message: %q", apiError.Message)
 	}
+	if apiError.Response().StatusCode != http.StatusUnprocessableEntity {
+		t.Errorf("unexpected http status code: %q", apiError.Response().StatusCode)
+	}
 }
 
 func TestClientInvalidToken(t *testing.T) {
