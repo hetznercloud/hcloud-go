@@ -286,8 +286,8 @@ func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 			return response, fmt.Errorf("hcloud: error reading response meta data: %s", err)
 		}
 
-		if resp.StatusCode >= 400 && resp.StatusCode <= 599 {
-			err = errorFromResponse(resp, body)
+		if response.StatusCode >= 400 && response.StatusCode <= 599 {
+			err = errorFromResponse(response, body)
 			if err == nil {
 				err = fmt.Errorf("hcloud: server responded with status code %d", resp.StatusCode)
 			} else if IsError(err, ErrorCodeConflict) {
@@ -359,7 +359,7 @@ func dumpRequest(r *http.Request) ([]byte, error) {
 	return dumpReq, nil
 }
 
-func errorFromResponse(resp *http.Response, body []byte) error {
+func errorFromResponse(resp *Response, body []byte) error {
 	if !strings.HasPrefix(resp.Header.Get("Content-Type"), "application/json") {
 		return nil
 	}

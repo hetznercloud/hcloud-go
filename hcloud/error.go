@@ -3,7 +3,6 @@ package hcloud
 import (
 	"fmt"
 	"net"
-	"net/http"
 )
 
 // ErrorCode represents an error code returned from the API.
@@ -96,15 +95,15 @@ type Error struct {
 	Message string
 	Details interface{}
 
-	response *http.Response
+	response *Response
 }
 
 func (e Error) Error() string {
 	return fmt.Sprintf("%s (%s)", e.Message, e.Code)
 }
 
-// Response returns the error underlying HTTP response.
-func (e Error) Response() *http.Response {
+// Response returns the [Response] that contained the error if available.
+func (e Error) Response() *Response {
 	return e.response
 }
 
