@@ -1,24 +1,36 @@
-name: Continuous Integration
+name: CI
+
 on:
-  pull_request:
   push:
     branches:
       - main
       - release-1.x
+  pull_request:
 
 jobs:
-  build:
-    name: Build
+  lint:
     runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+          cache: false
+
+      - uses: golangci/golangci-lint-action@v3
+        with:
+          version: v1.55.1 # renovate: datasource=github-releases depName=golangci/golangci-lint
+
+  test:
     strategy:
       matrix:
         go-version: ["1.19", "1.20", "1.21"]
+
+    runs-on: ubuntu-latest
     steps:
-    - name: Set up Go ${{ matrix.go-version }}
-      uses: actions/setup-go@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v4
       with:
         go-version: ${{ matrix.go-version }}
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v4
-    - name: Run tests
-      run: go test -v ./...
+
+    - run: go test -v ./...
