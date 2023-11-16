@@ -26,3 +26,13 @@ func Bool(b bool) *bool { return Ptr(b) }
 //
 // Deprecated: Use [Ptr] instead.
 func Duration(d time.Duration) *time.Duration { return Ptr(d) }
+
+// copySlice returns a copy of the slice s. If s is nil, copySlice returns nil.
+func copySlice[T any](s []T) []T {
+	if s == nil {
+		return nil
+	}
+	clone := make([]T, len(s))
+	copy(clone, s)
+	return clone
+}

@@ -235,6 +235,44 @@ func (lb *LoadBalancer) GetDNSPtrForIP(ip net.IP) (string, error) {
 	return "", DNSNotFoundError{ip}
 }
 
+// GetUpdateOpts is a utility method that returns the LoadBalancerUpdateServiceOpts for the current service.
+// This can be used as a starting point instead of creating the object from scratch.
+func (s LoadBalancerService) GetUpdateOpts() LoadBalancerUpdateServiceOpts {
+	certs := make([]*Certificate, len(s.HTTP.Certificates))
+	for i, cert := range s.HTTP.Certificates {
+		certs[i] = &Certificate{
+			ID: cert.ID,
+		}
+	}
+
+	return LoadBalancerUpdateServiceOpts{
+		Protocol:        s.Protocol,
+		DestinationPort: Ptr(s.DestinationPort),
+		Proxyprotocol:   Ptr(s.Proxyprotocol),
+		HTTP: &LoadBalancerUpdateServiceOptsHTTP{
+			CookieName:     Ptr(s.HTTP.CookieName),
+			CookieLifetime: Ptr(s.HTTP.CookieLifetime),
+			Certificates:   certs,
+			RedirectHTTP:   Ptr(s.HTTP.RedirectHTTP),
+			StickySessions: Ptr(s.HTTP.StickySessions),
+		},
+		HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
+			Protocol: s.HealthCheck.Protocol,
+			Port:     Ptr(s.HealthCheck.Port),
+			Interval: Ptr(s.HealthCheck.Interval),
+			Timeout:  Ptr(s.HealthCheck.Timeout),
+			Retries:  Ptr(s.HealthCheck.Retries),
+			HTTP: &LoadBalancerUpdateServiceOptsHealthCheckHTTP{
+				Domain:      Ptr(s.HealthCheck.HTTP.Domain),
+				Path:        Ptr(s.HealthCheck.HTTP.Path),
+				Response:    Ptr(s.HealthCheck.HTTP.Response),
+				StatusCodes: copySlice(s.HealthCheck.HTTP.StatusCodes),
+				TLS:         Ptr(s.HealthCheck.HTTP.TLS),
+			},
+		},
+	}
+}
+
 // LoadBalancerClient is a client for the Load Balancers API.
 type LoadBalancerClient struct {
 	client *Client
