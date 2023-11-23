@@ -448,7 +448,7 @@ func TestCertificateClient_RetryIssuance(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 
 		resp := schema.CertificateIssuanceRetryResponse{
-			Action: schema.Action{ID: 1},
+			Action: schema.Action{ID: 1, Resources: []schema.ActionResourceReference{}},
 		}
 		err := json.NewEncoder(w).Encode(resp)
 		assert.NoError(t, err)
