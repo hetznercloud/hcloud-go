@@ -767,10 +767,8 @@ func (c *converterImpl) SchemaFromLoadBalancer(source *LoadBalancer) schema.Load
 		schemaLoadBalancer2.Targets = schemaLoadBalancerTargetList
 		schemaLoadBalancer2.Algorithm = c.hcloudLoadBalancerAlgorithmToSchemaLoadBalancerAlgorithm((*source).Algorithm)
 		schemaLoadBalancer2.IncludedTraffic = (*source).IncludedTraffic
-		pUint64 := (*source).OutgoingTraffic
-		schemaLoadBalancer2.OutgoingTraffic = &pUint64
-		pUint642 := (*source).IngoingTraffic
-		schemaLoadBalancer2.IngoingTraffic = &pUint642
+		schemaLoadBalancer2.OutgoingTraffic = mapZeroUint64ToNil((*source).OutgoingTraffic)
+		schemaLoadBalancer2.IngoingTraffic = mapZeroUint64ToNil((*source).IngoingTraffic)
 		schemaLoadBalancer = schemaLoadBalancer2
 	}
 	return schemaLoadBalancer

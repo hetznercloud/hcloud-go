@@ -158,6 +158,8 @@ type converter interface {
 
 	LoadBalancerFromSchema(schema.LoadBalancer) *LoadBalancer
 
+	// goverter:map OutgoingTraffic | mapZeroUint64ToNil
+	// goverter:map IngoingTraffic | mapZeroUint64ToNil
 	SchemaFromLoadBalancer(*LoadBalancer) schema.LoadBalancer
 
 	// goverter:map Prices Pricings
