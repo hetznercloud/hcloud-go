@@ -23,6 +23,8 @@ type ServerType struct {
 	// IncludedTraffic is the free traffic per month in bytes
 	IncludedTraffic int64
 	Pricings        []ServerTypeLocationPricing
+	// Deprecated: Use DeprecatableResource instead
+	Deprecated bool
 	DeprecatableResource
 }
 

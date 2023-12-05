@@ -13,6 +13,8 @@ type ServerType struct {
 	Architecture    string                   `json:"architecture"`
 	IncludedTraffic int64                    `json:"included_traffic"`
 	Prices          []PricingServerTypePrice `json:"prices"`
+	// Deprecated: Use Deprecation instead
+	Deprecated bool `json:"deprecated"`
 	DeprecatableResource
 }
 
