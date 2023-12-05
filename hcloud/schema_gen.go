@@ -96,9 +96,9 @@ type converter interface {
 
 	ServerFromSchema(schema.Server) *Server
 
-	// goverter:map OutgoingTraffic OutgoingTraffic | mapZeroUint64ToNil
-	// goverter:map IngoingTraffic IngoingTraffic | mapZeroUint64ToNil
-	// goverter:map BackupWindow BackupWindow | mapEmptyStringToNil
+	// goverter:map OutgoingTraffic | mapZeroUint64ToNil
+	// goverter:map IngoingTraffic | mapZeroUint64ToNil
+	// goverter:map BackupWindow | mapEmptyStringToNil
 	SchemaFromServer(*Server) schema.Server
 
 	ServerPublicNetFromSchema(schema.ServerPublicNet) ServerPublicNet
@@ -206,11 +206,11 @@ type converter interface {
 
 	// goverter:ignore response
 	// goverter:ignore DetailsRaw
-	// goverter:map Details Details | errorDetailsFromSchema
+	// goverter:map Details | errorDetailsFromSchema
 	ErrorFromSchema(schema.Error) Error
 
 	// goverter:ignore response
-	// goverter:map Details Details | schemaFromErrorDetails
+	// goverter:map Details | schemaFromErrorDetails
 	// goverter:map Details DetailsRaw | rawSchemaFromErrorDetails
 	SchemaFromError(Error) schema.Error
 
