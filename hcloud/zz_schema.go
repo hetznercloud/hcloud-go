@@ -85,7 +85,7 @@ func (c *converterImpl) DatacenterFromSchema(source schema.Datacenter) *Datacent
 	hcloudDatacenter.Name = source.Name
 	hcloudDatacenter.Description = source.Description
 	hcloudDatacenter.Location = c.LocationFromSchema(source.Location)
-	hcloudDatacenter.ServerTypes = c.unnamedToHcloudDatacenterServerTypes(source.ServerTypes)
+	hcloudDatacenter.ServerTypes = c.schemaDatacenterServerTypesToHcloudDatacenterServerTypes(source.ServerTypes)
 	return &hcloudDatacenter
 }
 func (c *converterImpl) DeprecationFromSchema(source *schema.DeprecationInfo) *DeprecationInfo {
@@ -356,6 +356,7 @@ func (c *converterImpl) LoadBalancerTypeFromSchema(source schema.LoadBalancerTyp
 		}
 	}
 	hcloudLoadBalancerType.Pricings = hcloudLoadBalancerTypeLocationPricingList
+	hcloudLoadBalancerType.Deprecated = source.Deprecated
 	return &hcloudLoadBalancerType
 }
 func (c *converterImpl) LoadBalancerTypeLocationPricingFromSchema(source schema.PricingLoadBalancerTypePrice) LoadBalancerTypeLocationPricing {
@@ -567,7 +568,7 @@ func (c *converterImpl) SchemaFromDatacenter(source *Datacenter) schema.Datacent
 		schemaDatacenter2.Name = (*source).Name
 		schemaDatacenter2.Description = (*source).Description
 		schemaDatacenter2.Location = c.SchemaFromLocation((*source).Location)
-		schemaDatacenter2.ServerTypes = c.hcloudDatacenterServerTypesToUnnamed((*source).ServerTypes)
+		schemaDatacenter2.ServerTypes = c.hcloudDatacenterServerTypesToSchemaDatacenterServerTypes((*source).ServerTypes)
 		schemaDatacenter = schemaDatacenter2
 	}
 	return schemaDatacenter
@@ -899,6 +900,7 @@ func (c *converterImpl) SchemaFromLoadBalancerType(source *LoadBalancerType) sch
 			}
 		}
 		schemaLoadBalancerType2.Prices = schemaPricingLoadBalancerTypePriceList
+		schemaLoadBalancerType2.Deprecated = (*source).Deprecated
 		schemaLoadBalancerType = schemaLoadBalancerType2
 	}
 	return schemaLoadBalancerType
@@ -1137,6 +1139,14 @@ func (c *converterImpl) SchemaFromServer(source *Server) schema.Server {
 		schemaServer2.Volumes = int64List
 		schemaServer2.PrimaryDiskSize = (*source).PrimaryDiskSize
 		schemaServer2.PlacementGroup = c.pHcloudPlacementGroupToPSchemaPlacementGroup((*source).PlacementGroup)
+		var int64List2 []int64
+		if (*source).LoadBalancers != nil {
+			int64List2 = make([]int64, len((*source).LoadBalancers))
+			for k := 0; k < len((*source).LoadBalancers); k++ {
+				int64List2[k] = c.pHcloudLoadBalancerToInt64((*source).LoadBalancers[k])
+			}
+		}
+		schemaServer2.LoadBalancers = int64List2
 		schemaServer = schemaServer2
 	}
 	return schemaServer
@@ -1288,6 +1298,15 @@ func (c *converterImpl) ServerFromSchema(source schema.Server) *Server {
 	hcloudServer.Volumes = pHcloudVolumeList
 	hcloudServer.PrimaryDiskSize = source.PrimaryDiskSize
 	hcloudServer.PlacementGroup = c.pSchemaPlacementGroupToPHcloudPlacementGroup(source.PlacementGroup)
+	var pHcloudLoadBalancerList []*LoadBalancer
+	if source.LoadBalancers != nil {
+		pHcloudLoadBalancerList = make([]*LoadBalancer, len(source.LoadBalancers))
+		for k := 0; k < len(source.LoadBalancers); k++ {
+			hcloudLoadBalancer := loadBalancerFromInt64(source.LoadBalancers[k])
+			pHcloudLoadBalancerList[k] = &hcloudLoadBalancer
+		}
+	}
+	hcloudServer.LoadBalancers = pHcloudLoadBalancerList
 	return &hcloudServer
 }
 func (c *converterImpl) ServerMetricsFromSchema(source *schema.ServerGetMetricsResponse) (*ServerMetrics, error) {
@@ -1416,14 +1435,8 @@ func (c *converterImpl) hcloudCertificateUsedByRefToSchemaCertificateUsedByRef(s
 	schemaCertificateUsedByRef.Type = string(source.Type)
 	return schemaCertificateUsedByRef
 }
-func (c *converterImpl) hcloudDatacenterServerTypesToUnnamed(source DatacenterServerTypes) struct {
-	Supported []int64 `json:"supported"`
-	Available []int64 `json:"available"`
-} {
-	var unnamed struct {
-		Supported []int64 `json:"supported"`
-		Available []int64 `json:"available"`
-	}
+func (c *converterImpl) hcloudDatacenterServerTypesToSchemaDatacenterServerTypes(source DatacenterServerTypes) schema.DatacenterServerTypes {
+	var schemaDatacenterServerTypes schema.DatacenterServerTypes
 	var int64List []int64
 	if source.Supported != nil {
 		int64List = make([]int64, len(source.Supported))
@@ -1431,16 +1444,24 @@ func (c *converterImpl) hcloudDatacenterServerTypesToUnnamed(source DatacenterSe
 			int64List[i] = int64FromServerType(source.Supported[i])
 		}
 	}
-	unnamed.Supported = int64List
+	schemaDatacenterServerTypes.Supported = int64List
 	var int64List2 []int64
-	if source.Available != nil {
-		int64List2 = make([]int64, len(source.Available))
-		for j := 0; j < len(source.Available); j++ {
-			int64List2[j] = int64FromServerType(source.Available[j])
+	if source.AvailableForMigration != nil {
+		int64List2 = make([]int64, len(source.AvailableForMigration))
+		for j := 0; j < len(source.AvailableForMigration); j++ {
+			int64List2[j] = int64FromServerType(source.AvailableForMigration[j])
 		}
 	}
-	unnamed.Available = int64List2
-	return unnamed
+	schemaDatacenterServerTypes.AvailableForMigration = int64List2
+	var int64List3 []int64
+	if source.Available != nil {
+		int64List3 = make([]int64, len(source.Available))
+		for k := 0; k < len(source.Available); k++ {
+			int64List3[k] = int64FromServerType(source.Available[k])
+		}
+	}
+	schemaDatacenterServerTypes.Available = int64List3
+	return schemaDatacenterServerTypes
 }
 func (c *converterImpl) hcloudDeprecatableResourceToSchemaDeprecatableResource(source DeprecatableResource) schema.DeprecatableResource {
 	var schemaDeprecatableResource schema.DeprecatableResource
@@ -1857,6 +1878,13 @@ func (c *converterImpl) pHcloudLoadBalancerTargetServerToPSchemaLoadBalancerTarg
 	}
 	return pSchemaLoadBalancerTargetServer
 }
+func (c *converterImpl) pHcloudLoadBalancerToInt64(source *LoadBalancer) int64 {
+	var xint64 int64
+	if source != nil {
+		xint64 = int64FromLoadBalancer((*source))
+	}
+	return xint64
+}
 func (c *converterImpl) pHcloudLoadBalancerUpdateServiceOptsHTTPToPSchemaLoadBalancerActionUpdateServiceRequestHTTP(source *LoadBalancerUpdateServiceOptsHTTP) *schema.LoadBalancerActionUpdateServiceRequestHTTP {
 	var pSchemaLoadBalancerActionUpdateServiceRequestHTTP *schema.LoadBalancerActionUpdateServiceRequestHTTP
 	if source != nil {
@@ -2195,6 +2223,34 @@ func (c *converterImpl) schemaCertificateUsedByRefToHcloudCertificateUsedByRef(s
 	hcloudCertificateUsedByRef.Type = CertificateUsedByRefType(source.Type)
 	return hcloudCertificateUsedByRef
 }
+func (c *converterImpl) schemaDatacenterServerTypesToHcloudDatacenterServerTypes(source schema.DatacenterServerTypes) DatacenterServerTypes {
+	var hcloudDatacenterServerTypes DatacenterServerTypes
+	var pHcloudServerTypeList []*ServerType
+	if source.Supported != nil {
+		pHcloudServerTypeList = make([]*ServerType, len(source.Supported))
+		for i := 0; i < len(source.Supported); i++ {
+			pHcloudServerTypeList[i] = serverTypeFromInt64(source.Supported[i])
+		}
+	}
+	hcloudDatacenterServerTypes.Supported = pHcloudServerTypeList
+	var pHcloudServerTypeList2 []*ServerType
+	if source.AvailableForMigration != nil {
+		pHcloudServerTypeList2 = make([]*ServerType, len(source.AvailableForMigration))
+		for j := 0; j < len(source.AvailableForMigration); j++ {
+			pHcloudServerTypeList2[j] = serverTypeFromInt64(source.AvailableForMigration[j])
+		}
+	}
+	hcloudDatacenterServerTypes.AvailableForMigration = pHcloudServerTypeList2
+	var pHcloudServerTypeList3 []*ServerType
+	if source.Available != nil {
+		pHcloudServerTypeList3 = make([]*ServerType, len(source.Available))
+		for k := 0; k < len(source.Available); k++ {
+			pHcloudServerTypeList3[k] = serverTypeFromInt64(source.Available[k])
+		}
+	}
+	hcloudDatacenterServerTypes.Available = pHcloudServerTypeList3
+	return hcloudDatacenterServerTypes
+}
 func (c *converterImpl) schemaDeprecatableResourceToHcloudDeprecatableResource(source schema.DeprecatableResource) DeprecatableResource {
 	var hcloudDeprecatableResource DeprecatableResource
 	hcloudDeprecatableResource.Deprecation = c.DeprecationFromSchema(source.Deprecation)
@@ -2440,27 +2496,4 @@ func (c *converterImpl) serverTypePricingFromSchema(source schema.PricingServerT
 }
 func (c *converterImpl) timeTimeToTimeTime(source time.Time) time.Time {
 	return source
-}
-func (c *converterImpl) unnamedToHcloudDatacenterServerTypes(source struct {
-	Supported []int64 `json:"supported"`
-	Available []int64 `json:"available"`
-}) DatacenterServerTypes {
-	var hcloudDatacenterServerTypes DatacenterServerTypes
-	var pHcloudServerTypeList []*ServerType
-	if source.Supported != nil {
-		pHcloudServerTypeList = make([]*ServerType, len(source.Supported))
-		for i := 0; i < len(source.Supported); i++ {
-			pHcloudServerTypeList[i] = serverTypeFromInt64(source.Supported[i])
-		}
-	}
-	hcloudDatacenterServerTypes.Supported = pHcloudServerTypeList
-	var pHcloudServerTypeList2 []*ServerType
-	if source.Available != nil {
-		pHcloudServerTypeList2 = make([]*ServerType, len(source.Available))
-		for j := 0; j < len(source.Available); j++ {
-			pHcloudServerTypeList2[j] = serverTypeFromInt64(source.Available[j])
-		}
-	}
-	hcloudDatacenterServerTypes.Available = pHcloudServerTypeList2
-	return hcloudDatacenterServerTypes
 }
