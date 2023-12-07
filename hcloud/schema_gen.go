@@ -11,11 +11,23 @@ import (
 
 //go:generate sh ../script/generate_schema.sh
 
+// Documentation of goverter at https://goverter.jmattheis.de/
 // goverter:converter
+//
+// Specify where and in which package to output the generated
+// conversion methods.
 // goverter:output:file zz_schema.go
 // goverter:output:package github.com/hetznercloud/hcloud-go/v2/hcloud
+//
+// In case of *T -> T conversion, use zero value if *T is nil.
 // goverter:useZeroValueOnPointerInconsistency yes
+//
+// Do not deep copy in case of *T -> *T conversion.
 // goverter:skipCopySameType yes
+//
+// Explicit conversion methods are needed for non-trivial cases
+// where the target, source or both are of primitive types. Struct
+// to struct conversions can be handled by goverter directly.
 // goverter:extend ipFromString
 // goverter:extend stringFromIP
 // goverter:extend ipNetFromString
