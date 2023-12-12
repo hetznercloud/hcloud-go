@@ -46,6 +46,8 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend int64FromServer
 // goverter:extend networkFromInt64
 // goverter:extend int64FromNetwork
+// goverter:extend loadBalancerFromInt64
+// goverter:extend int64FromLoadBalancer
 // goverter:extend volumeFromInt64
 // goverter:extend int64FromVolume
 // goverter:extend certificateFromInt64
@@ -387,6 +389,14 @@ func networkFromInt64(id int64) Network {
 
 func int64FromNetwork(network Network) int64 {
 	return network.ID
+}
+
+func loadBalancerFromInt64(id int64) LoadBalancer {
+	return LoadBalancer{ID: id}
+}
+
+func int64FromLoadBalancer(lb LoadBalancer) int64 {
+	return lb.ID
 }
 
 func volumeFromInt64(id int64) *Volume {
