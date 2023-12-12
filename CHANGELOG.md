@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.5.0](https://github.com/hetznercloud/hcloud-go/compare/v2.4.0...v2.5.0) (2023-12-12)
+
+
+### Features
+
+* add conversion methods from schema to hcloud objects ([#343](https://github.com/hetznercloud/hcloud-go/issues/343)) ([6feda4d](https://github.com/hetznercloud/hcloud-go/commit/6feda4d9b0e7cf3f5a17a4b38504abbe5213883d))
+* add interfaces for client structs ([#342](https://github.com/hetznercloud/hcloud-go/issues/342)) ([4f9390f](https://github.com/hetznercloud/hcloud-go/commit/4f9390f8387d1c86330156adbb6801aacba7a8f0))
+* add missing properties ([#349](https://github.com/hetznercloud/hcloud-go/issues/349)) ([c8a28d0](https://github.com/hetznercloud/hcloud-go/commit/c8a28d0dbf0c84364401282a60b44ccea1da6423))
+* **error:** include http response in api errors ([#320](https://github.com/hetznercloud/hcloud-go/issues/320)) ([9558239](https://github.com/hetznercloud/hcloud-go/commit/95582395dfb1039f4ce4f10a1ac9c068db93a867))
+
+
+### Bug Fixes
+
+* make schemas consistent with API ([#348](https://github.com/hetznercloud/hcloud-go/issues/348)) ([b0d7055](https://github.com/hetznercloud/hcloud-go/commit/b0d7055543669fb96af1726daa7c1458fb1b65a2))
+
 ## [2.4.0](https://github.com/hetznercloud/hcloud-go/compare/v2.3.0...v2.4.0) (2023-10-12)
 
 
