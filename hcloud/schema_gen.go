@@ -11,7 +11,16 @@ import (
 
 //go:generate sh ../script/generate_schema.sh
 
-// Documentation of goverter at https://goverter.jmattheis.de/
+/*
+This file generates conversions methods between the schema and the hcloud package.
+Goverter (https://github.com/jmattheis/goverter) is used to generate these conversion
+methods. Goverter is configured using comments in and on the [converter] interface.
+A struct implementing the interface methods, [converterImpl], is generated in zz_schema.go.
+The generated methods are then wrapped in schema.go to be exported.
+
+You can find a documentation of goverter here: https://goverter.jmattheis.de/
+*/
+
 // goverter:converter
 //
 // Specify where and in which package to output the generated
