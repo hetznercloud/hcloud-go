@@ -149,11 +149,16 @@ type converter interface {
 	ServerTypeFromSchema(schema.ServerType) *ServerType
 
 	// goverter:map Pricings Prices
+	// goverter:map DeprecatableResource.Deprecation Deprecated | isDeprecationNotNil
 	SchemaFromServerType(*ServerType) schema.ServerType
 
 	ImageFromSchema(schema.Image) *Image
 
 	SchemaFromImage(*Image) schema.Image
+
+	// Needed because of how goverter works internally, see https://github.com/jmattheis/goverter/issues/114
+	// goverter:map ImageSize | mapZeroFloat32ToNil
+	intSchemaFromImage(Image) schema.Image
 
 	// goverter:ignore Currency
 	// goverter:ignore VATRate
@@ -905,4 +910,16 @@ func rawSchemaFromErrorDetails(v interface{}) json.RawMessage {
 	}
 	msg, _ := json.Marshal(d)
 	return msg
+}
+
+func mapZeroFloat32ToNil(f float32) *float32 {
+	fmt.Println(f)
+	if f == 0 {
+		return nil
+	}
+	return &f
+}
+
+func isDeprecationNotNil(d *DeprecationInfo) bool {
+	return d != nil
 }

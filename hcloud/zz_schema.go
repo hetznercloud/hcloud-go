@@ -167,7 +167,7 @@ func (c *converterImpl) ISOFromSchema(source schema.ISO) *ISO {
 		pHcloudArchitecture = &hcloudArchitecture
 	}
 	hcloudISO.Architecture = pHcloudArchitecture
-	hcloudISO.Deprecated = c.timeTimeToTimeTime(source.Deprecated)
+	hcloudISO.Deprecated = c.pTimeTimeToTimeTime(source.Deprecated)
 	hcloudISO.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
 	return &hcloudISO
 }
@@ -188,7 +188,7 @@ func (c *converterImpl) ImageFromSchema(source schema.Image) *Image {
 	}
 	hcloudImage.ImageSize = xfloat32
 	hcloudImage.DiskSize = source.DiskSize
-	hcloudImage.Created = c.timeTimeToTimeTime(source.Created)
+	hcloudImage.Created = c.pTimeTimeToTimeTime(source.Created)
 	hcloudImage.CreatedFrom = c.pSchemaImageCreatedFromToPHcloudServer(source.CreatedFrom)
 	var pHcloudServer *Server
 	if source.BoundTo != nil {
@@ -205,9 +205,9 @@ func (c *converterImpl) ImageFromSchema(source schema.Image) *Image {
 	hcloudImage.OSVersion = xstring2
 	hcloudImage.Architecture = Architecture(source.Architecture)
 	hcloudImage.Protection = c.schemaImageProtectionToHcloudImageProtection(source.Protection)
-	hcloudImage.Deprecated = c.timeTimeToTimeTime(source.Deprecated)
+	hcloudImage.Deprecated = c.pTimeTimeToTimeTime(source.Deprecated)
 	hcloudImage.Labels = source.Labels
-	hcloudImage.Deleted = c.timeTimeToTimeTime(source.Deleted)
+	hcloudImage.Deleted = c.pTimeTimeToTimeTime(source.Deleted)
 	return &hcloudImage
 }
 func (c *converterImpl) LoadBalancerFromSchema(source schema.LoadBalancer) *LoadBalancer {
@@ -695,7 +695,7 @@ func (c *converterImpl) SchemaFromISO(source *ISO) schema.ISO {
 			pString = &xstring
 		}
 		schemaISO2.Architecture = pString
-		schemaISO2.Deprecated = c.timeTimeToTimeTime((*source).Deprecated)
+		schemaISO2.Deprecated = timeToTimePtr((*source).Deprecated)
 		schemaISO2.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource((*source).DeprecatableResource)
 		schemaISO = schemaISO2
 	}
@@ -704,29 +704,7 @@ func (c *converterImpl) SchemaFromISO(source *ISO) schema.ISO {
 func (c *converterImpl) SchemaFromImage(source *Image) schema.Image {
 	var schemaImage schema.Image
 	if source != nil {
-		var schemaImage2 schema.Image
-		schemaImage2.ID = (*source).ID
-		schemaImage2.Status = string((*source).Status)
-		schemaImage2.Type = string((*source).Type)
-		pString := (*source).Name
-		schemaImage2.Name = &pString
-		schemaImage2.Description = (*source).Description
-		pFloat32 := (*source).ImageSize
-		schemaImage2.ImageSize = &pFloat32
-		schemaImage2.DiskSize = (*source).DiskSize
-		schemaImage2.Created = c.timeTimeToTimeTime((*source).Created)
-		schemaImage2.CreatedFrom = c.pHcloudServerToPSchemaImageCreatedFrom((*source).CreatedFrom)
-		schemaImage2.BoundTo = c.pHcloudServerToPInt64((*source).BoundTo)
-		schemaImage2.OSFlavor = (*source).OSFlavor
-		pString2 := (*source).OSVersion
-		schemaImage2.OSVersion = &pString2
-		schemaImage2.Architecture = string((*source).Architecture)
-		schemaImage2.RapidDeploy = (*source).RapidDeploy
-		schemaImage2.Protection = c.hcloudImageProtectionToSchemaImageProtection((*source).Protection)
-		schemaImage2.Deprecated = c.timeTimeToTimeTime((*source).Deprecated)
-		schemaImage2.Deleted = c.timeTimeToTimeTime((*source).Deleted)
-		schemaImage2.Labels = (*source).Labels
-		schemaImage = schemaImage2
+		schemaImage = c.intSchemaFromImage((*source))
 	}
 	return schemaImage
 }
@@ -1226,6 +1204,7 @@ func (c *converterImpl) SchemaFromServerType(source *ServerType) schema.ServerTy
 			}
 		}
 		schemaServerType2.Prices = schemaPricingServerTypePriceList
+		schemaServerType2.Deprecated = isDeprecationNotNil((*source).DeprecatableResource.Deprecation)
 		schemaServerType2.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource((*source).DeprecatableResource)
 		schemaServerType = schemaServerType2
 	}
@@ -1610,6 +1589,30 @@ func (c *converterImpl) hcloudVolumeProtectionToSchemaVolumeProtection(source Vo
 	schemaVolumeProtection.Delete = source.Delete
 	return schemaVolumeProtection
 }
+func (c *converterImpl) intSchemaFromImage(source Image) schema.Image {
+	var schemaImage schema.Image
+	schemaImage.ID = source.ID
+	schemaImage.Status = string(source.Status)
+	schemaImage.Type = string(source.Type)
+	pString := source.Name
+	schemaImage.Name = &pString
+	schemaImage.Description = source.Description
+	schemaImage.ImageSize = mapZeroFloat32ToNil(source.ImageSize)
+	schemaImage.DiskSize = source.DiskSize
+	schemaImage.Created = timeToTimePtr(source.Created)
+	schemaImage.CreatedFrom = c.pHcloudServerToPSchemaImageCreatedFrom(source.CreatedFrom)
+	schemaImage.BoundTo = c.pHcloudServerToPInt64(source.BoundTo)
+	schemaImage.OSFlavor = source.OSFlavor
+	pString2 := source.OSVersion
+	schemaImage.OSVersion = &pString2
+	schemaImage.Architecture = string(source.Architecture)
+	schemaImage.RapidDeploy = source.RapidDeploy
+	schemaImage.Protection = c.hcloudImageProtectionToSchemaImageProtection(source.Protection)
+	schemaImage.Deprecated = timeToTimePtr(source.Deprecated)
+	schemaImage.Deleted = timeToTimePtr(source.Deleted)
+	schemaImage.Labels = source.Labels
+	return schemaImage
+}
 func (c *converterImpl) pHcloudActionResourceToSchemaActionResourceReference(source *ActionResource) schema.ActionResourceReference {
 	var schemaActionResourceReference schema.ActionResourceReference
 	if source != nil {
@@ -1671,7 +1674,7 @@ func (c *converterImpl) pHcloudISOToPSchemaISO(source *ISO) *schema.ISO {
 			pString = &xstring
 		}
 		schemaISO.Architecture = pString
-		schemaISO.Deprecated = c.timeTimeToTimeTime((*source).Deprecated)
+		schemaISO.Deprecated = timeToTimePtr((*source).Deprecated)
 		schemaISO.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource((*source).DeprecatableResource)
 		pSchemaISO = &schemaISO
 	}
@@ -1680,28 +1683,7 @@ func (c *converterImpl) pHcloudISOToPSchemaISO(source *ISO) *schema.ISO {
 func (c *converterImpl) pHcloudImageToPSchemaImage(source *Image) *schema.Image {
 	var pSchemaImage *schema.Image
 	if source != nil {
-		var schemaImage schema.Image
-		schemaImage.ID = (*source).ID
-		schemaImage.Status = string((*source).Status)
-		schemaImage.Type = string((*source).Type)
-		pString := (*source).Name
-		schemaImage.Name = &pString
-		schemaImage.Description = (*source).Description
-		pFloat32 := (*source).ImageSize
-		schemaImage.ImageSize = &pFloat32
-		schemaImage.DiskSize = (*source).DiskSize
-		schemaImage.Created = c.timeTimeToTimeTime((*source).Created)
-		schemaImage.CreatedFrom = c.pHcloudServerToPSchemaImageCreatedFrom((*source).CreatedFrom)
-		schemaImage.BoundTo = c.pHcloudServerToPInt64((*source).BoundTo)
-		schemaImage.OSFlavor = (*source).OSFlavor
-		pString2 := (*source).OSVersion
-		schemaImage.OSVersion = &pString2
-		schemaImage.Architecture = string((*source).Architecture)
-		schemaImage.RapidDeploy = (*source).RapidDeploy
-		schemaImage.Protection = c.hcloudImageProtectionToSchemaImageProtection((*source).Protection)
-		schemaImage.Deprecated = c.timeTimeToTimeTime((*source).Deprecated)
-		schemaImage.Deleted = c.timeTimeToTimeTime((*source).Deleted)
-		schemaImage.Labels = (*source).Labels
+		schemaImage := c.intSchemaFromImage((*source))
 		pSchemaImage = &schemaImage
 	}
 	return pSchemaImage
@@ -2074,7 +2056,7 @@ func (c *converterImpl) pSchemaISOToPHcloudISO(source *schema.ISO) *ISO {
 			pHcloudArchitecture = &hcloudArchitecture
 		}
 		hcloudISO.Architecture = pHcloudArchitecture
-		hcloudISO.Deprecated = c.timeTimeToTimeTime((*source).Deprecated)
+		hcloudISO.Deprecated = c.pTimeTimeToTimeTime((*source).Deprecated)
 		hcloudISO.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource((*source).DeprecatableResource)
 		pHcloudISO = &hcloudISO
 	}
@@ -2107,7 +2089,7 @@ func (c *converterImpl) pSchemaImageToPHcloudImage(source *schema.Image) *Image 
 		}
 		hcloudImage.ImageSize = xfloat32
 		hcloudImage.DiskSize = (*source).DiskSize
-		hcloudImage.Created = c.timeTimeToTimeTime((*source).Created)
+		hcloudImage.Created = c.pTimeTimeToTimeTime((*source).Created)
 		hcloudImage.CreatedFrom = c.pSchemaImageCreatedFromToPHcloudServer((*source).CreatedFrom)
 		var pHcloudServer *Server
 		if (*source).BoundTo != nil {
@@ -2124,9 +2106,9 @@ func (c *converterImpl) pSchemaImageToPHcloudImage(source *schema.Image) *Image 
 		hcloudImage.OSVersion = xstring2
 		hcloudImage.Architecture = Architecture((*source).Architecture)
 		hcloudImage.Protection = c.schemaImageProtectionToHcloudImageProtection((*source).Protection)
-		hcloudImage.Deprecated = c.timeTimeToTimeTime((*source).Deprecated)
+		hcloudImage.Deprecated = c.pTimeTimeToTimeTime((*source).Deprecated)
 		hcloudImage.Labels = (*source).Labels
-		hcloudImage.Deleted = c.timeTimeToTimeTime((*source).Deleted)
+		hcloudImage.Deleted = c.pTimeTimeToTimeTime((*source).Deleted)
 		pHcloudImage = &hcloudImage
 	}
 	return pHcloudImage
