@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.53.0](https://github.com/hetznercloud/hcloud-go/compare/v1.52.0...v1.53.0) (2023-10-20)
+
+
+### Features
+
+* **error:** include http response in api errors ([#335](https://github.com/hetznercloud/hcloud-go/issues/335)) ([4984025](https://github.com/hetznercloud/hcloud-go/commit/49840253cdf566ba47a86917e5f8255438b0fc05))
+
 ## [1.52.0](https://github.com/hetznercloud/hcloud-go/compare/v1.51.0...v1.52.0) (2023-10-12)
 
 
