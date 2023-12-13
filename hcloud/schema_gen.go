@@ -913,7 +913,6 @@ func rawSchemaFromErrorDetails(v interface{}) json.RawMessage {
 }
 
 func mapZeroFloat32ToNil(f float32) *float32 {
-	fmt.Println(f)
 	if f == 0 {
 		return nil
 	}
