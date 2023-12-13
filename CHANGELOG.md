@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.1](https://github.com/hetznercloud/hcloud-go/compare/v2.5.0...v2.5.1) (2023-12-13)
+
+
+### Bug Fixes
+
+* schema conversion outputs debug messages to stdout ([#354](https://github.com/hetznercloud/hcloud-go/issues/354)) ([ade8fbd](https://github.com/hetznercloud/hcloud-go/commit/ade8fbd60a88a648c95391f00cfe3ccc09be8f37))
+
 ## [2.5.0](https://github.com/hetznercloud/hcloud-go/compare/v2.4.0...v2.5.0) (2023-12-12)
 
 
