@@ -25,6 +25,10 @@ linters-settings:
               We do not currently need to parse properties files. At the same
               time this module has an assert package which tends to get
               imported by accident. It is therefore blocked.
+  forbidigo:
+    forbid:
+      - ^print.*$
+      - ^fmt\.Print.*$
   misspell:
     locale: "US"
 
@@ -53,6 +57,7 @@ linters:
     - unparam
     - unused
     - whitespace
+    - forbidigo
 
 issues:
   exclude-rules:
