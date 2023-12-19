@@ -1,25 +1,19 @@
+name: Release-please
+
 on:
   push:
     branches:
       - main
       - release-1.x
 
-name: release-please
-
 jobs:
   release-please:
+    # Do not run on forks.
+    if: github.repository == 'hetznercloud/hcloud-go'
+
     runs-on: ubuntu-latest
     steps:
-      - uses: google-github-actions/release-please-action@v3
+      - uses: google-github-actions/release-please-action@v4
         with:
-          release-type: go
-          package-name: hcloud-go
-
-          # hcloud-go is consumed directly from the git tag.
-          # To make sure that the version in the user-agent is up-to-date,
-          # we need to write it to a file that is included in the git tag.
-          extra-files: |
-            hcloud/hcloud.go
-
-          # Configuration for multiple active release branches
-          default-branch: ${{ github.ref_name }}
+          config-file: .github/release-please-config.json
+          manifest-file: .github/release-please-manifest.json
