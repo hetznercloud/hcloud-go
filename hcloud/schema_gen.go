@@ -234,9 +234,8 @@ type converter interface {
 
 	SchemaFromPagination(Pagination) schema.MetaPagination
 
-	// goverter:ignore response
-	// goverter:ignore DetailsRaw
 	// goverter:map Details | errorDetailsFromSchema
+	// goverter:ignore response
 	ErrorFromSchema(schema.Error) Error
 
 	// goverter:ignore response
