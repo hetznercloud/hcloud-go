@@ -33,7 +33,9 @@ jobs:
       with:
         go-version: ${{ matrix.go-version }}
 
-    - run: go test -v ./...
+    - run: go test -coverprofile=coverage.txt -v -race ./...
+
+    - uses: codecov/codecov-action@v3
 
   generate:
     runs-on: ubuntu-latest
