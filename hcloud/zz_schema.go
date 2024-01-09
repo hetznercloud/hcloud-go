@@ -157,19 +157,7 @@ func (c *converterImpl) FloatingIPFromSchema(source schema.FloatingIP) *Floating
 	return &hcloudFloatingIP
 }
 func (c *converterImpl) ISOFromSchema(source schema.ISO) *ISO {
-	var hcloudISO ISO
-	hcloudISO.ID = source.ID
-	hcloudISO.Name = source.Name
-	hcloudISO.Description = source.Description
-	hcloudISO.Type = ISOType(source.Type)
-	var pHcloudArchitecture *Architecture
-	if source.Architecture != nil {
-		hcloudArchitecture := Architecture(*source.Architecture)
-		pHcloudArchitecture = &hcloudArchitecture
-	}
-	hcloudISO.Architecture = pHcloudArchitecture
-	hcloudISO.Deprecated = c.pTimeTimeToTimeTime(source.Deprecated)
-	hcloudISO.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
+	hcloudISO := c.intISOFromSchema(source)
 	return &hcloudISO
 }
 func (c *converterImpl) ImageFromSchema(source schema.Image) *Image {
@@ -685,20 +673,7 @@ func (c *converterImpl) SchemaFromFloatingIP(source *FloatingIP) schema.Floating
 func (c *converterImpl) SchemaFromISO(source *ISO) schema.ISO {
 	var schemaISO schema.ISO
 	if source != nil {
-		var schemaISO2 schema.ISO
-		schemaISO2.ID = (*source).ID
-		schemaISO2.Name = (*source).Name
-		schemaISO2.Description = (*source).Description
-		schemaISO2.Type = string((*source).Type)
-		var pString *string
-		if (*source).Architecture != nil {
-			xstring := string(*(*source).Architecture)
-			pString = &xstring
-		}
-		schemaISO2.Architecture = pString
-		schemaISO2.Deprecated = timeToTimePtr((*source).Deprecated)
-		schemaISO2.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource((*source).DeprecatableResource)
-		schemaISO = schemaISO2
+		schemaISO = c.intSchemaFromISO((*source))
 	}
 	return schemaISO
 }
@@ -1590,6 +1565,46 @@ func (c *converterImpl) hcloudVolumeProtectionToSchemaVolumeProtection(source Vo
 	schemaVolumeProtection.Delete = source.Delete
 	return schemaVolumeProtection
 }
+func (c *converterImpl) intISOFromSchema(source schema.ISO) ISO {
+	var hcloudISO ISO
+	hcloudISO.ID = source.ID
+	hcloudISO.Name = source.Name
+	hcloudISO.Description = source.Description
+	hcloudISO.Type = ISOType(source.Type)
+	var pHcloudArchitecture *Architecture
+	if source.Architecture != nil {
+		hcloudArchitecture := Architecture(*source.Architecture)
+		pHcloudArchitecture = &hcloudArchitecture
+	}
+	hcloudISO.Architecture = pHcloudArchitecture
+	var pTimeTime *time.Time
+	if source.DeprecatableResource.Deprecation != nil {
+		pTimeTime = &source.DeprecatableResource.Deprecation.UnavailableAfter
+	}
+	hcloudISO.Deprecated = c.pTimeTimeToTimeTime(pTimeTime)
+	hcloudISO.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
+	return hcloudISO
+}
+func (c *converterImpl) intSchemaFromISO(source ISO) schema.ISO {
+	var schemaISO schema.ISO
+	schemaISO.ID = source.ID
+	schemaISO.Name = source.Name
+	schemaISO.Description = source.Description
+	schemaISO.Type = string(source.Type)
+	var pString *string
+	if source.Architecture != nil {
+		xstring := string(*source.Architecture)
+		pString = &xstring
+	}
+	schemaISO.Architecture = pString
+	var pTimeTime *time.Time
+	if source.DeprecatableResource.Deprecation != nil {
+		pTimeTime = &source.DeprecatableResource.Deprecation.UnavailableAfter
+	}
+	schemaISO.Deprecated = pTimeTime
+	schemaISO.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource(source.DeprecatableResource)
+	return schemaISO
+}
 func (c *converterImpl) intSchemaFromImage(source Image) schema.Image {
 	var schemaImage schema.Image
 	schemaImage.ID = source.ID
@@ -1664,19 +1679,7 @@ func (c *converterImpl) pHcloudFirewallResourceServerToPSchemaFirewallResourceSe
 func (c *converterImpl) pHcloudISOToPSchemaISO(source *ISO) *schema.ISO {
 	var pSchemaISO *schema.ISO
 	if source != nil {
-		var schemaISO schema.ISO
-		schemaISO.ID = (*source).ID
-		schemaISO.Name = (*source).Name
-		schemaISO.Description = (*source).Description
-		schemaISO.Type = string((*source).Type)
-		var pString *string
-		if (*source).Architecture != nil {
-			xstring := string(*(*source).Architecture)
-			pString = &xstring
-		}
-		schemaISO.Architecture = pString
-		schemaISO.Deprecated = timeToTimePtr((*source).Deprecated)
-		schemaISO.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource((*source).DeprecatableResource)
+		schemaISO := c.intSchemaFromISO((*source))
 		pSchemaISO = &schemaISO
 	}
 	return pSchemaISO
@@ -2046,19 +2049,7 @@ func (c *converterImpl) pSchemaFirewallResourceServerToPHcloudFirewallResourceSe
 func (c *converterImpl) pSchemaISOToPHcloudISO(source *schema.ISO) *ISO {
 	var pHcloudISO *ISO
 	if source != nil {
-		var hcloudISO ISO
-		hcloudISO.ID = (*source).ID
-		hcloudISO.Name = (*source).Name
-		hcloudISO.Description = (*source).Description
-		hcloudISO.Type = ISOType((*source).Type)
-		var pHcloudArchitecture *Architecture
-		if (*source).Architecture != nil {
-			hcloudArchitecture := Architecture(*(*source).Architecture)
-			pHcloudArchitecture = &hcloudArchitecture
-		}
-		hcloudISO.Architecture = pHcloudArchitecture
-		hcloudISO.Deprecated = c.pTimeTimeToTimeTime((*source).Deprecated)
-		hcloudISO.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource((*source).DeprecatableResource)
+		hcloudISO := c.intISOFromSchema((*source))
 		pHcloudISO = &hcloudISO
 	}
 	return pHcloudISO

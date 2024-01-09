@@ -249,22 +249,38 @@ func TestPrimaryIPSchema(t *testing.T) {
 }
 
 func TestISOSchema(t *testing.T) {
-	data := []byte(`{
-		"id": 4711,
-		"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
-		"description": "FreeBSD 11.0 x64",
-		"type": "public",
-		"architecture": "x86",
-		"deprecated": "2018-02-28T00:00:00+00:00"
-	}`)
+	for name, tc := range map[string]string{
+		"without deprecation": `{
+			"id": 4711,
+			"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
+			"description": "FreeBSD 11.0 x64",
+			"type": "public",
+			"architecture": "x86"
+		}`,
+		"with deprecation": `{
+			"id": 4711,
+			"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
+			"description": "FreeBSD 11.0 x64",
+			"type": "public",
+			"architecture": "x86",
+			"deprecation": {
+				"announced": "2018-01-28T00:00:00+00:00",
+				"unavailable_after": "2018-04-28T00:00:00+00:00"
+			},
+			"deprecated": "2018-04-28T00:00:00+00:00"
+		}`,
+	} {
+		t.Run(name, func(t *testing.T) {
+			data := []byte(tc)
+			var s schema.ISO
+			assert.NoError(t, json.Unmarshal(data, &s))
 
-	var s schema.ISO
-	assert.NoError(t, json.Unmarshal(data, &s))
+			assert.Equal(t, s, SchemaFromISO(ISOFromSchema(s)))
 
-	assert.Equal(t, s, SchemaFromISO(ISOFromSchema(s)))
-
-	iso := ISOFromSchema(s)
-	assert.Equal(t, iso, ISOFromSchema(SchemaFromISO(iso)))
+			iso := ISOFromSchema(s)
+			assert.Equal(t, iso, ISOFromSchema(SchemaFromISO(iso)))
+		})
+	}
 }
 
 func TestDatacenterSchema(t *testing.T) {
