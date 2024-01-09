@@ -115,12 +115,6 @@ type converter interface {
 
 	SchemaFromISO(*ISO) schema.ISO
 
-	// We cannot use goverter settings when mapping a struct to a struct pointer
-	// See [converter.SchemaFromISO]
-	// See https://github.com/jmattheis/goverter/issues/114
-	// goverter:map DeprecatableResource.Deprecation.UnavailableAfter Deprecated
-	intSchemaFromISO(ISO) schema.ISO
-
 	LocationFromSchema(schema.Location) *Location
 
 	SchemaFromLocation(*Location) schema.Location
