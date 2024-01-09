@@ -11,6 +11,11 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
+type SchemaTestCase struct {
+	Data  string
+	Check func(t *testing.T, obj any)
+}
+
 func TestActionSchema(t *testing.T) {
 	data := []byte(`{
 		"id": 1,
@@ -249,35 +254,53 @@ func TestPrimaryIPSchema(t *testing.T) {
 }
 
 func TestISOSchema(t *testing.T) {
-	for name, tc := range map[string]string{
-		"without deprecation": `{
-			"id": 4711,
-			"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
-			"description": "FreeBSD 11.0 x64",
-			"type": "public",
-			"architecture": "x86"
-		}`,
-		"with deprecation": `{
-			"id": 4711,
-			"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
-			"description": "FreeBSD 11.0 x64",
-			"type": "public",
-			"architecture": "x86",
-			"deprecation": {
-				"announced": "2018-01-28T00:00:00+00:00",
-				"unavailable_after": "2018-04-28T00:00:00+00:00"
+	for testName, tc := range map[string]SchemaTestCase{
+		"without deprecation": {
+			Data: `{
+				"id": 4711,
+				"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
+				"description": "FreeBSD 11.0 x64",
+				"type": "public",
+				"architecture": "x86"
+			}`,
+		},
+		"with deprecation": {
+			Data: `{
+				"id": 4711,
+				"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
+				"description": "FreeBSD 11.0 x64",
+				"type": "public",
+				"architecture": "x86",
+				"deprecation": {
+					"announced": "2018-01-28T00:00:00+00:00",
+					"unavailable_after": "2018-04-28T00:00:00+00:00"
+				},
+				"deprecated": "2000-01-01T00:00:00+00:00"
+			}`,
+			Check: func(t *testing.T, obj any) {
+				v := obj.(*ISO)
+				expDeprecated, err := time.Parse(time.RFC3339, "2018-04-28T00:00:00+00:00")
+				if err != nil {
+					t.Fatal(err)
+				}
+				assert.NotNil(t, v.Deprecation)
+				assert.Equal(t, v.Deprecated, expDeprecated)
 			},
-			"deprecated": "2018-04-28T00:00:00+00:00"
-		}`,
+		},
 	} {
-		t.Run(name, func(t *testing.T) {
-			data := []byte(tc)
+		t.Run(testName, func(t *testing.T) {
+			data := []byte(tc.Data)
 			var s schema.ISO
 			assert.NoError(t, json.Unmarshal(data, &s))
 
 			assert.Equal(t, s, SchemaFromISO(ISOFromSchema(s)))
 
 			iso := ISOFromSchema(s)
+
+			if tc.Check != nil {
+				tc.Check(t, iso)
+			}
+
 			assert.Equal(t, iso, ISOFromSchema(SchemaFromISO(iso)))
 		})
 	}
