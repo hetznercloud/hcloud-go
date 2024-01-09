@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.6.0](https://github.com/hetznercloud/hcloud-go/compare/v2.5.1...v2.6.0) (2024-01-09)
+
+
+### Features
+
+* alias deprecated field to deprecation info struct ([#371](https://github.com/hetznercloud/hcloud-go/issues/371)) ([e961be9](https://github.com/hetznercloud/hcloud-go/commit/e961be9615452fc63c4c71e6561d4e86f8e8e95a))
+* **instrumentation:** allow passing in any prometheus.Registerer ([#369](https://github.com/hetznercloud/hcloud-go/issues/369)) ([0821c07](https://github.com/hetznercloud/hcloud-go/commit/0821c078900910fa9e3ca6c6c0af48a73f00c7c6))
+
 ## [2.5.1](https://github.com/hetznercloud/hcloud-go/compare/v2.5.0...v2.5.1) (2023-12-13)
 
 
