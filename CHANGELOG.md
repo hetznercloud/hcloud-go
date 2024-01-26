@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.54.0](https://github.com/hetznercloud/hcloud-go/compare/v1.53.0...v1.54.0) (2024-01-26)
+
+
+### Features
+
+* **error:** handle wrapped errors in IsError() ([64902c5](https://github.com/hetznercloud/hcloud-go/commit/64902c582618a4042382d36a4005720528bfaf51))
+* **server:** deprecate ServerRescueTypeLinux32 [#379](https://github.com/hetznercloud/hcloud-go/issues/379) ([7337010](https://github.com/hetznercloud/hcloud-go/commit/73370105e02bcfca0b97a2db8d30cf244866fdaf))
+
 ## [1.53.0](https://github.com/hetznercloud/hcloud-go/compare/v1.52.0...v1.53.0) (2023-10-20)
 
 
