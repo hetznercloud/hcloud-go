@@ -35,7 +35,7 @@ jobs:
 
     - run: go test -coverprofile=coverage.txt -v -race ./...
 
-    - uses: codecov/codecov-action@v3
+    - uses: codecov/codecov-action@v4
 
   generate:
     runs-on: ubuntu-latest
