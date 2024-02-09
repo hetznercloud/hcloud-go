@@ -35,7 +35,7 @@ func Test_preparePath(t *testing.T) {
 func TestMultipleInstrumentedClients(t *testing.T) {
 	reg := prometheus.NewRegistry()
 
-	t.Run("should not panic", func(t *testing.T) {
+	t.Run("should not panic", func(_ *testing.T) {
 		// Following code should run without panicking
 		New("test", reg).InstrumentedRoundTripper()
 		New("test", reg).InstrumentedRoundTripper()

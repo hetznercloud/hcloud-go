@@ -68,3 +68,9 @@ issues:
     - path: hcloud/error.go
       # False-positive in error codes
       text: "G101: Potential hardcoded credentials" # gosec
+
+    - path: _test\.go
+      linters:
+        - revive
+      # From "env.Mux.HandleFunc"
+      text: "unused-parameter: parameter '(w|r)' seems to be unused, consider removing or renaming it as _"
