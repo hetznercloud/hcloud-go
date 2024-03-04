@@ -254,13 +254,16 @@ func (c *converterImpl) LoadBalancerMetricsFromSchema(source *schema.LoadBalance
 		hcloudLoadBalancerMetrics.Start = c.timeTimeToTimeTime((*source).Metrics.Start)
 		hcloudLoadBalancerMetrics.End = c.timeTimeToTimeTime((*source).Metrics.End)
 		hcloudLoadBalancerMetrics.Step = (*source).Metrics.Step
-		mapStringHcloudLoadBalancerMetricsValueList := make(map[string][]LoadBalancerMetricsValue, len((*source).Metrics.TimeSeries))
-		for key, value := range (*source).Metrics.TimeSeries {
-			hcloudLoadBalancerMetricsValueList, err := loadBalancerMetricsTimeSeriesFromSchema(value)
-			if err != nil {
-				return nil, err
+		var mapStringHcloudLoadBalancerMetricsValueList map[string][]LoadBalancerMetricsValue
+		if (*source).Metrics.TimeSeries != nil {
+			mapStringHcloudLoadBalancerMetricsValueList = make(map[string][]LoadBalancerMetricsValue, len((*source).Metrics.TimeSeries))
+			for key, value := range (*source).Metrics.TimeSeries {
+				hcloudLoadBalancerMetricsValueList, err := loadBalancerMetricsTimeSeriesFromSchema(value)
+				if err != nil {
+					return nil, err
+				}
+				mapStringHcloudLoadBalancerMetricsValueList[key] = hcloudLoadBalancerMetricsValueList
 			}
-			mapStringHcloudLoadBalancerMetricsValueList[key] = hcloudLoadBalancerMetricsValueList
 		}
 		hcloudLoadBalancerMetrics.TimeSeries = mapStringHcloudLoadBalancerMetricsValueList
 		pHcloudLoadBalancerMetrics = &hcloudLoadBalancerMetrics
@@ -1287,13 +1290,16 @@ func (c *converterImpl) ServerMetricsFromSchema(source *schema.ServerGetMetricsR
 		hcloudServerMetrics.Start = c.timeTimeToTimeTime((*source).Metrics.Start)
 		hcloudServerMetrics.End = c.timeTimeToTimeTime((*source).Metrics.End)
 		hcloudServerMetrics.Step = (*source).Metrics.Step
-		mapStringHcloudServerMetricsValueList := make(map[string][]ServerMetricsValue, len((*source).Metrics.TimeSeries))
-		for key, value := range (*source).Metrics.TimeSeries {
-			hcloudServerMetricsValueList, err := serverMetricsTimeSeriesFromSchema(value)
-			if err != nil {
-				return nil, err
+		var mapStringHcloudServerMetricsValueList map[string][]ServerMetricsValue
+		if (*source).Metrics.TimeSeries != nil {
+			mapStringHcloudServerMetricsValueList = make(map[string][]ServerMetricsValue, len((*source).Metrics.TimeSeries))
+			for key, value := range (*source).Metrics.TimeSeries {
+				hcloudServerMetricsValueList, err := serverMetricsTimeSeriesFromSchema(value)
+				if err != nil {
+					return nil, err
+				}
+				mapStringHcloudServerMetricsValueList[key] = hcloudServerMetricsValueList
 			}
-			mapStringHcloudServerMetricsValueList[key] = hcloudServerMetricsValueList
 		}
 		hcloudServerMetrics.TimeSeries = mapStringHcloudServerMetricsValueList
 		pHcloudServerMetrics = &hcloudServerMetrics
