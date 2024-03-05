@@ -1797,8 +1797,18 @@ func TestLoadBalancerUpdateServiceOptsToSchema(t *testing.T) {
 		Request schema.LoadBalancerActionUpdateServiceRequest
 	}{
 		"empty": {
-			Opts:    LoadBalancerUpdateServiceOpts{},
-			Request: schema.LoadBalancerActionUpdateServiceRequest{},
+			Opts: LoadBalancerUpdateServiceOpts{
+				HTTP: &LoadBalancerUpdateServiceOptsHTTP{},
+				HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
+					HTTP: &LoadBalancerUpdateServiceOptsHealthCheckHTTP{},
+				},
+			},
+			Request: schema.LoadBalancerActionUpdateServiceRequest{
+				HTTP: &schema.LoadBalancerActionUpdateServiceRequestHTTP{},
+				HealthCheck: &schema.LoadBalancerActionUpdateServiceRequestHealthCheck{
+					HTTP: &schema.LoadBalancerActionUpdateServiceRequestHealthCheckHTTP{},
+				},
+			},
 		},
 		"all set": {
 			Opts: LoadBalancerUpdateServiceOpts{

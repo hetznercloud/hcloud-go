@@ -1706,14 +1706,7 @@ func (c *converterImpl) pHcloudLoadBalancerAddServiceOptsHTTPToPSchemaLoadBalanc
 			pInt = &xint
 		}
 		schemaLoadBalancerActionAddServiceRequestHTTP.CookieLifetime = pInt
-		var int64List []int64
-		if (*source).Certificates != nil {
-			int64List = make([]int64, len((*source).Certificates))
-			for i := 0; i < len((*source).Certificates); i++ {
-				int64List[i] = int64FromCertificate((*source).Certificates[i])
-			}
-		}
-		schemaLoadBalancerActionAddServiceRequestHTTP.Certificates = &int64List
+		schemaLoadBalancerActionAddServiceRequestHTTP.Certificates = int64SlicePtrFromCertificatePtrSlice((*source).Certificates)
 		schemaLoadBalancerActionAddServiceRequestHTTP.RedirectHTTP = (*source).RedirectHTTP
 		schemaLoadBalancerActionAddServiceRequestHTTP.StickySessions = (*source).StickySessions
 		pSchemaLoadBalancerActionAddServiceRequestHTTP = &schemaLoadBalancerActionAddServiceRequestHTTP
@@ -1727,7 +1720,7 @@ func (c *converterImpl) pHcloudLoadBalancerAddServiceOptsHealthCheckHTTPToPSchem
 		schemaLoadBalancerActionAddServiceRequestHealthCheckHTTP.Domain = (*source).Domain
 		schemaLoadBalancerActionAddServiceRequestHealthCheckHTTP.Path = (*source).Path
 		schemaLoadBalancerActionAddServiceRequestHealthCheckHTTP.Response = (*source).Response
-		schemaLoadBalancerActionAddServiceRequestHealthCheckHTTP.StatusCodes = &(*source).StatusCodes
+		schemaLoadBalancerActionAddServiceRequestHealthCheckHTTP.StatusCodes = stringSlicePtrFromStringSlice((*source).StatusCodes)
 		schemaLoadBalancerActionAddServiceRequestHealthCheckHTTP.TLS = (*source).TLS
 		pSchemaLoadBalancerActionAddServiceRequestHealthCheckHTTP = &schemaLoadBalancerActionAddServiceRequestHealthCheckHTTP
 	}
@@ -1777,14 +1770,7 @@ func (c *converterImpl) pHcloudLoadBalancerCreateOptsServiceHTTPToPSchemaLoadBal
 			pInt = &xint
 		}
 		schemaLoadBalancerCreateRequestServiceHTTP.CookieLifetime = pInt
-		var int64List []int64
-		if (*source).Certificates != nil {
-			int64List = make([]int64, len((*source).Certificates))
-			for i := 0; i < len((*source).Certificates); i++ {
-				int64List[i] = int64FromCertificate((*source).Certificates[i])
-			}
-		}
-		schemaLoadBalancerCreateRequestServiceHTTP.Certificates = &int64List
+		schemaLoadBalancerCreateRequestServiceHTTP.Certificates = int64SlicePtrFromCertificatePtrSlice((*source).Certificates)
 		schemaLoadBalancerCreateRequestServiceHTTP.RedirectHTTP = (*source).RedirectHTTP
 		schemaLoadBalancerCreateRequestServiceHTTP.StickySessions = (*source).StickySessions
 		pSchemaLoadBalancerCreateRequestServiceHTTP = &schemaLoadBalancerCreateRequestServiceHTTP
@@ -1798,7 +1784,7 @@ func (c *converterImpl) pHcloudLoadBalancerCreateOptsServiceHealthCheckHTTPToPSc
 		schemaLoadBalancerCreateRequestServiceHealthCheckHTTP.Domain = (*source).Domain
 		schemaLoadBalancerCreateRequestServiceHealthCheckHTTP.Path = (*source).Path
 		schemaLoadBalancerCreateRequestServiceHealthCheckHTTP.Response = (*source).Response
-		schemaLoadBalancerCreateRequestServiceHealthCheckHTTP.StatusCodes = &(*source).StatusCodes
+		schemaLoadBalancerCreateRequestServiceHealthCheckHTTP.StatusCodes = stringSlicePtrFromStringSlice((*source).StatusCodes)
 		schemaLoadBalancerCreateRequestServiceHealthCheckHTTP.TLS = (*source).TLS
 		pSchemaLoadBalancerCreateRequestServiceHealthCheckHTTP = &schemaLoadBalancerCreateRequestServiceHealthCheckHTTP
 	}
@@ -1885,14 +1871,7 @@ func (c *converterImpl) pHcloudLoadBalancerUpdateServiceOptsHTTPToPSchemaLoadBal
 			pInt = &xint
 		}
 		schemaLoadBalancerActionUpdateServiceRequestHTTP.CookieLifetime = pInt
-		var int64List []int64
-		if (*source).Certificates != nil {
-			int64List = make([]int64, len((*source).Certificates))
-			for i := 0; i < len((*source).Certificates); i++ {
-				int64List[i] = int64FromCertificate((*source).Certificates[i])
-			}
-		}
-		schemaLoadBalancerActionUpdateServiceRequestHTTP.Certificates = &int64List
+		schemaLoadBalancerActionUpdateServiceRequestHTTP.Certificates = int64SlicePtrFromCertificatePtrSlice((*source).Certificates)
 		schemaLoadBalancerActionUpdateServiceRequestHTTP.RedirectHTTP = (*source).RedirectHTTP
 		schemaLoadBalancerActionUpdateServiceRequestHTTP.StickySessions = (*source).StickySessions
 		pSchemaLoadBalancerActionUpdateServiceRequestHTTP = &schemaLoadBalancerActionUpdateServiceRequestHTTP
@@ -1906,7 +1885,7 @@ func (c *converterImpl) pHcloudLoadBalancerUpdateServiceOptsHealthCheckHTTPToPSc
 		schemaLoadBalancerActionUpdateServiceRequestHealthCheckHTTP.Domain = (*source).Domain
 		schemaLoadBalancerActionUpdateServiceRequestHealthCheckHTTP.Path = (*source).Path
 		schemaLoadBalancerActionUpdateServiceRequestHealthCheckHTTP.Response = (*source).Response
-		schemaLoadBalancerActionUpdateServiceRequestHealthCheckHTTP.StatusCodes = &(*source).StatusCodes
+		schemaLoadBalancerActionUpdateServiceRequestHealthCheckHTTP.StatusCodes = stringSlicePtrFromStringSlice((*source).StatusCodes)
 		schemaLoadBalancerActionUpdateServiceRequestHealthCheckHTTP.TLS = (*source).TLS
 		pSchemaLoadBalancerActionUpdateServiceRequestHealthCheckHTTP = &schemaLoadBalancerActionUpdateServiceRequestHealthCheckHTTP
 	}
