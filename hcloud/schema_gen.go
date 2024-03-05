@@ -105,6 +105,7 @@ type converter interface {
 	PrimaryIPFromSchema(schema.PrimaryIP) *PrimaryIP
 
 	// goverter:map . IP | primaryIPToIPString
+	// goverter:map AssigneeID | mapZeroInt64ToNil
 	SchemaFromPrimaryIP(*PrimaryIP) schema.PrimaryIP
 
 	ISOFromSchema(schema.ISO) *ISO
@@ -872,6 +873,13 @@ func stringPtrFromLoadBalancerServiceProtocol(p LoadBalancerServiceProtocol) *st
 
 func stringPtrFromNetworkZone(z NetworkZone) *string {
 	return mapEmptyStringToNil(string(z))
+}
+
+func mapZeroInt64ToNil(i int64) *int64 {
+	if i == 0 {
+		return nil
+	}
+	return &i
 }
 
 func mapZeroUint64ToNil(i uint64) *uint64 {
