@@ -471,7 +471,11 @@ func (c *converterImpl) PrimaryIPFromSchema(source schema.PrimaryIP) *PrimaryIP 
 	hcloudPrimaryIP.Type = PrimaryIPType(source.Type)
 	hcloudPrimaryIP.Protection = c.schemaPrimaryIPProtectionToHcloudPrimaryIPProtection(source.Protection)
 	hcloudPrimaryIP.DNSPtr = mapFromPrimaryIPDNSPtrSchema(source.DNSPtr)
-	hcloudPrimaryIP.AssigneeID = source.AssigneeID
+	var xint64 int64
+	if source.AssigneeID != nil {
+		xint64 = *source.AssigneeID
+	}
+	hcloudPrimaryIP.AssigneeID = xint64
 	hcloudPrimaryIP.AssigneeType = source.AssigneeType
 	hcloudPrimaryIP.AutoDelete = source.AutoDelete
 	hcloudPrimaryIP.Blocked = source.Blocked
@@ -1042,7 +1046,7 @@ func (c *converterImpl) SchemaFromPrimaryIP(source *PrimaryIP) schema.PrimaryIP 
 		schemaPrimaryIP2.Type = string((*source).Type)
 		schemaPrimaryIP2.Protection = c.hcloudPrimaryIPProtectionToSchemaPrimaryIPProtection((*source).Protection)
 		schemaPrimaryIP2.DNSPtr = primaryIPDNSPtrSchemaFromMap((*source).DNSPtr)
-		schemaPrimaryIP2.AssigneeID = (*source).AssigneeID
+		schemaPrimaryIP2.AssigneeID = mapZeroInt64ToNil((*source).AssigneeID)
 		schemaPrimaryIP2.AssigneeType = (*source).AssigneeType
 		schemaPrimaryIP2.AutoDelete = (*source).AutoDelete
 		schemaPrimaryIP2.Blocked = (*source).Blocked
