@@ -929,7 +929,7 @@ func isDeprecationNotNil(d *DeprecationInfo) bool {
 	return d != nil
 }
 
-// this is needed so that a nil slice is mapped to nil instead of &nil
+// int64SlicePtrFromCertificatePtrSlice is needed so that a nil slice is mapped to nil instead of &nil.
 func int64SlicePtrFromCertificatePtrSlice(s []*Certificate) *[]int64 {
 	if s == nil {
 		return nil
