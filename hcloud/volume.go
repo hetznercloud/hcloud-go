@@ -30,7 +30,7 @@ type Volume struct {
 
 const (
 	VolumeFormatExt4 = "ext4"
-	VolumeFormatXfs  = "xfs"
+	VolumeFormatXFS  = "xfs"
 )
 
 // VolumeProtection represents the protection level of a volume.
