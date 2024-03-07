@@ -1215,6 +1215,7 @@ func (c *converterImpl) SchemaFromVolume(source *Volume) schema.Volume {
 		schemaVolume2.Status = string((*source).Status)
 		schemaVolume2.Location = c.SchemaFromLocation((*source).Location)
 		schemaVolume2.Size = (*source).Size
+		schemaVolume2.Format = (*source).Format
 		schemaVolume2.Protection = c.hcloudVolumeProtectionToSchemaVolumeProtection((*source).Protection)
 		schemaVolume2.Labels = (*source).Labels
 		schemaVolume2.LinuxDevice = (*source).LinuxDevice
@@ -1397,6 +1398,7 @@ func (c *converterImpl) VolumeFromSchema(source schema.Volume) *Volume {
 	hcloudVolume.Server = pHcloudServer
 	hcloudVolume.Location = c.LocationFromSchema(source.Location)
 	hcloudVolume.Size = source.Size
+	hcloudVolume.Format = source.Format
 	hcloudVolume.Protection = c.schemaVolumeProtectionToHcloudVolumeProtection(source.Protection)
 	hcloudVolume.Labels = source.Labels
 	hcloudVolume.LinuxDevice = source.LinuxDevice
