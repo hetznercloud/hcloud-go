@@ -662,6 +662,7 @@ func TestVolumeSchema(t *testing.T) {
 		"name": "db-storage",
 		"status": "creating",
 		"server": 2,
+		"format": "xfs",
 		"location": {
 			"id": 1,
 			"name": "fsn1",
