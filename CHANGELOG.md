@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.7.0](https://github.com/hetznercloud/hcloud-go/compare/v2.6.0...v2.7.0) (2024-03-27)
+
+
+### Features
+
+* add volume format property ([#397](https://github.com/hetznercloud/hcloud-go/issues/397)) ([c0940af](https://github.com/hetznercloud/hcloud-go/commit/c0940afce9eb01c0e6838502c91aa569ab411a03))
+* **error:** handle wrapped errors in IsError() ([#374](https://github.com/hetznercloud/hcloud-go/issues/374)) ([83df108](https://github.com/hetznercloud/hcloud-go/commit/83df108228519617a919470e5ebbb4a1a2587b34))
+* require Go &gt;= 1.20 ([#392](https://github.com/hetznercloud/hcloud-go/issues/392)) ([299f181](https://github.com/hetznercloud/hcloud-go/commit/299f181c469a48e977743f2587e232a293cd9db5))
+* **server:** deprecate ServerRescueTypeLinux32 ([#378](https://github.com/hetznercloud/hcloud-go/issues/378)) ([2f334c3](https://github.com/hetznercloud/hcloud-go/commit/2f334c3de2aecfb7aaf179424bb9a1a7b0da53ea))
+* test with Go 1.22 ([#391](https://github.com/hetznercloud/hcloud-go/issues/391)) ([49be506](https://github.com/hetznercloud/hcloud-go/commit/49be50664f56e4e315e687543ee0bf7fbb2af186))
+
+
+### Bug Fixes
+
+* falsely omitted fields in firewall schema ([#396](https://github.com/hetznercloud/hcloud-go/issues/396)) ([a3509b6](https://github.com/hetznercloud/hcloud-go/commit/a3509b6b0f2762b5d1e27f2374d3fb5fb53206e2))
+* LoadBalancerUpdateServiceOpts not converted correctly ([#394](https://github.com/hetznercloud/hcloud-go/issues/394)) ([0f187ce](https://github.com/hetznercloud/hcloud-go/commit/0f187cef1f568d87a32b2ec063847dd9ff314740))
+* primary ip assignee id not mapped to nil ([#395](https://github.com/hetznercloud/hcloud-go/issues/395)) ([b5fea38](https://github.com/hetznercloud/hcloud-go/commit/b5fea38f5d9d62c88af470ba69195a73ee075f09))
+
 ## [2.6.0](https://github.com/hetznercloud/hcloud-go/compare/v2.5.1...v2.6.0) (2024-01-09)
 
 
