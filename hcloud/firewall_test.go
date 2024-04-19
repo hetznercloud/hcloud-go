@@ -328,7 +328,7 @@ func TestFirewallSetRules(t *testing.T) {
 		{
 			name: "direction in",
 			expectedReqBody: schema.FirewallActionSetRulesRequest{
-				Rules: []schema.FirewallRuleReq{
+				Rules: []schema.FirewallRuleRequest{
 					{
 						Direction: "in",
 						SourceIPs: []string{"10.0.0.5/32", "10.0.0.6/32"},
@@ -358,7 +358,7 @@ func TestFirewallSetRules(t *testing.T) {
 		{
 			name: "direction out",
 			expectedReqBody: schema.FirewallActionSetRulesRequest{
-				Rules: []schema.FirewallRuleReq{
+				Rules: []schema.FirewallRuleRequest{
 					{
 						Direction:      "out",
 						DestinationIPs: []string{"10.0.0.5/32", "10.0.0.6/32"},
@@ -388,7 +388,7 @@ func TestFirewallSetRules(t *testing.T) {
 		{
 			name: "empty",
 			expectedReqBody: schema.FirewallActionSetRulesRequest{
-				Rules: []schema.FirewallRuleReq{},
+				Rules: []schema.FirewallRuleRequest{},
 			},
 			opts: FirewallSetRulesOpts{
 				Rules: []FirewallRule{},
@@ -397,7 +397,7 @@ func TestFirewallSetRules(t *testing.T) {
 		{
 			name: "description",
 			expectedReqBody: schema.FirewallActionSetRulesRequest{
-				Rules: []schema.FirewallRuleReq{
+				Rules: []schema.FirewallRuleRequest{
 					{
 						Direction:      "out",
 						DestinationIPs: []string{"10.0.0.5/32", "10.0.0.6/32"},

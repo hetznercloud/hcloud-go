@@ -619,14 +619,14 @@ func (c *converterImpl) SchemaFromFirewallCreateOpts(source FirewallCreateOpts) 
 	var schemaFirewallCreateRequest schema.FirewallCreateRequest
 	schemaFirewallCreateRequest.Name = source.Name
 	schemaFirewallCreateRequest.Labels = stringMapToStringMapPtr(source.Labels)
-	var schemaFirewallRuleReqList []schema.FirewallRuleReq
+	var schemaFirewallRuleRequestList []schema.FirewallRuleRequest
 	if source.Rules != nil {
-		schemaFirewallRuleReqList = make([]schema.FirewallRuleReq, len(source.Rules))
+		schemaFirewallRuleRequestList = make([]schema.FirewallRuleRequest, len(source.Rules))
 		for i := 0; i < len(source.Rules); i++ {
-			schemaFirewallRuleReqList[i] = c.hcloudFirewallRuleToSchemaFirewallRuleReq(source.Rules[i])
+			schemaFirewallRuleRequestList[i] = c.hcloudFirewallRuleToSchemaFirewallRuleRequest(source.Rules[i])
 		}
 	}
-	schemaFirewallCreateRequest.Rules = schemaFirewallRuleReqList
+	schemaFirewallCreateRequest.Rules = schemaFirewallRuleRequestList
 	var schemaFirewallResourceList []schema.FirewallResource
 	if source.ApplyTo != nil {
 		schemaFirewallResourceList = make([]schema.FirewallResource, len(source.ApplyTo))
@@ -646,14 +646,14 @@ func (c *converterImpl) SchemaFromFirewallResource(source FirewallResource) sche
 }
 func (c *converterImpl) SchemaFromFirewallSetRulesOpts(source FirewallSetRulesOpts) schema.FirewallActionSetRulesRequest {
 	var schemaFirewallActionSetRulesRequest schema.FirewallActionSetRulesRequest
-	var schemaFirewallRuleReqList []schema.FirewallRuleReq
+	var schemaFirewallRuleRequestList []schema.FirewallRuleRequest
 	if source.Rules != nil {
-		schemaFirewallRuleReqList = make([]schema.FirewallRuleReq, len(source.Rules))
+		schemaFirewallRuleRequestList = make([]schema.FirewallRuleRequest, len(source.Rules))
 		for i := 0; i < len(source.Rules); i++ {
-			schemaFirewallRuleReqList[i] = c.hcloudFirewallRuleToSchemaFirewallRuleReq(source.Rules[i])
+			schemaFirewallRuleRequestList[i] = c.hcloudFirewallRuleToSchemaFirewallRuleRequest(source.Rules[i])
 		}
 	}
-	schemaFirewallActionSetRulesRequest.Rules = schemaFirewallRuleReqList
+	schemaFirewallActionSetRulesRequest.Rules = schemaFirewallRuleRequestList
 	return schemaFirewallActionSetRulesRequest
 }
 func (c *converterImpl) SchemaFromFloatingIP(source *FloatingIP) schema.FloatingIP {
@@ -1471,9 +1471,9 @@ func (c *converterImpl) hcloudFirewallRuleToSchemaFirewallRule(source FirewallRu
 	schemaFirewallRule.Description = source.Description
 	return schemaFirewallRule
 }
-func (c *converterImpl) hcloudFirewallRuleToSchemaFirewallRuleReq(source FirewallRule) schema.FirewallRuleReq {
-	var schemaFirewallRuleReq schema.FirewallRuleReq
-	schemaFirewallRuleReq.Direction = string(source.Direction)
+func (c *converterImpl) hcloudFirewallRuleToSchemaFirewallRuleRequest(source FirewallRule) schema.FirewallRuleRequest {
+	var schemaFirewallRuleRequest schema.FirewallRuleRequest
+	schemaFirewallRuleRequest.Direction = string(source.Direction)
 	var stringList []string
 	if source.SourceIPs != nil {
 		stringList = make([]string, len(source.SourceIPs))
@@ -1481,7 +1481,7 @@ func (c *converterImpl) hcloudFirewallRuleToSchemaFirewallRuleReq(source Firewal
 			stringList[i] = stringFromIPNet(source.SourceIPs[i])
 		}
 	}
-	schemaFirewallRuleReq.SourceIPs = stringList
+	schemaFirewallRuleRequest.SourceIPs = stringList
 	var stringList2 []string
 	if source.DestinationIPs != nil {
 		stringList2 = make([]string, len(source.DestinationIPs))
@@ -1489,11 +1489,11 @@ func (c *converterImpl) hcloudFirewallRuleToSchemaFirewallRuleReq(source Firewal
 			stringList2[j] = stringFromIPNet(source.DestinationIPs[j])
 		}
 	}
-	schemaFirewallRuleReq.DestinationIPs = stringList2
-	schemaFirewallRuleReq.Protocol = string(source.Protocol)
-	schemaFirewallRuleReq.Port = source.Port
-	schemaFirewallRuleReq.Description = source.Description
-	return schemaFirewallRuleReq
+	schemaFirewallRuleRequest.DestinationIPs = stringList2
+	schemaFirewallRuleRequest.Protocol = string(source.Protocol)
+	schemaFirewallRuleRequest.Port = source.Port
+	schemaFirewallRuleRequest.Description = source.Description
+	return schemaFirewallRuleRequest
 }
 func (c *converterImpl) hcloudFloatingIPProtectionToSchemaFloatingIPProtection(source FloatingIPProtection) schema.FloatingIPProtection {
 	var schemaFloatingIPProtection schema.FloatingIPProtection
