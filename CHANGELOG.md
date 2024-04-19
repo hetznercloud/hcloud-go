@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.7.2](https://github.com/hetznercloud/hcloud-go/compare/v2.7.1...v2.7.2) (2024-04-19)
+
+
+### Bug Fixes
+
+* creating firewall with rules not working correctly ([#412](https://github.com/hetznercloud/hcloud-go/issues/412)) ([43b2bab](https://github.com/hetznercloud/hcloud-go/commit/43b2bab8c82cab276c07e9deb9f4e422e10ccc82))
+
 ## [2.7.1](https://github.com/hetznercloud/hcloud-go/compare/v2.7.0...v2.7.1) (2024-04-18)
 
 
