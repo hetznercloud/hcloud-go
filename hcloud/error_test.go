@@ -2,6 +2,7 @@ package hcloud
 
 import (
 	"fmt"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,6 +27,38 @@ func TestError_Error(t *testing.T) {
 				Message: "unable to authenticate",
 			},
 			want: "unable to authenticate (unauthorized)",
+		},
+		{
+			name: "internal server error with correlation id",
+			fields: fields{
+				Code:    ErrorCodeUnknownError,
+				Message: "Creating image failed because of an unknown error.",
+				response: &Response{
+					Response: &http.Response{
+						StatusCode: http.StatusInternalServerError,
+						Header: func() http.Header {
+							headers := http.Header{}
+							// [http.Header] requires normalized header names, easiest to do by using the Set method
+							headers.Set("X-Correlation-ID", "foobar")
+							return headers
+						}(),
+					},
+				},
+			},
+			want: "Creating image failed because of an unknown error. (unknown_error) (Correlation ID: foobar)",
+		},
+		{
+			name: "internal server error without correlation id",
+			fields: fields{
+				Code:    ErrorCodeUnknownError,
+				Message: "Creating image failed because of an unknown error.",
+				response: &Response{
+					Response: &http.Response{
+						StatusCode: http.StatusInternalServerError,
+					},
+				},
+			},
+			want: "Creating image failed because of an unknown error. (unknown_error)",
 		},
 	}
 
