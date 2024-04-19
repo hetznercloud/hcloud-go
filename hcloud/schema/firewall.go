@@ -12,7 +12,7 @@ type Firewall struct {
 	AppliedTo []FirewallResource `json:"applied_to"`
 }
 
-// FirewallRule defines the schema of a Firewall rule.
+// FirewallRule defines the schema of a Firewall rule in responses.
 type FirewallRule struct {
 	Direction      string   `json:"direction"`
 	SourceIPs      []string `json:"source_ips"`
@@ -20,6 +20,16 @@ type FirewallRule struct {
 	Protocol       string   `json:"protocol"`
 	Port           *string  `json:"port"`
 	Description    *string  `json:"description"`
+}
+
+// FirewallRuleReq defines the schema of a Firewall rule in requests.
+type FirewallRuleReq struct {
+	Direction      string   `json:"direction"`
+	SourceIPs      []string `json:"source_ips,omitempty"`
+	DestinationIPs []string `json:"destination_ips,omitempty"`
+	Protocol       string   `json:"protocol"`
+	Port           *string  `json:"port,omitempty"`
+	Description    *string  `json:"description,omitempty"`
 }
 
 // FirewallListResponse defines the schema of the response when listing Firewalls.
@@ -36,7 +46,7 @@ type FirewallGetResponse struct {
 type FirewallCreateRequest struct {
 	Name    string             `json:"name"`
 	Labels  *map[string]string `json:"labels,omitempty"`
-	Rules   []FirewallRule     `json:"rules,omitempty"`
+	Rules   []FirewallRuleReq  `json:"rules,omitempty"`
 	ApplyTo []FirewallResource `json:"apply_to,omitempty"`
 }
 
@@ -76,7 +86,7 @@ type FirewallUpdateResponse struct {
 
 // FirewallActionSetRulesRequest defines the schema of the request when setting Firewall rules.
 type FirewallActionSetRulesRequest struct {
-	Rules []FirewallRule `json:"rules"`
+	Rules []FirewallRuleReq `json:"rules"`
 }
 
 // FirewallActionSetRulesResponse defines the schema of the response when setting Firewall rules.
