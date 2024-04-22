@@ -322,6 +322,7 @@ func TestResourceActionClientAll(t *testing.T) {
 }
 
 func TestActionClientWatchOverallProgress(t *testing.T) {
+	t.Parallel()
 	env := newTestEnv()
 	defer env.Teardown()
 
