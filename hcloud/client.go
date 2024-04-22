@@ -236,6 +236,8 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, body io.Re
 }
 
 // Do performs an HTTP request against the API.
+// v can be nil, an io.Writer to write the response body to or a pointer to
+// a struct to json.Unmarshal the response to.
 func (c *Client) Do(r *http.Request, v interface{}) (*Response, error) {
 	var retries int
 	var body []byte
