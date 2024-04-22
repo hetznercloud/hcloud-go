@@ -21,6 +21,19 @@ jobs:
         )
       )
     steps:
-      - uses: tibdex/backport@v2
+      - uses: jooola/backport@main
+        # Using a fork of tibdex/backport@v2 to get https://github.com/tibdex/backport/pull/109
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+          # These templates are compatible with release-please and our default commit body (body of PR).
+          title_template: "<%= title %> [Backport <%= base %>]"
+          body_template: |
+            <%= body %>
+            
+            ---
+            Backport <%= mergeCommitSha %> from #<%= number %>.
+            
+            BEGIN_COMMIT_OVERRIDE
+            <%= title %>
+            END_COMMIT_OVERRIDE
