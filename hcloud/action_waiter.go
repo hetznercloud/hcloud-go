@@ -15,8 +15,9 @@ type ActionWaiter interface {
 
 var _ ActionWaiter = (*ActionClient)(nil)
 
-// WaitForActions waits until all actions completed (succeeded or failed) by pooling the
-// API at the interval defined by [WithPollBackoffFunc].
+// WaitForFunc waits until all actions are completed by polling the API at the interval
+// defined by [WithPollBackoffFunc]. An action is considered as complete when its status is
+// either [ActionStatusSuccess] or [ActionStatusError].
 //
 // The handleUpdate callback is called every time an action is updated.
 func (c *ActionClient) WaitForFunc(ctx context.Context, handleUpdate func(update *Action) error, actions ...*Action) error {
@@ -90,13 +91,14 @@ func (c *ActionClient) WaitForFunc(ctx context.Context, handleUpdate func(update
 	return nil
 }
 
-// WaitFor waits until all actions succeeded by pooling the API at the interval
-// defined by [WithPollBackoffFunc].
+// WaitFor waits until all actions succeed by polling the API at the interval defined by
+// [WithPollBackoffFunc]. An action is considered as succeeded when its status is either
+// [ActionStatusSuccess].
 //
-// If a single action fails, the function will stop waiting and the action underlying
-// error will be returned.
+// If a single action fails, the function will stop waiting and the error set in the
+// action will be returned as an [ActionError].
 //
-// For more flexibility, see the [WaitForActionsFunc] function.
+// For more flexibility, see the [WaitForFunc] function.
 func (c *ActionClient) WaitFor(ctx context.Context, actions ...*Action) error {
 	return c.WaitForFunc(
 		ctx,
