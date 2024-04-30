@@ -57,4 +57,17 @@ type IActionClient interface {
 	// WatchProgress uses the [WithPollBackoffFunc] of the [Client] to wait until
 	// sending the next request.
 	WatchProgress(ctx context.Context, action *Action) (<-chan int, <-chan error)
+	// WaitForActions waits until all actions completed (succeeded or failed) by pooling the
+	// API at the interval defined by [WithPollBackoffFunc].
+	//
+	// The handleUpdate callback is called every time an action is updated.
+	WaitForFunc(ctx context.Context, handleUpdate func(update *Action) error, actions ...*Action) error
+	// WaitFor waits until all actions succeeded by pooling the API at the interval
+	// defined by [WithPollBackoffFunc].
+	//
+	// If a single action fails, the function will stop waiting and the action underlying
+	// error will be returned.
+	//
+	// For more flexibility, see the [WaitForActionsFunc] function.
+	WaitFor(ctx context.Context, actions ...*Action) error
 }
