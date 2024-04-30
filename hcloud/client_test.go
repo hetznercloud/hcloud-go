@@ -31,6 +31,10 @@ func (env *testEnv) Teardown() {
 func newTestEnv() testEnv {
 	mux := http.NewServeMux()
 	server := httptest.NewServer(mux)
+	return newTestEnvWithServer(server, mux)
+}
+
+func newTestEnvWithServer(server *httptest.Server, mux *http.ServeMux) testEnv {
 	client := NewClient(
 		WithEndpoint(server.URL),
 		WithToken("token"),
