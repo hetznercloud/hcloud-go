@@ -60,3 +60,8 @@ issues:
       linters:
         - gosec
         - errcheck
+
+    - path: _test\.go
+      linters:
+          - revive
+      text: unused-parameter
