@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestWaitForActions(t *testing.T) {
+func TestWaitFor(t *testing.T) {
 	RunMockedTestCases(t,
 		[]MockedTestCase{
 			{
@@ -89,7 +89,7 @@ func TestWaitForActions(t *testing.T) {
 	)
 }
 
-func TestWaitForActionsFunc(t *testing.T) {
+func TestWaitForFunc(t *testing.T) {
 	RunMockedTestCases(t,
 		[]MockedTestCase{
 			{
