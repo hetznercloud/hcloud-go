@@ -29,7 +29,7 @@ func TestWaitFor(t *testing.T) {
 						}`},
 				},
 				Run: func(env testEnv) {
-					actions := []*Action{{ID: 1509772237, Status: "running"}}
+					actions := []*Action{{ID: 1509772237, Status: ActionStatusRunning}}
 
 					err := env.Client.Action.WaitFor(context.Background(), actions...)
 					assert.NoError(t, err)
@@ -38,7 +38,7 @@ func TestWaitFor(t *testing.T) {
 			{
 				Name: "succeed with already succeeded action",
 				Run: func(env testEnv) {
-					actions := []*Action{{ID: 1509772237, Status: "success"}}
+					actions := []*Action{{ID: 1509772237, Status: ActionStatusSuccess}}
 
 					err := env.Client.Action.WaitFor(context.Background(), actions...)
 					assert.NoError(t, err)
@@ -54,7 +54,7 @@ func TestWaitFor(t *testing.T) {
 						}`},
 				},
 				Run: func(env testEnv) {
-					actions := []*Action{{ID: 1509772237, Status: "running"}}
+					actions := []*Action{{ID: 1509772237, Status: ActionStatusRunning}}
 
 					err := env.Client.Action.WaitFor(context.Background(), actions...)
 					assert.Error(t, err)
@@ -64,7 +64,7 @@ func TestWaitFor(t *testing.T) {
 			{
 				Name: "fail with canceled context",
 				Run: func(env testEnv) {
-					actions := []*Action{{ID: 1509772237, Status: "running"}}
+					actions := []*Action{{ID: 1509772237, Status: ActionStatusRunning}}
 
 					ctx, cancelFunc := context.WithCancel(context.Background())
 					cancelFunc()
@@ -78,7 +78,7 @@ func TestWaitFor(t *testing.T) {
 					{"GET", "/actions?id=1509772237&page=1&sort=status&sort=id", nil, 503, ""},
 				},
 				Run: func(env testEnv) {
-					actions := []*Action{{ID: 1509772237, Status: "running"}}
+					actions := []*Action{{ID: 1509772237, Status: ActionStatusRunning}}
 
 					err := env.Client.Action.WaitFor(context.Background(), actions...)
 					assert.Error(t, err)
@@ -134,9 +134,9 @@ func TestWaitForFunc(t *testing.T) {
 				},
 				Run: func(env testEnv) {
 					actions := []*Action{
-						{ID: 1509772236, Status: "success"},
-						{ID: 1509772237, Status: "running"},
-						{ID: 1509772238, Status: "running"},
+						{ID: 1509772236, Status: ActionStatusSuccess},
+						{ID: 1509772237, Status: ActionStatusRunning},
+						{ID: 1509772238, Status: ActionStatusRunning},
 					}
 					progress := make([]int, 0)
 
