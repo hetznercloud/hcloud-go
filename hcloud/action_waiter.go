@@ -48,7 +48,10 @@ func (c *ActionClient) WaitForFunc(ctx context.Context, handleUpdate func(update
 			retries++
 		}
 
-		opts := ActionListOpts{Sort: []string{"status", "id"}}
+		opts := ActionListOpts{
+			Sort: []string{"status", "id"},
+			ID:   make([]int64, 0, len(running)),
+		}
 		for actionID := range running {
 			opts.ID = append(opts.ID, actionID)
 		}
