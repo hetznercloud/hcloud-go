@@ -6,8 +6,9 @@ import (
 	"errors"
 	"net/http"
 	"reflect"
-	"strings"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
@@ -127,7 +128,7 @@ func TestActionClientWatchOverallProgress(t *testing.T) {
 		t.Fatalf("expected hcloud.Error, but got: %#v", err)
 	}
 
-	expectedProgressUpdates := []int{50, 100}
+	expectedProgressUpdates := []int{25, 62, 100}
 	if !reflect.DeepEqual(progressUpdates, expectedProgressUpdates) {
 		t.Fatalf("expected progresses %v but received %v", expectedProgressUpdates, progressUpdates)
 	}
@@ -202,9 +203,7 @@ func TestActionClientWatchOverallProgressInvalidID(t *testing.T) {
 
 	err := errs[0]
 
-	if !strings.HasPrefix(err.Error(), "failed to wait for actions") {
-		t.Fatalf("expected failed to wait for actions error, but got: %#v", err)
-	}
+	assert.Equal(t, "actions not found: [1]", err.Error())
 
 	expectedProgressUpdates := []int{}
 	if !reflect.DeepEqual(progressUpdates, expectedProgressUpdates) {
@@ -218,39 +217,36 @@ func TestActionClientWatchProgress(t *testing.T) {
 
 	callCount := 0
 
-	env.Mux.HandleFunc("/actions/1", func(w http.ResponseWriter, r *http.Request) {
+	env.Mux.HandleFunc("/actions", func(w http.ResponseWriter, r *http.Request) {
 		callCount++
 		w.Header().Set("Content-Type", "application/json")
 		switch callCount {
 		case 1:
-			_ = json.NewEncoder(w).Encode(schema.ActionGetResponse{
-				Action: schema.Action{
-					ID:       1,
-					Status:   "running",
-					Progress: 50,
-				},
-			})
+			_, _ = w.Write([]byte(`{
+				"actions": [
+					{ "id": 1, "status": "running", "progress": 50 }
+				],
+				"meta": { "pagination": { "page": 1 }}
+			}`))
 		case 2:
 			w.WriteHeader(http.StatusConflict)
-			_ = json.NewEncoder(w).Encode(schema.ErrorResponse{
-				Error: schema.Error{
-					Code:    string(ErrorCodeConflict),
-					Message: "conflict",
-				},
-			})
+			_, _ = w.Write([]byte(`{
+				"error": { 
+					"code": "conflict",
+					"message": "conflict"
+				}
+			}`))
 			return
 		case 3:
-			_ = json.NewEncoder(w).Encode(schema.ActionGetResponse{
-				Action: schema.Action{
-					ID:       1,
-					Status:   "error",
-					Progress: 100,
-					Error: &schema.ActionError{
-						Code:    "action_failed",
-						Message: "action failed",
-					},
-				},
-			})
+			_, _ = w.Write([]byte(`{
+				"actions": [
+					{ "id": 1, "status": "error", "progress": 100, "error": {
+						"code": "action_failed",
+						"message": "action failed"
+					} }
+				],
+				"meta": { "pagination": { "page": 1 }}
+			}`))
 		default:
 			t.Errorf("unexpected number of calls to the test server: %v", callCount)
 		}
@@ -293,7 +289,7 @@ func TestActionClientWatchProgressError(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
 
-	env.Mux.HandleFunc("/actions/1", func(w http.ResponseWriter, r *http.Request) {
+	env.Mux.HandleFunc("/actions", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusUnprocessableEntity)
 		_ = json.NewEncoder(w).Encode(schema.ErrorResponse{
@@ -304,7 +300,7 @@ func TestActionClientWatchProgressError(t *testing.T) {
 		})
 	})
 
-	action := &Action{ID: 1}
+	action := &Action{ID: 1, Status: ActionStatusRunning}
 	ctx := context.Background()
 	_, errCh := env.Client.Action.WatchProgress(ctx, action)
 	if err := <-errCh; err == nil {
@@ -318,26 +314,20 @@ func TestActionClientWatchProgressInvalidID(t *testing.T) {
 
 	callCount := 0
 
-	env.Mux.HandleFunc("/actions/1", func(w http.ResponseWriter, r *http.Request) {
+	env.Mux.HandleFunc("/actions", func(w http.ResponseWriter, r *http.Request) {
 		callCount++
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
 		switch callCount {
 		case 1:
-			_ = json.NewEncoder(w).Encode(schema.ErrorResponse{
-				Error: schema.Error{
-					Code:    string(ErrorCodeNotFound),
-					Message: "action with ID '1' not found",
-					Details: nil,
-				},
-			})
+			_, _ = w.Write([]byte(`{
+				"actions": [],
+				"meta": { "pagination": { "page": 1 }}
+			}`))
 		default:
 			t.Errorf("unexpected number of calls to the test server: %v", callCount)
 		}
 	})
-	action := &Action{
-		ID: 1,
-	}
+	action := &Action{ID: 1, Status: ActionStatusRunning}
 
 	ctx := context.Background()
 	progressCh, errCh := env.Client.Action.WatchProgress(ctx, action)
@@ -356,9 +346,8 @@ loop:
 		}
 	}
 
-	if !strings.HasPrefix(err.Error(), "failed to wait for action") {
-		t.Fatalf("expected failed to wait for action error, but got: %#v", err)
-	}
+	assert.Equal(t, "actions not found: [1]", err.Error())
+
 	if len(progressUpdates) != 0 {
 		t.Fatalf("unexpected progress updates: %v", progressUpdates)
 	}
