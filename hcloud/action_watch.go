@@ -3,7 +3,6 @@ package hcloud
 import (
 	"context"
 	"fmt"
-	"time"
 )
 
 // WatchOverallProgress watches several actions' progress until they complete
@@ -24,6 +23,8 @@ import (
 //
 // WatchOverallProgress uses the [WithPollBackoffFunc] of the [Client] to wait
 // until sending the next request.
+//
+// Deprecated: WatchOverallProgress is deprecated, use [WaitForFunc] instead.
 func (c *ActionClient) WatchOverallProgress(ctx context.Context, actions []*Action) (<-chan int, <-chan error) {
 	errCh := make(chan error, len(actions))
 	progressCh := make(chan int)
@@ -32,66 +33,37 @@ func (c *ActionClient) WatchOverallProgress(ctx context.Context, actions []*Acti
 		defer close(errCh)
 		defer close(progressCh)
 
-		completedIDs := make([]int64, 0, len(actions))
-		watchIDs := make(map[int64]struct{}, len(actions))
-		for _, action := range actions {
-			watchIDs[action.ID] = struct{}{}
-		}
-
-		retries := 0
-		previousProgress := 0
-
-		for {
-			select {
-			case <-ctx.Done():
-				errCh <- ctx.Err()
-				return
-			case <-time.After(c.action.client.pollBackoffFunc(retries)):
-				retries++
+		previousGlobalProgress := 0
+		progressByAction := make(map[int64]int, len(actions))
+		err := c.WaitForFunc(ctx, func(update *Action) error {
+			switch update.Status {
+			case ActionStatusRunning:
+				progressByAction[update.ID] = update.Progress
+			case ActionStatusSuccess:
+				progressByAction[update.ID] = 100
+			case ActionStatusError:
+				progressByAction[update.ID] = 100
+				errCh <- fmt.Errorf("action %d failed: %w", update.ID, update.Error())
 			}
 
-			opts := ActionListOpts{}
-			for watchID := range watchIDs {
-				opts.ID = append(opts.ID, watchID)
+			// Compute global progress
+			progressSum := 0
+			for _, value := range progressByAction {
+				progressSum += value
+			}
+			globalProgress := progressSum / len(actions)
+
+			// Only send progress when it changed
+			if globalProgress != 0 && globalProgress != previousGlobalProgress {
+				sendProgress(progressCh, globalProgress)
+				previousGlobalProgress = globalProgress
 			}
 
-			as, err := c.AllWithOpts(ctx, opts)
-			if err != nil {
-				errCh <- err
-				return
-			}
-			if len(as) == 0 {
-				// No actions returned for the provided IDs, they do not exist in the API.
-				// We need to catch and fail early for this, otherwise the loop will continue
-				// indefinitely.
-				errCh <- fmt.Errorf("failed to wait for actions: remaining actions (%v) are not returned from API", opts.ID)
-				return
-			}
+			return nil
+		}, actions...)
 
-			progress := 0
-			for _, a := range as {
-				switch a.Status {
-				case ActionStatusRunning:
-					progress += a.Progress
-				case ActionStatusSuccess:
-					delete(watchIDs, a.ID)
-					completedIDs = append(completedIDs, a.ID)
-				case ActionStatusError:
-					delete(watchIDs, a.ID)
-					completedIDs = append(completedIDs, a.ID)
-					errCh <- fmt.Errorf("action %d failed: %w", a.ID, a.Error())
-				}
-			}
-
-			progress += len(completedIDs) * 100
-			if progress != 0 && progress != previousProgress {
-				sendProgress(progressCh, progress/len(actions))
-				previousProgress = progress
-			}
-
-			if len(watchIDs) == 0 {
-				return
-			}
+		if err != nil {
+			errCh <- err
 		}
 	}()
 
@@ -116,6 +88,8 @@ func (c *ActionClient) WatchOverallProgress(ctx context.Context, actions []*Acti
 //
 // WatchProgress uses the [WithPollBackoffFunc] of the [Client] to wait until
 // sending the next request.
+//
+// Deprecated: WatchProgress is deprecated, use [WaitForFunc] instead.
 func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-chan int, <-chan error) {
 	errCh := make(chan error, 1)
 	progressCh := make(chan int)
@@ -124,38 +98,22 @@ func (c *ActionClient) WatchProgress(ctx context.Context, action *Action) (<-cha
 		defer close(errCh)
 		defer close(progressCh)
 
-		retries := 0
-
-		for {
-			select {
-			case <-ctx.Done():
-				errCh <- ctx.Err()
-				return
-			case <-time.After(c.action.client.pollBackoffFunc(retries)):
-				retries++
-			}
-
-			a, _, err := c.GetByID(ctx, action.ID)
-			if err != nil {
-				errCh <- err
-				return
-			}
-			if a == nil {
-				errCh <- fmt.Errorf("failed to wait for action %d: action not returned from API", action.ID)
-				return
-			}
-
-			switch a.Status {
+		err := c.WaitForFunc(ctx, func(update *Action) error {
+			switch update.Status {
 			case ActionStatusRunning:
-				sendProgress(progressCh, a.Progress)
+				sendProgress(progressCh, update.Progress)
 			case ActionStatusSuccess:
 				sendProgress(progressCh, 100)
-				errCh <- nil
-				return
 			case ActionStatusError:
-				errCh <- a.Error()
-				return
+				// Do not wrap the action error
+				return update.Error()
 			}
+
+			return nil
+		}, action)
+
+		if err != nil {
+			errCh <- err
 		}
 	}()
 
