@@ -101,7 +101,7 @@ func (c *ActionClient) WaitForFunc(ctx context.Context, handleUpdate func(update
 // If a single action fails, the function will stop waiting and the error set in the
 // action will be returned as an [ActionError].
 //
-// For more flexibility, see the [WaitForFunc] function.
+// For more flexibility, see the [ActionClient.WaitForFunc] function.
 func (c *ActionClient) WaitFor(ctx context.Context, actions ...*Action) error {
 	return c.WaitForFunc(
 		ctx,
