@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.55.0](https://github.com/hetznercloud/hcloud-go/compare/v1.54.1...v1.55.0) (2024-05-06)
+
+
+### Features
+
+* **error:** show internal correlation id in error messages ([#417](https://github.com/hetznercloud/hcloud-go/issues/417)) ([f7f96a5](https://github.com/hetznercloud/hcloud-go/commit/f7f96a5d5ebc0d8239b946b928d5bd534cc2bf21))
+* implement actions waiter ([c4d8be8](https://github.com/hetznercloud/hcloud-go/commit/c4d8be8f053469948d564e93b043af05c61afb41))
+* require Go &gt;= 1.21 ([18adaf6](https://github.com/hetznercloud/hcloud-go/commit/18adaf6abe5caeee38af030af832af98baeaaf0e))
+
+
+### Bug Fixes
+
+* improve error message format with correlation id ([1939cfb](https://github.com/hetznercloud/hcloud-go/commit/1939cfb6c8bbcd495e79c059e11a30ffd7c16948))
+
 ## [1.54.1](https://github.com/hetznercloud/hcloud-go/compare/v1.54.0...v1.54.1) (2024-04-19)
 
 
