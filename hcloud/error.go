@@ -104,7 +104,7 @@ func (e Error) Error() string {
 		correlationID := resp.internalCorrelationID()
 		if correlationID != "" {
 			// For easier debugging, the error string contains the Correlation ID of the response.
-			return fmt.Sprintf("%s (%s) (Correlation ID: %s)", e.Message, e.Code, correlationID)
+			return fmt.Sprintf("%s (%s, %s)", e.Message, e.Code, correlationID)
 		}
 	}
 	return fmt.Sprintf("%s (%s)", e.Message, e.Code)
