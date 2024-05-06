@@ -39,13 +39,13 @@ func TestError_Error(t *testing.T) {
 						Header: func() http.Header {
 							headers := http.Header{}
 							// [http.Header] requires normalized header names, easiest to do by using the Set method
-							headers.Set("X-Correlation-ID", "foobar")
+							headers.Set("X-Correlation-ID", "d5064a1f0bb9de4b")
 							return headers
 						}(),
 					},
 				},
 			},
-			want: "Creating image failed because of an unknown error. (unknown_error) (Correlation ID: foobar)",
+			want: "Creating image failed because of an unknown error. (unknown_error, d5064a1f0bb9de4b)",
 		},
 		{
 			name: "internal server error without correlation id",
