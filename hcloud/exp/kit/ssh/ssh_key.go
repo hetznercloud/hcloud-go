@@ -14,17 +14,17 @@ import (
 func GenerateKeyPair() ([]byte, []byte, error) {
 	pub, priv, err := ed25519.GenerateKey(nil)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("could not generate key pair: %w", err)
 	}
 
 	privBytes, err := encodePrivateKey(priv)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("could not encode private key: %w", err)
 	}
 
 	pubBytes, err := encodePublicKey(pub)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, fmt.Errorf("could not encode public key: %w", err)
 	}
 
 	return privBytes, pubBytes, nil
@@ -57,17 +57,17 @@ type privateKeyWithPublic interface {
 func GeneratePublicKey(privBytes []byte) ([]byte, error) {
 	priv, err := ssh.ParseRawPrivateKey(privBytes)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not decode private key: %w", err)
 	}
 
 	key, ok := priv.(privateKeyWithPublic)
 	if !ok {
-		return nil, fmt.Errorf("key doesn't export PublicKey()")
+		return nil, fmt.Errorf("private key doesn't export PublicKey()")
 	}
 
 	pubBytes, err := encodePublicKey(key.Public())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("could not encode public key: %w", err)
 	}
 
 	return pubBytes, nil
@@ -77,7 +77,7 @@ func GeneratePublicKey(privBytes []byte) ([]byte, error) {
 func GetPublicKeyFingerprint(pubBytes []byte) (string, error) {
 	pub, _, _, _, err := ssh.ParseAuthorizedKey(pubBytes)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("could not decode public key: %w", err)
 	}
 
 	fingerprint := ssh.FingerprintLegacyMD5(pub)
