@@ -62,7 +62,7 @@ func GeneratePublicKey(privBytes []byte) ([]byte, error) {
 
 	key, ok := priv.(privateKeyWithPublicKey)
 	if !ok {
-		return nil, fmt.Errorf("private key doesn't export PublicKey()")
+		return nil, fmt.Errorf("private key doesn't export Public() crypto.PublicKey")
 	}
 
 	pubBytes, err := encodePublicKey(key.Public())
