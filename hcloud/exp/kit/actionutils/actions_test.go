@@ -1,4 +1,4 @@
-package actions
+package actionutils
 
 import (
 	"testing"
