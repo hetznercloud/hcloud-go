@@ -27,7 +27,7 @@ type Client struct {
 	Volume           *VolumeClient
 }
 
-func NewMockClient(ctrl *gomock.Controller) *Client {
+func NewClient(ctrl *gomock.Controller) *Client {
 	return &Client{
 		Action:           NewActionClient(ctrl),
 		Certificate:      NewCertificateClient(ctrl),
