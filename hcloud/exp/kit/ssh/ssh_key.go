@@ -48,7 +48,7 @@ func encodePublicKey(pub crypto.PublicKey) ([]byte, error) {
 	return ssh.MarshalAuthorizedKey(sshPub), nil
 }
 
-type privateKeyWithPublic interface {
+type privateKeyWithPublicKey interface {
 	crypto.PrivateKey
 	Public() crypto.PublicKey
 }
@@ -60,7 +60,7 @@ func GeneratePublicKey(privBytes []byte) ([]byte, error) {
 		return nil, fmt.Errorf("could not decode private key: %w", err)
 	}
 
-	key, ok := priv.(privateKeyWithPublic)
+	key, ok := priv.(privateKeyWithPublicKey)
 	if !ok {
 		return nil, fmt.Errorf("private key doesn't export PublicKey()")
 	}
