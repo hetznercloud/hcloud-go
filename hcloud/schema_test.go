@@ -1235,6 +1235,7 @@ func TestVolumeFromSchema(t *testing.T) {
 		"name": "db-storage",
 		"status": "creating",
 		"server": 2,
+        "format": "xfs",
 		"location": {
 			"id": 1,
 			"name": "fsn1",
@@ -1276,6 +1277,9 @@ func TestVolumeFromSchema(t *testing.T) {
 	}
 	if volume.Server != nil && volume.Server.ID != 2 {
 		t.Errorf("unexpected server ID: %v", volume.Server.ID)
+	}
+	if volume.Format == nil || *volume.Format != "xfs" {
+		t.Errorf("unexpected format: %v", volume.Format)
 	}
 	if volume.Location == nil || volume.Location.ID != 1 {
 		t.Errorf("unexpected location: %v", volume.Location)
