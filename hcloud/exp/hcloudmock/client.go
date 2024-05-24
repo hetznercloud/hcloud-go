@@ -2,8 +2,6 @@ package hcloudmock
 
 import (
 	gomock "go.uber.org/mock/gomock"
-
-	hcloud "github.com/hetznercloud/hcloud-go/v2/hcloud"
 )
 
 type Client struct {
@@ -49,5 +47,3 @@ func NewClient(ctrl *gomock.Controller) *Client {
 		Volume:           NewVolumeClient(ctrl),
 	}
 }
-
-func (*Client) WithOpts(...hcloud.ClientOption) {}
