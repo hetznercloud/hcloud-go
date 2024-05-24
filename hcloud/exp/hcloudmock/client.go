@@ -1,4 +1,4 @@
-package mock
+package hcloudmock
 
 import (
 	gomock "go.uber.org/mock/gomock"

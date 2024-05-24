@@ -7,7 +7,7 @@
 //
 
 // Package mock is a generated GoMock package.
-package mock
+package hcloudmock
 
 import (
 	context "context"
