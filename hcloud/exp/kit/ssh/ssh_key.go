@@ -9,7 +9,7 @@ import (
 	"golang.org/x/crypto/ssh"
 )
 
-// GenerateKeyPair generate an new ed25519 ssh key pair, and returns the private key and
+// GenerateKeyPair generates a new ed25519 ssh key pair, and returns the private key and
 // the public key respectively.
 func GenerateKeyPair() ([]byte, []byte, error) {
 	pub, priv, err := ed25519.GenerateKey(nil)
