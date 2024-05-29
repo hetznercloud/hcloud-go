@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.9.0](https://github.com/hetznercloud/hcloud-go/compare/v2.8.0...v2.9.0) (2024-05-29)
+
+
+### Features
+
+* **exp:** add `AppendNextActions` function ([#440](https://github.com/hetznercloud/hcloud-go/issues/440)) ([b07d7ad](https://github.com/hetznercloud/hcloud-go/commit/b07d7adf0bb08dd372f1f6ff630d16af8cb1265c))
+* **exp:** add ssh key functions ([#441](https://github.com/hetznercloud/hcloud-go/issues/441)) ([d766e96](https://github.com/hetznercloud/hcloud-go/commit/d766e96e2220b069a0a8067a3249afe48cf68b2e))
+
+
+### Bug Fixes
+
+* **exp:** rename to `sshutils` package name ([#450](https://github.com/hetznercloud/hcloud-go/issues/450)) ([6d4100d](https://github.com/hetznercloud/hcloud-go/commit/6d4100dbceb9a43a66bad3ce91cee039198130c3))
+
 ## [2.8.0](https://github.com/hetznercloud/hcloud-go/compare/v2.7.2...v2.8.0) (2024-05-06)
 
 
