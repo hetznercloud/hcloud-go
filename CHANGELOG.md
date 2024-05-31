@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.56.0](https://github.com/hetznercloud/hcloud-go/compare/v1.55.0...v1.56.0) (2024-05-22)
+
+
+### Features
+
+* add volume format property ([5ff15f8](https://github.com/hetznercloud/hcloud-go/commit/5ff15f8461b1ffb69418209b332f5b5905a024c7))
+
 ## [1.55.0](https://github.com/hetznercloud/hcloud-go/compare/v1.54.1...v1.55.0) (2024-05-06)
 
 
