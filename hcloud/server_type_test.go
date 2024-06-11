@@ -77,7 +77,7 @@ func TestServerTypeClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/server_types", func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.RawQuery != "name=cx10" {
+			if r.URL.RawQuery != "name=cx22" {
 				t.Fatal("missing name query")
 			}
 			json.NewEncoder(w).Encode(schema.ServerTypeListResponse{
@@ -90,7 +90,7 @@ func TestServerTypeClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
-		serverType, _, err := env.Client.ServerType.GetByName(ctx, "cx10")
+		serverType, _, err := env.Client.ServerType.GetByName(ctx, "cx22")
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -102,7 +102,7 @@ func TestServerTypeClient(t *testing.T) {
 		}
 
 		t.Run("via Get", func(t *testing.T) {
-			serverType, _, err := env.Client.ServerType.Get(ctx, "cx10")
+			serverType, _, err := env.Client.ServerType.Get(ctx, "cx22")
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -120,7 +120,7 @@ func TestServerTypeClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/server_types", func(w http.ResponseWriter, r *http.Request) {
-			if r.URL.RawQuery != "name=cx10" {
+			if r.URL.RawQuery != "name=cx22" {
 				t.Fatal("missing name query")
 			}
 			json.NewEncoder(w).Encode(schema.ServerTypeListResponse{
@@ -129,7 +129,7 @@ func TestServerTypeClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
-		serverType, _, err := env.Client.ServerType.GetByName(ctx, "cx10")
+		serverType, _, err := env.Client.ServerType.GetByName(ctx, "cx22")
 		if err != nil {
 			t.Fatal(err)
 		}

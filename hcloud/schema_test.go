@@ -600,7 +600,7 @@ func TestServerPrivateNetSchema(t *testing.T) {
 func TestServerTypeSchema(t *testing.T) {
 	data := []byte(`{
 		"id": 1,
-		"name": "cx10",
+		"name": "cx22",
 		"description": "description",
 		"cores": 4,
 		"memory": 1.0,
