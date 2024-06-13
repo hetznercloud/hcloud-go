@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -40,13 +41,28 @@ func ConstantBackoff(d time.Duration) BackoffFunc {
 }
 
 // ExponentialBackoff returns a BackoffFunc which implements an exponential
-// backoff.
-// It uses the formula:
+// backoff, capped to 24 seconds with an added 50% of jitter.
+// See [ExponentialBackoffWithOpts] for more details.
+func ExponentialBackoff(multiplier float64, baseDuration time.Duration) BackoffFunc {
+	return ExponentialBackoffWithOpts(multiplier, baseDuration, 24*time.Second, 0.5)
+}
+
+// ExponentialBackoffWithOpts returns a BackoffFunc which implements an exponential
+// backoff, capped to a provided maximum, with an additional jitter ratio.
 //
-//	b^retries * d
-func ExponentialBackoff(b float64, d time.Duration) BackoffFunc {
+// It uses the formula:
+// - backoff = min(capDuration, baseDuration * (multiplier ^ retries))
+// - backoff = backoff + (rand(0, backoff) * jitterRatio).
+func ExponentialBackoffWithOpts(multiplier float64, baseDuration time.Duration, capDuration time.Duration, jitterRatio float64) BackoffFunc {
+	baseSeconds := baseDuration.Seconds()
+	capSeconds := capDuration.Seconds()
+
 	return func(retries int) time.Duration {
-		return time.Duration(math.Pow(b, float64(retries))) * d
+		backoff := baseSeconds * math.Pow(multiplier, float64(retries)) // Exponential backoff
+		backoff = math.Min(capSeconds, backoff)                         // Cap backoff
+		backoff += rand.Float64() * backoff * jitterRatio               // #nosec G404 Add jitter
+
+		return time.Duration(backoff * float64(time.Second))
 	}
 }
 
