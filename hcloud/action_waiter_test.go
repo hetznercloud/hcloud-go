@@ -15,8 +15,7 @@ func TestWaitFor(t *testing.T) {
 			{
 				Name: "succeed",
 				WantRequests: []mockutils.Request{
-					{
-						Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
+					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
 						Status: 200,
 						JSONRaw: `{
 							"actions": [
