@@ -34,7 +34,6 @@ func (h *retryHandler) Do(req *http.Request, v any) (resp *Response, err error) 
 			// - request preparation
 			// - network connectivity
 			// - http status code (see [errorHandler])
-			// - response parsing
 			if IsError(err, ErrorCodeConflict) {
 				time.Sleep(h.backoffFunc(retries))
 				retries++
