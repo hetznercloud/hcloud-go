@@ -19,9 +19,8 @@ type debugHandler struct {
 }
 
 func (h *debugHandler) Do(req *http.Request, v any) (resp *Response, err error) {
-	// Duplicate the request, so we can redact the auth header and read the body
-
-	// Clone the request using the new context
+	// Clone the request, so we can redact the auth header, read the body
+	// and use a new context.
 	cloned := req.Clone(context.Background())
 
 	if req.ContentLength > 0 {
