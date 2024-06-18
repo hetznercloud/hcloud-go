@@ -1,6 +1,7 @@
 package hcloud
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -280,6 +281,23 @@ type Response struct {
 	// body holds a copy of the http.Response body that must be used within the handler
 	// chain. The http.Response.Body is reserved for external users.
 	body []byte
+}
+
+// populateBody copies the original [http.Response] body into the internal [Response] body
+// property, and restore the original [http.Response] body as if it was untouched.
+func (r *Response) populateBody() error {
+	// Read full response body and save it for later use
+	body, err := io.ReadAll(r.Body)
+	r.Body.Close()
+	if err != nil {
+		return err
+	}
+	r.body = body
+
+	// Restore the body as if it was untouched, as it might be read by external users
+	r.Body = io.NopCloser(bytes.NewReader(body))
+
+	return nil
 }
 
 // hasJSONBody returns whether the response has a JSON body.
