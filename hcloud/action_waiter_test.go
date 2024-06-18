@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutils"
 )
 
 func TestWaitFor(t *testing.T) {
@@ -12,21 +14,25 @@ func TestWaitFor(t *testing.T) {
 		[]MockedTestCase{
 			{
 				Name: "succeed",
-				WantRequests: []MockedRequest{
-					{"GET", "/actions?id=1509772237&page=1&sort=status&sort=id", nil, 200,
-						`{
+				WantRequests: []mockutils.Request{
+					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
+						Status: 200,
+						JSONRaw: `{
 							"actions": [
 								{ "id": 1509772237, "status": "running", "progress": 0 }
 							],
 							"meta": { "pagination": { "page": 1 }}
-						}`},
-					{"GET", "/actions?id=1509772237&page=1&sort=status&sort=id", nil, 200,
-						`{
+						}`,
+					},
+					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
+						Status: 200,
+						JSONRaw: `{
 							"actions": [
 								{ "id": 1509772237, "status": "success", "progress": 100 }
 							],
 							"meta": { "pagination": { "page": 1 }}
-						}`},
+						}`,
+					},
 				},
 				Run: func(env testEnv) {
 					actions := []*Action{{ID: 1509772237, Status: ActionStatusRunning}}
@@ -46,12 +52,14 @@ func TestWaitFor(t *testing.T) {
 			},
 			{
 				Name: "fail with unknown action",
-				WantRequests: []MockedRequest{
-					{"GET", "/actions?id=1509772237&page=1&sort=status&sort=id", nil, 200,
-						`{
+				WantRequests: []mockutils.Request{
+					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
+						Status: 200,
+						JSONRaw: `{
 							"actions": [],
 							"meta": { "pagination": { "page": 1 }}
-						}`},
+						}`,
+					},
 				},
 				Run: func(env testEnv) {
 					actions := []*Action{{ID: 1509772237, Status: ActionStatusRunning}}
@@ -74,8 +82,9 @@ func TestWaitFor(t *testing.T) {
 			},
 			{
 				Name: "fail with api error",
-				WantRequests: []MockedRequest{
-					{"GET", "/actions?id=1509772237&page=1&sort=status&sort=id", nil, 503, ""},
+				WantRequests: []mockutils.Request{
+					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
+						Status: 503},
 				},
 				Run: func(env testEnv) {
 					actions := []*Action{{ID: 1509772237, Status: ActionStatusRunning}}
@@ -94,33 +103,40 @@ func TestWaitForFunc(t *testing.T) {
 		[]MockedTestCase{
 			{
 				Name: "succeed",
-				WantRequests: []MockedRequest{
-					{"GET", "/actions?id=1509772237&id=1509772238&page=1&sort=status&sort=id", nil, 200,
-						`{
+				WantRequests: []mockutils.Request{
+					{Method: "GET", Path: "/actions?id=1509772237&id=1509772238&page=1&sort=status&sort=id",
+						Status: 200,
+						JSONRaw: `{
 							"actions": [
 								{ "id": 1509772237, "status": "running", "progress": 40 },
 								{ "id": 1509772238, "status": "running", "progress": 0 }
 							],
 							"meta": { "pagination": { "page": 1 }}
-						}`},
-					{"GET", "/actions?id=1509772237&id=1509772238&page=1&sort=status&sort=id", nil, 200,
-						`{
+						}`,
+					},
+					{Method: "GET", Path: "/actions?id=1509772237&id=1509772238&page=1&sort=status&sort=id",
+						Status: 200,
+						JSONRaw: `{
 							"actions": [
 								{ "id": 1509772237, "status": "running", "progress": 60 },
 								{ "id": 1509772238, "status": "running", "progress": 50 }
 							],
 							"meta": { "pagination": { "page": 1 }}
-						}`},
-					{"GET", "/actions?id=1509772237&id=1509772238&page=1&sort=status&sort=id", nil, 200,
-						`{
+						}`,
+					},
+					{Method: "GET", Path: "/actions?id=1509772237&id=1509772238&page=1&sort=status&sort=id",
+						Status: 200,
+						JSONRaw: `{
 							"actions": [
 								{ "id": 1509772237, "status": "success", "progress": 100 },
 								{ "id": 1509772238, "status": "running", "progress": 75 }
 							],
 							"meta": { "pagination": { "page": 1 }}
-						}`},
-					{"GET", "/actions?id=1509772238&page=1&sort=status&sort=id", nil, 200,
-						`{
+						}`,
+					},
+					{Method: "GET", Path: "/actions?id=1509772238&page=1&sort=status&sort=id",
+						Status: 200,
+						JSONRaw: `{
 							"actions": [
 								{ "id": 1509772238, "status": "error", "progress": 75, 
 									"error": {
@@ -130,7 +146,8 @@ func TestWaitForFunc(t *testing.T) {
 								}
 							],
 							"meta": { "pagination": { "page": 1 }}
-						}`},
+						}`,
+					},
 				},
 				Run: func(env testEnv) {
 					actions := []*Action{
