@@ -15,6 +15,16 @@ func TestErrorHandler(t *testing.T) {
 		want    func(t *testing.T, resp *Response, err error)
 	}{
 		{
+			name: "no error",
+			wrapped: func(_ *http.Request, _ any) (*Response, error) {
+				return fakeResponse(t, 200, `{"data": "Hello"}`, true), nil
+			},
+			want: func(t *testing.T, resp *Response, err error) {
+				assert.Equal(t, 200, resp.StatusCode)
+				assert.NoError(t, err)
+			},
+		},
+		{
 			name: "network error",
 			wrapped: func(_ *http.Request, _ any) (*Response, error) {
 				return nil, fmt.Errorf("network error")
