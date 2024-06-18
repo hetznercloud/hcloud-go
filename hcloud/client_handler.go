@@ -20,16 +20,16 @@ func assembleHandlerChain(client *Client) handler {
 	// Start down the chain: sending the http request
 	h := newHTTPHandler(client.httpClient)
 
+	// Insert debug writer if enabled
+	if client.debugWriter != nil {
+		h = wrapDebugHandler(h, client.debugWriter)
+	}
+
 	// Read rate limit headers
 	h = wrapRateLimitHandler(h)
 
 	// Build error from response
 	h = wrapErrorHandler(h)
-
-	// Insert debug writer if enabled
-	if client.debugWriter != nil {
-		h = wrapDebugHandler(h, client.debugWriter)
-	}
 
 	// Retry request if condition are met
 	h = wrapRetryHandler(h, client.backoffFunc)
