@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/http/httputil"
 )
@@ -34,8 +33,7 @@ func (h *debugHandler) Do(req *http.Request, v any) (resp *Response, err error) 
 
 	dumpReq, err := httputil.DumpRequestOut(cloned, true)
 	if err != nil {
-		log.Println(err)
-		return
+		return nil, err
 	}
 
 	fmt.Fprintf(h.output, "--- Request:\n%s\n\n", dumpReq)
@@ -47,8 +45,7 @@ func (h *debugHandler) Do(req *http.Request, v any) (resp *Response, err error) 
 
 	dumpResp, err := httputil.DumpResponse(resp.Response, true)
 	if err != nil {
-		log.Println(err)
-		return
+		return nil, err
 	}
 
 	fmt.Fprintf(h.output, "--- Response:\n%s\n\n", dumpResp)
