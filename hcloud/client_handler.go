@@ -1,6 +1,7 @@
 package hcloud
 
 import (
+	"context"
 	"net/http"
 )
 
@@ -38,4 +39,18 @@ func assembleHandlerChain(client *Client) handler {
 	h = wrapParseHandler(h)
 
 	return h
+}
+
+// cloneRequest clones both the request and the request body.
+func cloneRequest(req *http.Request, ctx context.Context) (cloned *http.Request, err error) { //revive:disable:context-as-argument
+	cloned = req.Clone(ctx)
+
+	if req.ContentLength > 0 {
+		cloned.Body, err = req.GetBody()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return cloned, nil
 }

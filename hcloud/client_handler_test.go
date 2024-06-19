@@ -1,10 +1,14 @@
 package hcloud
 
 import (
+	"bytes"
+	"context"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -32,4 +36,28 @@ func fakeResponse(t *testing.T, statusCode int, body string, json bool) *Respons
 	require.NoError(t, resp.populateBody())
 
 	return resp
+}
+
+func TestCloneRequest(t *testing.T) {
+	ctx := context.Background()
+
+	req, err := http.NewRequest("GET", "/", bytes.NewBufferString("Hello"))
+	require.NoError(t, err)
+	req.Header.Set("Authorization", "sensitive")
+
+	cloned, err := cloneRequest(req, ctx)
+	require.NoError(t, err)
+	cloned.Header.Set("Authorization", "REDACTED")
+	cloned.Body = io.NopCloser(bytes.NewBufferString("Changed"))
+
+	// Check context
+	assert.Equal(t, req.Context(), cloned.Context())
+
+	// Check headers
+	assert.Equal(t, req.Header.Get("Authorization"), "sensitive")
+
+	// Check body
+	reqBody, err := io.ReadAll(req.Body)
+	require.NoError(t, err)
+	assert.Equal(t, string(reqBody), "Hello")
 }

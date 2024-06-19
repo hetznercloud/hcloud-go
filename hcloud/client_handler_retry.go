@@ -19,13 +19,9 @@ func (h *retryHandler) Do(req *http.Request, v any) (resp *Response, err error) 
 
 	for {
 		// Clone the request using the original context
-		cloned := req.Clone(req.Context())
-
-		if req.ContentLength > 0 {
-			cloned.Body, err = req.GetBody()
-			if err != nil {
-				return nil, err
-			}
+		cloned, err := cloneRequest(req, req.Context())
+		if err != nil {
+			return nil, err
 		}
 
 		resp, err = h.handler.Do(cloned, v)

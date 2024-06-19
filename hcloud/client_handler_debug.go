@@ -20,13 +20,9 @@ type debugHandler struct {
 func (h *debugHandler) Do(req *http.Request, v any) (resp *Response, err error) {
 	// Clone the request, so we can redact the auth header, read the body
 	// and use a new context.
-	cloned := req.Clone(context.Background())
-
-	if req.ContentLength > 0 {
-		cloned.Body, err = req.GetBody()
-		if err != nil {
-			return nil, err
-		}
+	cloned, err := cloneRequest(req, context.Background())
+	if err != nil {
+		return nil, err
 	}
 
 	cloned.Header.Set("Authorization", "REDACTED")
