@@ -28,14 +28,18 @@ func TestRetryHandler(t *testing.T) {
 		},
 		{
 			name: "http 503 error",
-			wrapped: func(_ *http.Request, _ any) (*Response, error) {
-				return nil, nil
+			wrapped: func(req *http.Request, _ any) (*Response, error) {
+				resp := fakeResponse(t, 503, "", false)
+				resp.Response.Request = req
+				return resp, fmt.Errorf("%w %d", ErrorStatusCode, 503)
 			},
-			want: 0,
+			want: 1,
 		},
 		{
 			name: "api conflict error",
-			wrapped: func(_ *http.Request, _ any) (*Response, error) {
+			wrapped: func(req *http.Request, _ any) (*Response, error) {
+				resp := fakeResponse(t, 409, "", false)
+				resp.Response.Request = req
 				return nil, ErrorFromSchema(schema.Error{Code: string(ErrorCodeConflict)})
 			},
 			want: 1,
