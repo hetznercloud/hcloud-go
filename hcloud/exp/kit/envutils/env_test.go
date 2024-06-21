@@ -49,6 +49,7 @@ func TestLookupWithFile(t *testing.T) {
 			name: "empty value from environment",
 			setup: func(t *testing.T, tmpDir string) {
 				t.Setenv("CONFIG", "")
+
 				// Test for precedence
 				filepath := writeTmpFile(t, tmpDir, "config", "content")
 				t.Setenv("CONFIG_FILE", filepath)
