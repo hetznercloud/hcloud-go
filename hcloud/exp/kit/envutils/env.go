@@ -21,7 +21,7 @@ func LookupWithFile(key string) (string, error) {
 		return value, nil
 	}
 
-	key = key + "_FILE"
+	key += "_FILE"
 
 	// Check if the value is set via a file (e.g. HCLOUD_TOKEN_FILE)
 	valueFile, ok := os.LookupEnv(key)

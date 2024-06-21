@@ -9,8 +9,9 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func writeTmpFile(t *testing.T, tmp string, filename string, content string) string {
-	filepath := path.Join(tmp, filename)
+// nolint:unparam
+func writeTmpFile(t *testing.T, tmpDir, filename, content string) string {
+	filepath := path.Join(tmpDir, filename)
 
 	err := os.WriteFile(filepath, []byte(content), 0644)
 	require.NoError(t, err)
@@ -25,7 +26,7 @@ func TestLookupWithFile(t *testing.T) {
 	}{
 		{
 			name:  "without any environment",
-			setup: func(t *testing.T, tmpDir string) {},
+			setup: func(_ *testing.T, _ string) {},
 			want: func(t *testing.T, value string, err error) {
 				assert.NoError(t, err)
 				assert.Equal(t, "", value)
@@ -84,7 +85,7 @@ func TestLookupWithFile(t *testing.T) {
 		},
 		{
 			name: "missing file",
-			setup: func(t *testing.T, tmpDir string) {
+			setup: func(t *testing.T, _ string) {
 				t.Setenv("CONFIG_FILE", "/tmp/this-file-does-not-exits")
 			},
 			want: func(t *testing.T, value string, err error) {
