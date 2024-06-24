@@ -17,7 +17,8 @@ type rateLimitHandler struct {
 func (h *rateLimitHandler) Do(req *http.Request, v any) (resp *Response, err error) {
 	resp, err = h.handler.Do(req, v)
 
-	if resp != nil && resp.Header != nil {
+	// Ensure the embedded [*http.Response] is not nil, e.g. on canceled context
+	if resp != nil && resp.Response != nil && resp.Response.Header != nil {
 		if h := resp.Header.Get("RateLimit-Limit"); h != "" {
 			resp.Meta.Ratelimit.Limit, _ = strconv.Atoi(h)
 		}
