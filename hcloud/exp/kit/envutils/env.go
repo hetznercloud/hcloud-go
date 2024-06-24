@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// LookupWithFile retrieves the value of the environment variable named by the key (e.g.
+// LookupEnvWithFile retrieves the value of the environment variable named by the key (e.g.
 // HCLOUD_TOKEN). If the previous environment variable is not set, it retrieves the
 // content of the file located by a second environment variable named by the key +
 // '_FILE' (.e.g HCLOUD_TOKEN_FILE).
@@ -14,7 +14,7 @@ import (
 // For both cases, the returned value may be empty.
 //
 // The value from the environment takes precedence over the value from the file.
-func LookupWithFile(key string) (string, error) {
+func LookupEnvWithFile(key string) (string, error) {
 	// Check if the value is set in the environment (e.g. HCLOUD_TOKEN)
 	value, ok := os.LookupEnv(key)
 	if ok {

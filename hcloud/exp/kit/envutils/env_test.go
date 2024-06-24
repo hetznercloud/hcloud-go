@@ -18,7 +18,8 @@ func writeTmpFile(t *testing.T, tmpDir, filename, content string) string {
 
 	return filepath
 }
-func TestLookupWithFile(t *testing.T) {
+
+func TestLookupEnvWithFile(t *testing.T) {
 	testCases := []struct {
 		name  string
 		setup func(t *testing.T, tmpDir string)
@@ -98,7 +99,7 @@ func TestLookupWithFile(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			tmpDir := t.TempDir()
 			testCase.setup(t, tmpDir)
-			value, err := LookupWithFile("CONFIG")
+			value, err := LookupEnvWithFile("CONFIG")
 			testCase.want(t, value, err)
 		})
 	}
