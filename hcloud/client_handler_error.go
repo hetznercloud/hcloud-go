@@ -9,7 +9,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
-var ErrorStatusCode = errors.New("server responded with status code")
+var ErrStatusCode = errors.New("server responded with status code")
 
 func wrapErrorHandler(wrapped handler) handler {
 	return &errorHandler{wrapped}
@@ -28,7 +28,7 @@ func (h *errorHandler) Do(req *http.Request, v any) (resp *Response, err error) 
 	if resp.StatusCode >= 400 && resp.StatusCode <= 599 {
 		err = errorFromBody(resp)
 		if err == nil {
-			err = fmt.Errorf("hcloud: %w %d", ErrorStatusCode, resp.StatusCode)
+			err = fmt.Errorf("hcloud: %w %d", ErrStatusCode, resp.StatusCode)
 		}
 	}
 	return resp, err

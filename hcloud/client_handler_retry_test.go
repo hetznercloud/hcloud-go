@@ -31,7 +31,7 @@ func TestRetryHandler(t *testing.T) {
 			wrapped: func(req *http.Request, _ any) (*Response, error) {
 				resp := fakeResponse(t, 503, "", false)
 				resp.Response.Request = req
-				return resp, fmt.Errorf("%w %d", ErrorStatusCode, 503)
+				return resp, fmt.Errorf("%w %d", ErrStatusCode, 503)
 			},
 			want: 1,
 		},

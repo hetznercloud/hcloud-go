@@ -60,7 +60,7 @@ func retryPolicy(resp *Response, err error) bool {
 			if apiErr.Code == ErrorCodeConflict {
 				return true
 			}
-		case errors.Is(err, ErrorStatusCode):
+		case errors.Is(err, ErrStatusCode):
 			if resp == nil || resp.Response == nil {
 				// Should not happen
 				return false
