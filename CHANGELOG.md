@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.57.0](https://github.com/hetznercloud/hcloud-go/compare/v1.56.0...v1.57.0) (2024-06-25)
+
+
+### Features
+
+* filter out nil actions in action waiter ([#464](https://github.com/hetznercloud/hcloud-go/issues/464)) ([#471](https://github.com/hetznercloud/hcloud-go/issues/471)) ([14bf589](https://github.com/hetznercloud/hcloud-go/commit/14bf589531514c49de5ea374696a880dea09a355))
+
 ## [1.56.0](https://github.com/hetznercloud/hcloud-go/compare/v1.55.0...v1.56.0) (2024-05-22)
 
 
