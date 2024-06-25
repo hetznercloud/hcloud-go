@@ -27,6 +27,10 @@ func TestHandler(t *testing.T) {
 			Status:  400,
 			JSONRaw: `{"error": "failed"}`,
 		},
+		{
+			Method: "GET", Path: "/",
+			Status: 503,
+		},
 	}))
 	defer server.Close()
 
@@ -34,13 +38,22 @@ func TestHandler(t *testing.T) {
 	resp, err := http.Get(server.URL)
 	require.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 	assert.Equal(t, `{"data":"Hello"}`, readBody(t, resp))
 
 	// Request 2
 	resp, err = http.Get(server.URL)
 	require.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode)
+	assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
 	assert.Equal(t, `{"error": "failed"}`, readBody(t, resp))
+
+	// Request 3
+	resp, err = http.Get(server.URL)
+	require.NoError(t, err)
+	assert.Equal(t, 503, resp.StatusCode)
+	assert.Equal(t, "", resp.Header.Get("Content-Type"))
+	assert.Equal(t, "", readBody(t, resp))
 }
 
 func readBody(t *testing.T, resp *http.Response) string {
