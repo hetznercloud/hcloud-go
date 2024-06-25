@@ -13,6 +13,8 @@ github.com/jessevdk/go-flags v1.4.1-0.20181029123624-5de817a9aa20 h1:dAOsPLhnBzI
 github.com/jessevdk/go-flags v1.4.1-0.20181029123624-5de817a9aa20/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
 github.com/jmattheis/goverter v1.4.0 h1:SrboBYMpGkj1XSgFhWwqzdP024zIa1+58YzUm+0jcBE=
 github.com/jmattheis/goverter v1.4.0/go.mod h1:iVIl/4qItWjWj2g3vjouGoYensJbRqDHpzlEVMHHFeY=
+github.com/jmattheis/goverter v1.5.0 h1:3ANt/y+OzmB63Kw55ejYPv0J44RqNY781zNETVgi8WQ=
+github.com/jmattheis/goverter v1.5.0/go.mod h1:iVIl/4qItWjWj2g3vjouGoYensJbRqDHpzlEVMHHFeY=
 github.com/kr/pretty v0.3.1 h1:flRD4NNwYAUpkphVc1HcthR4KEIFJ65n8Mw5qdRn3LE=
 github.com/kr/pretty v0.3.1/go.mod h1:hoEshYVHaxMs3cyo3Yncou5ZscifuDolrwPKZanG3xk=
 github.com/kr/text v0.2.0 h1:5Nx0Ya0ZqY2ygV366QzturHI13Jq95ApcVaJBhpS+AY=
