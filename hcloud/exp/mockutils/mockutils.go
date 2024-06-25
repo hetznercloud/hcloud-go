@@ -52,19 +52,22 @@ func Handler(t *testing.T, requests []Request) http.HandlerFunc {
 			expected.Want(t, r)
 		}
 
-		w.WriteHeader(expected.Status)
 		switch {
 		case expected.JSON != nil:
 			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(expected.Status)
 			if err := json.NewEncoder(w).Encode(expected.JSON); err != nil {
 				t.Fatal(err)
 			}
 		case expected.JSONRaw != "":
 			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(expected.Status)
 			_, err := w.Write([]byte(expected.JSONRaw))
 			if err != nil {
 				t.Fatal(err)
 			}
+		default:
+			w.WriteHeader(expected.Status)
 		}
 
 		index++
