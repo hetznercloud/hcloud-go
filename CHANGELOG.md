@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.10.0](https://github.com/hetznercloud/hcloud-go/compare/v2.9.0...v2.10.0) (2024-06-25)
+
+
+### Features
+
+* **exp:** add envutils package ([#466](https://github.com/hetznercloud/hcloud-go/issues/466)) ([a7636bd](https://github.com/hetznercloud/hcloud-go/commit/a7636bdcf5e4d55860f40da684c64cb72f8ddc03))
+* **exp:** add labelutils with selector ([#465](https://github.com/hetznercloud/hcloud-go/issues/465)) ([1a55a7e](https://github.com/hetznercloud/hcloud-go/commit/1a55a7ed65bffdbf73000ffcf1ef22c9e55650f8))
+* **exp:** add mock utils package ([#460](https://github.com/hetznercloud/hcloud-go/issues/460)) ([92f7c62](https://github.com/hetznercloud/hcloud-go/commit/92f7c624edfc76e06abe8c9c60e9c78d4b28f12f))
+* **exp:** rename `AppendNextActions` to `AppendNext` ([#452](https://github.com/hetznercloud/hcloud-go/issues/452)) ([9b6239a](https://github.com/hetznercloud/hcloud-go/commit/9b6239ad188e601f22bc28e0072603c07fea201c))
+* filter out nil actions in action waiter ([#464](https://github.com/hetznercloud/hcloud-go/issues/464)) ([4fc9a40](https://github.com/hetznercloud/hcloud-go/commit/4fc9a4039d45071124a435121642ca396a8237c0))
+
+
+### Bug Fixes
+
+* nil check against the embedded `http.Response` ([#469](https://github.com/hetznercloud/hcloud-go/issues/469)) ([46e489a](https://github.com/hetznercloud/hcloud-go/commit/46e489a1782e8477d1c5a234dc203fa356c2a583))
+
 ## [2.9.0](https://github.com/hetznercloud/hcloud-go/compare/v2.8.0...v2.9.0) (2024-05-29)
 
 
