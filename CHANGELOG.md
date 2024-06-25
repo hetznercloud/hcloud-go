@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.1](https://github.com/hetznercloud/hcloud-go/compare/v2.10.0...v2.10.1) (2024-06-25)
+
+
+### Bug Fixes
+
+* **exp:** configure response headers before sending them ([#473](https://github.com/hetznercloud/hcloud-go/issues/473)) ([07d4a35](https://github.com/hetznercloud/hcloud-go/commit/07d4a356dec0e2f44a6f3eec1ea3affec8932c22))
+
 ## [2.10.0](https://github.com/hetznercloud/hcloud-go/compare/v2.9.0...v2.10.0) (2024-06-25)
 
 
