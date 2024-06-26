@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.10.2](https://github.com/hetznercloud/hcloud-go/compare/v2.10.1...v2.10.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **exp:** allow request path matching in the want function ([#475](https://github.com/hetznercloud/hcloud-go/issues/475)) ([267879b](https://github.com/hetznercloud/hcloud-go/commit/267879b78989ae870d581e9c929105ff76c60fb0))
+
 ## [2.10.1](https://github.com/hetznercloud/hcloud-go/compare/v2.10.0...v2.10.1) (2024-06-25)
 
 
