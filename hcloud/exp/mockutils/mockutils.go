@@ -43,10 +43,14 @@ func Handler(t *testing.T, requests []Request) http.HandlerFunc {
 		}
 
 		expected := requests[index]
-		require.Equal(t,
-			expected.Method+" "+expected.Path,
-			r.Method+" "+r.RequestURI,
-		)
+
+		expectedCall := expected.Method
+		foundCall := r.Method
+		if expected.Path != "" {
+			expectedCall += " " + expected.Path
+			foundCall += " " + r.RequestURI
+		}
+		require.Equal(t, expectedCall, foundCall)
 
 		if expected.Want != nil {
 			expected.Want(t, r)

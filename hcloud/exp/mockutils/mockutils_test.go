@@ -1,7 +1,9 @@
 package mockutils
 
 import (
+	"fmt"
 	"io"
+	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -31,6 +33,13 @@ func TestHandler(t *testing.T) {
 			Method: "GET", Path: "/",
 			Status: 503,
 		},
+		{
+			Method: "GET",
+			Want: func(t *testing.T, r *http.Request) {
+				require.True(t, strings.HasPrefix(r.RequestURI, "/random?key="))
+			},
+			Status: 200,
+		},
 	}))
 	defer server.Close()
 
@@ -52,6 +61,13 @@ func TestHandler(t *testing.T) {
 	resp, err = http.Get(server.URL)
 	require.NoError(t, err)
 	assert.Equal(t, 503, resp.StatusCode)
+	assert.Equal(t, "", resp.Header.Get("Content-Type"))
+	assert.Equal(t, "", readBody(t, resp))
+
+	// Request 4
+	resp, err = http.Get(fmt.Sprintf("%s/random?key=%d", server.URL, rand.Int63()))
+	require.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
 	assert.Equal(t, "", resp.Header.Get("Content-Type"))
 	assert.Equal(t, "", readBody(t, resp))
 }
