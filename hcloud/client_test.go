@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -382,21 +383,52 @@ func TestBuildUserAgent(t *testing.T) {
 }
 
 func TestExponentialBackoff(t *testing.T) {
-	backoffFunc := ExponentialBackoffWithOpts(ExponentialBackoffOpts{
-		Base:       time.Second,
-		Multiplier: 2,
-		Cap:        32 * time.Second,
+	t.Run("without jitter", func(t *testing.T) {
+		backoffFunc := ExponentialBackoffWithOpts(ExponentialBackoffOpts{
+			Base:       time.Second,
+			Multiplier: 2,
+			Cap:        32 * time.Second,
+		})
+
+		sum := 0.0
+		for i, expected := range []time.Duration{
+			1 * time.Second,
+			2 * time.Second,
+			4 * time.Second,
+			8 * time.Second,
+			16 * time.Second,
+			32 * time.Second,
+			32 * time.Second,
+			32 * time.Second,
+		} {
+			backoff := backoffFunc(i)
+			require.Equal(t, backoff, expected)
+			sum += backoff.Seconds()
+		}
+		require.Equal(t, 127.0, sum)
 	})
 
-	count := 8
-	sum := 0.0
-	result := make([]string, 0, count)
-	for i := 0; i < count; i++ {
-		backoff := backoffFunc(i)
-		sum += backoff.Seconds()
-		result = append(result, backoff.String())
-	}
+	t.Run("with jitter", func(t *testing.T) {
+		backoffFunc := ExponentialBackoffWithOpts(ExponentialBackoffOpts{
+			Base:       time.Second,
+			Multiplier: 2,
+			Cap:        32 * time.Second,
+			Jitter:     true,
+		})
 
-	require.Equal(t, []string{"1s", "2s", "4s", "8s", "16s", "32s", "32s", "32s"}, result)
-	require.Equal(t, 127.0, sum)
+		for i, expected := range []time.Duration{
+			1 * time.Second,
+			2 * time.Second,
+			4 * time.Second,
+			8 * time.Second,
+			16 * time.Second,
+			32 * time.Second,
+			32 * time.Second,
+			32 * time.Second,
+		} {
+			backoff := backoffFunc(i)
+			assert.GreaterOrEqual(t, backoff, time.Second)
+			assert.LessOrEqual(t, backoff, expected)
+		}
+	})
 }
