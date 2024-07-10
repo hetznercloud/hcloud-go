@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"math"
+	"math/rand"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -40,13 +41,43 @@ func ConstantBackoff(d time.Duration) BackoffFunc {
 }
 
 // ExponentialBackoff returns a BackoffFunc which implements an exponential
-// backoff.
-// It uses the formula:
+// backoff, truncated to 60 seconds.
+// See [ExponentialBackoffWithOpts] for more details.
+func ExponentialBackoff(multiplier float64, base time.Duration) BackoffFunc {
+	return ExponentialBackoffWithOpts(ExponentialBackoffOpts{
+		Base:       base,
+		Multiplier: multiplier,
+		Cap:        time.Minute,
+	})
+}
+
+// ExponentialBackoffOpts defines the options used by [ExponentialBackoffWithOpts].
+type ExponentialBackoffOpts struct {
+	Base       time.Duration
+	Multiplier float64
+	Cap        time.Duration
+	Jitter     bool
+}
+
+// ExponentialBackoffWithOpts returns a BackoffFunc which implements an exponential
+// backoff, truncated to a maximum, and an optional full jitter.
 //
-//	b^retries * d
-func ExponentialBackoff(b float64, d time.Duration) BackoffFunc {
+// See https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/
+func ExponentialBackoffWithOpts(opts ExponentialBackoffOpts) BackoffFunc {
+	baseSeconds := opts.Base.Seconds()
+	capSeconds := opts.Cap.Seconds()
+
 	return func(retries int) time.Duration {
-		return time.Duration(math.Pow(b, float64(retries))) * d
+		// Exponential backoff
+		backoff := baseSeconds * math.Pow(opts.Multiplier, float64(retries))
+		// Cap backoff
+		backoff = math.Min(capSeconds, backoff)
+		// Add jitter
+		if opts.Jitter {
+			backoff = ((backoff - baseSeconds) * rand.Float64()) + baseSeconds // #nosec G404
+		}
+
+		return time.Duration(backoff * float64(time.Second))
 	}
 }
 

@@ -12,6 +12,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -377,4 +379,24 @@ func TestBuildUserAgent(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestExponentialBackoff(t *testing.T) {
+	backoffFunc := ExponentialBackoffWithOpts(ExponentialBackoffOpts{
+		Base:       time.Second,
+		Multiplier: 2,
+		Cap:        32 * time.Second,
+	})
+
+	count := 8
+	sum := 0.0
+	result := make([]string, 0, count)
+	for i := 0; i < count; i++ {
+		backoff := backoffFunc(i)
+		sum += backoff.Seconds()
+		result = append(result, backoff.String())
+	}
+
+	require.Equal(t, []string{"1s", "2s", "4s", "8s", "16s", "32s", "32s", "32s"}, result)
+	require.Equal(t, 127.0, sum)
 }
