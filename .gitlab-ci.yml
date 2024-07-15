@@ -37,7 +37,7 @@ test:unit:
   stage: test
   image: golang:1.22
   script:
-    - go test -v -race -coverprofile=coverage.txt -covermode count ./...
+    - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
     - go get github.com/boumenot/gocover-cobertura
     - go run github.com/boumenot/gocover-cobertura < coverage.txt > coverage.xml
   artifacts:
