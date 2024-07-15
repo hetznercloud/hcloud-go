@@ -5,6 +5,7 @@ include:
       - workflows/feature-branches.yml
 
 stages:
+  - build
   - test
 
 variables:
