@@ -23,8 +23,8 @@ When the API returned an application error, with the code:
   - [ErrorCodeConflict]
   - [ErrorCodeRateLimitExceeded]
 
-Changes to the retry policy might occur between releases, and will not be considered as
-breaking change.
+Changes to the retry policy might occur between releases, and will not be considered
+breaking changes.
 */
 package hcloud
 
