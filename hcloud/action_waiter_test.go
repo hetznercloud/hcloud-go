@@ -81,17 +81,41 @@ func TestWaitFor(t *testing.T) {
 				},
 			},
 			{
-				Name: "fail with api error",
+				Name: "fail with server error",
 				WantRequests: []mockutils.Request{
 					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
-						Status: 503},
+						Status: 500,
+					},
 				},
 				Run: func(env testEnv) {
 					actions := []*Action{{ID: 1509772237, Status: ActionStatusRunning}}
 
 					err := env.Client.Action.WaitFor(context.Background(), actions...)
 					assert.Error(t, err)
-					assert.Equal(t, "hcloud: server responded with status code 503", err.Error())
+					assert.Equal(t, "hcloud: server responded with status code 500", err.Error())
+				},
+			},
+			{
+				Name: "succeed with retry",
+				WantRequests: []mockutils.Request{
+					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
+						Status: 503,
+					},
+					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
+						Status: 200,
+						JSONRaw: `{
+							"actions": [
+								{ "id": 1509772237, "status": "success", "progress": 100 }
+							],
+							"meta": { "pagination": { "page": 1 }}
+						}`,
+					},
+				},
+				Run: func(env testEnv) {
+					actions := []*Action{{ID: 1509772237, Status: ActionStatusRunning}}
+
+					err := env.Client.Action.WaitFor(context.Background(), actions...)
+					assert.NoError(t, err)
 				},
 			},
 		},

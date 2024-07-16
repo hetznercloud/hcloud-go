@@ -86,7 +86,8 @@ type Client struct {
 	endpoint                string
 	token                   string
 	tokenValid              bool
-	backoffFunc             BackoffFunc
+	retryBackoffFunc        BackoffFunc
+	retryMaxRetries         int
 	pollBackoffFunc         BackoffFunc
 	httpClient              *http.Client
 	applicationName         string
@@ -162,7 +163,7 @@ func WithPollBackoffFunc(f BackoffFunc) ClientOption {
 // The backoff function is used for retrying HTTP requests.
 func WithBackoffFunc(f BackoffFunc) ClientOption {
 	return func(client *Client) {
-		client.backoffFunc = f
+		client.retryBackoffFunc = f
 	}
 }
 
@@ -201,11 +202,12 @@ func WithInstrumentation(registry prometheus.Registerer) ClientOption {
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
-		endpoint:        Endpoint,
-		tokenValid:      true,
-		httpClient:      &http.Client{},
-		backoffFunc:     ExponentialBackoff(2, 500*time.Millisecond),
-		pollBackoffFunc: ConstantBackoff(500 * time.Millisecond),
+		endpoint:         Endpoint,
+		tokenValid:       true,
+		httpClient:       &http.Client{},
+		retryBackoffFunc: ExponentialBackoff(2, time.Second),
+		retryMaxRetries:  5,
+		pollBackoffFunc:  ConstantBackoff(500 * time.Millisecond),
 	}
 
 	for _, option := range options {
