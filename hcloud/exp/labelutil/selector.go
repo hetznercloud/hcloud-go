@@ -1,4 +1,4 @@
-package labelutils
+package labelutil
 
 import (
 	"fmt"

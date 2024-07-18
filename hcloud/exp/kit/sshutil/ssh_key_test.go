@@ -1,4 +1,4 @@
-package sshutils
+package sshutil
 
 import (
 	"strings"

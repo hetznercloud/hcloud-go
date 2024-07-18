@@ -1,4 +1,4 @@
-package actionutils
+package actionutil
 
 import "github.com/hetznercloud/hcloud-go/v2/hcloud"
 
