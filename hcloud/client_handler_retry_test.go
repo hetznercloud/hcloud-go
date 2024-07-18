@@ -31,11 +31,11 @@ func TestRetryHandler(t *testing.T) {
 			},
 		},
 		{
-			name: "http 503 error recovery",
+			name: "http 502 error recovery",
 			wrapped: func(req *http.Request, _ any) (*Response, error) {
-				resp := fakeResponse(t, 503, "", false)
+				resp := fakeResponse(t, 502, "", false)
 				resp.Response.Request = req
-				return resp, fmt.Errorf("%w %d", ErrStatusCode, 503)
+				return resp, fmt.Errorf("%w %d", ErrStatusCode, 502)
 			},
 			recover: true,
 			want: func(t *testing.T, err error, retryCount int) {
@@ -44,14 +44,14 @@ func TestRetryHandler(t *testing.T) {
 			},
 		},
 		{
-			name: "http 503 error",
+			name: "http 502 error",
 			wrapped: func(req *http.Request, _ any) (*Response, error) {
-				resp := fakeResponse(t, 503, "", false)
+				resp := fakeResponse(t, 502, "", false)
 				resp.Response.Request = req
-				return resp, fmt.Errorf("%w %d", ErrStatusCode, 503)
+				return resp, fmt.Errorf("%w %d", ErrStatusCode, 502)
 			},
 			want: func(t *testing.T, err error, retryCount int) {
-				assert.EqualError(t, err, "server responded with status code 503")
+				assert.EqualError(t, err, "server responded with status code 502")
 				assert.Equal(t, 5, retryCount)
 			},
 		},
@@ -116,8 +116,11 @@ func TestRetryPolicy(t *testing.T) {
 		want bool
 	}{
 		{
-			// The API error code unavailable is used in many unexpected situations, we must only
-			// retry if the server returns HTTP 503.
+			name: "server returns 502 error",
+			resp: fakeResponse(t, 502, ``, false),
+			want: true,
+		},
+		{
 			name: "api returns unavailable error",
 			resp: fakeResponse(t, 503, `{"error":{"code":"unavailable"}}`, true),
 			want: false,
@@ -125,7 +128,7 @@ func TestRetryPolicy(t *testing.T) {
 		{
 			name: "server returns 503 error",
 			resp: fakeResponse(t, 503, ``, false),
-			want: true,
+			want: false,
 		},
 		{
 			name: "api returns rate_limit_exceeded error",
@@ -135,7 +138,7 @@ func TestRetryPolicy(t *testing.T) {
 		{
 			name: "server returns 429 error",
 			resp: fakeResponse(t, 429, ``, false),
-			want: true,
+			want: false,
 		},
 		{
 			name: "api returns conflict error",
