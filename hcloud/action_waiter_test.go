@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutils"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 )
 
 func TestWaitFor(t *testing.T) {
@@ -14,7 +14,7 @@ func TestWaitFor(t *testing.T) {
 		[]MockedTestCase{
 			{
 				Name: "succeed",
-				WantRequests: []mockutils.Request{
+				WantRequests: []mockutil.Request{
 					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
 						Status: 200,
 						JSONRaw: `{
@@ -52,7 +52,7 @@ func TestWaitFor(t *testing.T) {
 			},
 			{
 				Name: "fail with unknown action",
-				WantRequests: []mockutils.Request{
+				WantRequests: []mockutil.Request{
 					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
 						Status: 200,
 						JSONRaw: `{
@@ -82,7 +82,7 @@ func TestWaitFor(t *testing.T) {
 			},
 			{
 				Name: "fail with server error",
-				WantRequests: []mockutils.Request{
+				WantRequests: []mockutil.Request{
 					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
 						Status: 500,
 					},
@@ -97,7 +97,7 @@ func TestWaitFor(t *testing.T) {
 			},
 			{
 				Name: "succeed with retry",
-				WantRequests: []mockutils.Request{
+				WantRequests: []mockutil.Request{
 					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
 						Status: 503,
 					},
@@ -127,7 +127,7 @@ func TestWaitForFunc(t *testing.T) {
 		[]MockedTestCase{
 			{
 				Name: "succeed",
-				WantRequests: []mockutils.Request{
+				WantRequests: []mockutil.Request{
 					{Method: "GET", Path: "/actions?id=1509772237&id=1509772238&page=1&sort=status&sort=id",
 						Status: 200,
 						JSONRaw: `{
