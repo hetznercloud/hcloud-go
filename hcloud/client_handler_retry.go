@@ -69,11 +69,8 @@ func retryPolicy(resp *Response, err error) bool {
 			}
 		case errors.Is(err, ErrStatusCode):
 			switch resp.Response.StatusCode {
-			// 4xx errors
-			case http.StatusTooManyRequests:
-				return true
 			// 5xx errors
-			case http.StatusBadGateway, http.StatusServiceUnavailable, http.StatusGatewayTimeout:
+			case http.StatusBadGateway, http.StatusGatewayTimeout:
 				return true
 			}
 		case errors.As(err, &netErr):

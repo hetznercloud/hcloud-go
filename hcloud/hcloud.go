@@ -14,9 +14,7 @@ The following rules defines when a request can be retried:
 When the [http.Client] returned a network timeout error.
 
 When the API returned an HTTP error, with the status code:
-  - [http.StatusTooManyRequests]
   - [http.StatusBadGateway]
-  - [http.StatusServiceUnavailable]
   - [http.StatusGatewayTimeout]
 
 When the API returned an application error, with the code:

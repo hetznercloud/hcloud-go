@@ -99,7 +99,7 @@ func TestWaitFor(t *testing.T) {
 				Name: "succeed with retry",
 				WantRequests: []mockutil.Request{
 					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
-						Status: 503,
+						Status: 502,
 					},
 					{Method: "GET", Path: "/actions?id=1509772237&page=1&sort=status&sort=id",
 						Status: 200,
