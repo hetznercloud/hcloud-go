@@ -1,4 +1,4 @@
-package mockutils
+package mockutil
 
 import (
 	"encoding/json"
