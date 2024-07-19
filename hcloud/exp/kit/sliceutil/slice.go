@@ -1,5 +1,6 @@
 package sliceutil
 
+// Batches splits a slice into multiple batches of a desired size.
 func Batches[T any](all []T, size int) (batches [][]T) {
 	for size < len(all) {
 		all, batches = all[size:], append(batches, all[:size])
