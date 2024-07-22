@@ -161,9 +161,26 @@ func WithPollBackoffFunc(f BackoffFunc) ClientOption {
 
 // WithBackoffFunc configures a Client to use the specified backoff function.
 // The backoff function is used for retrying HTTP requests.
+//
+// Deprecated: WithBackoffFunc is deprecated, use [WithRetryOpts] instead.
 func WithBackoffFunc(f BackoffFunc) ClientOption {
 	return func(client *Client) {
 		client.retryBackoffFunc = f
+	}
+}
+
+// RetryOpts defines the options used by [WithRetryOpts].
+type RetryOpts struct {
+	BackoffFunc BackoffFunc
+	MaxRetries  int
+}
+
+// WithRetryOpts configures a Client to use the specified options when retrying API
+// requests.
+func WithRetryOpts(opts RetryOpts) ClientOption {
+	return func(client *Client) {
+		client.retryBackoffFunc = opts.BackoffFunc
+		client.retryMaxRetries = opts.MaxRetries
 	}
 }
 
