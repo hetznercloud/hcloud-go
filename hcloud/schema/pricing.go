@@ -90,6 +90,9 @@ type PricingLoadBalancerTypePrice struct {
 	Location     string `json:"location"`
 	PriceHourly  Price  `json:"price_hourly"`
 	PriceMonthly Price  `json:"price_monthly"`
+
+	IncludedTraffic   uint64 `json:"included_traffic"`
+	PricePerTBTraffic Price  `json:"price_per_tb_traffic"`
 }
 
 // PricingGetResponse defines the schema of the response when retrieving pricing information.

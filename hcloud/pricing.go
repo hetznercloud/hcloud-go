@@ -120,6 +120,10 @@ type LoadBalancerTypeLocationPricing struct {
 	Location *Location
 	Hourly   Price
 	Monthly  Price
+
+	// IncludedTraffic is the free traffic per month in bytes
+	IncludedTraffic uint64
+	PerTBTraffic    Price
 }
 
 // PricingClient is a client for the pricing API.
