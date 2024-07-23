@@ -290,7 +290,7 @@ func ServerTypeFromSchema(s schema.ServerType) *ServerType {
 		StorageType:     StorageType(s.StorageType),
 		CPUType:         CPUType(s.CPUType),
 		Architecture:    Architecture(s.Architecture),
-		IncludedTraffic: s.IncludedTraffic,
+		IncludedTraffic: s.IncludedTraffic, // nolint:staticcheck // Field is deprecated, but we still need to map it as long as it is available
 		DeprecatableResource: DeprecatableResource{
 			DeprecationFromSchema(s.Deprecation),
 		},
