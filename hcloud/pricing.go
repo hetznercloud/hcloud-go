@@ -8,10 +8,12 @@ import (
 
 // Pricing specifies pricing information for various resources.
 type Pricing struct {
-	Image             ImagePricing
-	FloatingIP        FloatingIPPricing
-	FloatingIPs       []FloatingIPTypePricing
-	PrimaryIPs        []PrimaryIPPricing
+	Image       ImagePricing
+	FloatingIP  FloatingIPPricing
+	FloatingIPs []FloatingIPTypePricing
+	PrimaryIPs  []PrimaryIPPricing
+	// Deprecated: [Pricing.Traffic] is deprecated and will report 0 after 2024-08-05.
+	// Use traffic pricing from [Pricing.ServerTypes] or [Pricing.LoadBalancerTypes] instead.
 	Traffic           TrafficPricing
 	ServerBackup      ServerBackupPricing
 	ServerTypes       []ServerTypePricing

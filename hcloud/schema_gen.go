@@ -711,8 +711,8 @@ func primaryIPPricingFromSchema(s schema.Pricing) []PrimaryIPPricing {
 func trafficPricingFromSchema(s schema.Pricing) TrafficPricing {
 	return TrafficPricing{
 		PerTB: Price{
-			Net:      s.Traffic.PricePerTB.Net,
-			Gross:    s.Traffic.PricePerTB.Gross,
+			Net:      s.Traffic.PricePerTB.Net,   // nolint:staticcheck // Field is deprecated, but we still need to map it as long as it is available
+			Gross:    s.Traffic.PricePerTB.Gross, // nolint:staticcheck // Field is deprecated, but we still need to map it as long as it is available
 			Currency: s.Currency,
 			VATRate:  s.VATRate,
 		},
