@@ -72,6 +72,9 @@ type PricingServerTypePrice struct {
 	Location     string `json:"location"`
 	PriceHourly  Price  `json:"price_hourly"`
 	PriceMonthly Price  `json:"price_monthly"`
+
+	IncludedTraffic   uint64 `json:"included_traffic"`
+	PricePerTBTraffic Price  `json:"price_per_tb_traffic"`
 }
 
 // PricingLoadBalancerType defines the schema of pricing information for a Load Balancer type.

@@ -263,6 +263,7 @@ type converter interface {
 
 	// goverter:map PriceHourly Hourly
 	// goverter:map PriceMonthly Monthly
+	// goverter:map PricePerTBTraffic PerTBTraffic
 	serverTypePricingFromSchema(schema.PricingServerTypePrice) ServerTypeLocationPricing
 
 	// goverter:map Image.PerGBMonth.Currency Currency
@@ -306,6 +307,7 @@ type converter interface {
 
 	// goverter:map Monthly PriceMonthly
 	// goverter:map Hourly PriceHourly
+	// goverter:map PerTBTraffic PricePerTBTraffic
 	schemaFromServerTypeLocationPricing(ServerTypeLocationPricing) schema.PricingServerTypePrice
 
 	FirewallFromSchema(schema.Firewall) *Firewall
@@ -733,6 +735,13 @@ func serverTypePricingFromSchema(s schema.Pricing) []ServerTypePricing {
 					VATRate:  s.VATRate,
 					Net:      price.PriceMonthly.Net,
 					Gross:    price.PriceMonthly.Gross,
+				},
+				IncludedTraffic: price.IncludedTraffic,
+				PerTBTraffic: Price{
+					Currency: s.Currency,
+					VATRate:  s.VATRate,
+					Net:      price.PricePerTBTraffic.Net,
+					Gross:    price.PricePerTBTraffic.Gross,
 				},
 			}
 		}
