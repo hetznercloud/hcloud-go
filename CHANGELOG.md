@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.11.0](https://github.com/hetznercloud/hcloud-go/compare/v2.10.2...v2.11.0) (2024-07-23)
+
+
+### Features
+
+* add truncated exponential backoff with full jitter ([#459](https://github.com/hetznercloud/hcloud-go/issues/459)) ([fd1f46c](https://github.com/hetznercloud/hcloud-go/commit/fd1f46cc35e61dde1e524399eef88c38a757636e))
+* allow configuring retry options ([#488](https://github.com/hetznercloud/hcloud-go/issues/488)) ([2db9575](https://github.com/hetznercloud/hcloud-go/commit/2db95753e2c826aeafa3bd9b864e95efd89ace7f))
+* **exp:** add sliceutil package ([#489](https://github.com/hetznercloud/hcloud-go/issues/489)) ([f4ad6bc](https://github.com/hetznercloud/hcloud-go/commit/f4ad6bc93ff5017dda1b71a1606b67a79b56eb57))
+* **exp:** rename `*utils` package to `*util` ([#487](https://github.com/hetznercloud/hcloud-go/issues/487)) ([19da475](https://github.com/hetznercloud/hcloud-go/commit/19da4759f4cbee7ed94ed6996350b45650f8b0b9))
+* respect cancelled contexts during retry sleep ([#470](https://github.com/hetznercloud/hcloud-go/issues/470)) ([756f605](https://github.com/hetznercloud/hcloud-go/commit/756f605c97ac570adec531a479fc61c1ed27ab72))
+* retry requests when the api gateway errors ([#470](https://github.com/hetznercloud/hcloud-go/issues/470)) ([756f605](https://github.com/hetznercloud/hcloud-go/commit/756f605c97ac570adec531a479fc61c1ed27ab72))
+* retry requests when the network timed out ([#470](https://github.com/hetznercloud/hcloud-go/issues/470)) ([756f605](https://github.com/hetznercloud/hcloud-go/commit/756f605c97ac570adec531a479fc61c1ed27ab72))
+* retry requests when the rate limit was reached ([#470](https://github.com/hetznercloud/hcloud-go/issues/470)) ([756f605](https://github.com/hetznercloud/hcloud-go/commit/756f605c97ac570adec531a479fc61c1ed27ab72))
+
+
+### Bug Fixes
+
+* **exp:** set capacity for each batch ([#490](https://github.com/hetznercloud/hcloud-go/issues/490)) ([57f53c1](https://github.com/hetznercloud/hcloud-go/commit/57f53c1dca54ee79a33bab35740e7de7ece3b75f))
+
 ## [2.10.2](https://github.com/hetznercloud/hcloud-go/compare/v2.10.1...v2.10.2) (2024-06-26)
 
 
