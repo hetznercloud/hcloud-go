@@ -315,6 +315,8 @@ func (c *converterImpl) LoadBalancerTypeLocationPricingFromSchema(source schema.
 	hcloudLoadBalancerTypeLocationPricing.Location = &hcloudLocation
 	hcloudLoadBalancerTypeLocationPricing.Hourly = c.PriceFromSchema(source.PriceHourly)
 	hcloudLoadBalancerTypeLocationPricing.Monthly = c.PriceFromSchema(source.PriceMonthly)
+	hcloudLoadBalancerTypeLocationPricing.IncludedTraffic = source.IncludedTraffic
+	hcloudLoadBalancerTypeLocationPricing.PerTBTraffic = c.PriceFromSchema(source.PricePerTBTraffic)
 	return hcloudLoadBalancerTypeLocationPricing
 }
 func (c *converterImpl) LocationFromSchema(source schema.Location) *Location {
@@ -799,6 +801,8 @@ func (c *converterImpl) SchemaFromLoadBalancerTypeLocationPricing(source LoadBal
 	schemaPricingLoadBalancerTypePrice.Location = c.pHcloudLocationToString(source.Location)
 	schemaPricingLoadBalancerTypePrice.PriceHourly = c.hcloudPriceToSchemaPrice(source.Hourly)
 	schemaPricingLoadBalancerTypePrice.PriceMonthly = c.hcloudPriceToSchemaPrice(source.Monthly)
+	schemaPricingLoadBalancerTypePrice.IncludedTraffic = source.IncludedTraffic
+	schemaPricingLoadBalancerTypePrice.PricePerTBTraffic = c.hcloudPriceToSchemaPrice(source.PerTBTraffic)
 	return schemaPricingLoadBalancerTypePrice
 }
 func (c *converterImpl) SchemaFromLoadBalancerUpdateServiceOpts(source LoadBalancerUpdateServiceOpts) schema.LoadBalancerActionUpdateServiceRequest {

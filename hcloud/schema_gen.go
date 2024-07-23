@@ -207,10 +207,12 @@ type converter interface {
 
 	// goverter:map PriceHourly Hourly
 	// goverter:map PriceMonthly Monthly
+	// goverter:map PricePerTBTraffic PerTBTraffic
 	LoadBalancerTypeLocationPricingFromSchema(schema.PricingLoadBalancerTypePrice) LoadBalancerTypeLocationPricing
 
 	// goverter:map Hourly PriceHourly
 	// goverter:map Monthly PriceMonthly
+	// goverter:map PerTBTraffic PricePerTBTraffic
 	SchemaFromLoadBalancerTypeLocationPricing(LoadBalancerTypeLocationPricing) schema.PricingLoadBalancerTypePrice
 
 	LoadBalancerServiceFromSchema(schema.LoadBalancerService) LoadBalancerService
@@ -774,6 +776,13 @@ func loadBalancerTypePricingFromSchema(s schema.Pricing) []LoadBalancerTypePrici
 					VATRate:  s.VATRate,
 					Net:      price.PriceMonthly.Net,
 					Gross:    price.PriceMonthly.Gross,
+				},
+				IncludedTraffic: price.IncludedTraffic,
+				PerTBTraffic: Price{
+					Currency: s.Currency,
+					VATRate:  s.VATRate,
+					Net:      price.PricePerTBTraffic.Net,
+					Gross:    price.PricePerTBTraffic.Gross,
 				},
 			}
 		}
