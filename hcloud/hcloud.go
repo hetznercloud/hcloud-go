@@ -5,9 +5,9 @@ The Hetzner Cloud API reference is available at https://docs.hetzner.cloud.
 
 # Retry mechanism
 
-The [Client.Do] method will retry failed requests that match certain criteria. The default
-retry interval is defined by an exponential backoff algorithm truncated to 60s. The
-default maximal number of retries is 5.
+The [Client.Do] method will retry failed requests that match certain criteria. The
+default retry interval is defined by an exponential backoff algorithm truncated to 60s
+with jitter. The default maximal number of retries is 5.
 
 The following rules defines when a request can be retried:
 
