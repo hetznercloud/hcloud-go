@@ -711,8 +711,8 @@ func PricingFromSchema(s schema.Pricing) Pricing {
 			PerTB: Price{
 				Currency: s.Currency,
 				VATRate:  s.VATRate,
-				Net:      s.Traffic.PricePerTB.Net,
-				Gross:    s.Traffic.PricePerTB.Gross,
+				Net:      s.Traffic.PricePerTB.Net,   // nolint:staticcheck // Field is deprecated, but we still need to map it as long as it is available
+				Gross:    s.Traffic.PricePerTB.Gross, // nolint:staticcheck // Field is deprecated, but we still need to map it as long as it is available
 			},
 		},
 		ServerBackup: ServerBackupPricing{
