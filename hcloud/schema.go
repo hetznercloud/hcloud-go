@@ -306,6 +306,11 @@ func ServerTypeFromSchema(s schema.ServerType) *ServerType {
 				Net:   price.PriceMonthly.Net,
 				Gross: price.PriceMonthly.Gross,
 			},
+			IncludedTraffic: price.IncludedTraffic,
+			PerTBTraffic: Price{
+				Net:   price.PricePerTBTraffic.Net,
+				Gross: price.PricePerTBTraffic.Gross,
+			},
 		})
 	}
 
@@ -767,6 +772,13 @@ func PricingFromSchema(s schema.Pricing) Pricing {
 					VATRate:  s.VATRate,
 					Net:      price.PriceMonthly.Net,
 					Gross:    price.PriceMonthly.Gross,
+				},
+				IncludedTraffic: price.IncludedTraffic,
+				PerTBTraffic: Price{
+					Currency: s.Currency,
+					VATRate:  s.VATRate,
+					Net:      price.PricePerTBTraffic.Net,
+					Gross:    price.PricePerTBTraffic.Gross,
 				},
 			})
 		}
