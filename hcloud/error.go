@@ -127,7 +127,7 @@ type ErrorDetailsInvalidInputField struct {
 	Messages []string
 }
 
-// IsError returns whether err is an API error with the given error code.
+// IsError returns whether err is an API error with one of the given error codes.
 func IsError(err error, code ...ErrorCode) bool {
 	var apiErr Error
 	ok := errors.As(err, &apiErr)
