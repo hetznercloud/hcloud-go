@@ -78,7 +78,7 @@ func TestError_Error(t *testing.T) {
 func TestIsError(t *testing.T) {
 	type args struct {
 		err  error
-		code ErrorCode
+		code []ErrorCode
 	}
 	tests := []struct {
 		name string
@@ -89,7 +89,15 @@ func TestIsError(t *testing.T) {
 			name: "hcloud error with code",
 			args: args{
 				err:  Error{Code: ErrorCodeUnauthorized},
-				code: ErrorCodeUnauthorized,
+				code: []ErrorCode{ErrorCodeUnauthorized},
+			},
+			want: true,
+		},
+		{
+			name: "hcloud error with many codes",
+			args: args{
+				err:  Error{Code: ErrorCodeUnauthorized},
+				code: []ErrorCode{ErrorCodeUnauthorized, ErrorCodeConflict},
 			},
 			want: true,
 		},
@@ -97,7 +105,7 @@ func TestIsError(t *testing.T) {
 			name: "hcloud error with different code",
 			args: args{
 				err:  Error{Code: ErrorCodeConflict},
-				code: ErrorCodeUnauthorized,
+				code: []ErrorCode{ErrorCodeUnauthorized},
 			},
 			want: false,
 		},
@@ -105,7 +113,7 @@ func TestIsError(t *testing.T) {
 			name: "wrapped hcloud error with code",
 			args: args{
 				err:  fmt.Errorf("wrapped: %w", Error{Code: ErrorCodeUnauthorized}),
-				code: ErrorCodeUnauthorized,
+				code: []ErrorCode{ErrorCodeUnauthorized},
 			},
 			want: true,
 		},
@@ -113,7 +121,7 @@ func TestIsError(t *testing.T) {
 			name: "wrapped hcloud error with different code",
 			args: args{
 				err:  fmt.Errorf("wrapped: %w", Error{Code: ErrorCodeConflict}),
-				code: ErrorCodeUnauthorized,
+				code: []ErrorCode{ErrorCodeUnauthorized},
 			},
 			want: false,
 		},
@@ -121,14 +129,14 @@ func TestIsError(t *testing.T) {
 			name: "non-hcloud error",
 			args: args{
 				err:  fmt.Errorf("something went wrong"),
-				code: ErrorCodeUnauthorized,
+				code: []ErrorCode{ErrorCodeUnauthorized},
 			},
 			want: false,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equalf(t, tt.want, IsError(tt.args.err, tt.args.code), "IsError(%v, %v)", tt.args.err, tt.args.code)
+			assert.Equalf(t, tt.want, IsError(tt.args.err, tt.args.code...), "IsError(%v, %v)", tt.args.err, tt.args.code)
 		})
 	}
 }
