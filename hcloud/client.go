@@ -219,12 +219,19 @@ func WithInstrumentation(registry prometheus.Registerer) ClientOption {
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
-		endpoint:         Endpoint,
-		tokenValid:       true,
-		httpClient:       &http.Client{},
-		retryBackoffFunc: ExponentialBackoff(2, time.Second),
-		retryMaxRetries:  5,
-		pollBackoffFunc:  ConstantBackoff(500 * time.Millisecond),
+		endpoint:   Endpoint,
+		tokenValid: true,
+		httpClient: &http.Client{},
+
+		retryBackoffFunc: ExponentialBackoffWithOpts(ExponentialBackoffOpts{
+			Base:       time.Second,
+			Multiplier: 2,
+			Cap:        time.Minute,
+			Jitter:     true,
+		}),
+		retryMaxRetries: 5,
+
+		pollBackoffFunc: ConstantBackoff(500 * time.Millisecond),
 	}
 
 	for _, option := range options {
