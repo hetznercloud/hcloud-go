@@ -42,10 +42,12 @@ func newTestEnvWithServer(server *httptest.Server, mux *http.ServeMux) testEnv {
 		WithEndpoint(server.URL),
 		WithToken("token"),
 		WithRetryOpts(RetryOpts{
-			BackoffFunc: func(_ int) time.Duration { return 0 },
+			BackoffFunc: ConstantBackoff(0),
 			MaxRetries:  5,
 		}),
-		WithPollBackoffFunc(func(r int) time.Duration { return 0 }),
+		WithPollOpts(PollOpts{
+			BackoffFunc: ConstantBackoff(0),
+		}),
 	)
 	return testEnv{
 		Server: server,

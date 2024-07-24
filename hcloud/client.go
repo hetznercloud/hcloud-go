@@ -140,22 +140,40 @@ func WithToken(token string) ClientOption {
 // polling from the API.
 //
 // Deprecated: Setting the poll interval is deprecated, you can now configure
-// [WithPollBackoffFunc] with a [ConstantBackoff] to get the same results. To
+// [WithPollOpts] with a [ConstantBackoff] to get the same results. To
 // migrate your code, replace your usage like this:
 //
 //	// before
 //	hcloud.WithPollInterval(2 * time.Second)
 //	// now
-//	hcloud.WithPollBackoffFunc(hcloud.ConstantBackoff(2 * time.Second))
+//	hcloud.WithPollOpts(hcloud.PollOpts{
+//		BackoffFunc: hcloud.ConstantBackoff(2 * time.Second),
+//	})
 func WithPollInterval(pollInterval time.Duration) ClientOption {
-	return WithPollBackoffFunc(ConstantBackoff(pollInterval))
+	return WithPollOpts(PollOpts{
+		BackoffFunc: ConstantBackoff(pollInterval),
+	})
 }
 
 // WithPollBackoffFunc configures a Client to use the specified backoff
 // function when polling from the API.
+//
+// Deprecated: WithPollBackoffFunc is deprecated, use [WithPollOpts] instead.
 func WithPollBackoffFunc(f BackoffFunc) ClientOption {
+	return WithPollOpts(PollOpts{
+		BackoffFunc: f,
+	})
+}
+
+// PollOpts defines the options used by [WithPollOpts].
+type PollOpts struct {
+	BackoffFunc BackoffFunc
+}
+
+// WithPollOpts configures a Client to use the specified options when polling from the API.
+func WithPollOpts(opts PollOpts) ClientOption {
 	return func(client *Client) {
-		client.pollBackoffFunc = f
+		client.pollBackoffFunc = opts.BackoffFunc
 	}
 }
 
