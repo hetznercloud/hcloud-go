@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.58.0](https://github.com/hetznercloud/hcloud-go/compare/v1.57.0...v1.58.0) (2024-07-25)
+
+
+### Features
+
+* **load-balancer-type:** new traffic price fields ([90c3110](https://github.com/hetznercloud/hcloud-go/commit/90c31109d6caaf6c56d4a69b79dab4eabe9b4318))
+* **pricing:** mark traffic field as deprecated ([90c3110](https://github.com/hetznercloud/hcloud-go/commit/90c31109d6caaf6c56d4a69b79dab4eabe9b4318))
+* **server-type:** mark included traffic field as deprecated ([90c3110](https://github.com/hetznercloud/hcloud-go/commit/90c31109d6caaf6c56d4a69b79dab4eabe9b4318))
+* **server-type:** new traffic price fields ([90c3110](https://github.com/hetznercloud/hcloud-go/commit/90c31109d6caaf6c56d4a69b79dab4eabe9b4318))
+
 ## [1.57.0](https://github.com/hetznercloud/hcloud-go/compare/v1.56.0...v1.57.0) (2024-06-25)
 
 
