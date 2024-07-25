@@ -1,5 +1,70 @@
 # Changelog
 
+## [1.58.0](https://github.com/hetznercloud/hcloud-go/compare/v1.57.0...v1.58.0) (2024-07-25)
+
+### API Changes for Traffic Prices and Server Type Included Traffic
+
+There will be a breaking change in the API regarding Traffic Prices and Server Type Included Traffic on 2024-08-05. This release marks the affected fields as `Deprecated`. Please check if this affects any of your code and switch to the replacement fields where necessary.
+
+You can learn more about this change in [our changelog](https://docs.hetzner.cloud/changelog#2024-07-25-cloud-api-returns-traffic-information-in-different-format).
+
+#### Upgrading
+
+##### Server Type Included Traffic
+
+If you were using the field `hcloud.ServerType.IncludedTraffic`, you can now get the information through `hcloud.ServerType.Pricings`:
+
+```go
+func main() {
+// previous
+includedTraffic := serverType.IncludedTraffic
+
+    // now
+    locationOfInterest := "fsn1"
+    var includedTraffic uint64
+    for _, price := range serverType.Pricings {
+        if price.Location.Name == locationOfInterest {
+            includedTraffic = price.IncludedTraffic
+            break
+        }
+    }
+}
+```
+
+##### Traffic Prices
+
+If you were using the field `hcloud.Pricing.Traffic`, you can now get the information through `hcloud.Pricing.ServerTypes` or `hcloud.Pricing.LoadBalancerTypes`:
+
+```go
+func main() {
+// previous
+trafficPrice := pricing.Traffic
+
+    // now
+    serverTypeOfInterest := "cx22"
+    locationOfInterest := "fsn1"
+
+    var trafficPrice hcloud.Price
+    for _, serverTypePricings := range pricing.ServerTypes {
+        if serverTypePricings.ServerType.Name == serverTypeOfInterest {
+            for _, price := range serverTypePricings {
+               if price.Location.Name == locationOfInterest {
+                   trafficPrice = price.PerTBTraffic
+                   break
+               }
+            }
+        }
+    }
+}
+```
+
+### Features
+
+* **load-balancer-type:** new traffic price fields ([90c3110](https://github.com/hetznercloud/hcloud-go/commit/90c31109d6caaf6c56d4a69b79dab4eabe9b4318))
+* **pricing:** mark traffic field as deprecated ([90c3110](https://github.com/hetznercloud/hcloud-go/commit/90c31109d6caaf6c56d4a69b79dab4eabe9b4318))
+* **server-type:** mark included traffic field as deprecated ([90c3110](https://github.com/hetznercloud/hcloud-go/commit/90c31109d6caaf6c56d4a69b79dab4eabe9b4318))
+* **server-type:** new traffic price fields ([90c3110](https://github.com/hetznercloud/hcloud-go/commit/90c31109d6caaf6c56d4a69b79dab4eabe9b4318))
+
 ## [1.57.0](https://github.com/hetznercloud/hcloud-go/compare/v1.56.0...v1.57.0) (2024-06-25)
 
 
