@@ -932,6 +932,11 @@ func TestServerTypeFromSchema(t *testing.T) {
 				"price_monthly": {
 					"net": "1",
 					"gross": "1.19"
+				},
+				"included_traffic": 654321,
+				"price_per_tb_traffic": {
+					"net": "1",
+					"gross": "1.19"
 				}
 			}
 		]
@@ -990,6 +995,17 @@ func TestServerTypeFromSchema(t *testing.T) {
 		}
 		if serverType.Pricings[0].Monthly.Gross != "1.19" {
 			t.Errorf("unexpected monthly gross price: %v", serverType.Pricings[0].Monthly.Gross)
+		}
+
+		if serverType.Pricings[0].IncludedTraffic != 654321 {
+			t.Errorf("unexpected included traffic: %v", serverType.Pricings[0].IncludedTraffic)
+		}
+
+		if serverType.Pricings[0].PerTBTraffic.Net != "1" {
+			t.Errorf("unexpected per tb traffic net price: %v", serverType.Pricings[0].PerTBTraffic.Net)
+		}
+		if serverType.Pricings[0].PerTBTraffic.Gross != "1.19" {
+			t.Errorf("unexpected per tb traffic gross price: %v", serverType.Pricings[0].PerTBTraffic.Gross)
 		}
 	}
 }
@@ -1460,6 +1476,11 @@ func TestLoadBalancerTypeFromSchema(t *testing.T) {
 				"price_monthly": {
 					"net": "1",
 					"gross": "1.19"
+				},
+				"included_traffic": 654321,
+				"price_per_tb_traffic": {
+					"net": "1",
+					"gross": "1.19"
 				}
 			}
 		]
@@ -1507,6 +1528,17 @@ func TestLoadBalancerTypeFromSchema(t *testing.T) {
 		}
 		if loadBalancerType.Pricings[0].Monthly.Gross != "1.19" {
 			t.Errorf("unexpected monthly gross price: %v", loadBalancerType.Pricings[0].Monthly.Gross)
+		}
+
+		if loadBalancerType.Pricings[0].IncludedTraffic != 654321 {
+			t.Errorf("unexpected included traffic: %v", loadBalancerType.Pricings[0].IncludedTraffic)
+		}
+
+		if loadBalancerType.Pricings[0].PerTBTraffic.Net != "1" {
+			t.Errorf("unexpected per tb traffic net price: %v", loadBalancerType.Pricings[0].PerTBTraffic.Net)
+		}
+		if loadBalancerType.Pricings[0].PerTBTraffic.Gross != "1.19" {
+			t.Errorf("unexpected per tb traffic gross price: %v", loadBalancerType.Pricings[0].PerTBTraffic.Gross)
 		}
 	}
 }
@@ -2103,6 +2135,11 @@ func TestPricingFromSchema(t *testing.T) {
 						"price_monthly": {
 							"net": "1",
 							"gross": "1.19"
+						},
+						"included_traffic": 654321,
+						"price_per_tb_traffic": {
+							"net": "1",
+							"gross": "1.19"
 						}
 					}
 				]
@@ -2120,6 +2157,11 @@ func TestPricingFromSchema(t *testing.T) {
 							"gross": "1.19"
 						},
 						"price_monthly": {
+							"net": "1",
+							"gross": "1.19"
+						},
+						"included_traffic": 654321,
+						"price_per_tb_traffic": {
 							"net": "1",
 							"gross": "1.19"
 						}
@@ -2299,6 +2341,22 @@ func TestPricingFromSchema(t *testing.T) {
 			if p.Pricings[0].Monthly.Gross != "1.19" {
 				t.Errorf("unexpected Monthly.Gross: %v", p.Pricings[0].Monthly.Gross)
 			}
+
+			if p.Pricings[0].IncludedTraffic != 654321 {
+				t.Errorf("unexpected IncludedTraffic: %v", p.Pricings[0].IncludedTraffic)
+			}
+			if p.Pricings[0].PerTBTraffic.Currency != "EUR" {
+				t.Errorf("unexpected PerTBTraffic.Currency: %v", p.Pricings[0].PerTBTraffic.Currency)
+			}
+			if p.Pricings[0].PerTBTraffic.VATRate != "19.00" {
+				t.Errorf("unexpected PerTBTraffic.VATRate: %v", p.Pricings[0].PerTBTraffic.VATRate)
+			}
+			if p.Pricings[0].PerTBTraffic.Net != "1" {
+				t.Errorf("unexpected PerTBTraffic.Net: %v", p.Pricings[0].PerTBTraffic.Net)
+			}
+			if p.Pricings[0].PerTBTraffic.Gross != "1.19" {
+				t.Errorf("unexpected PerTBTraffic.Gross: %v", p.Pricings[0].PerTBTraffic.Gross)
+			}
 		}
 	}
 
@@ -2345,6 +2403,22 @@ func TestPricingFromSchema(t *testing.T) {
 			}
 			if p.Pricings[0].Monthly.Gross != "1.19" {
 				t.Errorf("unexpected Monthly.Gross: %v", p.Pricings[0].Monthly.Gross)
+			}
+
+			if p.Pricings[0].IncludedTraffic != 654321 {
+				t.Errorf("unexpected IncludedTraffic: %v", p.Pricings[0].IncludedTraffic)
+			}
+			if p.Pricings[0].PerTBTraffic.Currency != "EUR" {
+				t.Errorf("unexpected PerTBTraffic.Currency: %v", p.Pricings[0].PerTBTraffic.Currency)
+			}
+			if p.Pricings[0].PerTBTraffic.VATRate != "19.00" {
+				t.Errorf("unexpected PerTBTraffic.VATRate: %v", p.Pricings[0].PerTBTraffic.VATRate)
+			}
+			if p.Pricings[0].PerTBTraffic.Net != "1" {
+				t.Errorf("unexpected PerTBTraffic.Net: %v", p.Pricings[0].PerTBTraffic.Net)
+			}
+			if p.Pricings[0].PerTBTraffic.Gross != "1.19" {
+				t.Errorf("unexpected PerTBTraffic.Gross: %v", p.Pricings[0].PerTBTraffic.Gross)
 			}
 		}
 	}
