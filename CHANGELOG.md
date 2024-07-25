@@ -1,5 +1,73 @@
 # Changelog
 
+## [2.12.0](https://github.com/hetznercloud/hcloud-go/compare/v2.11.0...v2.12.0) (2024-07-25)
+
+### API Changes for Traffic Prices and Server Type Included Traffic
+
+There will be a breaking change in the API regarding Traffic Prices and Server Type Included Traffic on 2024-08-05. This release marks the affected fields as `Deprecated`. Please check if this affects any of your code and switch to the replacement fields where necessary.
+
+You can learn more about this change in [our changelog](https://docs.hetzner.cloud/changelog#2024-07-25-cloud-api-returns-traffic-information-in-different-format).
+
+#### Upgrading
+
+##### Server Type Included Traffic
+
+If you were using the field `hcloud.ServerType.IncludedTraffic`, you can now get the information through `hcloud.ServerType.Pricings`:
+
+```go
+func main() {
+// previous
+includedTraffic := serverType.IncludedTraffic
+
+    // now
+    locationOfInterest := "fsn1"
+    var includedTraffic uint64
+    for _, price := range serverType.Pricings {
+        if price.Location.Name == locationOfInterest {
+            includedTraffic = price.IncludedTraffic
+            break
+        }
+    }
+}
+```
+
+##### Traffic Prices
+
+If you were using the field `hcloud.Pricing.Traffic`, you can now get the information through `hcloud.Pricing.ServerTypes` or `hcloud.Pricing.LoadBalancerTypes`:
+
+```go
+func main() {
+// previous
+trafficPrice := pricing.Traffic
+
+    // now
+    serverTypeOfInterest := "cx22"
+    locationOfInterest := "fsn1"
+
+    var trafficPrice hcloud.Price
+    for _, serverTypePricings := range pricing.ServerTypes {
+        if serverTypePricings.ServerType.Name == serverTypeOfInterest {
+            for _, price := range serverTypePricings {
+               if price.Location.Name == locationOfInterest {
+                   trafficPrice = price.PerTBTraffic
+                   break
+               }
+            }
+        }
+    }
+}
+```
+
+### Features
+
+* add jitter in the client default retry exponential backoff ([#492](https://github.com/hetznercloud/hcloud-go/issues/492)) ([6205076](https://github.com/hetznercloud/hcloud-go/commit/6205076b89350bdbf08bc6b771a1d1267a3ac422))
+* add new `WithPollOpts` client option ([#493](https://github.com/hetznercloud/hcloud-go/issues/493)) ([2c1a2d6](https://github.com/hetznercloud/hcloud-go/commit/2c1a2d65596bcbe282ff004c1a9da89950e754df))
+* allow checking multiple errors codes in `IsError` ([#491](https://github.com/hetznercloud/hcloud-go/issues/491)) ([af59ab8](https://github.com/hetznercloud/hcloud-go/commit/af59ab846665abd735c9717eb2a47c0a8c79776d))
+* **load-balancer-type:** new traffic price fields ([94e0f44](https://github.com/hetznercloud/hcloud-go/commit/94e0f44d269fdb5138485a6e69dae9105690e4b0))
+* **pricing:** mark traffic field as deprecated ([94e0f44](https://github.com/hetznercloud/hcloud-go/commit/94e0f44d269fdb5138485a6e69dae9105690e4b0))
+* **server-type:** mark included traffic field as deprecated ([94e0f44](https://github.com/hetznercloud/hcloud-go/commit/94e0f44d269fdb5138485a6e69dae9105690e4b0))
+* **server-type:** new traffic price fields ([94e0f44](https://github.com/hetznercloud/hcloud-go/commit/94e0f44d269fdb5138485a6e69dae9105690e4b0))
+
 ## [2.11.0](https://github.com/hetznercloud/hcloud-go/compare/v2.10.2...v2.11.0) (2024-07-23)
 
 
