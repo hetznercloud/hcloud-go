@@ -29,13 +29,13 @@ type NetworkSubnetType string
 
 // List of available network subnet types.
 const (
-	// Used to connect cloud servers.
+	// Used to connect cloud servers and load balancers.
 	NetworkSubnetTypeCloud NetworkSubnetType = "cloud"
-	// Used to connect cloud servers.
+	// Used to connect cloud servers and load balancers.
 	//
 	// Deprecated: Use [NetworkSubnetTypeCloud] instead.
 	NetworkSubnetTypeServer NetworkSubnetType = "server"
-	// Used to connect cloud servers to dedicated servers.
+	// Used to connect cloud servers and load balancers with dedicated servers.
 	//
 	// See https://docs.hetzner.com/cloud/networks/connect-dedi-vswitch/
 	NetworkSubnetTypeVSwitch NetworkSubnetType = "vswitch"
