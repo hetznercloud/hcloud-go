@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.59.0](https://github.com/hetznercloud/hcloud-go/compare/v1.58.0...v1.59.0) (2024-08-06)
+
+
+### Features
+
+* **network:** add new network zone ap-southeast ([#502](https://github.com/hetznercloud/hcloud-go/issues/502)) ([0104ec0](https://github.com/hetznercloud/hcloud-go/commit/0104ec08665b039af12eff3ed6122cbfb12bb11f))
+
 ## [1.58.0](https://github.com/hetznercloud/hcloud-go/compare/v1.57.0...v1.58.0) (2024-07-25)
 
 ### API Changes for Traffic Prices and Server Type Included Traffic
