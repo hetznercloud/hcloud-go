@@ -20,6 +20,8 @@ type Action struct {
 	ErrorCode    string
 	ErrorMessage string
 	Resources    []*ActionResource
+
+	Resource *ActionResource
 }
 
 // ActionStatus represents an action's status.
