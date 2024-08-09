@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.59.1](https://github.com/hetznercloud/hcloud-go/compare/v1.59.0...v1.59.1) (2024-08-09)
+
+
+### Bug Fixes
+
+* `invalid_input` API errors may not return details ([bfa3803](https://github.com/hetznercloud/hcloud-go/commit/bfa3803200d620b6644e8019bb7a5f2e7202ca7b))
+
 ## [1.59.0](https://github.com/hetznercloud/hcloud-go/compare/v1.58.0...v1.59.0) (2024-08-06)
 
 
