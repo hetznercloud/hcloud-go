@@ -13,6 +13,14 @@ import (
 )
 
 func TestDebugHandler(t *testing.T) {
+	generateTimestampOrig := generateTimestamp
+	generateTimestamp = func() string { return "2024-08-08T12:15:18+02:00" }
+	defer func() { generateTimestamp = generateTimestampOrig }()
+
+	generateRandomIDOrig := generateRandomID
+	generateRandomID = func() string { return "22ae0311" }
+	defer func() { generateRandomID = generateRandomIDOrig }()
+
 	testCases := []struct {
 		name    string
 		wrapped func(req *http.Request, v any) (*Response, error)
@@ -23,15 +31,14 @@ func TestDebugHandler(t *testing.T) {
 			wrapped: func(_ *http.Request, _ any) (*Response, error) {
 				return nil, fmt.Errorf("network error")
 			},
-			want: `--- Request:
-GET /v1/ HTTP/1.1
-Host: api.hetzner.cloud
-User-Agent: hcloud-go/testing
-Authorization: REDACTED
-Accept-Encoding: gzip
-
-
-
+			want: `2024-08-08T12:15:18+02:00 [22ae0311]: --- Request:
+2024-08-08T12:15:18+02:00 [22ae0311]: GET /v1/ HTTP/1.1
+2024-08-08T12:15:18+02:00 [22ae0311]: Host: api.hetzner.cloud
+2024-08-08T12:15:18+02:00 [22ae0311]: User-Agent: hcloud-go/testing
+2024-08-08T12:15:18+02:00 [22ae0311]: Authorization: REDACTED
+2024-08-08T12:15:18+02:00 [22ae0311]: Accept-Encoding: gzip
+2024-08-08T12:15:18+02:00 [22ae0311]: 
+2024-08-08T12:15:18+02:00 [22ae0311]: 
 `,
 		},
 		{
@@ -39,21 +46,19 @@ Accept-Encoding: gzip
 			wrapped: func(_ *http.Request, _ any) (*Response, error) {
 				return fakeResponse(t, 503, "", false), nil
 			},
-			want: `--- Request:
-GET /v1/ HTTP/1.1
-Host: api.hetzner.cloud
-User-Agent: hcloud-go/testing
-Authorization: REDACTED
-Accept-Encoding: gzip
-
-
-
---- Response:
-HTTP/1.1 503 Service Unavailable
-Connection: close
-
-
-
+			want: `2024-08-08T12:15:18+02:00 [22ae0311]: --- Request:
+2024-08-08T12:15:18+02:00 [22ae0311]: GET /v1/ HTTP/1.1
+2024-08-08T12:15:18+02:00 [22ae0311]: Host: api.hetzner.cloud
+2024-08-08T12:15:18+02:00 [22ae0311]: User-Agent: hcloud-go/testing
+2024-08-08T12:15:18+02:00 [22ae0311]: Authorization: REDACTED
+2024-08-08T12:15:18+02:00 [22ae0311]: Accept-Encoding: gzip
+2024-08-08T12:15:18+02:00 [22ae0311]: 
+2024-08-08T12:15:18+02:00 [22ae0311]: 
+2024-08-08T12:15:18+02:00 [22ae0311]: --- Response:
+2024-08-08T12:15:18+02:00 [22ae0311]: HTTP/1.1 503 Service Unavailable
+2024-08-08T12:15:18+02:00 [22ae0311]: Connection: close
+2024-08-08T12:15:18+02:00 [22ae0311]: 
+2024-08-08T12:15:18+02:00 [22ae0311]: 
 `,
 		},
 		{
@@ -61,22 +66,21 @@ Connection: close
 			wrapped: func(_ *http.Request, _ any) (*Response, error) {
 				return fakeResponse(t, 200, `{"data": {"id": 1234, "name": "testing"}}`, true), nil
 			},
-			want: `--- Request:
-GET /v1/ HTTP/1.1
-Host: api.hetzner.cloud
-User-Agent: hcloud-go/testing
-Authorization: REDACTED
-Accept-Encoding: gzip
-
-
-
---- Response:
-HTTP/1.1 200 OK
-Connection: close
-Content-Type: application/json
-
-{"data": {"id": 1234, "name": "testing"}}
-
+			want: `2024-08-08T12:15:18+02:00 [22ae0311]: --- Request:
+2024-08-08T12:15:18+02:00 [22ae0311]: GET /v1/ HTTP/1.1
+2024-08-08T12:15:18+02:00 [22ae0311]: Host: api.hetzner.cloud
+2024-08-08T12:15:18+02:00 [22ae0311]: User-Agent: hcloud-go/testing
+2024-08-08T12:15:18+02:00 [22ae0311]: Authorization: REDACTED
+2024-08-08T12:15:18+02:00 [22ae0311]: Accept-Encoding: gzip
+2024-08-08T12:15:18+02:00 [22ae0311]: 
+2024-08-08T12:15:18+02:00 [22ae0311]: 
+2024-08-08T12:15:18+02:00 [22ae0311]: --- Response:
+2024-08-08T12:15:18+02:00 [22ae0311]: HTTP/1.1 200 OK
+2024-08-08T12:15:18+02:00 [22ae0311]: Connection: close
+2024-08-08T12:15:18+02:00 [22ae0311]: Content-Type: application/json
+2024-08-08T12:15:18+02:00 [22ae0311]: 
+2024-08-08T12:15:18+02:00 [22ae0311]: {"data": {"id": 1234, "name": "testing"}}
+2024-08-08T12:15:18+02:00 [22ae0311]: 
 `,
 		},
 	}
