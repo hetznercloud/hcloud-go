@@ -93,7 +93,7 @@ type Client struct {
 	applicationName         string
 	applicationVersion      string
 	userAgent               string
-	debugWriter             io.Writer
+	debugOpts               *DebugOpts
 	instrumentationRegistry prometheus.Registerer
 	handler                 handler
 
@@ -216,7 +216,28 @@ func WithApplication(name, version string) ClientOption {
 // writer. To, for example, print debug information on stderr, set it to os.Stderr.
 func WithDebugWriter(debugWriter io.Writer) ClientOption {
 	return func(client *Client) {
-		client.debugWriter = debugWriter
+		client.debugOpts = defaultDebugOpts(debugWriter)
+	}
+}
+
+// DebugOpts defines the options used by [WithDebugOpts].
+type DebugOpts struct {
+	WriteRequest  func(id string, dump []byte)
+	WriteResponse func(id string, dump []byte)
+}
+
+func defaultDebugOpts(writer io.Writer) *DebugOpts {
+	return &DebugOpts{
+		WriteRequest:  defaultDebugWriter(writer, "Request"),
+		WriteResponse: defaultDebugWriter(writer, "Response"),
+	}
+}
+
+// WithDebugOpts configures a Client to print debug information using the given write
+// functions.
+func WithDebugOpts(opts DebugOpts) ClientOption {
+	return func(client *Client) {
+		client.debugOpts = &opts
 	}
 }
 

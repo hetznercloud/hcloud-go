@@ -21,9 +21,9 @@ func assembleHandlerChain(client *Client) handler {
 	// Start down the chain: sending the http request
 	h := newHTTPHandler(client.httpClient)
 
-	// Insert debug writer if enabled
-	if client.debugWriter != nil {
-		h = wrapDebugHandler(h, client.debugWriter)
+	// Insert debug opts if enabled
+	if client.debugOpts != nil {
+		h = wrapDebugHandler(h, client.debugOpts)
 	}
 
 	// Read rate limit headers
