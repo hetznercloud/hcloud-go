@@ -102,6 +102,24 @@ func (l ActionListOpts) values() url.Values {
 	return vals
 }
 
+// ResourceActionListOpts specifies options for listing actions.
+type ResourceActionListOpts struct {
+	ListOpts
+	Status []ActionStatus
+	Sort   []string
+}
+
+func (l ResourceActionListOpts) values() url.Values {
+	vals := l.ListOpts.Values()
+	for _, status := range l.Status {
+		vals.Add("status", string(status))
+	}
+	for _, sort := range l.Sort {
+		vals.Add("sort", sort)
+	}
+	return vals
+}
+
 // List returns a list of actions for a specific page.
 //
 // Please note that filters specified in opts are not taken into account
@@ -179,6 +197,33 @@ func (c *ResourceActionClient) List(ctx context.Context, opts ActionListOpts) ([
 	return actions, resp, nil
 }
 
+// ListForResource returns a list of actions of a resource for a specific page.
+//
+// Please note that filters specified in opts are not taken into account
+// when their value corresponds to their zero value or when they are empty.
+func (c *ResourceActionClient) ListForResource(ctx context.Context, resourceID int64, opts ResourceActionListOpts) ([]*Action, *Response, error) {
+	req, err := c.client.NewRequest(
+		ctx,
+		"GET",
+		fmt.Sprintf("%s/%d/actions?%s", c.getBaseURL(), resourceID, opts.values().Encode()),
+		nil,
+	)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	var body schema.ActionListResponse
+	resp, err := c.client.Do(req, &body)
+	if err != nil {
+		return nil, nil, err
+	}
+	actions := make([]*Action, 0, len(body.Actions))
+	for _, i := range body.Actions {
+		actions = append(actions, ActionFromSchema(i))
+	}
+	return actions, resp, nil
+}
+
 // All returns all actions for the given options.
 func (c *ResourceActionClient) All(ctx context.Context, opts ActionListOpts) ([]*Action, error) {
 	allActions := []*Action{}
@@ -186,6 +231,26 @@ func (c *ResourceActionClient) All(ctx context.Context, opts ActionListOpts) ([]
 	err := c.client.all(func(page int) (*Response, error) {
 		opts.Page = page
 		actions, resp, err := c.List(ctx, opts)
+		if err != nil {
+			return resp, err
+		}
+		allActions = append(allActions, actions...)
+		return resp, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return allActions, nil
+}
+
+// AllForResource returns all actions of a resource for the given options.
+func (c *ResourceActionClient) AllForResource(ctx context.Context, resourceID int64, opts ResourceActionListOpts) ([]*Action, error) {
+	allActions := []*Action{}
+
+	err := c.client.all(func(page int) (*Response, error) {
+		opts.Page = page
+		actions, resp, err := c.ListForResource(ctx, resourceID, opts)
 		if err != nil {
 			return resp, err
 		}
