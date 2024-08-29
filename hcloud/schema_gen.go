@@ -658,8 +658,8 @@ func imagePricingFromSchema(s schema.Pricing) ImagePricing {
 func floatingIPPricingFromSchema(s schema.Pricing) FloatingIPPricing {
 	return FloatingIPPricing{
 		Monthly: Price{
-			Net:      s.FloatingIP.PriceMonthly.Net,
-			Gross:    s.FloatingIP.PriceMonthly.Gross,
+			Net:      s.FloatingIP.PriceMonthly.Net,   // nolint:staticcheck // Field is deprecated, but removal is not planned
+			Gross:    s.FloatingIP.PriceMonthly.Gross, // nolint:staticcheck // Field is deprecated, but removal is not planned
 			Currency: s.Currency,
 			VATRate:  s.VATRate,
 		},
