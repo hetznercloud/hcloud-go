@@ -6,6 +6,10 @@ module github.com/hetznercloud/hcloud-go/v2
 // It should never be higher than the lowest currently supported version of Go.
 go 1.21
 
+// The toolchain version describes which Go version to use for testing, generating etc.
+// It should always be the newest version.
+toolchain go1.23.1
+
 require (
 	github.com/google/go-cmp v0.6.0
 	github.com/jmattheis/goverter v1.5.1
