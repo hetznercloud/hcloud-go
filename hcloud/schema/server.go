@@ -289,12 +289,6 @@ type ServerActionDetachISOResponse struct {
 	Action Action `json:"action"`
 }
 
-// ServerActionEnableBackupRequest defines the schema for the request to
-// enable backup for a server.
-type ServerActionEnableBackupRequest struct {
-	BackupWindow *string `json:"backup_window,omitempty"`
-}
-
 // ServerActionEnableBackupResponse defines the schema of the response when
 // creating a enable_backup server action.
 type ServerActionEnableBackupResponse struct {

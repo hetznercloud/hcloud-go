@@ -1696,61 +1696,24 @@ func TestServerClientEnableBackup(t *testing.T) {
 		server = &Server{ID: 1}
 	)
 
-	t.Run("with a backup window", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
+	env := newTestEnv()
+	defer env.Teardown()
 
-		env.Mux.HandleFunc("/servers/1/actions/enable_backup", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody schema.ServerActionEnableBackupRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.BackupWindow == nil || *reqBody.BackupWindow != "9-17" {
-				t.Errorf("unexpected backup window: %v", reqBody.BackupWindow)
-			}
-			json.NewEncoder(w).Encode(schema.ServerActionEnableBackupResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
+	env.Mux.HandleFunc("/servers/1/actions/enable_backup", func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(schema.ServerActionEnableBackupResponse{
+			Action: schema.Action{
+				ID: 1,
+			},
 		})
-
-		action, _, err := env.Client.Server.EnableBackup(ctx, server, "9-17")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %d", action.ID)
-		}
 	})
 
-	t.Run("without a backup window", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/servers/1/actions/enable_backup", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody schema.ServerActionEnableBackupRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.BackupWindow != nil {
-				t.Errorf("unexpected backup window: %v", reqBody.BackupWindow)
-			}
-			json.NewEncoder(w).Encode(schema.ServerActionEnableBackupResponse{
-				Action: schema.Action{
-					ID: 1,
-				},
-			})
-		})
-
-		action, _, err := env.Client.Server.EnableBackup(ctx, server, "")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if action.ID != 1 {
-			t.Errorf("unexpected action ID: %d", action.ID)
-		}
-	})
+	action, _, err := env.Client.Server.EnableBackup(ctx, server, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if action.ID != 1 {
+		t.Errorf("unexpected action ID: %d", action.ID)
+	}
 }
 
 func TestServerClientDisableBackup(t *testing.T) {
