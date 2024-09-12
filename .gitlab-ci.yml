@@ -22,7 +22,7 @@ cache:
 
 build:
   stage: build
-  image: golang:1.22
+  image: golang:1.23
   script:
     - go env
     - go mod download
@@ -35,7 +35,7 @@ test:lint:
 
 test:unit:
   stage: test
-  image: golang:1.22
+  image: golang:1.23
   script:
     - go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
     - go get github.com/boumenot/gocover-cobertura
