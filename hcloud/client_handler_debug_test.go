@@ -31,7 +31,6 @@ Authorization: REDACTED
 Accept-Encoding: gzip
 
 
-
 `,
 		},
 		{
@@ -47,11 +46,9 @@ Authorization: REDACTED
 Accept-Encoding: gzip
 
 
-
 --- Response:
 HTTP/1.1 503 Service Unavailable
 Connection: close
-
 
 
 `,
@@ -69,7 +66,6 @@ Authorization: REDACTED
 Accept-Encoding: gzip
 
 
-
 --- Response:
 HTTP/1.1 200 OK
 Connection: close
@@ -85,7 +81,7 @@ Content-Type: application/json
 			buf := bytes.NewBuffer(nil)
 
 			m := &mockHandler{testCase.wrapped}
-			h := wrapDebugHandler(m, buf)
+			h := wrapDebugHandler(m, defaultDebugOpts(buf))
 
 			client := NewClient(WithToken("dummy"))
 			client.userAgent = "hcloud-go/testing"
