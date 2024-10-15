@@ -13,7 +13,7 @@ toolchain go1.23.2
 require (
 	github.com/google/go-cmp v0.6.0
 	github.com/jmattheis/goverter v1.5.1
-	github.com/prometheus/client_golang v1.20.4
+	github.com/prometheus/client_golang v1.20.5
 	github.com/stretchr/testify v1.9.0
 	github.com/vburenin/ifacemaker v1.2.1
 	golang.org/x/crypto v0.25.0
