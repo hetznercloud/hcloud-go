@@ -309,7 +309,7 @@ func TestClientDoPost(t *testing.T) {
 
 	debugLog := new(bytes.Buffer)
 
-	env.Client.debugWriter = debugLog
+	env.Client.debugOpts = defaultDebugOpts(debugLog)
 	callCount := 0
 	env.Mux.HandleFunc("/test", func(w http.ResponseWriter, r *http.Request) {
 		auth := r.Header.Get("Authorization")
