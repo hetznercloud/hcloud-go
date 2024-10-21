@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.14.0](https://github.com/hetznercloud/hcloud-go/compare/v2.13.1...v2.14.0) (2024-10-21)
+
+
+### Features
+
+* add support for Go 1.23 ([#532](https://github.com/hetznercloud/hcloud-go/issues/532)) ([838f878](https://github.com/hetznercloud/hcloud-go/commit/838f878189bb46fc071066e77bac421880d9b61e))
+* allow retrieving the action from an action error ([#538](https://github.com/hetznercloud/hcloud-go/issues/538)) ([07727d3](https://github.com/hetznercloud/hcloud-go/commit/07727d3362ae3ebd0966ff09e5616afe9965b17f))
+* include action ID in action error string ([#539](https://github.com/hetznercloud/hcloud-go/issues/539)) ([ad5417f](https://github.com/hetznercloud/hcloud-go/commit/ad5417f9086278521937ccbae00f31a2b3c8421e))
+
+
+### Bug Fixes
+
+* deprecate pricing floating ip field ([#523](https://github.com/hetznercloud/hcloud-go/issues/523)) ([1089d40](https://github.com/hetznercloud/hcloud-go/commit/1089d40577b60caeeffcfe30940f831ea7ce3999))
+* deprecate unused window parameter in the `EnableBackup` call  ([#531](https://github.com/hetznercloud/hcloud-go/issues/531)) ([584f6c2](https://github.com/hetznercloud/hcloud-go/commit/584f6c2a5091ebb2f4761f752c22d9562d46a6f6)), closes [#525](https://github.com/hetznercloud/hcloud-go/issues/525)
+
 ## [2.13.1](https://github.com/hetznercloud/hcloud-go/compare/v2.13.0...v2.13.1) (2024-08-09)
 
 
