@@ -64,9 +64,10 @@ func (e ActionError) Action() *Action {
 }
 
 func (e ActionError) Error() string {
-	if e.action != nil {
+	action := e.Action()
+	if action != nil {
 		// For easier debugging, the error string contains the Action ID.
-		return fmt.Sprintf("%s (%s, %d)", e.Message, e.Code, e.action.ID)
+		return fmt.Sprintf("%s (%s, %d)", e.Message, e.Code, action.ID)
 	}
 	return fmt.Sprintf("%s (%s)", e.Message, e.Code)
 }
