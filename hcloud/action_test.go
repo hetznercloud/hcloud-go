@@ -7,8 +7,21 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
+
+func TestActionError(t *testing.T) {
+	assert.Equal(t,
+		"action failed (failed)",
+		ActionError{Code: "failed", Message: "action failed"}.Error(),
+	)
+	assert.Equal(t,
+		"action failed (failed, 12345)",
+		ActionError{Code: "failed", Message: "action failed", action: &Action{ID: 12345}}.Error(),
+	)
+}
 
 func TestActionClientGetByID(t *testing.T) {
 	env := newTestEnv()
