@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -33,6 +34,11 @@ func Handler(t *testing.T, requests []Request) http.HandlerFunc {
 	t.Helper()
 
 	index := 0
+
+	t.Cleanup(func() {
+		assert.EqualValues(t, len(requests), index, "expected more calls")
+	})
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if testing.Verbose() {
 			t.Logf("call %d: %s %s\n", index, r.Method, r.RequestURI)
