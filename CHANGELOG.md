@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.15.0](https://github.com/hetznercloud/hcloud-go/compare/v2.14.0...v2.15.0) (2024-10-31)
+
+
+### Features
+
+* **exp:** add mockutil.Server helper ([#543](https://github.com/hetznercloud/hcloud-go/issues/543)) ([fa1069b](https://github.com/hetznercloud/hcloud-go/commit/fa1069b1f677325726bf1f9dc14922a707e16440))
+* **exp:** fail test when mock calls were expected but not received ([#542](https://github.com/hetznercloud/hcloud-go/issues/542)) ([01392cc](https://github.com/hetznercloud/hcloud-go/commit/01392cc77e05d1aa1add84e17aa89a8a26ea61d2))
+
 ## [2.14.0](https://github.com/hetznercloud/hcloud-go/compare/v2.13.1...v2.14.0) (2024-10-21)
 
 
