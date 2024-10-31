@@ -3,6 +3,7 @@ package mockutil
 import (
 	"encoding/json"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -82,4 +83,14 @@ func Handler(t *testing.T, requests []Request) http.HandlerFunc {
 
 		index++
 	})
+}
+
+// Server is a [httptest.Server] wrapping a [Handler] that closes itself at the end of the test.
+func Server(t *testing.T, requests []Request) *httptest.Server {
+	t.Helper()
+
+	server := httptest.NewServer(Handler(t, requests))
+	t.Cleanup(server.Close)
+
+	return server
 }

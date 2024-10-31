@@ -5,7 +5,6 @@ import (
 	"io"
 	"math/rand"
 	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
 
@@ -14,7 +13,7 @@ import (
 )
 
 func TestHandler(t *testing.T) {
-	server := httptest.NewServer(Handler(t, []Request{
+	server := Server(t, []Request{
 		{
 			Method: "GET", Path: "/",
 			Status: 200,
@@ -40,8 +39,7 @@ func TestHandler(t *testing.T) {
 			},
 			Status: 200,
 		},
-	}))
-	defer server.Close()
+	})
 
 	// Request 1
 	resp, err := http.Get(server.URL)
