@@ -1508,7 +1508,7 @@ func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
 			},
 			Request: schema.LoadBalancerCreateRequest{
 				Name:             "test",
-				LoadBalancerType: "lb11",
+				LoadBalancerType: schema.IDOrName{Name: "lb11"},
 				Algorithm: &schema.LoadBalancerCreateRequestAlgorithm{
 					Type: string(LoadBalancerAlgorithmTypeRoundRobin),
 				},
@@ -1593,7 +1593,7 @@ func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
 			},
 			Request: schema.LoadBalancerCreateRequest{
 				Name:             "test",
-				LoadBalancerType: "lb11",
+				LoadBalancerType: schema.IDOrName{Name: "lb11"},
 				Algorithm: &schema.LoadBalancerCreateRequestAlgorithm{
 					Type: string(LoadBalancerAlgorithmTypeRoundRobin),
 				},

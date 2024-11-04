@@ -69,7 +69,6 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend durationFromIntSeconds
 // goverter:extend intSecondsFromDuration
 // goverter:extend serverFromImageCreatedFromSchema
-// goverter:extend anyFromLoadBalancerType
 // goverter:extend serverMetricsTimeSeriesFromSchema
 // goverter:extend loadBalancerMetricsTimeSeriesFromSchema
 // goverter:extend stringPtrFromLoadBalancerServiceProtocol
@@ -806,16 +805,6 @@ func volumePricingFromSchema(s schema.Pricing) VolumePricing {
 			VATRate:  s.VATRate,
 		},
 	}
-}
-
-func anyFromLoadBalancerType(t *LoadBalancerType) interface{} {
-	if t == nil {
-		return nil
-	}
-	if t.ID != 0 {
-		return t.ID
-	}
-	return t.Name
 }
 
 func serverMetricsTimeSeriesFromSchema(s schema.ServerTimeSeriesVals) ([]ServerMetricsValue, error) {

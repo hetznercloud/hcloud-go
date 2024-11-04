@@ -319,7 +319,7 @@ func TestVolumeClientCreateWithLocation(t *testing.T) {
 		if reqBody.Size != 42 {
 			t.Errorf("unexpected volume size in request: %v", reqBody.Size)
 		}
-		if reqBody.Location != float64(1) {
+		if reqBody.Location.ID != 1 {
 			t.Errorf("unexpected volume location in request: %v", reqBody.Location)
 		}
 		if reqBody.Server != nil {

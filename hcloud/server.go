@@ -378,15 +378,11 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	reqBody.Name = opts.Name
 	reqBody.Automount = opts.Automount
 	reqBody.StartAfterCreate = opts.StartAfterCreate
-	if opts.ServerType.ID != 0 {
-		reqBody.ServerType = opts.ServerType.ID
-	} else if opts.ServerType.Name != "" {
-		reqBody.ServerType = opts.ServerType.Name
+	if opts.ServerType.ID != 0 || opts.ServerType.Name != "" {
+		reqBody.ServerType = schema.IDOrName{ID: opts.ServerType.ID, Name: opts.ServerType.Name}
 	}
-	if opts.Image.ID != 0 {
-		reqBody.Image = opts.Image.ID
-	} else if opts.Image.Name != "" {
-		reqBody.Image = opts.Image.Name
+	if opts.Image.ID != 0 || opts.Image.Name != "" {
+		reqBody.Image = schema.IDOrName{ID: opts.Image.ID, Name: opts.Image.Name}
 	}
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
@@ -778,10 +774,8 @@ func (c *ServerClient) Rebuild(ctx context.Context, server *Server, opts ServerR
 // RebuildWithResult rebuilds a server.
 func (c *ServerClient) RebuildWithResult(ctx context.Context, server *Server, opts ServerRebuildOpts) (ServerRebuildResult, *Response, error) {
 	reqBody := schema.ServerActionRebuildRequest{}
-	if opts.Image.ID != 0 {
-		reqBody.Image = opts.Image.ID
-	} else {
-		reqBody.Image = opts.Image.Name
+	if opts.Image.ID != 0 || opts.Image.Name != "" {
+		reqBody.Image = schema.IDOrName{ID: opts.Image.ID, Name: opts.Image.Name}
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -813,10 +807,8 @@ func (c *ServerClient) RebuildWithResult(ctx context.Context, server *Server, op
 // AttachISO attaches an ISO to a server.
 func (c *ServerClient) AttachISO(ctx context.Context, server *Server, iso *ISO) (*Action, *Response, error) {
 	reqBody := schema.ServerActionAttachISORequest{}
-	if iso.ID != 0 {
-		reqBody.ISO = iso.ID
-	} else {
-		reqBody.ISO = iso.Name
+	if iso.ID != 0 || iso.Name != "" {
+		reqBody.ISO = schema.IDOrName{ID: iso.ID, Name: iso.Name}
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {
@@ -899,10 +891,8 @@ func (c *ServerClient) ChangeType(ctx context.Context, server *Server, opts Serv
 	reqBody := schema.ServerActionChangeTypeRequest{
 		UpgradeDisk: opts.UpgradeDisk,
 	}
-	if opts.ServerType.ID != 0 {
-		reqBody.ServerType = opts.ServerType.ID
-	} else {
-		reqBody.ServerType = opts.ServerType.Name
+	if opts.ServerType.ID != 0 || opts.ServerType.Name != "" {
+		reqBody.ServerType = schema.IDOrName{ID: opts.ServerType.ID, Name: opts.ServerType.Name}
 	}
 	reqBodyData, err := json.Marshal(reqBody)
 	if err != nil {

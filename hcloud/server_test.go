@@ -1468,7 +1468,7 @@ func TestServerClientRebuild(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if id, ok := reqBody.Image.(float64); !ok || id != 1 {
+			if reqBody.Image.ID != 1 {
 				t.Errorf("unexpected image ID: %v", reqBody.Image)
 			}
 			json.NewEncoder(w).Encode(schema.ServerActionRebuildResponse{
@@ -1499,7 +1499,7 @@ func TestServerClientRebuild(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if name, ok := reqBody.Image.(string); !ok || name != "debian-9" {
+			if reqBody.Image.Name != "debian-9" {
 				t.Errorf("unexpected image name: %v", reqBody.Image)
 			}
 			json.NewEncoder(w).Encode(schema.ServerActionRebuildResponse{
@@ -1537,7 +1537,7 @@ func TestServerClientRebuildWithResult(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if id, ok := reqBody.Image.(float64); !ok || id != 1 {
+			if reqBody.Image.ID != 1 {
 				t.Errorf("unexpected image ID: %v", reqBody.Image)
 			}
 			json.NewEncoder(w).Encode(schema.ServerActionRebuildResponse{
@@ -1572,7 +1572,7 @@ func TestServerClientRebuildWithResult(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if name, ok := reqBody.Image.(string); !ok || name != "debian-9" {
+			if reqBody.Image.Name != "debian-9" {
 				t.Errorf("unexpected image name: %v", reqBody.Image)
 			}
 			json.NewEncoder(w).Encode(schema.ServerActionRebuildResponse{
@@ -1614,7 +1614,7 @@ func TestServerClientAttachISO(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if id, ok := reqBody.ISO.(float64); !ok || id != 1 {
+			if reqBody.ISO.ID != 1 {
 				t.Errorf("unexpected ISO ID: %v", reqBody.ISO)
 			}
 			json.NewEncoder(w).Encode(schema.ServerActionAttachISOResponse{
@@ -1643,7 +1643,7 @@ func TestServerClientAttachISO(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if name, ok := reqBody.ISO.(string); !ok || name != "debian.iso" {
+			if reqBody.ISO.Name != "debian.iso" {
 				t.Errorf("unexpected ISO name: %v", reqBody.ISO)
 			}
 			json.NewEncoder(w).Encode(schema.ServerActionAttachISOResponse{
@@ -1757,7 +1757,7 @@ func TestServerClientChangeType(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if id, ok := reqBody.ServerType.(float64); !ok || id != 1 {
+			if reqBody.ServerType.ID != 1 {
 				t.Errorf("unexpected server type ID: %v", reqBody.ServerType)
 			}
 			if !reqBody.UpgradeDisk {
@@ -1792,7 +1792,7 @@ func TestServerClientChangeType(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if name, ok := reqBody.ServerType.(string); !ok || name != "type" {
+			if reqBody.ServerType.Name != "type" {
 				t.Errorf("unexpected server type name: %v", reqBody.ServerType)
 			}
 			if !reqBody.UpgradeDisk {
