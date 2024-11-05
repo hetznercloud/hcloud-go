@@ -175,7 +175,7 @@ func TestLoadBalancerCreate(t *testing.T) {
 		}
 		expectedReqBody := schema.LoadBalancerCreateRequest{
 			Name:             "load-balancer",
-			LoadBalancerType: "lb1",
+			LoadBalancerType: schema.IDOrName{Name: "lb1"},
 			Algorithm: &schema.LoadBalancerCreateRequestAlgorithm{
 				Type: "round_robin",
 			},
@@ -813,7 +813,7 @@ func TestLoadBalancerClientChangeType(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if id, ok := reqBody.LoadBalancerType.(float64); !ok || id != 1 {
+			if reqBody.LoadBalancerType.ID != 1 {
 				t.Errorf("unexpected Load Balancer type ID: %v", reqBody.LoadBalancerType)
 			}
 			json.NewEncoder(w).Encode(schema.LoadBalancerActionChangeTypeResponse{
@@ -844,7 +844,7 @@ func TestLoadBalancerClientChangeType(t *testing.T) {
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if name, ok := reqBody.LoadBalancerType.(string); !ok || name != "type" {
+			if reqBody.LoadBalancerType.Name != "type" {
 				t.Errorf("unexpected Load Balancer type name: %v", reqBody.LoadBalancerType)
 			}
 			json.NewEncoder(w).Encode(schema.LoadBalancerActionChangeTypeResponse{
