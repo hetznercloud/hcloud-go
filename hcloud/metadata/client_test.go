@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 type testEnv struct {
@@ -39,6 +40,9 @@ func TestClient_Base(t *testing.T) {
 	env.Mux.HandleFunc("/ok", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("ok"))
 	})
+	env.Mux.HandleFunc("/sanitized", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("sanitized  \n"))
+	})
 	env.Mux.HandleFunc("/not-found", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		w.Write([]byte("not found"))
@@ -46,6 +50,9 @@ func TestClient_Base(t *testing.T) {
 
 	if body, err := env.Client.get("/ok"); assert.NoError(t, err) {
 		assert.Equal(t, "ok", body)
+	}
+	if body, err := env.Client.get("/sanitized"); assert.NoError(t, err) {
+		assert.Equal(t, "sanitized", body)
 	}
 	if body, err := env.Client.get("/not-found"); assert.EqualError(t, err, "response status was 404") {
 		assert.Equal(t, "not found", body)
@@ -99,33 +106,51 @@ func TestClient_Hostname(t *testing.T) {
 }
 
 func TestClient_InstanceID(t *testing.T) {
-	env := newTestEnv()
-	env.Mux.HandleFunc("/instance-id", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("123456"))
+	t.Run("success", func(t *testing.T) {
+		env := newTestEnv()
+		env.Mux.HandleFunc("/instance-id", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("123456"))
+		})
+
+		instanceID, err := env.Client.InstanceID()
+		require.NoError(t, err)
+		require.Equal(t, int64(123456), instanceID)
 	})
 
-	instanceID, err := env.Client.InstanceID()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if instanceID != 123456 {
-		t.Fatalf("Unexpected instanceID %d", instanceID)
-	}
+	t.Run("success sanitized", func(t *testing.T) {
+		env := newTestEnv()
+		env.Mux.HandleFunc("/instance-id", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("123456\n"))
+		})
+
+		instanceID, err := env.Client.InstanceID()
+		require.NoError(t, err)
+		require.Equal(t, int64(123456), instanceID)
+	})
 }
 
 func TestClient_PublicIPv4(t *testing.T) {
-	env := newTestEnv()
-	env.Mux.HandleFunc("/public-ipv4", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("127.0.0.1"))
+	t.Run("success", func(t *testing.T) {
+		env := newTestEnv()
+		env.Mux.HandleFunc("/public-ipv4", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("127.0.0.1"))
+		})
+
+		publicIPv4, err := env.Client.PublicIPv4()
+		require.NoError(t, err)
+		require.Equal(t, "127.0.0.1", publicIPv4.String())
 	})
 
-	publicIPv4, err := env.Client.PublicIPv4()
-	if err != nil {
-		t.Fatal(err)
-	}
-	if publicIPv4.String() != "127.0.0.1" {
-		t.Fatalf("Unexpected PublicIPv4 %s", publicIPv4.String())
-	}
+	t.Run("success sanitized", func(t *testing.T) {
+		env := newTestEnv()
+		env.Mux.HandleFunc("/public-ipv4", func(w http.ResponseWriter, r *http.Request) {
+			w.Write([]byte("127.0.0.1\n"))
+		})
+
+		publicIPv4, err := env.Client.PublicIPv4()
+		require.NoError(t, err)
+		require.Equal(t, "127.0.0.1", publicIPv4.String())
+	})
 }
 
 func TestClient_Region(t *testing.T) {
