@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -31,11 +32,12 @@ func TestIDOrNameMarshall(t *testing.T) {
 		require.Equal(t, `1`, string(got))
 	})
 
-	t.Run("none", func(t *testing.T) {
+	t.Run("null", func(t *testing.T) {
 		i := IDOrName{}
 
-		_, err := i.MarshalJSON()
-		require.EqualError(t, err, "json: unsupported value: id or name must not be zero values")
+		got, err := i.MarshalJSON()
+		require.NoError(t, err)
+		require.Equal(t, `null`, string(got))
 	})
 }
 
@@ -72,5 +74,32 @@ func TestIDOrNameUnMarshall(t *testing.T) {
 
 		err := i.UnmarshalJSON([]byte(`null`))
 		require.EqualError(t, err, "json: cannot unmarshal null into Go value of type schema.IDOrName")
+	})
+}
+
+func TestIDOrName(t *testing.T) {
+	// Make sure the behavior does not change from the use of an interface{}.
+	type FakeRequest struct {
+		Old interface{} `json:"old"`
+		New IDOrName    `json:"new"`
+	}
+
+	t.Run("null", func(t *testing.T) {
+		o := FakeRequest{}
+		body, err := json.Marshal(o)
+		require.NoError(t, err)
+		require.Equal(t, `{"old":null,"new":null}`, string(body))
+	})
+	t.Run("id", func(t *testing.T) {
+		o := FakeRequest{Old: int64(1), New: IDOrName{ID: 1}}
+		body, err := json.Marshal(o)
+		require.NoError(t, err)
+		require.Equal(t, `{"old":1,"new":1}`, string(body))
+	})
+	t.Run("name", func(t *testing.T) {
+		o := FakeRequest{Old: "name", New: IDOrName{Name: "name"}}
+		body, err := json.Marshal(o)
+		require.NoError(t, err)
+		require.Equal(t, `{"old":"name","new":"name"}`, string(body))
 	})
 }

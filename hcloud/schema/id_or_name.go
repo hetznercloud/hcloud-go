@@ -25,10 +25,9 @@ func (o IDOrName) MarshalJSON() ([]byte, error) {
 		return json.Marshal(o.Name)
 	}
 
-	return nil, &json.UnsupportedValueError{
-		Value: reflect.ValueOf(o),
-		Str:   "id or name must not be zero values",
-	}
+	// We want to preserve the behavior of an empty interface{} to prevent breaking
+	// changes (marshaled to null when empty).
+	return json.Marshal(nil)
 }
 
 func (o *IDOrName) UnmarshalJSON(data []byte) error {
