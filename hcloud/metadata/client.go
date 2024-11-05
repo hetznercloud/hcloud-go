@@ -1,6 +1,7 @@
 package metadata
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"net"
@@ -80,16 +81,20 @@ func NewClient(options ...ClientOption) *Client {
 // get executes an HTTP request against the API.
 func (c *Client) get(path string) (string, error) {
 	url := c.endpoint + path
+
 	resp, err := c.httpClient.Get(url)
 	if err != nil {
 		return "", err
 	}
+
 	defer resp.Body.Close()
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
-	body := string(bodyBytes)
+
+	body := string(bytes.TrimSpace(bodyBytes))
+
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		return body, fmt.Errorf("response status was %d", resp.StatusCode)
 	}
