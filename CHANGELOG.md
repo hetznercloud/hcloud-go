@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.16.0](https://github.com/hetznercloud/hcloud-go/compare/v2.15.0...v2.16.0) (2024-11-05)
+
+
+### Features
+
+* use custom IDOrName type for schemas ([#545](https://github.com/hetznercloud/hcloud-go/issues/545)) ([1d97017](https://github.com/hetznercloud/hcloud-go/commit/1d97017b303caa29379e7202a04814985604bea2))
+
+
+### Bug Fixes
+
+* **metadata:** trim responses before parsing ([#547](https://github.com/hetznercloud/hcloud-go/issues/547)) ([283363f](https://github.com/hetznercloud/hcloud-go/commit/283363f2c875f6cf7611d99a8f1590bfab157af6)), closes [#540](https://github.com/hetznercloud/hcloud-go/issues/540)
+
 ## [2.15.0](https://github.com/hetznercloud/hcloud-go/compare/v2.14.0...v2.15.0) (2024-10-31)
 
 
