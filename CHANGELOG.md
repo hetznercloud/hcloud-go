@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.59.2](https://github.com/hetznercloud/hcloud-go/compare/v1.59.1...v1.59.2) (2024-11-11)
+
+
+### Bug Fixes
+
+* do not send primary IPs ID opts to the API ([#552](https://github.com/hetznercloud/hcloud-go/issues/552)) ([#554](https://github.com/hetznercloud/hcloud-go/issues/554)) ([245ba1e](https://github.com/hetznercloud/hcloud-go/commit/245ba1e21260ff9362ea6cc33bb3dcb8f2df6d87))
+
 ## [1.59.1](https://github.com/hetznercloud/hcloud-go/compare/v1.59.0...v1.59.1) (2024-08-09)
 
 
