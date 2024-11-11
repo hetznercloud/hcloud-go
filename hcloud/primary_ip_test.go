@@ -368,18 +368,15 @@ func TestPrimaryIPClient(t *testing.T) {
 				t.Error("expected POST")
 			}
 			w.Header().Set("Content-Type", "application/json")
-			expectedReqBody := PrimaryIPAssignOpts{
-				AssigneeType: "server",
-				AssigneeID:   1,
-				ID:           1,
-			}
+
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if !cmp.Equal(expectedReqBody, reqBody) {
-				t.Log(cmp.Diff(expectedReqBody, reqBody))
-				t.Error("unexpected request body")
-			}
+
+			assert.Equal(t, int64(1), reqBody.AssigneeID)
+			assert.Equal(t, "server", reqBody.AssigneeType)
+			assert.Equal(t, int64(0), reqBody.ID)
+
 			json.NewEncoder(w).Encode(PrimaryIPAssignResult{
 				Action: schema.Action{ID: 1},
 			})
@@ -428,16 +425,15 @@ func TestPrimaryIPClient(t *testing.T) {
 				t.Error("expected POST")
 			}
 			w.Header().Set("Content-Type", "application/json")
-			expectedReqBody := PrimaryIPChangeDNSPtrOpts{
-				ID: 1,
-			}
+
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if !cmp.Equal(expectedReqBody, reqBody) {
-				t.Log(cmp.Diff(expectedReqBody, reqBody))
-				t.Error("unexpected request body")
-			}
+
+			assert.Equal(t, "value", reqBody.DNSPtr)
+			assert.Equal(t, "127.0.0.1", reqBody.IP)
+			assert.Equal(t, int64(0), reqBody.ID)
+
 			json.NewEncoder(w).Encode(PrimaryIPChangeDNSPtrResult{
 				Action: schema.Action{ID: 1},
 			})
@@ -445,7 +441,9 @@ func TestPrimaryIPClient(t *testing.T) {
 
 		ctx := context.Background()
 		opts := PrimaryIPChangeDNSPtrOpts{
-			ID: 1,
+			ID:     1,
+			DNSPtr: "value",
+			IP:     "127.0.0.1",
 		}
 
 		action, resp, err := env.Client.PrimaryIP.ChangeDNSPtr(ctx, opts)
@@ -463,17 +461,13 @@ func TestPrimaryIPClient(t *testing.T) {
 				t.Error("expected POST")
 			}
 			w.Header().Set("Content-Type", "application/json")
-			expectedReqBody := PrimaryIPChangeProtectionOpts{
-				ID:     1,
-				Delete: true,
-			}
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
 			}
-			if !cmp.Equal(expectedReqBody, reqBody) {
-				t.Log(cmp.Diff(expectedReqBody, reqBody))
-				t.Error("unexpected request body")
-			}
+
+			assert.True(t, reqBody.Delete)
+			assert.Equal(t, int64(0), reqBody.ID)
+
 			json.NewEncoder(w).Encode(PrimaryIPChangeProtectionResult{
 				Action: schema.Action{ID: 1},
 			})
