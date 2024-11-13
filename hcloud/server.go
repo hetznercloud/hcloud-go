@@ -1055,6 +1055,10 @@ type ServerChangeAliasIPsOpts struct {
 
 // ChangeAliasIPs changes a server's alias IPs in a network.
 func (c *ServerClient) ChangeAliasIPs(ctx context.Context, server *Server, opts ServerChangeAliasIPsOpts) (*Action, *Response, error) {
+	if opts.Network == nil || server == nil {
+		return nil, nil, fmt.Errorf("*opts.Network/*Server cannot be nil")
+	}
+
 	reqBody := schema.ServerActionChangeAliasIPsRequest{
 		Network:  opts.Network.ID,
 		AliasIPs: []string{},
