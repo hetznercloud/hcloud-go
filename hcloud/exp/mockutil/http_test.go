@@ -13,7 +13,7 @@ import (
 )
 
 func TestHandler(t *testing.T) {
-	server := Server(t, []Request{
+	server := NewServer(t, []Request{
 		{
 			Method: "GET", Path: "/",
 			Status: 200,
@@ -64,6 +64,17 @@ func TestHandler(t *testing.T) {
 
 	// Request 4
 	resp, err = http.Get(fmt.Sprintf("%s/random?key=%d", server.URL, rand.Int63()))
+	require.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "", resp.Header.Get("Content-Type"))
+	assert.Equal(t, "", readBody(t, resp))
+
+	// Extra request 5
+	server.Expect([]Request{
+		{Method: "GET", Path: "/", Status: 200},
+	})
+
+	resp, err = http.Get(server.URL)
 	require.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode)
 	assert.Equal(t, "", resp.Header.Get("Content-Type"))

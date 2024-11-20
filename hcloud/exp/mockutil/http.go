@@ -27,70 +27,97 @@ type Request struct {
 	JSONRaw string
 }
 
-// Handler is used with a [httptest.Server] to mock http requests provided by the user.
-//
-// Request matching is based on the request count, and the user provided request will be
-// iterated over.
+// Handler is using a [Server] to mock http requests provided by the user.
 func Handler(t *testing.T, requests []Request) http.HandlerFunc {
 	t.Helper()
 
-	index := 0
+	server := NewServer(t, requests)
+	t.Cleanup(server.close)
 
-	t.Cleanup(func() {
-		assert.EqualValues(t, len(requests), index, "expected more calls")
-	})
-
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if testing.Verbose() {
-			t.Logf("call %d: %s %s\n", index, r.Method, r.RequestURI)
-		}
-
-		if index >= len(requests) {
-			t.Fatalf("received unknown call %d", index)
-		}
-
-		expected := requests[index]
-
-		expectedCall := expected.Method
-		foundCall := r.Method
-		if expected.Path != "" {
-			expectedCall += " " + expected.Path
-			foundCall += " " + r.RequestURI
-		}
-		require.Equal(t, expectedCall, foundCall)
-
-		if expected.Want != nil {
-			expected.Want(t, r)
-		}
-
-		switch {
-		case expected.JSON != nil:
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(expected.Status)
-			if err := json.NewEncoder(w).Encode(expected.JSON); err != nil {
-				t.Fatal(err)
-			}
-		case expected.JSONRaw != "":
-			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(expected.Status)
-			_, err := w.Write([]byte(expected.JSONRaw))
-			if err != nil {
-				t.Fatal(err)
-			}
-		default:
-			w.WriteHeader(expected.Status)
-		}
-
-		index++
-	})
+	return server.handler
 }
 
-// Server is a [httptest.Server] wrapping a [Handler] that closes itself at the end of the test.
-func Server(t *testing.T, requests []Request) *httptest.Server {
+// NewServer returns a new mock server that closes itself at the end of the test.
+func NewServer(t *testing.T, requests []Request) *Server {
 	t.Helper()
 
-	server := httptest.NewServer(Handler(t, requests))
-	t.Cleanup(server.Close)
+	o := &Server{t: t}
+	o.Server = httptest.NewServer(http.HandlerFunc(o.handler))
+	t.Cleanup(o.close)
 
-	return server
+	o.Expect(requests)
+
+	return o
+}
+
+// Server embeds a [httptest.Server] that answers HTTP calls with a list of expected [Request].
+//
+// Request matching is based on the request count, and the user provided request will be
+// iterated over.
+//
+// A Server must be created using the [NewServer] function.
+type Server struct {
+	*httptest.Server
+
+	t *testing.T
+
+	requests []Request
+	index    int
+}
+
+// Expect adds requests to the list of requests expected by the [Server].
+func (m *Server) Expect(requests []Request) {
+	m.requests = append(m.requests, requests...)
+}
+
+func (m *Server) close() {
+	m.t.Helper()
+
+	m.Server.Close()
+
+	assert.EqualValues(m.t, len(m.requests), m.index, "expected more calls")
+}
+
+func (m *Server) handler(w http.ResponseWriter, r *http.Request) {
+	if testing.Verbose() {
+		m.t.Logf("call %d: %s %s\n", m.index, r.Method, r.RequestURI)
+	}
+
+	if m.index >= len(m.requests) {
+		m.t.Fatalf("received unknown call %d", m.index)
+	}
+
+	expected := m.requests[m.index]
+
+	expectedCall := expected.Method
+	foundCall := r.Method
+	if expected.Path != "" {
+		expectedCall += " " + expected.Path
+		foundCall += " " + r.RequestURI
+	}
+	require.Equal(m.t, expectedCall, foundCall)
+
+	if expected.Want != nil {
+		expected.Want(m.t, r)
+	}
+
+	switch {
+	case expected.JSON != nil:
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(expected.Status)
+		if err := json.NewEncoder(w).Encode(expected.JSON); err != nil {
+			m.t.Fatal(err)
+		}
+	case expected.JSONRaw != "":
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(expected.Status)
+		_, err := w.Write([]byte(expected.JSONRaw))
+		if err != nil {
+			m.t.Fatal(err)
+		}
+	default:
+		w.WriteHeader(expected.Status)
+	}
+
+	m.index++
 }
