@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.17.0](https://github.com/hetznercloud/hcloud-go/compare/v2.16.0...v2.17.0) (2024-11-20)
+
+
+### Features
+
+* **exp:** add mock requests after mock server creation ([#558](https://github.com/hetznercloud/hcloud-go/issues/558)) ([f9879fd](https://github.com/hetznercloud/hcloud-go/commit/f9879fdd5c610e76f9170ac876b65dfd38033867))
+
+
+### Bug Fixes
+
+* do not send primary IPs ID opts to the API ([#552](https://github.com/hetznercloud/hcloud-go/issues/552)) ([4e70340](https://github.com/hetznercloud/hcloud-go/commit/4e7034075363baa598a94c07083aa2a0d2779701))
+
 ## [2.16.0](https://github.com/hetznercloud/hcloud-go/compare/v2.15.0...v2.16.0) (2024-11-05)
 
 
