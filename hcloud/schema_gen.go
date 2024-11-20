@@ -9,7 +9,8 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
-//go:generate go run github.com/jmattheis/goverter/cmd/goverter gen ./...
+//go:generate make -C ../tools goverter
+//go:generate ../tools/goverter gen ./...
 
 /*
 This file generates conversions methods between the schema and the hcloud package.
