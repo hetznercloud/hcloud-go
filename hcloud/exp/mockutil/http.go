@@ -27,10 +27,7 @@ type Request struct {
 	JSONRaw string
 }
 
-// Handler is used with a [httptest.Server] to mock http requests provided by the user.
-//
-// Request matching is based on the request count, and the user provided request will be
-// iterated over.
+// Handler is used with a [Server] to mock http requests provided by the user.
 func Handler(t *testing.T, requests []Request) http.HandlerFunc {
 	t.Helper()
 
@@ -53,7 +50,12 @@ func NewServer(t *testing.T, requests []Request) *Server {
 	return o
 }
 
-// Server embeds a [httptest.Server] that answers each HTTP calls with the [Request]   list of [Request] closes itself at the end of the test.
+// Server embeds a [httptest.Server] that answers HTTP calls with a list of expected [Request].
+//
+// Request matching is based on the request count, and the user provided request will be
+// iterated over.
+//
+// A Server must be created using the [NewServer] function.
 type Server struct {
 	*httptest.Server
 
@@ -63,6 +65,7 @@ type Server struct {
 	index    int
 }
 
+// Expect adds requests to the list of requests expected by the [Server].
 func (m *Server) Expect(requests []Request) {
 	m.requests = append(m.requests, requests...)
 }
