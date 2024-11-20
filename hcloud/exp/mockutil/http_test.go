@@ -77,6 +77,8 @@ func TestHandler(t *testing.T) {
 	resp, err = http.Get(server.URL)
 	require.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "", resp.Header.Get("Content-Type"))
+	assert.Equal(t, "", readBody(t, resp))
 }
 
 func readBody(t *testing.T, resp *http.Response) string {
