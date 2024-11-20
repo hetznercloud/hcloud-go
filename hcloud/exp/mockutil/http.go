@@ -27,7 +27,7 @@ type Request struct {
 	JSONRaw string
 }
 
-// Handler is used with a [Server] to mock http requests provided by the user.
+// Handler is using a [Server] to mock http requests provided by the user.
 func Handler(t *testing.T, requests []Request) http.HandlerFunc {
 	t.Helper()
 
