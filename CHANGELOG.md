@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.1](https://github.com/hetznercloud/hcloud-go/compare/v2.17.0...v2.17.1) (2024-12-17)
+
+
+### Bug Fixes
+
+* missing load-balancers property in network schema ([#568](https://github.com/hetznercloud/hcloud-go/issues/568)) ([103cf5e](https://github.com/hetznercloud/hcloud-go/commit/103cf5e3392b424c6ee16e9f590d8082be6977b7))
+
 ## [2.17.0](https://github.com/hetznercloud/hcloud-go/compare/v2.16.0...v2.17.0) (2024-11-20)
 
 
