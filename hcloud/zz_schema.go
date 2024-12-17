@@ -357,6 +357,13 @@ func (c *converterImpl) NetworkFromSchema(source schema.Network) *Network {
 			hcloudNetwork.Servers[k] = &hcloudServer
 		}
 	}
+	if source.LoadBalancers != nil {
+		hcloudNetwork.LoadBalancers = make([]*LoadBalancer, len(source.LoadBalancers))
+		for l := 0; l < len(source.LoadBalancers); l++ {
+			hcloudLoadBalancer := loadBalancerFromInt64(source.LoadBalancers[l])
+			hcloudNetwork.LoadBalancers[l] = &hcloudLoadBalancer
+		}
+	}
 	hcloudNetwork.Protection = c.schemaNetworkProtectionToHcloudNetworkProtection(source.Protection)
 	hcloudNetwork.Labels = source.Labels
 	hcloudNetwork.ExposeRoutesToVSwitch = source.ExposeRoutesToVSwitch
@@ -854,6 +861,12 @@ func (c *converterImpl) SchemaFromNetwork(source *Network) schema.Network {
 			schemaNetwork2.Servers = make([]int64, len((*source).Servers))
 			for k := 0; k < len((*source).Servers); k++ {
 				schemaNetwork2.Servers[k] = c.pHcloudServerToInt64((*source).Servers[k])
+			}
+		}
+		if (*source).LoadBalancers != nil {
+			schemaNetwork2.LoadBalancers = make([]int64, len((*source).LoadBalancers))
+			for l := 0; l < len((*source).LoadBalancers); l++ {
+				schemaNetwork2.LoadBalancers[l] = c.pHcloudLoadBalancerToInt64((*source).LoadBalancers[l])
 			}
 		}
 		schemaNetwork2.Protection = c.hcloudNetworkProtectionToSchemaNetworkProtection((*source).Protection)
