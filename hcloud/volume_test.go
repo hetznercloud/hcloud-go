@@ -157,6 +157,65 @@ func TestVolumeClientGetByName(t *testing.T) {
 	})
 }
 
+func TestVolumeClientGetByNumericName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/volumes/123", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: string(ErrorCodeNotFound),
+			},
+		})
+	})
+
+	env.Mux.HandleFunc("/volumes", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=123" {
+			t.Fatal("missing name query")
+		}
+		fmt.Fprint(w, `{
+			"volumes": [
+				{
+					"id": 1,
+					"created": "2016-01-30T23:50:11+00:00",
+					"name": "123",
+					"status": "creating",
+					"server": null,
+					"location": {
+						"id": 1,
+						"name": "fsn1",
+						"description": "Falkenstein DC Park 1",
+						"country": "DE",
+						"city": "Falkenstein",
+						"latitude": 50.47612,
+						"longitude": 12.370071
+					},
+					"size": 42,
+					"linux_device":"/dev/disk/by-id/scsi-0HC_volume_1",
+					"protection": {
+						"delete": true
+					}
+				}
+			]
+		}`)
+	})
+
+	ctx := context.Background()
+
+	volume, _, err := env.Client.Volume.Get(ctx, "123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if volume == nil {
+		t.Fatal("no volume")
+	}
+	if volume.ID != 1 {
+		t.Errorf("unexpected volume ID: %v", volume.ID)
+	}
+}
+
 func TestVolumeClientGetByNameNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

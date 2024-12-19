@@ -239,6 +239,48 @@ func TestCertificateClientGetByName(t *testing.T) {
 	})
 }
 
+func TestCertificateClientGetByNumericName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/certificates/123", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: string(ErrorCodeNotFound),
+			},
+		})
+	})
+
+	env.Mux.HandleFunc("/certificates", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=123" {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.CertificateListResponse{
+			Certificates: []schema.Certificate{
+				{
+					ID:   1,
+					Name: "123",
+				},
+			},
+		})
+	})
+
+	ctx := context.Background()
+
+	certficate, _, err := env.Client.Certificate.Get(ctx, "123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if certficate == nil {
+		t.Fatal("no certficate")
+	}
+	if certficate.ID != 1 {
+		t.Errorf("unexpected certficate ID: %v", certficate.ID)
+	}
+}
+
 func TestCertificateClientGetByNameNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

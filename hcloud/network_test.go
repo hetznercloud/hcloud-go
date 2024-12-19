@@ -116,6 +116,47 @@ func TestNetworkClientGetByName(t *testing.T) {
 	})
 }
 
+func TestNetworkClientGetByNumericName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/networks/123", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: string(ErrorCodeNotFound),
+			},
+		})
+	})
+
+	env.Mux.HandleFunc("/networks", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=123" {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.NetworkListResponse{
+			Networks: []schema.Network{
+				{
+					ID:   1,
+					Name: "123",
+				},
+			},
+		})
+	})
+	ctx := context.Background()
+
+	network, _, err := env.Client.Network.Get(ctx, "123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if network == nil {
+		t.Fatal("no network")
+	}
+	if network.ID != 1 {
+		t.Errorf("unexpected network ID: %v", network.ID)
+	}
+}
+
 func TestNetworkClientGetByNameNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
