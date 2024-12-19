@@ -119,7 +119,10 @@ func (c *NetworkClient) GetByName(ctx context.Context, name string) (*Network, *
 // retrieves a network by its name. If the network does not exist, nil is returned.
 func (c *NetworkClient) Get(ctx context.Context, idOrName string) (*Network, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		return c.GetByID(ctx, id)
+		n, res, err := c.GetByID(ctx, id)
+		if n != nil {
+			return n, res, err
+		}
 	}
 	return c.GetByName(ctx, idOrName)
 }

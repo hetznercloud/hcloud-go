@@ -127,6 +127,62 @@ func TestPlacementGroupClientGetByName(t *testing.T) {
 	})
 }
 
+func TestPlacementGroupClientGetByNumericName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	const (
+		id   = 1
+		name = "123"
+	)
+
+	env.Mux.HandleFunc("/placement_groups/123", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: string(ErrorCodeNotFound),
+			},
+		})
+	})
+
+	env.Mux.HandleFunc("/placement_groups", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != fmt.Sprintf("name=%s", name) {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.PlacementGroupListResponse{
+			PlacementGroups: []schema.PlacementGroup{
+				{
+					ID:   id,
+					Name: name,
+				},
+			},
+		})
+	})
+
+	checkError := func(t *testing.T, placementGroup *PlacementGroup, err error) {
+		if err != nil {
+			t.Fatal(err)
+		}
+		if placementGroup == nil {
+			t.Fatal("no placement group")
+		}
+		if placementGroup.ID != id {
+			t.Errorf("unexpected placement group ID: %v", placementGroup.ID)
+		}
+		if placementGroup.Name != name {
+			t.Errorf("unexpected placement group Name: %v", placementGroup.Name)
+		}
+	}
+
+	ctx := context.Background()
+
+	t.Run("called via Get", func(t *testing.T) {
+		placementGroup, _, err := env.Client.PlacementGroup.Get(ctx, name)
+		checkError(t, placementGroup, err)
+	})
+}
+
 func TestPlacementGroupClientGetByNameNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

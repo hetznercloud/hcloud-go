@@ -119,6 +119,47 @@ func TestPrimaryIPClient(t *testing.T) {
 		})
 	})
 
+	t.Run("GetByNumericName", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/primary_ips/123", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(schema.ErrorResponse{
+				Error: schema.Error{
+					Code: string(ErrorCodeNotFound),
+				},
+			})
+		})
+
+		env.Mux.HandleFunc("/primary_ips", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.RawQuery != "name=123" {
+				t.Fatal("missing name query")
+			}
+			json.NewEncoder(w).Encode(schema.PrimaryIPListResult{
+				PrimaryIPs: []schema.PrimaryIP{
+					{
+						ID: 1,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+
+		primaryIP, _, err := env.Client.PrimaryIP.Get(ctx, "123")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if primaryIP == nil {
+			t.Fatal("no primary_ip")
+		}
+		if primaryIP.ID != 1 {
+			t.Errorf("unexpected primary_ip ID: %v", primaryIP.ID)
+		}
+	})
+
 	t.Run("GetByName (not found)", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

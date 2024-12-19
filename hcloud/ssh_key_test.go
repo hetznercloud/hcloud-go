@@ -120,6 +120,48 @@ func TestSSHKeyClientGetByName(t *testing.T) {
 	})
 }
 
+func TestSSHKeyClientGetByNumericName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/ssh_keys/123", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: string(ErrorCodeNotFound),
+			},
+		})
+	})
+
+	env.Mux.HandleFunc("/ssh_keys", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=123" {
+			t.Fatal("missing name query")
+		}
+		fmt.Fprint(w, `{
+			"ssh_keys": [{
+				"id": 1,
+				"name": "123",
+				"fingerprint": "b7:2f:30:a0:2f:6c:58:6c:21:04:58:61:ba:06:3b:2c",
+				"public_key": "ssh-rsa AAAjjk76kgf...Xt"
+			}]
+		}`)
+	})
+
+	ctx := context.Background()
+
+	sshKey, _, err := env.Client.SSHKey.Get(ctx, "123")
+	if err != nil {
+		t.Fatalf("SSHKey.GetByID failed: %s", err)
+	}
+	if sshKey == nil {
+		t.Fatal("no SSH key")
+	}
+	if sshKey.ID != 1 {
+		t.Errorf("unexpected SSH key ID: %v", sshKey.ID)
+	}
+}
+
 func TestSSHKeyClientGetByNameNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

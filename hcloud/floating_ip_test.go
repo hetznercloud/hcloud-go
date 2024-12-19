@@ -117,6 +117,50 @@ func TestFloatingIPClientGetByName(t *testing.T) {
 	})
 }
 
+func TestFloatingIPClientGetByNumericName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/floating_ips/123", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: string(ErrorCodeNotFound),
+			},
+		})
+	})
+
+	env.Mux.HandleFunc("/floating_ips", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=123" {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.FloatingIPListResponse{
+			FloatingIPs: []schema.FloatingIP{
+				{
+					ID:   1,
+					Name: "123",
+					Type: "ipv4",
+					IP:   "131.232.99.1",
+				},
+			},
+		})
+	})
+
+	ctx := context.Background()
+
+	floatingIP, _, err := env.Client.FloatingIP.Get(ctx, "123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if floatingIP == nil {
+		t.Fatal("no Floating IP")
+	}
+	if floatingIP.ID != 1 {
+		t.Errorf("unexpected Floating IP ID: %v", floatingIP.ID)
+	}
+}
+
 func TestFloatingIPClientGetByNameNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

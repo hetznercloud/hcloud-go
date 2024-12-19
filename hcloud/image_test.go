@@ -134,6 +134,47 @@ func TestImageClient(t *testing.T) {
 		})
 	})
 
+	t.Run("GetByNumericName", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/images/123", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(schema.ErrorResponse{
+				Error: schema.Error{
+					Code: string(ErrorCodeNotFound),
+				},
+			})
+		})
+
+		env.Mux.HandleFunc("/images", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.RawQuery != "name=123" {
+				t.Fatal("missing name query")
+			}
+			json.NewEncoder(w).Encode(schema.ImageListResponse{
+				Images: []schema.Image{
+					{
+						ID: 1,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+
+		image, _, err := env.Client.Image.Get(ctx, "123")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if image == nil {
+			t.Fatal("no image")
+		}
+		if image.ID != 1 {
+			t.Errorf("unexpected image ID: %v", image.ID)
+		}
+	})
+
 	t.Run("GetByName (not found)", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()

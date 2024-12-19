@@ -209,7 +209,10 @@ func (c *PrimaryIPClient) GetByName(ctx context.Context, name string) (*PrimaryI
 // retrieves a Primary IP by its name. If the Primary IP does not exist, nil is returned.
 func (c *PrimaryIPClient) Get(ctx context.Context, idOrName string) (*PrimaryIP, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		return c.GetByID(ctx, id)
+		ip, res, err := c.GetByID(ctx, id)
+		if ip != nil {
+			return ip, res, err
+		}
 	}
 	return c.GetByName(ctx, idOrName)
 }
