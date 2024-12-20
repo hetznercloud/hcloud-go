@@ -90,7 +90,7 @@ func (c *VolumeClient) GetByName(ctx context.Context, name string) (*Volume, *Re
 func (c *VolumeClient) Get(ctx context.Context, idOrName string) (*Volume, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		vol, res, err := c.GetByID(ctx, id)
-		if vol != nil {
+		if vol != nil || err != nil {
 			return vol, res, err
 		}
 	}

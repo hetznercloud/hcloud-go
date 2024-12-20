@@ -131,7 +131,7 @@ func (c *CertificateClient) GetByName(ctx context.Context, name string) (*Certif
 func (c *CertificateClient) Get(ctx context.Context, idOrName string) (*Certificate, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		cert, res, err := c.GetByID(ctx, id)
-		if cert != nil {
+		if cert != nil || err != nil {
 			return cert, res, err
 		}
 	}

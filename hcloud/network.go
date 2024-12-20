@@ -120,7 +120,7 @@ func (c *NetworkClient) GetByName(ctx context.Context, name string) (*Network, *
 func (c *NetworkClient) Get(ctx context.Context, idOrName string) (*Network, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		n, res, err := c.GetByID(ctx, id)
-		if n != nil {
+		if n != nil || err != nil {
 			return n, res, err
 		}
 	}

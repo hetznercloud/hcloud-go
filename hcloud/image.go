@@ -150,7 +150,7 @@ func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Respon
 func (c *ImageClient) GetForArchitecture(ctx context.Context, idOrName string, architecture Architecture) (*Image, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		img, res, err := c.GetByID(ctx, id)
-		if img != nil {
+		if img != nil || err != nil {
 			return img, res, err
 		}
 	}

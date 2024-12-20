@@ -72,7 +72,7 @@ func (c *SSHKeyClient) GetByFingerprint(ctx context.Context, fingerprint string)
 func (c *SSHKeyClient) Get(ctx context.Context, idOrName string) (*SSHKey, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		sshKey, res, err := c.GetByID(ctx, id)
-		if sshKey != nil {
+		if sshKey != nil || err != nil {
 			return sshKey, res, err
 		}
 	}

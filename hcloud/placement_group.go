@@ -71,7 +71,7 @@ func (c *PlacementGroupClient) GetByName(ctx context.Context, name string) (*Pla
 func (c *PlacementGroupClient) Get(ctx context.Context, idOrName string) (*PlacementGroup, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		pg, res, err := c.GetByID(ctx, id)
-		if pg != nil {
+		if pg != nil || err != nil {
 			return pg, res, err
 		}
 	}

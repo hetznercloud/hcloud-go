@@ -129,7 +129,7 @@ func (c *FirewallClient) GetByName(ctx context.Context, name string) (*Firewall,
 func (c *FirewallClient) Get(ctx context.Context, idOrName string) (*Firewall, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		fw, res, err := c.GetByID(ctx, id)
-		if fw != nil {
+		if fw != nil || err != nil {
 			return fw, res, err
 		}
 	}

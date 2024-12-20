@@ -231,7 +231,7 @@ func (c *ServerClient) GetByName(ctx context.Context, name string) (*Server, *Re
 func (c *ServerClient) Get(ctx context.Context, idOrName string) (*Server, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		srv, res, err := c.GetByID(ctx, id)
-		if srv != nil {
+		if srv != nil || err != nil {
 			return srv, res, err
 		}
 	}

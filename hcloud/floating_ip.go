@@ -130,7 +130,7 @@ func (c *FloatingIPClient) GetByName(ctx context.Context, name string) (*Floatin
 func (c *FloatingIPClient) Get(ctx context.Context, idOrName string) (*FloatingIP, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		ip, res, err := c.GetByID(ctx, id)
-		if ip != nil {
+		if ip != nil || err != nil {
 			return ip, res, err
 		}
 	}

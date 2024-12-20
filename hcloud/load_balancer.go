@@ -276,7 +276,7 @@ func (c *LoadBalancerClient) GetByName(ctx context.Context, name string) (*LoadB
 func (c *LoadBalancerClient) Get(ctx context.Context, idOrName string) (*LoadBalancer, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		lb, res, err := c.GetByID(ctx, id)
-		if lb != nil {
+		if lb != nil || err != nil {
 			return lb, res, err
 		}
 	}

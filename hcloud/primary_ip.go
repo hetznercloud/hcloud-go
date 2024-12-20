@@ -210,7 +210,7 @@ func (c *PrimaryIPClient) GetByName(ctx context.Context, name string) (*PrimaryI
 func (c *PrimaryIPClient) Get(ctx context.Context, idOrName string) (*PrimaryIP, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
 		ip, res, err := c.GetByID(ctx, id)
-		if ip != nil {
+		if ip != nil || err != nil {
 			return ip, res, err
 		}
 	}
