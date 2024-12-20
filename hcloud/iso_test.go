@@ -134,6 +134,47 @@ func TestISOClient(t *testing.T) {
 		})
 	})
 
+	t.Run("GetByNumericName", func(t *testing.T) {
+		env := newTestEnv()
+		defer env.Teardown()
+
+		env.Mux.HandleFunc("/isos/123", func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(schema.ErrorResponse{
+				Error: schema.Error{
+					Code: string(ErrorCodeNotFound),
+				},
+			})
+		})
+
+		env.Mux.HandleFunc("/isos", func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.RawQuery != "name=123" {
+				t.Fatal("missing name query")
+			}
+			json.NewEncoder(w).Encode(schema.ISOListResponse{
+				ISOs: []schema.ISO{
+					{
+						ID: 1,
+					},
+				},
+			})
+		})
+
+		ctx := context.Background()
+
+		iso, _, err := env.Client.ISO.Get(ctx, "123")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if iso == nil {
+			t.Fatal("no iso")
+		}
+		if iso.ID != 1 {
+			t.Errorf("unexpected iso ID: %v", iso.ID)
+		}
+	})
+
 	t.Run("GetByName (not found)", func(t *testing.T) {
 		env := newTestEnv()
 		defer env.Teardown()
