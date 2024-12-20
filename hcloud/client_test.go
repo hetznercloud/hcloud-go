@@ -15,8 +15,23 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
+
+func makeTestUtils(t *testing.T) (context.Context, *mockutil.Server, *Client) {
+	ctx := context.Background()
+
+	server := mockutil.NewServer(t, nil)
+
+	client := NewClient(
+		WithEndpoint(server.URL),
+		WithRetryOpts(RetryOpts{BackoffFunc: ConstantBackoff(0), MaxRetries: 5}),
+		WithPollOpts(PollOpts{BackoffFunc: ConstantBackoff(0)}),
+	)
+
+	return ctx, server, client
+}
 
 type testEnv struct {
 	Server *httptest.Server
