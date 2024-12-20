@@ -148,6 +148,48 @@ func TestFirewallClientGetByName(t *testing.T) {
 	})
 }
 
+func TestFirewallClientGetByNumericName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/firewalls/123", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: string(ErrorCodeNotFound),
+			},
+		})
+	})
+
+	env.Mux.HandleFunc("/firewalls", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=123" {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.FirewallListResponse{
+			Firewalls: []schema.Firewall{
+				{
+					ID:   1,
+					Name: "123",
+				},
+			},
+		})
+	})
+
+	ctx := context.Background()
+
+	firewall, _, err := env.Client.Firewall.Get(ctx, "123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if firewall == nil {
+		t.Fatal("no firewall")
+	}
+	if firewall.ID != 1 {
+		t.Errorf("unexpected firewall ID: %v", firewall.ID)
+	}
+}
+
 func TestFirewallClientGetByNameNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()

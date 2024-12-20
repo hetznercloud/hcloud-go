@@ -230,7 +230,10 @@ func (c *ServerClient) GetByName(ctx context.Context, name string) (*Server, *Re
 // retrieves a server by its name. If the server does not exist, nil is returned.
 func (c *ServerClient) Get(ctx context.Context, idOrName string) (*Server, *Response, error) {
 	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		return c.GetByID(ctx, id)
+		srv, res, err := c.GetByID(ctx, id)
+		if srv != nil || err != nil {
+			return srv, res, err
+		}
 	}
 	return c.GetByName(ctx, idOrName)
 }

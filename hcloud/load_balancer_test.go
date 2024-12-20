@@ -125,6 +125,48 @@ func TestLoadBalancerClientGetByName(t *testing.T) {
 	})
 }
 
+func TestLoadBalancerClientGetByNumericName(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	env.Mux.HandleFunc("/load_balancers/123", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusNotFound)
+		json.NewEncoder(w).Encode(schema.ErrorResponse{
+			Error: schema.Error{
+				Code: string(ErrorCodeNotFound),
+			},
+		})
+	})
+
+	env.Mux.HandleFunc("/load_balancers", func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.RawQuery != "name=123" {
+			t.Fatal("missing name query")
+		}
+		json.NewEncoder(w).Encode(schema.LoadBalancerListResponse{
+			LoadBalancers: []schema.LoadBalancer{
+				{
+					ID:   1,
+					Name: "123",
+				},
+			},
+		})
+	})
+
+	ctx := context.Background()
+
+	loadBalancer, _, err := env.Client.LoadBalancer.Get(ctx, "123")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if loadBalancer == nil {
+		t.Fatal("no load balancer")
+	}
+	if loadBalancer.ID != 1 {
+		t.Errorf("unexpected load balancer ID: %v", loadBalancer.ID)
+	}
+}
+
 func TestLoadBalancerClientGetByNameNotFound(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
