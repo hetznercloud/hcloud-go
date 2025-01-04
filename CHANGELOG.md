@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.17.2](https://github.com/hetznercloud/hcloud-go/compare/v2.17.1...v2.17.2) (2025-01-04)
+
+
+### Bug Fixes
+
+* allow getting resources with number as name ([#571](https://github.com/hetznercloud/hcloud-go/issues/571)) ([b743a33](https://github.com/hetznercloud/hcloud-go/commit/b743a332578904748129240974142b3f6ea20845))
+
 ## [2.17.1](https://github.com/hetznercloud/hcloud-go/compare/v2.17.0...v2.17.1) (2024-12-17)
 
 
