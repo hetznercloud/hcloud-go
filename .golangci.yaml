@@ -1,74 +1,48 @@
 ---
+linters:
+  presets:
+    - bugs
+    - error
+    - import
+    - metalinter
+    - module
+    - unused
+
+  enable:
+    - forbidigo
+    - testifylint
+
+  disable:
+    # preset error
+    - err113 # Very annoying to define static errors everywhere
+    - wrapcheck # Very annoying to wrap errors everywhere
+    # preset import
+    - depguard
+
 linters-settings:
-  exhaustive:
-    default-signifies-exhaustive: true
   gci:
     sections:
       - standard
       - default
       - prefix(github.com/hetznercloud)
-  gomodguard:
-    blocked:
-      modules:
-        - github.com/tj/assert:
-            recommendations:
-              - github.com/stretchr/testify/assert
-            reason: |
-              One assertion library is enough and we use testify/assert
-              everywhere.
-        - github.com/magiconair/properties:
-            recommendations:
-              - github.com/stretchr/testify/assert
-            reason: >
-              We do not currently need to parse properties files. At the same
-              time this module has an assert package which tends to get
-              imported by accident. It is therefore blocked.
-  forbidigo:
-    forbid:
-      - ^print.*$
-      - ^fmt\.Print.*$
-  misspell:
-    locale: "US"
 
-linters:
-  disable-all: true
-  enable:
-    - bodyclose
-    - errcheck
-    - errname
-    - exhaustive
-    - copyloopvar
-    - gci
-    - gocritic
-    - godot
-    - goimports
-    - gomodguard
-    - gosec
-    - gosimple
-    - govet
-    - ineffassign
-    - misspell
-    - prealloc
-    - revive
-    - staticcheck
-    - typecheck
-    - unparam
-    - unused
-    - whitespace
-    - forbidigo
+  exhaustive:
+    # Switch cases with a default case should be exhaustive.
+    default-signifies-exhaustive: true
 
 issues:
   exclude-rules:
     - path: _test\.go
       linters:
-        - gosec
         - errcheck
-    - path: hcloud/error.go
-      # False-positive in error codes
-      text: "G101: Potential hardcoded credentials" # gosec
+        - gosec
+        - noctx
 
     - path: _test\.go
       linters:
         - revive
-      # From "env.Mux.HandleFunc"
       text: "unused-parameter: parameter '(w|r)' seems to be unused, consider removing or renaming it as _"
+
+    - linters:
+        - testifylint
+      text: "require-error"
