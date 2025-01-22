@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.18.0](https://github.com/hetznercloud/hcloud-go/compare/v2.17.1...v2.18.0) (2025-01-22)
+
+
+### Features
+
+* **exp:** add `randutil.GenerateID` helper ([#580](https://github.com/hetznercloud/hcloud-go/issues/580)) ([9515be7](https://github.com/hetznercloud/hcloud-go/commit/9515be7c2b44e5656bd756837e5c89ccd19665f1))
+
+
+### Bug Fixes
+
+* allow getting resources with number as name ([#571](https://github.com/hetznercloud/hcloud-go/issues/571)) ([b743a33](https://github.com/hetznercloud/hcloud-go/commit/b743a332578904748129240974142b3f6ea20845))
+
 ## [2.17.1](https://github.com/hetznercloud/hcloud-go/compare/v2.17.0...v2.17.1) (2024-12-17)
 
 
