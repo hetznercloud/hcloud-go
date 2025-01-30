@@ -703,6 +703,11 @@ func TestErrorSchema(t *testing.T) {
 			"message": "invalid input",
 			"details": {"fields":[{"name":"broken_field","messages":["is required"]}]}
 		}`,
+		"deprecated_api_endpoint": `{
+			"code": "deprecated_api_endpoint",
+			"message": "API functionality was removed",
+			"details": {"announcement":"https://docs.hetzner.cloud/changelog#2023-07-20-foo-endpoint-is-deprecated"}
+		}`,
 	}
 
 	for name, data := range testCases {

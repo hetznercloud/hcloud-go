@@ -609,37 +609,48 @@ func intSecondsFromDuration(d time.Duration) int {
 }
 
 func errorDetailsFromSchema(d interface{}) interface{} {
-	if d, ok := d.(schema.ErrorDetailsInvalidInput); ok {
+	switch typed := d.(type) {
+	case schema.ErrorDetailsInvalidInput:
 		details := ErrorDetailsInvalidInput{
-			Fields: make([]ErrorDetailsInvalidInputField, len(d.Fields)),
+			Fields: make([]ErrorDetailsInvalidInputField, len(typed.Fields)),
 		}
-		for i, field := range d.Fields {
+		for i, field := range typed.Fields {
 			details.Fields[i] = ErrorDetailsInvalidInputField{
 				Name:     field.Name,
 				Messages: field.Messages,
 			}
 		}
 		return details
+
+	case schema.ErrorDetailsDeprecatedAPIEndpoint:
+		return ErrorDetailsDeprecatedAPIEndpoint{
+			Announcement: typed.Announcement,
+		}
 	}
 	return nil
 }
 
 func schemaFromErrorDetails(d interface{}) interface{} {
-	if d, ok := d.(ErrorDetailsInvalidInput); ok {
+	switch typed := d.(type) {
+	case ErrorDetailsInvalidInput:
 		details := schema.ErrorDetailsInvalidInput{
 			Fields: make([]struct {
 				Name     string   `json:"name"`
 				Messages []string `json:"messages"`
-			}, len(d.Fields)),
+			}, len(typed.Fields)),
 		}
-		for i, field := range d.Fields {
+		for i, field := range typed.Fields {
 			details.Fields[i] = struct {
 				Name     string   `json:"name"`
 				Messages []string `json:"messages"`
 			}{Name: field.Name, Messages: field.Messages}
 		}
 		return details
+
+	case ErrorDetailsDeprecatedAPIEndpoint:
+		return schema.ErrorDetailsDeprecatedAPIEndpoint{Announcement: typed.Announcement}
 	}
+
 	return nil
 }
 
