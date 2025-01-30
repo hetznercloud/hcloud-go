@@ -124,11 +124,15 @@ func (c *ActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action
 }
 
 // All returns all actions.
+//
+// Deprecated: It is required to pass in a list of IDs since 30 January 2025. Please use [ActionClient.AllWithOpts] instead.
 func (c *ActionClient) All(ctx context.Context) ([]*Action, error) {
 	return c.action.All(ctx, ActionListOpts{ListOpts: ListOpts{PerPage: 50}})
 }
 
 // AllWithOpts returns all actions for the given options.
+//
+// It is required to set [ActionListOpts.ID]. Any other fields set in the opts are ignored.
 func (c *ActionClient) AllWithOpts(ctx context.Context, opts ActionListOpts) ([]*Action, error) {
 	return c.action.All(ctx, opts)
 }
