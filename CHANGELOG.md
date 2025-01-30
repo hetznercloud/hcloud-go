@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.19.0](https://github.com/hetznercloud/hcloud-go/compare/v2.18.0...v2.19.0) (2025-01-30)
+
+
+### Features
+
+* add deprecated_api_endpoint error code ([#582](https://github.com/hetznercloud/hcloud-go/issues/582)) ([de07960](https://github.com/hetznercloud/hcloud-go/commit/de079601fdde0c240f8a8360c48facdc9f874043))
+* update ActionClient for actions list removal ([#583](https://github.com/hetznercloud/hcloud-go/issues/583)) ([cf2d426](https://github.com/hetznercloud/hcloud-go/commit/cf2d4268758241eff30f5ca714372e2452c0a648))
+
 ## [2.18.0](https://github.com/hetznercloud/hcloud-go/compare/v2.17.1...v2.18.0) (2025-01-22)
 
 
