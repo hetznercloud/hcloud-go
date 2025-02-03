@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.19.1](https://github.com/hetznercloud/hcloud-go/compare/v2.19.0...v2.19.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* ignore nil backoff function when configuring poll or retry options ([#587](https://github.com/hetznercloud/hcloud-go/issues/587)) ([8d1b665](https://github.com/hetznercloud/hcloud-go/commit/8d1b665b88068a1956ec9f4f582b197cc7239ca7))
+
 ## [2.19.0](https://github.com/hetznercloud/hcloud-go/compare/v2.18.0...v2.19.0) (2025-01-30)
 
 
