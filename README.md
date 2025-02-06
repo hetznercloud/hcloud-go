@@ -55,7 +55,7 @@ func main() {
 ### Support
 
 - `v2` is actively maintained by Hetzner Cloud
-- `v1` is supported until September 1st 2023 and will continue to receive new features until then. See [#263](https://github.com/hetznercloud/hcloud-go/issues/263).
+- `v1` is unsupported since February 2025.
 
 ### From v1 to v2
 
