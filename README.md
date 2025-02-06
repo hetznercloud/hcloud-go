@@ -8,6 +8,9 @@ Package hcloud is a library for the Hetzner Cloud API.
 The library’s documentation is available at [GoDoc](https://godoc.org/github.com/hetznercloud/hcloud-go/hcloud),
 the public API documentation is available at [docs.hetzner.cloud](https://docs.hetzner.cloud/).
 
+> [!IMPORTANT]
+> v1 is unsupported since February 2025.
+
 ## Example
 
 ```go
