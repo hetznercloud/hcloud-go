@@ -11,7 +11,7 @@ the public API documentation is available at [docs.hetzner.cloud](https://docs.h
 
 > [!IMPORTANT]
 > Make sure to follow our API changelog available at
-> [docs.hetzner.cloud/changelog](https://docs.hetzner.cloud/changelog) (or the RRS feed
+> [docs.hetzner.cloud/changelog](https://docs.hetzner.cloud/changelog) (or the RSS feed
 > available at
 > [docs.hetzner.cloud/changelog/feed.rss](https://docs.hetzner.cloud/changelog/feed.rss))
 > to be notified about additions, deprecations and removals.
