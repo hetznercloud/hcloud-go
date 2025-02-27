@@ -4,11 +4,11 @@ module github.com/hetznercloud/hcloud-go/v2
 // all dependends to update to the new version.
 // As long as we do not depend on any newer language feature this can be kept at the current value.
 // It should never be higher than the lowest currently supported version of Go.
-go 1.21
+go 1.23.0
 
 // The toolchain version describes which Go version to use for testing, generating etc.
 // It should always be the newest version.
-toolchain go1.23.6
+toolchain go1.24.0
 
 require (
 	github.com/google/go-cmp v0.7.0
@@ -16,7 +16,7 @@ require (
 	github.com/prometheus/client_golang v1.21.0
 	github.com/stretchr/testify v1.10.0
 	github.com/vburenin/ifacemaker v1.2.1
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.35.0
 	golang.org/x/net v0.35.0
 )
 
