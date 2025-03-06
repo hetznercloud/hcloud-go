@@ -67,7 +67,6 @@ func TestCertificateCreateOptsValidate_Uploaded(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.opts.Validate()
 			if tt.errMsg != "" {
@@ -112,7 +111,6 @@ func TestCertificateCreateOptsValidate_Managed(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			err := tt.opts.Validate()
 			if tt.errMsg != "" {
