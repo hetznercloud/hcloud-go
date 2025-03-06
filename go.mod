@@ -4,7 +4,7 @@ module github.com/hetznercloud/hcloud-go/v2
 // all dependends to update to the new version.
 // As long as we do not depend on any newer language feature this can be kept at the current value.
 // It should never be higher than the lowest currently supported version of Go.
-go 1.21
+go 1.22
 
 // The toolchain version describes which Go version to use for testing, generating etc.
 // It should always be the newest version.
