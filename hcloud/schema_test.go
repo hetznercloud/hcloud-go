@@ -1269,7 +1269,6 @@ func TestCertificateSchema(t *testing.T) {
 		},
 	}
 	for _, testCase := range testCases {
-		testCase := testCase
 		t.Run(testCase.name, func(t *testing.T) {
 			var s schema.Certificate
 			assert.NoError(t, json.Unmarshal([]byte(testCase.data), &s))
@@ -2062,7 +2061,6 @@ func TestServerMetricsFromSchema(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			resp := tt.respFn()
 			actual, err := serverMetricsFromSchema(resp)
@@ -2232,7 +2230,6 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			resp := tt.respFn()
 			actual, err := loadBalancerMetricsFromSchema(resp)
