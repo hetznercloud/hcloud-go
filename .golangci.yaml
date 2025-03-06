@@ -37,7 +37,7 @@ linters:
     - errcheck
     - errname
     - exhaustive
-    - exportloopref
+    # - copyloopvar TODO: re-enable once go is upgraded to 1.22
     - gci
     - gocritic
     - godot
