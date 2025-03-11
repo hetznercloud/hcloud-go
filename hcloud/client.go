@@ -124,7 +124,9 @@ type ClientOption func(*Client)
 // WithEndpoint configures a Client to use the specified API endpoint.
 func WithEndpoint(endpoint string) ClientOption {
 	return func(client *Client) {
-		client.endpoint = strings.TrimRight(endpoint, "/")
+		if endpoint != "" {
+			client.endpoint = strings.TrimRight(endpoint, "/")
+		}
 	}
 }
 
