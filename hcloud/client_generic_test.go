@@ -12,7 +12,7 @@ import (
 )
 
 func TestGenericRequest(t *testing.T) {
-	t.Run("get", func(t *testing.T) {
+	t.Run("GET", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
@@ -31,7 +31,7 @@ func TestGenericRequest(t *testing.T) {
 		require.Equal(t, int64(1234), respBody.Action.ID)
 	})
 
-	t.Run("post", func(t *testing.T) {
+	t.Run("POST", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
@@ -55,7 +55,7 @@ func TestGenericRequest(t *testing.T) {
 		require.Equal(t, int64(1234), respBody.Action.ID)
 	})
 
-	t.Run("put", func(t *testing.T) {
+	t.Run("PUT", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
@@ -79,7 +79,7 @@ func TestGenericRequest(t *testing.T) {
 		require.Equal(t, int64(1234), respBody.Action.ID)
 	})
 
-	t.Run("delete", func(t *testing.T) {
+	t.Run("DELETE", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
@@ -98,7 +98,7 @@ func TestGenericRequest(t *testing.T) {
 		require.Equal(t, int64(1234), respBody.Action.ID)
 	})
 
-	t.Run("delete no result", func(t *testing.T) {
+	t.Run("DELETE no result", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
