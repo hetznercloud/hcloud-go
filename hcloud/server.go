@@ -221,13 +221,7 @@ func (c *ServerClient) GetByName(ctx context.Context, name string) (*Server, *Re
 // Get retrieves a server by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a server by its name. If the server does not exist, nil is returned.
 func (c *ServerClient) Get(ctx context.Context, idOrName string) (*Server, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		srv, res, err := c.GetByID(ctx, id)
-		if srv != nil || err != nil {
-			return srv, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // ServerListOpts specifies options for listing servers.

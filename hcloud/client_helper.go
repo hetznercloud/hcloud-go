@@ -1,5 +1,10 @@
 package hcloud
 
+import (
+	"context"
+	"strconv"
+)
+
 // allFromSchemaFunc transform each item in the list using the FromSchema function, and
 // returns the result.
 func allFromSchemaFunc[T, V any](all []T, fn func(T) V) []V {
@@ -50,4 +55,31 @@ func firstByName[T any](name string, listFn func() ([]*T, *Response, error)) (*T
 	}
 
 	return firstBy(listFn)
+}
+
+// getByIDOrName fetches the resource by ID when the identifier is an integer, otherwise
+// by Name. To support resources that have a integer as Name, an additional attempt is
+// made to fetch the resource by Name using the ID.
+//
+// Since API managed resources (locations, server types, ...) do not have integers as
+// names, this function is only meaningful for user managed resources (ssh keys,
+// servers).
+func getByIDOrName[T any](
+	ctx context.Context,
+	getByIDFn func(ctx context.Context, id int64) (*T, *Response, error),
+	getByNameFn func(ctx context.Context, name string) (*T, *Response, error),
+	idOrName string,
+) (*T, *Response, error) {
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		result, resp, err := getByIDFn(ctx, id)
+		if err != nil {
+			return result, resp, err
+		}
+		if result != nil {
+			return result, resp, err
+		}
+		// Fallback to get by Name if the resource was not found
+	}
+
+	return getByNameFn(ctx, idOrName)
 }

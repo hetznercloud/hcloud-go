@@ -266,13 +266,7 @@ func (c *LoadBalancerClient) GetByName(ctx context.Context, name string) (*LoadB
 // Get retrieves a Load Balancer by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Load Balancer by its name. If the Load Balancer does not exist, nil is returned.
 func (c *LoadBalancerClient) Get(ctx context.Context, idOrName string) (*LoadBalancer, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		lb, res, err := c.GetByID(ctx, id)
-		if lb != nil || err != nil {
-			return lb, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // LoadBalancerListOpts specifies options for listing Load Balancers.

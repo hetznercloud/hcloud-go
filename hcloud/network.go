@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -110,13 +109,7 @@ func (c *NetworkClient) GetByName(ctx context.Context, name string) (*Network, *
 // Get retrieves a network by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a network by its name. If the network does not exist, nil is returned.
 func (c *NetworkClient) Get(ctx context.Context, idOrName string) (*Network, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		n, res, err := c.GetByID(ctx, id)
-		if n != nil || err != nil {
-			return n, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // NetworkListOpts specifies options for listing networks.

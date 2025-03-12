@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -60,13 +59,7 @@ func (c *SSHKeyClient) GetByFingerprint(ctx context.Context, fingerprint string)
 // Get retrieves a SSH key by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a SSH key by its name. If the SSH key does not exist, nil is returned.
 func (c *SSHKeyClient) Get(ctx context.Context, idOrName string) (*SSHKey, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		sshKey, res, err := c.GetByID(ctx, id)
-		if sshKey != nil || err != nil {
-			return sshKey, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // SSHKeyListOpts specifies options for listing SSH keys.
