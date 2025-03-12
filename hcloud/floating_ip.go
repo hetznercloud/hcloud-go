@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -120,13 +119,7 @@ func (c *FloatingIPClient) GetByName(ctx context.Context, name string) (*Floatin
 // Get retrieves a Floating IP by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Floating IP by its name. If the Floating IP does not exist, nil is returned.
 func (c *FloatingIPClient) Get(ctx context.Context, idOrName string) (*FloatingIP, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		ip, res, err := c.GetByID(ctx, id)
-		if ip != nil || err != nil {
-			return ip, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // FloatingIPListOpts specifies options for listing Floating IPs.

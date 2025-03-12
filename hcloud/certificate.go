@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -120,13 +119,7 @@ func (c *CertificateClient) GetByName(ctx context.Context, name string) (*Certif
 // Get retrieves a Certificate by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Certificate by its name. If the Certificate does not exist, nil is returned.
 func (c *CertificateClient) Get(ctx context.Context, idOrName string) (*Certificate, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		cert, res, err := c.GetByID(ctx, id)
-		if cert != nil || err != nil {
-			return cert, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // CertificateListOpts specifies options for listing Certificates.

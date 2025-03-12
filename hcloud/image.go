@@ -120,13 +120,7 @@ func (c *ImageClient) GetByNameAndArchitecture(ctx context.Context, name string,
 //
 // Deprecated: Use [ImageClient.GetForArchitecture] instead.
 func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		img, res, err := c.GetByID(ctx, id)
-		if img != nil {
-			return img, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // GetForArchitecture retrieves an image by its ID if the input can be parsed as an integer, otherwise it
@@ -135,13 +129,13 @@ func (c *ImageClient) Get(ctx context.Context, idOrName string) (*Image, *Respon
 // In contrast to [ImageClient.Get], this method also returns deprecated images. Depending on your needs you should
 // check for this in your calling method.
 func (c *ImageClient) GetForArchitecture(ctx context.Context, idOrName string, architecture Architecture) (*Image, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		img, res, err := c.GetByID(ctx, id)
-		if img != nil || err != nil {
-			return img, res, err
-		}
-	}
-	return c.GetByNameAndArchitecture(ctx, idOrName, architecture)
+	return getByIDOrName(ctx,
+		c.GetByID,
+		func(ctx context.Context, name string) (*Image, *Response, error) {
+			return c.GetByNameAndArchitecture(ctx, name, architecture)
+		},
+		idOrName,
+	)
 }
 
 // ImageListOpts specifies options for listing images.

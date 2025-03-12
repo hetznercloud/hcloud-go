@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"net"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -200,13 +199,7 @@ func (c *PrimaryIPClient) GetByName(ctx context.Context, name string) (*PrimaryI
 // Get retrieves a Primary IP by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Primary IP by its name. If the Primary IP does not exist, nil is returned.
 func (c *PrimaryIPClient) Get(ctx context.Context, idOrName string) (*PrimaryIP, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		ip, res, err := c.GetByID(ctx, id)
-		if ip != nil || err != nil {
-			return ip, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // PrimaryIPListOpts specifies options for listing Primary IPs.

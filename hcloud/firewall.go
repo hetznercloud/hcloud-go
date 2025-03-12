@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"net"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -119,13 +118,7 @@ func (c *FirewallClient) GetByName(ctx context.Context, name string) (*Firewall,
 // Get retrieves a Firewall by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a Firewall by its name. If the Firewall does not exist, nil is returned.
 func (c *FirewallClient) Get(ctx context.Context, idOrName string) (*Firewall, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		fw, res, err := c.GetByID(ctx, id)
-		if fw != nil || err != nil {
-			return fw, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // FirewallListOpts specifies options for listing Firewalls.

@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -61,13 +60,7 @@ func (c *PlacementGroupClient) GetByName(ctx context.Context, name string) (*Pla
 // Get retrieves a PlacementGroup by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a PlacementGroup by its name. If the PlacementGroup does not exist, nil is returned.
 func (c *PlacementGroupClient) Get(ctx context.Context, idOrName string) (*PlacementGroup, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		pg, res, err := c.GetByID(ctx, id)
-		if pg != nil || err != nil {
-			return pg, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // PlacementGroupListOpts specifies options for listing PlacementGroup.

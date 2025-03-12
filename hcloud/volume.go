@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -80,13 +79,7 @@ func (c *VolumeClient) GetByName(ctx context.Context, name string) (*Volume, *Re
 // Get retrieves a volume by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a volume by its name. If the volume does not exist, nil is returned.
 func (c *VolumeClient) Get(ctx context.Context, idOrName string) (*Volume, *Response, error) {
-	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
-		vol, res, err := c.GetByID(ctx, id)
-		if vol != nil || err != nil {
-			return vol, res, err
-		}
-	}
-	return c.GetByName(ctx, idOrName)
+	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
 // VolumeListOpts specifies options for listing volumes.
