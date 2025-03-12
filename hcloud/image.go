@@ -206,11 +206,9 @@ func (c *ImageClient) AllWithOpts(ctx context.Context, opts ImageListOpts) ([]*I
 
 // Delete deletes an image.
 func (c *ImageClient) Delete(ctx context.Context, image *Image) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/images/%d", image.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/images/%d", image.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // ImageUpdateOpts specifies options for updating an image.

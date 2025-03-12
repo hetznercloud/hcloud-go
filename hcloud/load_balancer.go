@@ -464,11 +464,9 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 
 // Delete deletes a Load Balancer.
 func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalancer) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/load_balancers/%d", loadBalancer.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/load_balancers/%d", loadBalancer.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionAddTargetRequest) (*Action, *Response, error) {

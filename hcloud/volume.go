@@ -223,11 +223,9 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 
 // Delete deletes a volume.
 func (c *VolumeClient) Delete(ctx context.Context, volume *Volume) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/volumes/%d", volume.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/volumes/%d", volume.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // VolumeUpdateOpts specifies options for updating a volume.

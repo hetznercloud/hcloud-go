@@ -245,11 +245,9 @@ func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts
 
 // Delete deletes a Floating IP.
 func (c *FloatingIPClient) Delete(ctx context.Context, floatingIP *FloatingIP) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/floating_ips/%d", floatingIP.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/floating_ips/%d", floatingIP.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // FloatingIPUpdateOpts specifies options for updating a Floating IP.

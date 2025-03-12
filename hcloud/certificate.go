@@ -313,11 +313,9 @@ func (c *CertificateClient) Update(ctx context.Context, certificate *Certificate
 
 // Delete deletes a certificate.
 func (c *CertificateClient) Delete(ctx context.Context, certificate *Certificate) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/certificates/%d", certificate.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/certificates/%d", certificate.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // RetryIssuance retries the issuance of a failed managed certificate.

@@ -160,11 +160,9 @@ func (c *NetworkClient) AllWithOpts(ctx context.Context, opts NetworkListOpts) (
 
 // Delete deletes a network.
 func (c *NetworkClient) Delete(ctx context.Context, network *Network) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/networks/%d", network.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/networks/%d", network.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // NetworkUpdateOpts specifies options for updating a network.

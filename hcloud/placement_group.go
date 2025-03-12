@@ -207,9 +207,7 @@ func (c *PlacementGroupClient) Update(ctx context.Context, placementGroup *Place
 
 // Delete deletes a PlacementGroup.
 func (c *PlacementGroupClient) Delete(ctx context.Context, placementGroup *PlacementGroup) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/placement_groups/%d", placementGroup.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/placement_groups/%d", placementGroup.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }

@@ -441,20 +441,18 @@ func (c *ServerClient) Delete(ctx context.Context, server *Server) (*Response, e
 
 // DeleteWithResult deletes a server and returns the parsed response containing the action.
 func (c *ServerClient) DeleteWithResult(ctx context.Context, server *Server) (*ServerDeleteResult, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/servers/%d", server.ID), nil)
+	result := &ServerDeleteResult{}
+
+	reqPath := fmt.Sprintf("/servers/%d", server.ID)
+
+	respBody, resp, err := deleteRequest[schema.ServerDeleteResponse](ctx, c.client, reqPath)
 	if err != nil {
-		return &ServerDeleteResult{}, nil, err
+		return result, resp, err
 	}
 
-	var respBody schema.ServerDeleteResponse
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return &ServerDeleteResult{}, resp, err
-	}
+	result.Action = ActionFromSchema(respBody.Action)
 
-	return &ServerDeleteResult{
-		Action: ActionFromSchema(respBody.Action),
-	}, resp, nil
+	return result, resp, nil
 }
 
 // ServerUpdateOpts specifies options for updating a server.
