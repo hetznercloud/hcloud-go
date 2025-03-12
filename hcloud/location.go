@@ -88,22 +88,14 @@ func (l LocationListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) ([]*Location, *Response, error) {
-	path := "/locations?" + opts.values().Encode()
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/locations?%s", opts.values().Encode())
 
-	var body schema.LocationListResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.LocationListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	locations := make([]*Location, 0, len(body.Locations))
-	for _, i := range body.Locations {
-		locations = append(locations, LocationFromSchema(i))
-	}
-	return locations, resp, nil
+
+	return allFromSchemaFunc(respBody.Locations, LocationFromSchema), resp, nil
 }
 
 // All returns all locations.

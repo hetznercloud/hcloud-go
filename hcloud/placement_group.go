@@ -105,22 +105,14 @@ func (l PlacementGroupListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *PlacementGroupClient) List(ctx context.Context, opts PlacementGroupListOpts) ([]*PlacementGroup, *Response, error) {
-	path := "/placement_groups?" + opts.values().Encode()
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/placement_groups?%s", opts.values().Encode())
 
-	var body schema.PlacementGroupListResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.PlacementGroupListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	placementGroups := make([]*PlacementGroup, 0, len(body.PlacementGroups))
-	for _, g := range body.PlacementGroups {
-		placementGroups = append(placementGroups, PlacementGroupFromSchema(g))
-	}
-	return placementGroups, resp, nil
+
+	return allFromSchemaFunc(respBody.PlacementGroups, PlacementGroupFromSchema), resp, nil
 }
 
 // All returns all PlacementGroups.

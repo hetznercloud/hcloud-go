@@ -161,22 +161,14 @@ func (l CertificateListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *CertificateClient) List(ctx context.Context, opts CertificateListOpts) ([]*Certificate, *Response, error) {
-	path := "/certificates?" + opts.values().Encode()
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/certificates?%s", opts.values().Encode())
 
-	var body schema.CertificateListResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.CertificateListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	Certificates := make([]*Certificate, 0, len(body.Certificates))
-	for _, s := range body.Certificates {
-		Certificates = append(Certificates, CertificateFromSchema(s))
-	}
-	return Certificates, resp, nil
+
+	return allFromSchemaFunc(respBody.Certificates, CertificateFromSchema), resp, nil
 }
 
 // All returns all Certificates.
