@@ -112,14 +112,9 @@ func (c *FloatingIPClient) GetByID(ctx context.Context, id int64) (*FloatingIP, 
 
 // GetByName retrieves a Floating IP by its name. If the Floating IP does not exist, nil is returned.
 func (c *FloatingIPClient) GetByName(ctx context.Context, name string) (*FloatingIP, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	floatingIPs, response, err := c.List(ctx, FloatingIPListOpts{Name: name})
-	if len(floatingIPs) == 0 {
-		return nil, response, err
-	}
-	return floatingIPs[0], response, err
+	return firstByName(name, func() ([]*FloatingIP, *Response, error) {
+		return c.List(ctx, FloatingIPListOpts{Name: name})
+	})
 }
 
 // Get retrieves a Floating IP by its ID if the input can be parsed as an integer, otherwise it

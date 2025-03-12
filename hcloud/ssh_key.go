@@ -45,23 +45,16 @@ func (c *SSHKeyClient) GetByID(ctx context.Context, id int64) (*SSHKey, *Respons
 
 // GetByName retrieves a SSH key by its name. If the SSH key does not exist, nil is returned.
 func (c *SSHKeyClient) GetByName(ctx context.Context, name string) (*SSHKey, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	sshKeys, response, err := c.List(ctx, SSHKeyListOpts{Name: name})
-	if len(sshKeys) == 0 {
-		return nil, response, err
-	}
-	return sshKeys[0], response, err
+	return firstByName(name, func() ([]*SSHKey, *Response, error) {
+		return c.List(ctx, SSHKeyListOpts{Name: name})
+	})
 }
 
 // GetByFingerprint retreives a SSH key by its fingerprint. If the SSH key does not exist, nil is returned.
 func (c *SSHKeyClient) GetByFingerprint(ctx context.Context, fingerprint string) (*SSHKey, *Response, error) {
-	sshKeys, response, err := c.List(ctx, SSHKeyListOpts{Fingerprint: fingerprint})
-	if len(sshKeys) == 0 {
-		return nil, response, err
-	}
-	return sshKeys[0], response, err
+	return firstBy(func() ([]*SSHKey, *Response, error) {
+		return c.List(ctx, SSHKeyListOpts{Fingerprint: fingerprint})
+	})
 }
 
 // Get retrieves a SSH key by its ID if the input can be parsed as an integer, otherwise it

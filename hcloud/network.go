@@ -102,14 +102,9 @@ func (c *NetworkClient) GetByID(ctx context.Context, id int64) (*Network, *Respo
 
 // GetByName retrieves a network by its name. If the network does not exist, nil is returned.
 func (c *NetworkClient) GetByName(ctx context.Context, name string) (*Network, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	Networks, response, err := c.List(ctx, NetworkListOpts{Name: name})
-	if len(Networks) == 0 {
-		return nil, response, err
-	}
-	return Networks[0], response, err
+	return firstByName(name, func() ([]*Network, *Response, error) {
+		return c.List(ctx, NetworkListOpts{Name: name})
+	})
 }
 
 // Get retrieves a network by its ID if the input can be parsed as an integer, otherwise it

@@ -100,14 +100,9 @@ func (c *ImageClient) GetByID(ctx context.Context, id int64) (*Image, *Response,
 //
 // Deprecated: Use [ImageClient.GetByNameAndArchitecture] instead.
 func (c *ImageClient) GetByName(ctx context.Context, name string) (*Image, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	images, response, err := c.List(ctx, ImageListOpts{Name: name})
-	if len(images) == 0 {
-		return nil, response, err
-	}
-	return images[0], response, err
+	return firstByName(name, func() ([]*Image, *Response, error) {
+		return c.List(ctx, ImageListOpts{Name: name})
+	})
 }
 
 // GetByNameAndArchitecture retrieves an image by its name and architecture. If the image does not exist,
@@ -115,14 +110,9 @@ func (c *ImageClient) GetByName(ctx context.Context, name string) (*Image, *Resp
 // In contrast to [ImageClient.Get], this method also returns deprecated images. Depending on your needs you should
 // check for this in your calling method.
 func (c *ImageClient) GetByNameAndArchitecture(ctx context.Context, name string, architecture Architecture) (*Image, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	images, response, err := c.List(ctx, ImageListOpts{Name: name, Architecture: []Architecture{architecture}, IncludeDeprecated: true})
-	if len(images) == 0 {
-		return nil, response, err
-	}
-	return images[0], response, err
+	return firstByName(name, func() ([]*Image, *Response, error) {
+		return c.List(ctx, ImageListOpts{Name: name, Architecture: []Architecture{architecture}, IncludeDeprecated: true})
+	})
 }
 
 // Get retrieves an image by its ID if the input can be parsed as an integer, otherwise it

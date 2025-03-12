@@ -111,14 +111,9 @@ func (c *FirewallClient) GetByID(ctx context.Context, id int64) (*Firewall, *Res
 
 // GetByName retrieves a Firewall by its name. If the Firewall does not exist, nil is returned.
 func (c *FirewallClient) GetByName(ctx context.Context, name string) (*Firewall, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	firewalls, response, err := c.List(ctx, FirewallListOpts{Name: name})
-	if len(firewalls) == 0 {
-		return nil, response, err
-	}
-	return firewalls[0], response, err
+	return firstByName(name, func() ([]*Firewall, *Response, error) {
+		return c.List(ctx, FirewallListOpts{Name: name})
+	})
 }
 
 // Get retrieves a Firewall by its ID if the input can be parsed as an integer, otherwise it
