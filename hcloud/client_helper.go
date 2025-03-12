@@ -61,7 +61,9 @@ func firstByName[T any](name string, listFn func() ([]*T, *Response, error)) (*T
 // by Name. To support resources that have a integer as Name, an additional attempt is
 // made to fetch the resource by Name using the ID.
 //
-// This function is only meaningful for resources created by users.
+// Since API managed resources (locations, server types, ...) do not have integers as
+// names, this function is only meaningful for user managed resources (ssh keys,
+// servers).
 func getByIDOrName[T any](
 	ctx context.Context,
 	getByIDFn func(ctx context.Context, id int64) (*T, *Response, error),
