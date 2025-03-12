@@ -241,22 +241,14 @@ func (l PrimaryIPListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *PrimaryIPClient) List(ctx context.Context, opts PrimaryIPListOpts) ([]*PrimaryIP, *Response, error) {
-	path := "/primary_ips?" + opts.values().Encode()
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/primary_ips?%s", opts.values().Encode())
 
-	var body schema.PrimaryIPListResult
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.PrimaryIPListResult](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	primaryIPs := make([]*PrimaryIP, 0, len(body.PrimaryIPs))
-	for _, s := range body.PrimaryIPs {
-		primaryIPs = append(primaryIPs, PrimaryIPFromSchema(s))
-	}
-	return primaryIPs, resp, nil
+
+	return allFromSchemaFunc(respBody.PrimaryIPs, PrimaryIPFromSchema), resp, nil
 }
 
 // All returns all Primary IPs.

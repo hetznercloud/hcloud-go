@@ -103,22 +103,14 @@ func (l SSHKeyListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey, *Response, error) {
-	path := "/ssh_keys?" + opts.values().Encode()
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/ssh_keys?%s", opts.values().Encode())
 
-	var body schema.SSHKeyListResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.SSHKeyListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	sshKeys := make([]*SSHKey, 0, len(body.SSHKeys))
-	for _, s := range body.SSHKeys {
-		sshKeys = append(sshKeys, SSHKeyFromSchema(s))
-	}
-	return sshKeys, resp, nil
+
+	return allFromSchemaFunc(respBody.SSHKeys, SSHKeyFromSchema), resp, nil
 }
 
 // All returns all SSH keys.

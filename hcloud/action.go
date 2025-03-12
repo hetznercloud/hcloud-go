@@ -170,26 +170,14 @@ func (c *ResourceActionClient) GetByID(ctx context.Context, id int64) (*Action, 
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *ResourceActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
-	req, err := c.client.NewRequest(
-		ctx,
-		"GET",
-		fmt.Sprintf("%s/actions?%s", c.getBaseURL(), opts.values().Encode()),
-		nil,
-	)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("%s/actions?%s", c.getBaseURL(), opts.values().Encode())
 
-	var body schema.ActionListResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.ActionListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	actions := make([]*Action, 0, len(body.Actions))
-	for _, i := range body.Actions {
-		actions = append(actions, ActionFromSchema(i))
-	}
-	return actions, resp, nil
+
+	return allFromSchemaFunc(respBody.Actions, ActionFromSchema), resp, nil
 }
 
 // All returns all actions for the given options.

@@ -156,22 +156,14 @@ func (l FirewallListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *FirewallClient) List(ctx context.Context, opts FirewallListOpts) ([]*Firewall, *Response, error) {
-	path := "/firewalls?" + opts.values().Encode()
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/firewalls?%s", opts.values().Encode())
 
-	var body schema.FirewallListResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.FirewallListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	firewalls := make([]*Firewall, 0, len(body.Firewalls))
-	for _, s := range body.Firewalls {
-		firewalls = append(firewalls, FirewallFromSchema(s))
-	}
-	return firewalls, resp, nil
+
+	return allFromSchemaFunc(respBody.Firewalls, FirewallFromSchema), resp, nil
 }
 
 // All returns all Firewalls.

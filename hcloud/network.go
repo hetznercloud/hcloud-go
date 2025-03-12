@@ -147,22 +147,14 @@ func (l NetworkListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *NetworkClient) List(ctx context.Context, opts NetworkListOpts) ([]*Network, *Response, error) {
-	path := "/networks?" + opts.values().Encode()
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/networks?%s", opts.values().Encode())
 
-	var body schema.NetworkListResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.NetworkListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	Networks := make([]*Network, 0, len(body.Networks))
-	for _, s := range body.Networks {
-		Networks = append(Networks, NetworkFromSchema(s))
-	}
-	return Networks, resp, nil
+
+	return allFromSchemaFunc(respBody.Networks, NetworkFromSchema), resp, nil
 }
 
 // All returns all networks.

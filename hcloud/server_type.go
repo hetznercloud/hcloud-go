@@ -114,22 +114,14 @@ func (l ServerTypeListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *ServerTypeClient) List(ctx context.Context, opts ServerTypeListOpts) ([]*ServerType, *Response, error) {
-	path := "/server_types?" + opts.values().Encode()
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/server_types?%s", opts.values().Encode())
 
-	var body schema.ServerTypeListResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.ServerTypeListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	serverTypes := make([]*ServerType, 0, len(body.ServerTypes))
-	for _, s := range body.ServerTypes {
-		serverTypes = append(serverTypes, ServerTypeFromSchema(s))
-	}
-	return serverTypes, resp, nil
+
+	return allFromSchemaFunc(respBody.ServerTypes, ServerTypeFromSchema), resp, nil
 }
 
 // All returns all server types.

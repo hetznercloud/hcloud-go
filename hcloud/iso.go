@@ -115,22 +115,14 @@ func (l ISOListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) ([]*ISO, *Response, error) {
-	path := "/isos?" + opts.values().Encode()
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/isos?%s", opts.values().Encode())
 
-	var body schema.ISOListResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.ISOListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
-	isos := make([]*ISO, 0, len(body.ISOs))
-	for _, i := range body.ISOs {
-		isos = append(isos, ISOFromSchema(i))
-	}
-	return isos, resp, nil
+
+	return allFromSchemaFunc(respBody.ISOs, ISOFromSchema), resp, nil
 }
 
 // All returns all ISOs.
