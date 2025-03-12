@@ -98,20 +98,16 @@ type CertificateClient struct {
 
 // GetByID retrieves a Certificate by its ID. If the Certificate does not exist, nil is returned.
 func (c *CertificateClient) GetByID(ctx context.Context, id int64) (*Certificate, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/certificates/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/certificates/%d", id)
 
-	var body schema.CertificateGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.CertificateGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return CertificateFromSchema(body.Certificate), resp, nil
+	return CertificateFromSchema(respBody.Certificate), resp, nil
 }
 
 // GetByName retrieves a Certificate by its name. If the Certificate does not exist, nil is returned.

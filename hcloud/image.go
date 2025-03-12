@@ -83,20 +83,17 @@ type ImageClient struct {
 
 // GetByID retrieves an image by its ID. If the image does not exist, nil is returned.
 func (c *ImageClient) GetByID(ctx context.Context, id int64) (*Image, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/images/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/images/%d", id)
 
-	var body schema.ImageGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.ImageGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return ImageFromSchema(body.Image), resp, nil
+
+	return ImageFromSchema(respBody.Image), resp, nil
 }
 
 // GetByName retrieves an image by its name. If the image does not exist, nil is returned.

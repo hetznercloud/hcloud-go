@@ -165,20 +165,17 @@ type PrimaryIPClient struct {
 
 // GetByID retrieves a Primary IP by its ID. If the Primary IP does not exist, nil is returned.
 func (c *PrimaryIPClient) GetByID(ctx context.Context, id int64) (*PrimaryIP, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/primary_ips/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/primary_ips/%d", id)
 
-	var body schema.PrimaryIPGetResult
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.PrimaryIPGetResult](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return PrimaryIPFromSchema(body.PrimaryIP), resp, nil
+
+	return PrimaryIPFromSchema(respBody.PrimaryIP), resp, nil
 }
 
 // GetByIP retrieves a Primary IP by its IP Address. If the Primary IP does not exist, nil is returned.

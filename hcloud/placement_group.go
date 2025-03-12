@@ -38,20 +38,17 @@ type PlacementGroupClient struct {
 
 // GetByID retrieves a PlacementGroup by its ID. If the PlacementGroup does not exist, nil is returned.
 func (c *PlacementGroupClient) GetByID(ctx context.Context, id int64) (*PlacementGroup, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/placement_groups/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/placement_groups/%d", id)
 
-	var body schema.PlacementGroupGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.PlacementGroupGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return PlacementGroupFromSchema(body.PlacementGroup), resp, nil
+
+	return PlacementGroupFromSchema(respBody.PlacementGroup), resp, nil
 }
 
 // GetByName retrieves a PlacementGroup by its name. If the PlacementGroup does not exist, nil is returned.

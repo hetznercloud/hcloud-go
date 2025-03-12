@@ -57,20 +57,17 @@ type ServerTypeClient struct {
 
 // GetByID retrieves a server type by its ID. If the server type does not exist, nil is returned.
 func (c *ServerTypeClient) GetByID(ctx context.Context, id int64) (*ServerType, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/server_types/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/server_types/%d", id)
 
-	var body schema.ServerTypeGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.ServerTypeGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return ServerTypeFromSchema(body.ServerType), resp, nil
+
+	return ServerTypeFromSchema(respBody.ServerType), resp, nil
 }
 
 // GetByName retrieves a server type by its name. If the server type does not exist, nil is returned.

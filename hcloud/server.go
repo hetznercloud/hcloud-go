@@ -198,20 +198,17 @@ type ServerClient struct {
 
 // GetByID retrieves a server by its ID. If the server does not exist, nil is returned.
 func (c *ServerClient) GetByID(ctx context.Context, id int64) (*Server, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/servers/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d", id)
 
-	var body schema.ServerGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.ServerGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return ServerFromSchema(body.Server), resp, nil
+
+	return ServerFromSchema(respBody.Server), resp, nil
 }
 
 // GetByName retrieves a server by its name. If the server does not exist, nil is returned.

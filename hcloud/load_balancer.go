@@ -243,20 +243,17 @@ type LoadBalancerClient struct {
 
 // GetByID retrieves a Load Balancer by its ID. If the Load Balancer does not exist, nil is returned.
 func (c *LoadBalancerClient) GetByID(ctx context.Context, id int64) (*LoadBalancer, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/load_balancers/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d", id)
 
-	var body schema.LoadBalancerGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.LoadBalancerGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return LoadBalancerFromSchema(body.LoadBalancer), resp, nil
+
+	return LoadBalancerFromSchema(respBody.LoadBalancer), resp, nil
 }
 
 // GetByName retrieves a Load Balancer by its name. If the Load Balancer does not exist, nil is returned.

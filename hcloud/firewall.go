@@ -96,20 +96,17 @@ type FirewallClient struct {
 
 // GetByID retrieves a Firewall by its ID. If the Firewall does not exist, nil is returned.
 func (c *FirewallClient) GetByID(ctx context.Context, id int64) (*Firewall, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/firewalls/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/firewalls/%d", id)
 
-	var body schema.FirewallGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.FirewallGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return FirewallFromSchema(body.Firewall), resp, nil
+
+	return FirewallFromSchema(respBody.Firewall), resp, nil
 }
 
 // GetByName retrieves a Firewall by its name. If the Firewall does not exist, nil is returned.

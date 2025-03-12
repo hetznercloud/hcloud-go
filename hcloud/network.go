@@ -87,20 +87,17 @@ type NetworkClient struct {
 
 // GetByID retrieves a network by its ID. If the network does not exist, nil is returned.
 func (c *NetworkClient) GetByID(ctx context.Context, id int64) (*Network, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/networks/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/networks/%d", id)
 
-	var body schema.NetworkGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.NetworkGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return NetworkFromSchema(body.Network), resp, nil
+
+	return NetworkFromSchema(respBody.Network), resp, nil
 }
 
 // GetByName retrieves a network by its name. If the network does not exist, nil is returned.

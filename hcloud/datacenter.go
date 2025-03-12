@@ -32,20 +32,17 @@ type DatacenterClient struct {
 
 // GetByID retrieves a datacenter by its ID. If the datacenter does not exist, nil is returned.
 func (c *DatacenterClient) GetByID(ctx context.Context, id int64) (*Datacenter, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/datacenters/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/datacenters/%d", id)
 
-	var body schema.DatacenterGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.DatacenterGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return DatacenterFromSchema(body.Datacenter), resp, nil
+
+	return DatacenterFromSchema(respBody.Datacenter), resp, nil
 }
 
 // GetByName retrieves a datacenter by its name. If the datacenter does not exist, nil is returned.

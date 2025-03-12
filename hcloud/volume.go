@@ -57,20 +57,17 @@ const (
 
 // GetByID retrieves a volume by its ID. If the volume does not exist, nil is returned.
 func (c *VolumeClient) GetByID(ctx context.Context, id int64) (*Volume, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/volumes/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/volumes/%d", id)
 
-	var body schema.VolumeGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.VolumeGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return VolumeFromSchema(body.Volume), resp, nil
+
+	return VolumeFromSchema(respBody.Volume), resp, nil
 }
 
 // GetByName retrieves a volume by its name. If the volume does not exist, nil is returned.

@@ -153,20 +153,16 @@ func (c *ResourceActionClient) getBaseURL() string {
 
 // GetByID retrieves an action by its ID. If the action does not exist, nil is returned.
 func (c *ResourceActionClient) GetByID(ctx context.Context, id int64) (*Action, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("%s/actions/%d", c.getBaseURL(), id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("%s/actions/%d", c.getBaseURL(), id)
 
-	var body schema.ActionGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return ActionFromSchema(body.Action), resp, nil
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // List returns a list of actions for a specific page.
