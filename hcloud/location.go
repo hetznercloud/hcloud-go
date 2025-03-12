@@ -28,20 +28,17 @@ type LocationClient struct {
 
 // GetByID retrieves a location by its ID. If the location does not exist, nil is returned.
 func (c *LocationClient) GetByID(ctx context.Context, id int64) (*Location, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/locations/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/locations/%d", id)
 
-	var body schema.LocationGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.LocationGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return LocationFromSchema(body.Location), resp, nil
+
+	return LocationFromSchema(respBody.Location), resp, nil
 }
 
 // GetByName retrieves an location by its name. If the location does not exist, nil is returned.

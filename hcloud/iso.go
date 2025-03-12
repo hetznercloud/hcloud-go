@@ -40,20 +40,17 @@ type ISOClient struct {
 
 // GetByID retrieves an ISO by its ID.
 func (c *ISOClient) GetByID(ctx context.Context, id int64) (*ISO, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", fmt.Sprintf("/isos/%d", id), nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/isos/%d", id)
 
-	var body schema.ISOGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.ISOGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
 		return nil, resp, err
 	}
-	return ISOFromSchema(body.ISO), resp, nil
+
+	return ISOFromSchema(respBody.ISO), resp, nil
 }
 
 // GetByName retrieves an ISO by its name.
