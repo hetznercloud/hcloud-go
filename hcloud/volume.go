@@ -72,14 +72,9 @@ func (c *VolumeClient) GetByID(ctx context.Context, id int64) (*Volume, *Respons
 
 // GetByName retrieves a volume by its name. If the volume does not exist, nil is returned.
 func (c *VolumeClient) GetByName(ctx context.Context, name string) (*Volume, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	volumes, response, err := c.List(ctx, VolumeListOpts{Name: name})
-	if len(volumes) == 0 {
-		return nil, response, err
-	}
-	return volumes[0], response, err
+	return firstByName(name, func() ([]*Volume, *Response, error) {
+		return c.List(ctx, VolumeListOpts{Name: name})
+	})
 }
 
 // Get retrieves a volume by its ID if the input can be parsed as an integer, otherwise it

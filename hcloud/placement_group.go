@@ -53,14 +53,9 @@ func (c *PlacementGroupClient) GetByID(ctx context.Context, id int64) (*Placemen
 
 // GetByName retrieves a PlacementGroup by its name. If the PlacementGroup does not exist, nil is returned.
 func (c *PlacementGroupClient) GetByName(ctx context.Context, name string) (*PlacementGroup, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	placementGroups, response, err := c.List(ctx, PlacementGroupListOpts{Name: name})
-	if len(placementGroups) == 0 {
-		return nil, response, err
-	}
-	return placementGroups[0], response, err
+	return firstByName(name, func() ([]*PlacementGroup, *Response, error) {
+		return c.List(ctx, PlacementGroupListOpts{Name: name})
+	})
 }
 
 // Get retrieves a PlacementGroup by its ID if the input can be parsed as an integer, otherwise it

@@ -112,14 +112,9 @@ func (c *CertificateClient) GetByID(ctx context.Context, id int64) (*Certificate
 
 // GetByName retrieves a Certificate by its name. If the Certificate does not exist, nil is returned.
 func (c *CertificateClient) GetByName(ctx context.Context, name string) (*Certificate, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	Certificate, response, err := c.List(ctx, CertificateListOpts{Name: name})
-	if len(Certificate) == 0 {
-		return nil, response, err
-	}
-	return Certificate[0], response, err
+	return firstByName(name, func() ([]*Certificate, *Response, error) {
+		return c.List(ctx, CertificateListOpts{Name: name})
+	})
 }
 
 // Get retrieves a Certificate by its ID if the input can be parsed as an integer, otherwise it

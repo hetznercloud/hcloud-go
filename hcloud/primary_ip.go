@@ -192,14 +192,9 @@ func (c *PrimaryIPClient) GetByIP(ctx context.Context, ip string) (*PrimaryIP, *
 
 // GetByName retrieves a Primary IP by its name. If the Primary IP does not exist, nil is returned.
 func (c *PrimaryIPClient) GetByName(ctx context.Context, name string) (*PrimaryIP, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	primaryIPs, response, err := c.List(ctx, PrimaryIPListOpts{Name: name})
-	if len(primaryIPs) == 0 {
-		return nil, response, err
-	}
-	return primaryIPs[0], response, err
+	return firstByName(name, func() ([]*PrimaryIP, *Response, error) {
+		return c.List(ctx, PrimaryIPListOpts{Name: name})
+	})
 }
 
 // Get retrieves a Primary IP by its ID if the input can be parsed as an integer, otherwise it

@@ -30,3 +30,24 @@ func iterPages[T any](listFn func(int) ([]*T, *Response, error)) ([]*T, error) {
 		page = resp.Meta.Pagination.NextPage
 	}
 }
+
+// firstBy fetches a list of items using the list function, and returns the first item
+// of the list if present otherwise nil.
+func firstBy[T any](listFn func() ([]*T, *Response, error)) (*T, *Response, error) {
+	items, resp, err := listFn()
+	if len(items) == 0 {
+		return nil, resp, err
+	}
+
+	return items[0], resp, err
+}
+
+// firstByName is a wrapper around [firstBy], that checks if the provided name is not
+// empty.
+func firstByName[T any](name string, listFn func() ([]*T, *Response, error)) (*T, *Response, error) {
+	if name == "" {
+		return nil, nil, nil
+	}
+
+	return firstBy(listFn)
+}

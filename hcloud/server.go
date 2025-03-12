@@ -213,14 +213,9 @@ func (c *ServerClient) GetByID(ctx context.Context, id int64) (*Server, *Respons
 
 // GetByName retrieves a server by its name. If the server does not exist, nil is returned.
 func (c *ServerClient) GetByName(ctx context.Context, name string) (*Server, *Response, error) {
-	if name == "" {
-		return nil, nil, nil
-	}
-	servers, response, err := c.List(ctx, ServerListOpts{Name: name})
-	if len(servers) == 0 {
-		return nil, response, err
-	}
-	return servers[0], response, err
+	return firstByName(name, func() ([]*Server, *Response, error) {
+		return c.List(ctx, ServerListOpts{Name: name})
+	})
 }
 
 // Get retrieves a server by its ID if the input can be parsed as an integer, otherwise it
