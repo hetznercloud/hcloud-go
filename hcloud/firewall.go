@@ -231,22 +231,14 @@ func (c *FirewallClient) Update(ctx context.Context, firewall *Firewall, opts Fi
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/firewalls/%d", firewall.ID)
-	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/firewalls/%d", firewall.ID)
 
-	respBody := schema.FirewallUpdateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := putRequest[schema.FirewallUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return FirewallFromSchema(respBody.Firewall), resp, nil
 }
 

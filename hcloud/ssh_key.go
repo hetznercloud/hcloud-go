@@ -183,21 +183,13 @@ func (c *SSHKeyClient) Update(ctx context.Context, sshKey *SSHKey, opts SSHKeyUp
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/ssh_keys/%d", sshKey.ID)
-	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/ssh_keys/%d", sshKey.ID)
 
-	respBody := schema.SSHKeyUpdateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := putRequest[schema.SSHKeyUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return SSHKeyFromSchema(respBody.SSHKey), resp, nil
 }

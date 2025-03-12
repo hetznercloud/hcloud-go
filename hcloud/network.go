@@ -188,22 +188,13 @@ func (c *NetworkClient) Update(ctx context.Context, network *Network, opts Netwo
 		reqBody.ExposeRoutesToVSwitch = opts.ExposeRoutesToVSwitch
 	}
 
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/networks/%d", network.ID)
 
-	path := fmt.Sprintf("/networks/%d", network.ID)
-	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	respBody := schema.NetworkUpdateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := putRequest[schema.NetworkUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return NetworkFromSchema(respBody.Network), resp, nil
 }
 

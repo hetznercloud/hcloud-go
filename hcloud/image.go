@@ -231,22 +231,14 @@ func (c *ImageClient) Update(ctx context.Context, image *Image, opts ImageUpdate
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/images/%d", image.ID)
-	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/images/%d", image.ID)
 
-	respBody := schema.ImageUpdateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := putRequest[schema.ImageUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ImageFromSchema(respBody.Image), resp, nil
 }
 

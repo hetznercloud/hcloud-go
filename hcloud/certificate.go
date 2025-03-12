@@ -292,22 +292,14 @@ func (c *CertificateClient) Update(ctx context.Context, certificate *Certificate
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/certificates/%d", certificate.ID)
-	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/certificates/%d", certificate.ID)
 
-	respBody := schema.CertificateUpdateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := putRequest[schema.CertificateUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return CertificateFromSchema(respBody.Certificate), resp, nil
 }
 
