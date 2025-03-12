@@ -132,20 +132,8 @@ func (c *ISOClient) All(ctx context.Context) ([]*ISO, error) {
 
 // AllWithOpts returns all ISOs for the given options.
 func (c *ISOClient) AllWithOpts(ctx context.Context, opts ISOListOpts) ([]*ISO, error) {
-	allISOs := []*ISO{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*ISO, *Response, error) {
 		opts.Page = page
-		isos, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allISOs = append(allISOs, isos...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allISOs, nil
 }

@@ -258,22 +258,10 @@ func (c *PrimaryIPClient) All(ctx context.Context) ([]*PrimaryIP, error) {
 
 // AllWithOpts returns all Primary IPs for the given options.
 func (c *PrimaryIPClient) AllWithOpts(ctx context.Context, opts PrimaryIPListOpts) ([]*PrimaryIP, error) {
-	allPrimaryIPs := []*PrimaryIP{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*PrimaryIP, *Response, error) {
 		opts.Page = page
-		primaryIPs, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allPrimaryIPs = append(allPrimaryIPs, primaryIPs...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allPrimaryIPs, nil
 }
 
 // Create creates a Primary IP.

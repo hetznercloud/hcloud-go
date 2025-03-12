@@ -182,20 +182,8 @@ func (c *ResourceActionClient) List(ctx context.Context, opts ActionListOpts) ([
 
 // All returns all actions for the given options.
 func (c *ResourceActionClient) All(ctx context.Context, opts ActionListOpts) ([]*Action, error) {
-	allActions := []*Action{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*Action, *Response, error) {
 		opts.Page = page
-		actions, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allActions = append(allActions, actions...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allActions, nil
 }

@@ -174,22 +174,10 @@ func (c *CertificateClient) All(ctx context.Context) ([]*Certificate, error) {
 
 // AllWithOpts returns all Certificates for the given options.
 func (c *CertificateClient) AllWithOpts(ctx context.Context, opts CertificateListOpts) ([]*Certificate, error) {
-	allCertificates := []*Certificate{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*Certificate, *Response, error) {
 		opts.Page = page
-		Certificates, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allCertificates = append(allCertificates, Certificates...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allCertificates, nil
 }
 
 // CertificateCreateOpts specifies options for creating a new Certificate.

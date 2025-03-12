@@ -125,22 +125,10 @@ func (c *PlacementGroupClient) All(ctx context.Context) ([]*PlacementGroup, erro
 
 // AllWithOpts returns all PlacementGroups for the given options.
 func (c *PlacementGroupClient) AllWithOpts(ctx context.Context, opts PlacementGroupListOpts) ([]*PlacementGroup, error) {
-	allPlacementGroups := []*PlacementGroup{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*PlacementGroup, *Response, error) {
 		opts.Page = page
-		placementGroups, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allPlacementGroups = append(allPlacementGroups, placementGroups...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allPlacementGroups, nil
 }
 
 // PlacementGroupCreateOpts specifies options for creating a new PlacementGroup.

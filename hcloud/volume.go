@@ -138,22 +138,10 @@ func (c *VolumeClient) All(ctx context.Context) ([]*Volume, error) {
 
 // AllWithOpts returns all volumes with the given options.
 func (c *VolumeClient) AllWithOpts(ctx context.Context, opts VolumeListOpts) ([]*Volume, error) {
-	allVolumes := []*Volume{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*Volume, *Response, error) {
 		opts.Page = page
-		volumes, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allVolumes = append(allVolumes, volumes...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allVolumes, nil
 }
 
 // VolumeCreateOpts specifies parameters for creating a volume.

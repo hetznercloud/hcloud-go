@@ -120,22 +120,10 @@ func (c *SSHKeyClient) All(ctx context.Context) ([]*SSHKey, error) {
 
 // AllWithOpts returns all SSH keys with the given options.
 func (c *SSHKeyClient) AllWithOpts(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey, error) {
-	allSSHKeys := []*SSHKey{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*SSHKey, *Response, error) {
 		opts.Page = page
-		sshKeys, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allSSHKeys = append(allSSHKeys, sshKeys...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allSSHKeys, nil
 }
 
 // SSHKeyCreateOpts specifies parameters for creating a SSH key.

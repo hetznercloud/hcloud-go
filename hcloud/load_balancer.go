@@ -320,22 +320,10 @@ func (c *LoadBalancerClient) All(ctx context.Context) ([]*LoadBalancer, error) {
 
 // AllWithOpts returns all Load Balancers for the given options.
 func (c *LoadBalancerClient) AllWithOpts(ctx context.Context, opts LoadBalancerListOpts) ([]*LoadBalancer, error) {
-	allLoadBalancers := []*LoadBalancer{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*LoadBalancer, *Response, error) {
 		opts.Page = page
-		LoadBalancers, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allLoadBalancers = append(allLoadBalancers, LoadBalancers...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allLoadBalancers, nil
 }
 
 // LoadBalancerUpdateOpts specifies options for updating a Load Balancer.
