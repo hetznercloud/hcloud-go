@@ -68,7 +68,7 @@ func (c *VolumeClient) GetByID(ctx context.Context, id int64) (*Volume, *Respons
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return VolumeFromSchema(body.Volume), resp, nil
 }
@@ -133,7 +133,7 @@ func (c *VolumeClient) List(ctx context.Context, opts VolumeListOpts) ([]*Volume
 	var body schema.VolumeListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	volumes := make([]*Volume, 0, len(body.Volumes))
 	for _, s := range body.Volumes {

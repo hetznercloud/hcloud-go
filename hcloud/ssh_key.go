@@ -41,7 +41,7 @@ func (c *SSHKeyClient) GetByID(ctx context.Context, id int64) (*SSHKey, *Respons
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return SSHKeyFromSchema(body.SSHKey), resp, nil
 }
@@ -115,7 +115,7 @@ func (c *SSHKeyClient) List(ctx context.Context, opts SSHKeyListOpts) ([]*SSHKey
 	var body schema.SSHKeyListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	sshKeys := make([]*SSHKey, 0, len(body.SSHKeys))
 	for _, s := range body.SSHKeys {

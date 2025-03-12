@@ -98,7 +98,7 @@ func (c *NetworkClient) GetByID(ctx context.Context, id int64) (*Network, *Respo
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return NetworkFromSchema(body.Network), resp, nil
 }
@@ -159,7 +159,7 @@ func (c *NetworkClient) List(ctx context.Context, opts NetworkListOpts) ([]*Netw
 	var body schema.NetworkListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	Networks := make([]*Network, 0, len(body.Networks))
 	for _, s := range body.Networks {

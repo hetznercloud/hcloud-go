@@ -164,7 +164,7 @@ func (c *ResourceActionClient) GetByID(ctx context.Context, id int64) (*Action, 
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return ActionFromSchema(body.Action), resp, nil
 }
@@ -187,7 +187,7 @@ func (c *ResourceActionClient) List(ctx context.Context, opts ActionListOpts) ([
 	var body schema.ActionListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	actions := make([]*Action, 0, len(body.Actions))
 	for _, i := range body.Actions {

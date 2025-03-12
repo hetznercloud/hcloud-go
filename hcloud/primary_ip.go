@@ -176,7 +176,7 @@ func (c *PrimaryIPClient) GetByID(ctx context.Context, id int64) (*PrimaryIP, *R
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return PrimaryIPFromSchema(body.PrimaryIP), resp, nil
 }
@@ -253,7 +253,7 @@ func (c *PrimaryIPClient) List(ctx context.Context, opts PrimaryIPListOpts) ([]*
 	var body schema.PrimaryIPListResult
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	primaryIPs := make([]*PrimaryIP, 0, len(body.PrimaryIPs))
 	for _, s := range body.PrimaryIPs {

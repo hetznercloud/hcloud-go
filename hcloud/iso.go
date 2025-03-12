@@ -127,7 +127,7 @@ func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) ([]*ISO, *Respon
 	var body schema.ISOListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	isos := make([]*ISO, 0, len(body.ISOs))
 	for _, i := range body.ISOs {

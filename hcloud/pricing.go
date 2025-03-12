@@ -144,7 +144,7 @@ func (c *PricingClient) Get(ctx context.Context) (Pricing, *Response, error) {
 	var body schema.PricingGetResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return Pricing{}, nil, err
+		return Pricing{}, resp, err
 	}
 	return PricingFromSchema(body.Pricing), resp, nil
 }

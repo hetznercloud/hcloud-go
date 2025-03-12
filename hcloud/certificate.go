@@ -109,7 +109,7 @@ func (c *CertificateClient) GetByID(ctx context.Context, id int64) (*Certificate
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return CertificateFromSchema(body.Certificate), resp, nil
 }
@@ -170,7 +170,7 @@ func (c *CertificateClient) List(ctx context.Context, opts CertificateListOpts) 
 	var body schema.CertificateListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	Certificates := make([]*Certificate, 0, len(body.Certificates))
 	for _, s := range body.Certificates {
@@ -366,7 +366,7 @@ func (c *CertificateClient) RetryIssuance(ctx context.Context, certificate *Cert
 	}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	action := ActionFromSchema(respBody.Action)
 	return action, resp, nil

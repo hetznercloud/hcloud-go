@@ -107,7 +107,7 @@ func (c *FirewallClient) GetByID(ctx context.Context, id int64) (*Firewall, *Res
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return FirewallFromSchema(body.Firewall), resp, nil
 }
@@ -168,7 +168,7 @@ func (c *FirewallClient) List(ctx context.Context, opts FirewallListOpts) ([]*Fi
 	var body schema.FirewallListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	firewalls := make([]*Firewall, 0, len(body.Firewalls))
 	for _, s := range body.Firewalls {

@@ -94,7 +94,7 @@ func (c *ImageClient) GetByID(ctx context.Context, id int64) (*Image, *Response,
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return ImageFromSchema(body.Image), resp, nil
 }
@@ -209,7 +209,7 @@ func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) ([]*Image, *
 	var body schema.ImageListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	images := make([]*Image, 0, len(body.Images))
 	for _, i := range body.Images {
