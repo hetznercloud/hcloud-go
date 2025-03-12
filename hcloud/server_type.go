@@ -131,20 +131,8 @@ func (c *ServerTypeClient) All(ctx context.Context) ([]*ServerType, error) {
 
 // AllWithOpts returns all server types for the given options.
 func (c *ServerTypeClient) AllWithOpts(ctx context.Context, opts ServerTypeListOpts) ([]*ServerType, error) {
-	allServerTypes := []*ServerType{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*ServerType, *Response, error) {
 		opts.Page = page
-		serverTypes, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allServerTypes = append(allServerTypes, serverTypes...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allServerTypes, nil
 }

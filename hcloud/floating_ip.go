@@ -174,22 +174,10 @@ func (c *FloatingIPClient) All(ctx context.Context) ([]*FloatingIP, error) {
 
 // AllWithOpts returns all Floating IPs for the given options.
 func (c *FloatingIPClient) AllWithOpts(ctx context.Context, opts FloatingIPListOpts) ([]*FloatingIP, error) {
-	allFloatingIPs := []*FloatingIP{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*FloatingIP, *Response, error) {
 		opts.Page = page
-		floatingIPs, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allFloatingIPs = append(allFloatingIPs, floatingIPs...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allFloatingIPs, nil
 }
 
 // FloatingIPCreateOpts specifies options for creating a Floating IP.

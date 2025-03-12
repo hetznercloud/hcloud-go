@@ -173,22 +173,10 @@ func (c *FirewallClient) All(ctx context.Context) ([]*Firewall, error) {
 
 // AllWithOpts returns all Firewalls for the given options.
 func (c *FirewallClient) AllWithOpts(ctx context.Context, opts FirewallListOpts) ([]*Firewall, error) {
-	allFirewalls := []*Firewall{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*Firewall, *Response, error) {
 		opts.Page = page
-		firewalls, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allFirewalls = append(allFirewalls, firewalls...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allFirewalls, nil
 }
 
 // FirewallCreateOpts specifies options for creating a new Firewall.

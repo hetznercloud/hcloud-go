@@ -164,22 +164,10 @@ func (c *NetworkClient) All(ctx context.Context) ([]*Network, error) {
 
 // AllWithOpts returns all networks for the given options.
 func (c *NetworkClient) AllWithOpts(ctx context.Context, opts NetworkListOpts) ([]*Network, error) {
-	allNetworks := []*Network{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*Network, *Response, error) {
 		opts.Page = page
-		Networks, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allNetworks = append(allNetworks, Networks...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allNetworks, nil
 }
 
 // Delete deletes a network.

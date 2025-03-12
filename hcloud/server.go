@@ -279,22 +279,10 @@ func (c *ServerClient) All(ctx context.Context) ([]*Server, error) {
 
 // AllWithOpts returns all servers for the given options.
 func (c *ServerClient) AllWithOpts(ctx context.Context, opts ServerListOpts) ([]*Server, error) {
-	allServers := []*Server{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*Server, *Response, error) {
 		opts.Page = page
-		servers, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allServers = append(allServers, servers...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allServers, nil
 }
 
 // ServerCreateOpts specifies options for creating a new server.

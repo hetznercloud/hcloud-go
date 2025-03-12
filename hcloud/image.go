@@ -214,22 +214,10 @@ func (c *ImageClient) All(ctx context.Context) ([]*Image, error) {
 
 // AllWithOpts returns all images for the given options.
 func (c *ImageClient) AllWithOpts(ctx context.Context, opts ImageListOpts) ([]*Image, error) {
-	allImages := []*Image{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*Image, *Response, error) {
 		opts.Page = page
-		images, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allImages = append(allImages, images...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allImages, nil
 }
 
 // Delete deletes an image.

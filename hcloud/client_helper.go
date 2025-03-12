@@ -10,3 +10,23 @@ func allFromSchemaFunc[T, V any](all []T, fn func(T) V) []V {
 
 	return result
 }
+
+// iterPages fetches each pages using the list function, and returns the result.
+func iterPages[T any](listFn func(int) ([]*T, *Response, error)) ([]*T, error) {
+	page := 1
+	result := []*T{}
+
+	for {
+		pageResult, resp, err := listFn(page)
+		if err != nil {
+			return nil, err
+		}
+
+		result = append(result, pageResult...)
+
+		if resp.Meta.Pagination == nil || resp.Meta.Pagination.NextPage == 0 {
+			return result, nil
+		}
+		page = resp.Meta.Pagination.NextPage
+	}
+}

@@ -103,20 +103,8 @@ func (c *LoadBalancerTypeClient) All(ctx context.Context) ([]*LoadBalancerType, 
 
 // AllWithOpts returns all Load Balancer types for the given options.
 func (c *LoadBalancerTypeClient) AllWithOpts(ctx context.Context, opts LoadBalancerTypeListOpts) ([]*LoadBalancerType, error) {
-	allLoadBalancerTypes := []*LoadBalancerType{}
-
-	err := c.client.all(func(page int) (*Response, error) {
+	return iterPages(func(page int) ([]*LoadBalancerType, *Response, error) {
 		opts.Page = page
-		LoadBalancerTypes, resp, err := c.List(ctx, opts)
-		if err != nil {
-			return resp, err
-		}
-		allLoadBalancerTypes = append(allLoadBalancerTypes, LoadBalancerTypes...)
-		return resp, nil
+		return c.List(ctx, opts)
 	})
-	if err != nil {
-		return nil, err
-	}
-
-	return allLoadBalancerTypes, nil
 }
