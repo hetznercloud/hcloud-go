@@ -40,7 +40,7 @@ func (c *LoadBalancerTypeClient) GetByID(ctx context.Context, id int64) (*LoadBa
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return LoadBalancerTypeFromSchema(body.LoadBalancerType), resp, nil
 }
@@ -98,7 +98,7 @@ func (c *LoadBalancerTypeClient) List(ctx context.Context, opts LoadBalancerType
 	var body schema.LoadBalancerTypeListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	LoadBalancerTypes := make([]*LoadBalancerType, 0, len(body.LoadBalancerTypes))
 	for _, s := range body.LoadBalancerTypes {

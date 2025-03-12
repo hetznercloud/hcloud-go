@@ -49,7 +49,7 @@ func (c *PlacementGroupClient) GetByID(ctx context.Context, id int64) (*Placemen
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return PlacementGroupFromSchema(body.PlacementGroup), resp, nil
 }
@@ -114,7 +114,7 @@ func (c *PlacementGroupClient) List(ctx context.Context, opts PlacementGroupList
 	var body schema.PlacementGroupListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	placementGroups := make([]*PlacementGroup, 0, len(body.PlacementGroups))
 	for _, g := range body.PlacementGroups {
@@ -193,7 +193,7 @@ func (c *PlacementGroupClient) Create(ctx context.Context, opts PlacementGroupCr
 	respBody := schema.PlacementGroupCreateResponse{}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
-		return PlacementGroupCreateResult{}, nil, err
+		return PlacementGroupCreateResult{}, resp, err
 	}
 	result := PlacementGroupCreateResult{
 		PlacementGroup: PlacementGroupFromSchema(respBody.PlacementGroup),

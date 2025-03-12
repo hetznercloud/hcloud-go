@@ -97,7 +97,7 @@ func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) ([]*Lo
 	var body schema.LocationListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	locations := make([]*Location, 0, len(body.Locations))
 	for _, i := range body.Locations {

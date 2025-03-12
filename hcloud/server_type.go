@@ -68,7 +68,7 @@ func (c *ServerTypeClient) GetByID(ctx context.Context, id int64) (*ServerType, 
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return ServerTypeFromSchema(body.ServerType), resp, nil
 }
@@ -126,7 +126,7 @@ func (c *ServerTypeClient) List(ctx context.Context, opts ServerTypeListOpts) ([
 	var body schema.ServerTypeListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	serverTypes := make([]*ServerType, 0, len(body.ServerTypes))
 	for _, s := range body.ServerTypes {

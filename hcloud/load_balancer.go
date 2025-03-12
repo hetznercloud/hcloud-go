@@ -254,7 +254,7 @@ func (c *LoadBalancerClient) GetByID(ctx context.Context, id int64) (*LoadBalanc
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
 		}
-		return nil, nil, err
+		return nil, resp, err
 	}
 	return LoadBalancerFromSchema(body.LoadBalancer), resp, nil
 }
@@ -315,7 +315,7 @@ func (c *LoadBalancerClient) List(ctx context.Context, opts LoadBalancerListOpts
 	var body schema.LoadBalancerListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	LoadBalancers := make([]*LoadBalancer, 0, len(body.LoadBalancers))
 	for _, s := range body.LoadBalancers {
@@ -1043,7 +1043,7 @@ func (c *LoadBalancerClient) GetMetrics(
 	}
 	resp, err := c.client.Do(req, &respBody)
 	if err != nil {
-		return nil, nil, fmt.Errorf("get metrics: %v", err)
+		return nil, resp, fmt.Errorf("get metrics: %v", err)
 	}
 	ms, err := loadBalancerMetricsFromSchema(&respBody)
 	if err != nil {

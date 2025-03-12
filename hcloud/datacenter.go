@@ -101,7 +101,7 @@ func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) ([
 	var body schema.DatacenterListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	datacenters := make([]*Datacenter, 0, len(body.Datacenters))
 	for _, i := range body.Datacenters {

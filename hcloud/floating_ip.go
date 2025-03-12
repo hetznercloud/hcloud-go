@@ -169,7 +169,7 @@ func (c *FloatingIPClient) List(ctx context.Context, opts FloatingIPListOpts) ([
 	var body schema.FloatingIPListResponse
 	resp, err := c.client.Do(req, &body)
 	if err != nil {
-		return nil, nil, err
+		return nil, resp, err
 	}
 	floatingIPs := make([]*FloatingIP, 0, len(body.FloatingIPs))
 	for _, s := range body.FloatingIPs {
