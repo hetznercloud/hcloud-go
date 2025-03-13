@@ -162,11 +162,9 @@ func (c *SSHKeyClient) Create(ctx context.Context, opts SSHKeyCreateOpts) (*SSHK
 
 // Delete deletes a SSH key.
 func (c *SSHKeyClient) Delete(ctx context.Context, sshKey *SSHKey) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/ssh_keys/%d", sshKey.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/ssh_keys/%d", sshKey.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // SSHKeyUpdateOpts specifies options for updating a SSH key.

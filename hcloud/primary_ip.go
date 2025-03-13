@@ -282,11 +282,9 @@ func (c *PrimaryIPClient) Create(ctx context.Context, reqBody PrimaryIPCreateOpt
 
 // Delete deletes a Primary IP.
 func (c *PrimaryIPClient) Delete(ctx context.Context, primaryIP *PrimaryIP) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/primary_ips/%d", primaryIP.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/primary_ips/%d", primaryIP.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // Update updates a Primary IP.

@@ -252,11 +252,9 @@ func (c *FirewallClient) Update(ctx context.Context, firewall *Firewall, opts Fi
 
 // Delete deletes a Firewall.
 func (c *FirewallClient) Delete(ctx context.Context, firewall *Firewall) (*Response, error) {
-	req, err := c.client.NewRequest(ctx, "DELETE", fmt.Sprintf("/firewalls/%d", firewall.ID), nil)
-	if err != nil {
-		return nil, err
-	}
-	return c.client.Do(req, nil)
+	reqPath := fmt.Sprintf("/firewalls/%d", firewall.ID)
+
+	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // FirewallSetRulesOpts specifies options for setting rules of a Firewall.
