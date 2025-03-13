@@ -266,22 +266,14 @@ func (c *FloatingIPClient) Update(ctx context.Context, floatingIP *FloatingIP, o
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/floating_ips/%d", floatingIP.ID)
-	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/floating_ips/%d", floatingIP.ID)
 
-	respBody := schema.FloatingIPUpdateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := putRequest[schema.FloatingIPUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return FloatingIPFromSchema(respBody.FloatingIP), resp, nil
 }
 

@@ -330,22 +330,14 @@ func (c *LoadBalancerClient) Update(ctx context.Context, loadBalancer *LoadBalan
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d", loadBalancer.ID)
 
-	respBody := schema.LoadBalancerUpdateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := putRequest[schema.LoadBalancerUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return LoadBalancerFromSchema(respBody.LoadBalancer), resp, nil
 }
 

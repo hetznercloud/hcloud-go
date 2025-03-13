@@ -289,22 +289,13 @@ func (c *PrimaryIPClient) Delete(ctx context.Context, primaryIP *PrimaryIP) (*Re
 
 // Update updates a Primary IP.
 func (c *PrimaryIPClient) Update(ctx context.Context, primaryIP *PrimaryIP, reqBody PrimaryIPUpdateOpts) (*PrimaryIP, *Response, error) {
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/primary_ips/%d", primaryIP.ID)
 
-	path := fmt.Sprintf("/primary_ips/%d", primaryIP.ID)
-	req, err := c.client.NewRequest(ctx, "PUT", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var respBody schema.PrimaryIPUpdateResult
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := putRequest[schema.PrimaryIPUpdateResult](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return PrimaryIPFromSchema(respBody.PrimaryIP), resp, nil
 }
 
