@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -29,7 +30,10 @@ type LoadBalancerTypeClient struct {
 
 // GetByID retrieves a Load Balancer type by its ID. If the Load Balancer type does not exist, nil is returned.
 func (c *LoadBalancerTypeClient) GetByID(ctx context.Context, id int64) (*LoadBalancerType, *Response, error) {
-	reqPath := fmt.Sprintf("/load_balancer_types/%d", id)
+	const opPath = "/load_balancer_types/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.LoadBalancerTypeGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -81,7 +85,10 @@ func (l LoadBalancerTypeListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *LoadBalancerTypeClient) List(ctx context.Context, opts LoadBalancerTypeListOpts) ([]*LoadBalancerType, *Response, error) {
-	reqPath := fmt.Sprintf("/load_balancer_types?%s", opts.values().Encode())
+	const opPath = "/load_balancer_types?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.LoadBalancerTypeListResponse](ctx, c.client, reqPath)
 	if err != nil {

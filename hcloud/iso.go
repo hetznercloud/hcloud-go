@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -39,7 +40,10 @@ type ISOClient struct {
 
 // GetByID retrieves an ISO by its ID.
 func (c *ISOClient) GetByID(ctx context.Context, id int64) (*ISO, *Response, error) {
-	reqPath := fmt.Sprintf("/isos/%d", id)
+	const opPath = "/isos/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.ISOGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -103,7 +107,10 @@ func (l ISOListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *ISOClient) List(ctx context.Context, opts ISOListOpts) ([]*ISO, *Response, error) {
-	reqPath := fmt.Sprintf("/isos?%s", opts.values().Encode())
+	const opPath = "/isos?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.ISOListResponse](ctx, c.client, reqPath)
 	if err != nil {

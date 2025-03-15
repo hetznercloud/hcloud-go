@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -51,12 +52,15 @@ const (
 // changeDNSPtr changes or resets the reverse DNS pointer for an IP address.
 // Pass a nil ptr to reset the reverse DNS pointer to its default value.
 func (f *FloatingIP) changeDNSPtr(ctx context.Context, client *Client, ip net.IP, ptr *string) (*Action, *Response, error) {
+	const opPath = "/floating_ips/%d/actions/change_dns_ptr"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, f.ID)
+
 	reqBody := schema.FloatingIPActionChangeDNSPtrRequest{
 		IP:     ip.String(),
 		DNSPtr: ptr,
 	}
-
-	reqPath := fmt.Sprintf("/floating_ips/%d/actions/change_dns_ptr", f.ID)
 
 	respBody, resp, err := postRequest[schema.FloatingIPActionChangeDNSPtrResponse](ctx, client, reqPath, reqBody)
 	if err != nil {
@@ -86,7 +90,10 @@ type FloatingIPClient struct {
 // GetByID retrieves a Floating IP by its ID. If the Floating IP does not exist,
 // nil is returned.
 func (c *FloatingIPClient) GetByID(ctx context.Context, id int64) (*FloatingIP, *Response, error) {
-	reqPath := fmt.Sprintf("/floating_ips/%d", id)
+	const opPath = "/floating_ips/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.FloatingIPGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -135,7 +142,10 @@ func (l FloatingIPListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *FloatingIPClient) List(ctx context.Context, opts FloatingIPListOpts) ([]*FloatingIP, *Response, error) {
-	reqPath := fmt.Sprintf("/floating_ips?%s", opts.values().Encode())
+	const opPath = "/floating_ips?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.FloatingIPListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -192,6 +202,11 @@ type FloatingIPCreateResult struct {
 func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts) (FloatingIPCreateResult, *Response, error) {
 	result := FloatingIPCreateResult{}
 
+	const opPath = "/floating_ips"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := opPath
+
 	if err := opts.Validate(); err != nil {
 		return result, nil, err
 	}
@@ -211,8 +226,6 @@ func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts
 		reqBody.Labels = &opts.Labels
 	}
 
-	reqPath := "/floating_ips"
-
 	respBody, resp, err := postRequest[schema.FloatingIPCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return result, resp, err
@@ -228,7 +241,10 @@ func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts
 
 // Delete deletes a Floating IP.
 func (c *FloatingIPClient) Delete(ctx context.Context, floatingIP *FloatingIP) (*Response, error) {
-	reqPath := fmt.Sprintf("/floating_ips/%d", floatingIP.ID)
+	const opPath = "/floating_ips/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, floatingIP.ID)
 
 	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
@@ -242,6 +258,11 @@ type FloatingIPUpdateOpts struct {
 
 // Update updates a Floating IP.
 func (c *FloatingIPClient) Update(ctx context.Context, floatingIP *FloatingIP, opts FloatingIPUpdateOpts) (*FloatingIP, *Response, error) {
+	const opPath = "/floating_ips/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, floatingIP.ID)
+
 	reqBody := schema.FloatingIPUpdateRequest{
 		Description: opts.Description,
 		Name:        opts.Name,
@@ -249,8 +270,6 @@ func (c *FloatingIPClient) Update(ctx context.Context, floatingIP *FloatingIP, o
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-
-	reqPath := fmt.Sprintf("/floating_ips/%d", floatingIP.ID)
 
 	respBody, resp, err := putRequest[schema.FloatingIPUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -262,11 +281,14 @@ func (c *FloatingIPClient) Update(ctx context.Context, floatingIP *FloatingIP, o
 
 // Assign assigns a Floating IP to a server.
 func (c *FloatingIPClient) Assign(ctx context.Context, floatingIP *FloatingIP, server *Server) (*Action, *Response, error) {
+	const opPath = "/floating_ips/%d/actions/assign"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, floatingIP.ID)
+
 	reqBody := schema.FloatingIPActionAssignRequest{
 		Server: server.ID,
 	}
-
-	reqPath := fmt.Sprintf("/floating_ips/%d/actions/assign", floatingIP.ID)
 
 	respBody, resp, err := postRequest[schema.FloatingIPActionAssignResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -278,9 +300,12 @@ func (c *FloatingIPClient) Assign(ctx context.Context, floatingIP *FloatingIP, s
 
 // Unassign unassigns a Floating IP from the currently assigned server.
 func (c *FloatingIPClient) Unassign(ctx context.Context, floatingIP *FloatingIP) (*Action, *Response, error) {
-	reqBody := schema.FloatingIPActionUnassignRequest{}
+	const opPath = "/floating_ips/%d/actions/unassign"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf("/floating_ips/%d/actions/unassign", floatingIP.ID)
+	reqPath := fmt.Sprintf(opPath, floatingIP.ID)
+
+	reqBody := schema.FloatingIPActionUnassignRequest{}
 
 	respBody, resp, err := postRequest[schema.FloatingIPActionUnassignResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -307,11 +332,14 @@ type FloatingIPChangeProtectionOpts struct {
 
 // ChangeProtection changes the resource protection level of a Floating IP.
 func (c *FloatingIPClient) ChangeProtection(ctx context.Context, floatingIP *FloatingIP, opts FloatingIPChangeProtectionOpts) (*Action, *Response, error) {
+	const opPath = "/floating_ips/%d/actions/change_protection"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, floatingIP.ID)
+
 	reqBody := schema.FloatingIPActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
-
-	reqPath := fmt.Sprintf("/floating_ips/%d/actions/change_protection", floatingIP.ID)
 
 	respBody, resp, err := postRequest[schema.FloatingIPActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {

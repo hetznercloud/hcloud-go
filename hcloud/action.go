@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -153,7 +154,10 @@ func (c *ResourceActionClient) getBaseURL() string {
 
 // GetByID retrieves an action by its ID. If the action does not exist, nil is returned.
 func (c *ResourceActionClient) GetByID(ctx context.Context, id int64) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("%s/actions/%d", c.getBaseURL(), id)
+	opPath := c.getBaseURL() + "/actions/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -170,7 +174,10 @@ func (c *ResourceActionClient) GetByID(ctx context.Context, id int64) (*Action, 
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *ResourceActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
-	reqPath := fmt.Sprintf("%s/actions?%s", c.getBaseURL(), opts.values().Encode())
+	opPath := c.getBaseURL() + "/actions?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.ActionListResponse](ctx, c.client, reqPath)
 	if err != nil {

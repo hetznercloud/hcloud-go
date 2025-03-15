@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -81,7 +82,10 @@ type ImageClient struct {
 
 // GetByID retrieves an image by its ID. If the image does not exist, nil is returned.
 func (c *ImageClient) GetByID(ctx context.Context, id int64) (*Image, *Response, error) {
-	reqPath := fmt.Sprintf("/images/%d", id)
+	const opPath = "/images/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.ImageGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -179,7 +183,10 @@ func (l ImageListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *ImageClient) List(ctx context.Context, opts ImageListOpts) ([]*Image, *Response, error) {
-	reqPath := fmt.Sprintf("/images?%s", opts.values().Encode())
+	const opPath = "/images?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.ImageListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -204,7 +211,10 @@ func (c *ImageClient) AllWithOpts(ctx context.Context, opts ImageListOpts) ([]*I
 
 // Delete deletes an image.
 func (c *ImageClient) Delete(ctx context.Context, image *Image) (*Response, error) {
-	reqPath := fmt.Sprintf("/images/%d", image.ID)
+	const opPath = "/images/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, image.ID)
 
 	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
@@ -218,6 +228,11 @@ type ImageUpdateOpts struct {
 
 // Update updates an image.
 func (c *ImageClient) Update(ctx context.Context, image *Image, opts ImageUpdateOpts) (*Image, *Response, error) {
+	const opPath = "/images/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, image.ID)
+
 	reqBody := schema.ImageUpdateRequest{
 		Description: opts.Description,
 	}
@@ -227,8 +242,6 @@ func (c *ImageClient) Update(ctx context.Context, image *Image, opts ImageUpdate
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-
-	reqPath := fmt.Sprintf("/images/%d", image.ID)
 
 	respBody, resp, err := putRequest[schema.ImageUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -245,11 +258,14 @@ type ImageChangeProtectionOpts struct {
 
 // ChangeProtection changes the resource protection level of an image.
 func (c *ImageClient) ChangeProtection(ctx context.Context, image *Image, opts ImageChangeProtectionOpts) (*Action, *Response, error) {
+	const opPath = "/images/%d/actions/change_protection"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, image.ID)
+
 	reqBody := schema.ImageActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
-
-	reqPath := fmt.Sprintf("/images/%d/actions/change_protection", image.ID)
 
 	respBody, resp, err := postRequest[schema.ImageActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {

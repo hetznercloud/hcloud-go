@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -84,7 +85,10 @@ type NetworkClient struct {
 
 // GetByID retrieves a network by its ID. If the network does not exist, nil is returned.
 func (c *NetworkClient) GetByID(ctx context.Context, id int64) (*Network, *Response, error) {
-	reqPath := fmt.Sprintf("/networks/%d", id)
+	const opPath = "/networks/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.NetworkGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -133,7 +137,10 @@ func (l NetworkListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *NetworkClient) List(ctx context.Context, opts NetworkListOpts) ([]*Network, *Response, error) {
-	reqPath := fmt.Sprintf("/networks?%s", opts.values().Encode())
+	const opPath = "/networks?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.NetworkListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -158,7 +165,10 @@ func (c *NetworkClient) AllWithOpts(ctx context.Context, opts NetworkListOpts) (
 
 // Delete deletes a network.
 func (c *NetworkClient) Delete(ctx context.Context, network *Network) (*Response, error) {
-	reqPath := fmt.Sprintf("/networks/%d", network.ID)
+	const opPath = "/networks/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, network.ID)
 
 	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
@@ -174,6 +184,11 @@ type NetworkUpdateOpts struct {
 
 // Update updates a network.
 func (c *NetworkClient) Update(ctx context.Context, network *Network, opts NetworkUpdateOpts) (*Network, *Response, error) {
+	const opPath = "/networks/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, network.ID)
+
 	reqBody := schema.NetworkUpdateRequest{
 		Name: opts.Name,
 	}
@@ -183,8 +198,6 @@ func (c *NetworkClient) Update(ctx context.Context, network *Network, opts Netwo
 	if opts.ExposeRoutesToVSwitch != nil {
 		reqBody.ExposeRoutesToVSwitch = opts.ExposeRoutesToVSwitch
 	}
-
-	reqPath := fmt.Sprintf("/networks/%d", network.ID)
 
 	respBody, resp, err := putRequest[schema.NetworkUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -219,6 +232,11 @@ func (o NetworkCreateOpts) Validate() error {
 
 // Create creates a new network.
 func (c *NetworkClient) Create(ctx context.Context, opts NetworkCreateOpts) (*Network, *Response, error) {
+	const opPath = "/networks"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := opPath
+
 	if err := opts.Validate(); err != nil {
 		return nil, nil, err
 	}
@@ -248,8 +266,6 @@ func (c *NetworkClient) Create(ctx context.Context, opts NetworkCreateOpts) (*Ne
 		reqBody.Labels = &opts.Labels
 	}
 
-	reqPath := "/networks"
-
 	respBody, resp, err := postRequest[schema.NetworkCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
@@ -265,11 +281,14 @@ type NetworkChangeIPRangeOpts struct {
 
 // ChangeIPRange changes the IP range of a network.
 func (c *NetworkClient) ChangeIPRange(ctx context.Context, network *Network, opts NetworkChangeIPRangeOpts) (*Action, *Response, error) {
+	const opPath = "/networks/%d/actions/change_ip_range"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, network.ID)
+
 	reqBody := schema.NetworkActionChangeIPRangeRequest{
 		IPRange: opts.IPRange.String(),
 	}
-
-	reqPath := fmt.Sprintf("/networks/%d/actions/change_ip_range", network.ID)
 
 	respBody, resp, err := postRequest[schema.NetworkActionChangeIPRangeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -286,6 +305,11 @@ type NetworkAddSubnetOpts struct {
 
 // AddSubnet adds a subnet to a network.
 func (c *NetworkClient) AddSubnet(ctx context.Context, network *Network, opts NetworkAddSubnetOpts) (*Action, *Response, error) {
+	const opPath = "/networks/%d/actions/add_subnet"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, network.ID)
+
 	reqBody := schema.NetworkActionAddSubnetRequest{
 		Type:        string(opts.Subnet.Type),
 		NetworkZone: string(opts.Subnet.NetworkZone),
@@ -296,8 +320,6 @@ func (c *NetworkClient) AddSubnet(ctx context.Context, network *Network, opts Ne
 	if opts.Subnet.VSwitchID != 0 {
 		reqBody.VSwitchID = opts.Subnet.VSwitchID
 	}
-
-	reqPath := fmt.Sprintf("/networks/%d/actions/add_subnet", network.ID)
 
 	respBody, resp, err := postRequest[schema.NetworkActionAddSubnetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -314,11 +336,14 @@ type NetworkDeleteSubnetOpts struct {
 
 // DeleteSubnet deletes a subnet from a network.
 func (c *NetworkClient) DeleteSubnet(ctx context.Context, network *Network, opts NetworkDeleteSubnetOpts) (*Action, *Response, error) {
+	const opPath = "/networks/%d/actions/delete_subnet"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, network.ID)
+
 	reqBody := schema.NetworkActionDeleteSubnetRequest{
 		IPRange: opts.Subnet.IPRange.String(),
 	}
-
-	reqPath := fmt.Sprintf("/networks/%d/actions/delete_subnet", network.ID)
 
 	respBody, resp, err := postRequest[schema.NetworkActionDeleteSubnetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -335,12 +360,15 @@ type NetworkAddRouteOpts struct {
 
 // AddRoute adds a route to a network.
 func (c *NetworkClient) AddRoute(ctx context.Context, network *Network, opts NetworkAddRouteOpts) (*Action, *Response, error) {
+	const opPath = "/networks/%d/actions/add_route"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, network.ID)
+
 	reqBody := schema.NetworkActionAddRouteRequest{
 		Destination: opts.Route.Destination.String(),
 		Gateway:     opts.Route.Gateway.String(),
 	}
-
-	reqPath := fmt.Sprintf("/networks/%d/actions/add_route", network.ID)
 
 	respBody, resp, err := postRequest[schema.NetworkActionAddSubnetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -357,12 +385,15 @@ type NetworkDeleteRouteOpts struct {
 
 // DeleteRoute deletes a route from a network.
 func (c *NetworkClient) DeleteRoute(ctx context.Context, network *Network, opts NetworkDeleteRouteOpts) (*Action, *Response, error) {
+	const opPath = "/networks/%d/actions/delete_route"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, network.ID)
+
 	reqBody := schema.NetworkActionDeleteRouteRequest{
 		Destination: opts.Route.Destination.String(),
 		Gateway:     opts.Route.Gateway.String(),
 	}
-
-	reqPath := fmt.Sprintf("/networks/%d/actions/delete_route", network.ID)
 
 	respBody, resp, err := postRequest[schema.NetworkActionDeleteSubnetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -379,11 +410,14 @@ type NetworkChangeProtectionOpts struct {
 
 // ChangeProtection changes the resource protection level of a network.
 func (c *NetworkClient) ChangeProtection(ctx context.Context, network *Network, opts NetworkChangeProtectionOpts) (*Action, *Response, error) {
+	const opPath = "/networks/%d/actions/change_protection"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, network.ID)
+
 	reqBody := schema.NetworkActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
-
-	reqPath := fmt.Sprintf("/networks/%d/actions/change_protection", network.ID)
 
 	respBody, resp, err := postRequest[schema.NetworkActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -28,7 +29,10 @@ type LocationClient struct {
 
 // GetByID retrieves a location by its ID. If the location does not exist, nil is returned.
 func (c *LocationClient) GetByID(ctx context.Context, id int64) (*Location, *Response, error) {
-	reqPath := fmt.Sprintf("/locations/%d", id)
+	const opPath = "/locations/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.LocationGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -80,7 +84,10 @@ func (l LocationListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *LocationClient) List(ctx context.Context, opts LocationListOpts) ([]*Location, *Response, error) {
-	reqPath := fmt.Sprintf("/locations?%s", opts.values().Encode())
+	const opPath = "/locations?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.LocationListResponse](ctx, c.client, reqPath)
 	if err != nil {

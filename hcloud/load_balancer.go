@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -197,12 +198,15 @@ type LoadBalancerProtection struct {
 // changeDNSPtr changes or resets the reverse DNS pointer for an IP address.
 // Pass a nil ptr to reset the reverse DNS pointer to its default value.
 func (lb *LoadBalancer) changeDNSPtr(ctx context.Context, client *Client, ip net.IP, ptr *string) (*Action, *Response, error) {
+	const opPath = "/load_balancers/%d/actions/change_dns_ptr"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, lb.ID)
+
 	reqBody := schema.LoadBalancerActionChangeDNSPtrRequest{
 		IP:     ip.String(),
 		DNSPtr: ptr,
 	}
-
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/change_dns_ptr", lb.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionChangeDNSPtrResponse](ctx, client, reqPath, reqBody)
 	if err != nil {
@@ -232,7 +236,10 @@ type LoadBalancerClient struct {
 
 // GetByID retrieves a Load Balancer by its ID. If the Load Balancer does not exist, nil is returned.
 func (c *LoadBalancerClient) GetByID(ctx context.Context, id int64) (*LoadBalancer, *Response, error) {
-	reqPath := fmt.Sprintf("/load_balancers/%d", id)
+	const opPath = "/load_balancers/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.LoadBalancerGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -281,7 +288,10 @@ func (l LoadBalancerListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *LoadBalancerClient) List(ctx context.Context, opts LoadBalancerListOpts) ([]*LoadBalancer, *Response, error) {
-	reqPath := fmt.Sprintf("/load_balancers?%s", opts.values().Encode())
+	const opPath = "/load_balancers?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.LoadBalancerListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -312,6 +322,11 @@ type LoadBalancerUpdateOpts struct {
 
 // Update updates a Load Balancer.
 func (c *LoadBalancerClient) Update(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerUpdateOpts) (*LoadBalancer, *Response, error) {
+	const opPath = "/load_balancers/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
+
 	reqBody := schema.LoadBalancerUpdateRequest{}
 	if opts.Name != "" {
 		reqBody.Name = &opts.Name
@@ -319,8 +334,6 @@ func (c *LoadBalancerClient) Update(ctx context.Context, loadBalancer *LoadBalan
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-
-	reqPath := fmt.Sprintf("/load_balancers/%d", loadBalancer.ID)
 
 	respBody, resp, err := putRequest[schema.LoadBalancerUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -422,11 +435,14 @@ type LoadBalancerCreateResult struct {
 
 // Create creates a new Load Balancer.
 func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreateOpts) (LoadBalancerCreateResult, *Response, error) {
+	const opPath = "/load_balancers"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := LoadBalancerCreateResult{}
 
-	reqBody := loadBalancerCreateOptsToSchema(opts)
+	reqPath := opPath
 
-	reqPath := "/load_balancers"
+	reqBody := loadBalancerCreateOptsToSchema(opts)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -441,13 +457,19 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 
 // Delete deletes a Load Balancer.
 func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalancer) (*Response, error) {
-	reqPath := fmt.Sprintf("/load_balancers/%d", loadBalancer.ID)
+	const opPath = "/load_balancers/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
 
 	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionAddTargetRequest) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/add_target", loadBalancer.ID)
+	const opPath = "/load_balancers/%d/actions/add_target"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionAddTargetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -458,7 +480,10 @@ func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBa
 }
 
 func (c *LoadBalancerClient) removeTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionRemoveTargetRequest) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/remove_target", loadBalancer.ID)
+	const opPath = "/load_balancers/%d/actions/remove_target"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionRemoveTargetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -597,9 +622,12 @@ type LoadBalancerAddServiceOptsHealthCheckHTTP struct {
 
 // AddService adds a service to a Load Balancer.
 func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddServiceOpts) (*Action, *Response, error) {
-	reqBody := loadBalancerAddServiceOptsToSchema(opts)
+	const opPath = "/load_balancers/%d/actions/add_service"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/add_service", loadBalancer.ID)
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
+
+	reqBody := loadBalancerAddServiceOptsToSchema(opts)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionAddServiceResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -650,10 +678,13 @@ type LoadBalancerUpdateServiceOptsHealthCheckHTTP struct {
 
 // UpdateService updates a Load Balancer service.
 func (c *LoadBalancerClient) UpdateService(ctx context.Context, loadBalancer *LoadBalancer, listenPort int, opts LoadBalancerUpdateServiceOpts) (*Action, *Response, error) {
+	const opPath = "/load_balancers/%d/actions/update_service"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
+
 	reqBody := loadBalancerUpdateServiceOptsToSchema(opts)
 	reqBody.ListenPort = listenPort
-
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/update_service", loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionUpdateServiceResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -665,11 +696,14 @@ func (c *LoadBalancerClient) UpdateService(ctx context.Context, loadBalancer *Lo
 
 // DeleteService deletes a Load Balancer service.
 func (c *LoadBalancerClient) DeleteService(ctx context.Context, loadBalancer *LoadBalancer, listenPort int) (*Action, *Response, error) {
+	const opPath = "/load_balancers/%d/actions/delete_service"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
+
 	reqBody := schema.LoadBalancerDeleteServiceRequest{
 		ListenPort: listenPort,
 	}
-
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/delete_service", loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerDeleteServiceResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -686,11 +720,14 @@ type LoadBalancerChangeProtectionOpts struct {
 
 // ChangeProtection changes the resource protection level of a Load Balancer.
 func (c *LoadBalancerClient) ChangeProtection(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerChangeProtectionOpts) (*Action, *Response, error) {
+	const opPath = "/load_balancers/%d/actions/change_protection"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
+
 	reqBody := schema.LoadBalancerActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
-
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/change_protection", loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -707,11 +744,14 @@ type LoadBalancerChangeAlgorithmOpts struct {
 
 // ChangeAlgorithm changes the algorithm of a Load Balancer.
 func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerChangeAlgorithmOpts) (*Action, *Response, error) {
+	const opPath = "/load_balancers/%d/actions/change_algorithm"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
+
 	reqBody := schema.LoadBalancerActionChangeAlgorithmRequest{
 		Type: string(opts.Type),
 	}
-
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/change_algorithm", loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionChangeAlgorithmResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -729,14 +769,17 @@ type LoadBalancerAttachToNetworkOpts struct {
 
 // AttachToNetwork attaches a Load Balancer to a network.
 func (c *LoadBalancerClient) AttachToNetwork(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAttachToNetworkOpts) (*Action, *Response, error) {
+	const opPath = "/load_balancers/%d/actions/attach_to_network"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
+
 	reqBody := schema.LoadBalancerActionAttachToNetworkRequest{
 		Network: opts.Network.ID,
 	}
 	if opts.IP != nil {
 		reqBody.IP = Ptr(opts.IP.String())
 	}
-
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/attach_to_network", loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionAttachToNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -753,11 +796,14 @@ type LoadBalancerDetachFromNetworkOpts struct {
 
 // DetachFromNetwork detaches a Load Balancer from a network.
 func (c *LoadBalancerClient) DetachFromNetwork(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerDetachFromNetworkOpts) (*Action, *Response, error) {
+	const opPath = "/load_balancers/%d/actions/detach_from_network"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
+
 	reqBody := schema.LoadBalancerActionDetachFromNetworkRequest{
 		Network: opts.Network.ID,
 	}
-
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/detach_from_network", loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionDetachFromNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -769,7 +815,10 @@ func (c *LoadBalancerClient) DetachFromNetwork(ctx context.Context, loadBalancer
 
 // EnablePublicInterface enables the Load Balancer's public network interface.
 func (c *LoadBalancerClient) EnablePublicInterface(ctx context.Context, loadBalancer *LoadBalancer) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/enable_public_interface", loadBalancer.ID)
+	const opPath = "/load_balancers/%d/actions/enable_public_interface"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionEnablePublicInterfaceResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -781,7 +830,10 @@ func (c *LoadBalancerClient) EnablePublicInterface(ctx context.Context, loadBala
 
 // DisablePublicInterface disables the Load Balancer's public network interface.
 func (c *LoadBalancerClient) DisablePublicInterface(ctx context.Context, loadBalancer *LoadBalancer) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/disable_public_interface", loadBalancer.ID)
+	const opPath = "/load_balancers/%d/actions/disable_public_interface"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionDisablePublicInterfaceResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -798,12 +850,15 @@ type LoadBalancerChangeTypeOpts struct {
 
 // ChangeType changes a Load Balancer's type.
 func (c *LoadBalancerClient) ChangeType(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerChangeTypeOpts) (*Action, *Response, error) {
+	const opPath = "/load_balancers/%d/actions/change_type"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
+
 	reqBody := schema.LoadBalancerActionChangeTypeRequest{}
 	if opts.LoadBalancerType.ID != 0 || opts.LoadBalancerType.Name != "" {
 		reqBody.LoadBalancerType = schema.IDOrName{ID: opts.LoadBalancerType.ID, Name: opts.LoadBalancerType.Name}
 	}
-
-	reqPath := fmt.Sprintf("/load_balancers/%d/actions/change_type", loadBalancer.ID)
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionChangeTypeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -882,6 +937,9 @@ type LoadBalancerMetricsValue struct {
 func (c *LoadBalancerClient) GetMetrics(
 	ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerGetMetricsOpts,
 ) (*LoadBalancerMetrics, *Response, error) {
+	const opPath = "/load_balancers/%d/metrics?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	if loadBalancer == nil {
 		return nil, nil, fmt.Errorf("illegal argument: load balancer is nil")
 	}
@@ -890,7 +948,7 @@ func (c *LoadBalancerClient) GetMetrics(
 		return nil, nil, err
 	}
 
-	reqPath := fmt.Sprintf("/load_balancers/%d/metrics?%s", loadBalancer.ID, opts.values().Encode())
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.LoadBalancerGetMetricsResponse](ctx, c.client, reqPath)
 	if err != nil {
