@@ -1155,7 +1155,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "add query params: no metric types specified",
+			expectedErr: "no metric types specified",
 		},
 		{
 			name: "no start time",
@@ -1164,7 +1164,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				Types: []LoadBalancerMetricType{LoadBalancerMetricBandwidth},
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "add query params: no start time specified",
+			expectedErr: "no start time specified",
 		},
 		{
 			name: "no end time",
@@ -1173,7 +1173,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				Types: []LoadBalancerMetricType{LoadBalancerMetricBandwidth},
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 			},
-			expectedErr: "add query params: no end time specified",
+			expectedErr: "no end time specified",
 		},
 		{
 			name: "call to backend API fails",
@@ -1184,7 +1184,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
 			respStatus:  http.StatusInternalServerError,
-			expectedErr: "get metrics: hcloud: server responded with status code 500",
+			expectedErr: "hcloud: server responded with status code 500",
 		},
 		{
 			name: "no load balancer passed",

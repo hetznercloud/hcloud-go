@@ -136,15 +136,12 @@ type PricingClient struct {
 
 // Get retrieves pricing information.
 func (c *PricingClient) Get(ctx context.Context) (Pricing, *Response, error) {
-	req, err := c.client.NewRequest(ctx, "GET", "/pricing", nil)
-	if err != nil {
-		return Pricing{}, nil, err
-	}
+	reqPath := "/pricing"
 
-	var body schema.PricingGetResponse
-	resp, err := c.client.Do(req, &body)
+	respBody, resp, err := getRequest[schema.PricingGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return Pricing{}, resp, err
 	}
-	return PricingFromSchema(body.Pricing), resp, nil
+
+	return PricingFromSchema(respBody.Pricing), resp, nil
 }
