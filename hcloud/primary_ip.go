@@ -254,30 +254,21 @@ func (c *PrimaryIPClient) AllWithOpts(ctx context.Context, opts PrimaryIPListOpt
 
 // Create creates a Primary IP.
 func (c *PrimaryIPClient) Create(ctx context.Context, reqBody PrimaryIPCreateOpts) (*PrimaryIPCreateResult, *Response, error) {
-	reqBodyData, err := json.Marshal(reqBody)
+	result := &PrimaryIPCreateResult{}
+
+	reqPath := "/primary_ips"
+
+	respBody, resp, err := postRequest[schema.PrimaryIPCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return &PrimaryIPCreateResult{}, nil, err
+		return result, resp, err
 	}
 
-	req, err := c.client.NewRequest(ctx, "POST", "/primary_ips", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return &PrimaryIPCreateResult{}, nil, err
-	}
-
-	var respBody schema.PrimaryIPCreateResponse
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return &PrimaryIPCreateResult{}, resp, err
-	}
-	var action *Action
+	result.PrimaryIP = PrimaryIPFromSchema(respBody.PrimaryIP)
 	if respBody.Action != nil {
-		action = ActionFromSchema(*respBody.Action)
+		result.Action = ActionFromSchema(*respBody.Action)
 	}
-	primaryIP := PrimaryIPFromSchema(respBody.PrimaryIP)
-	return &PrimaryIPCreateResult{
-		PrimaryIP: primaryIP,
-		Action:    action,
-	}, resp, nil
+
+	return result, resp, nil
 }
 
 // Delete deletes a Primary IP.

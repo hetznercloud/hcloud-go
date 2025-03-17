@@ -200,8 +200,10 @@ type FloatingIPCreateResult struct {
 
 // Create creates a Floating IP.
 func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts) (FloatingIPCreateResult, *Response, error) {
+	result := FloatingIPCreateResult{}
+
 	if err := opts.Validate(); err != nil {
-		return FloatingIPCreateResult{}, nil, err
+		return result, nil, err
 	}
 
 	reqBody := schema.FloatingIPCreateRequest{
@@ -218,29 +220,20 @@ func (c *FloatingIPClient) Create(ctx context.Context, opts FloatingIPCreateOpts
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
+
+	reqPath := "/floating_ips"
+
+	respBody, resp, err := postRequest[schema.FloatingIPCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return FloatingIPCreateResult{}, nil, err
+		return result, resp, err
 	}
 
-	req, err := c.client.NewRequest(ctx, "POST", "/floating_ips", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return FloatingIPCreateResult{}, nil, err
-	}
-
-	var respBody schema.FloatingIPCreateResponse
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return FloatingIPCreateResult{}, resp, err
-	}
-	var action *Action
+	result.FloatingIP = FloatingIPFromSchema(respBody.FloatingIP)
 	if respBody.Action != nil {
-		action = ActionFromSchema(*respBody.Action)
+		result.Action = ActionFromSchema(*respBody.Action)
 	}
-	return FloatingIPCreateResult{
-		FloatingIP: FloatingIPFromSchema(respBody.FloatingIP),
-		Action:     action,
-	}, resp, nil
+
+	return result, resp, nil
 }
 
 // Delete deletes a Floating IP.

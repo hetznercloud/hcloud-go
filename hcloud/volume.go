@@ -172,8 +172,10 @@ type VolumeCreateResult struct {
 
 // Create creates a new volume with the given options.
 func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (VolumeCreateResult, *Response, error) {
+	result := VolumeCreateResult{}
+
 	if err := opts.Validate(); err != nil {
-		return VolumeCreateResult{}, nil, err
+		return result, nil, err
 	}
 	reqBody := schema.VolumeCreateRequest{
 		Name:      opts.Name,
@@ -193,32 +195,20 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 		}
 	}
 
-	reqBodyData, err := json.Marshal(reqBody)
+	reqPath := "/volumes"
+
+	respBody, resp, err := postRequest[schema.VolumeCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return VolumeCreateResult{}, nil, err
+		return result, resp, err
 	}
 
-	req, err := c.client.NewRequest(ctx, "POST", "/volumes", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return VolumeCreateResult{}, nil, err
-	}
-
-	var respBody schema.VolumeCreateResponse
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return VolumeCreateResult{}, resp, err
-	}
-
-	var action *Action
+	result.Volume = VolumeFromSchema(respBody.Volume)
 	if respBody.Action != nil {
-		action = ActionFromSchema(*respBody.Action)
+		result.Action = ActionFromSchema(*respBody.Action)
 	}
+	result.NextActions = ActionsFromSchema(respBody.NextActions)
 
-	return VolumeCreateResult{
-		Volume:      VolumeFromSchema(respBody.Volume),
-		Action:      action,
-		NextActions: ActionsFromSchema(respBody.NextActions),
-	}, resp, nil
+	return result, resp, nil
 }
 
 // Delete deletes a volume.

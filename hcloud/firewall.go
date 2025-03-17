@@ -191,28 +191,24 @@ type FirewallCreateResult struct {
 
 // Create creates a new Firewall.
 func (c *FirewallClient) Create(ctx context.Context, opts FirewallCreateOpts) (FirewallCreateResult, *Response, error) {
+	result := FirewallCreateResult{}
+
 	if err := opts.Validate(); err != nil {
-		return FirewallCreateResult{}, nil, err
-	}
-	reqBody := firewallCreateOptsToSchema(opts)
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return FirewallCreateResult{}, nil, err
-	}
-	req, err := c.client.NewRequest(ctx, "POST", "/firewalls", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return FirewallCreateResult{}, nil, err
+		return result, nil, err
 	}
 
-	respBody := schema.FirewallCreateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	reqBody := firewallCreateOptsToSchema(opts)
+
+	reqPath := "/firewalls"
+
+	respBody, resp, err := postRequest[schema.FirewallCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return FirewallCreateResult{}, resp, err
+		return result, resp, err
 	}
-	result := FirewallCreateResult{
-		Firewall: FirewallFromSchema(respBody.Firewall),
-		Actions:  ActionsFromSchema(respBody.Actions),
-	}
+
+	result.Firewall = FirewallFromSchema(respBody.Firewall)
+	result.Actions = ActionsFromSchema(respBody.Actions)
+
 	return result, resp, nil
 }
 

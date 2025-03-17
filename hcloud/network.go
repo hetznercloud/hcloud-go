@@ -249,20 +249,14 @@ func (c *NetworkClient) Create(ctx context.Context, opts NetworkCreateOpts) (*Ne
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
-	req, err := c.client.NewRequest(ctx, "POST", "/networks", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
 
-	respBody := schema.NetworkCreateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	reqPath := "/networks"
+
+	respBody, resp, err := postRequest[schema.NetworkCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return NetworkFromSchema(respBody.Network), resp, nil
 }
 
