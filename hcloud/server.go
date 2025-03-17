@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"net"
-	"net/http"
 	"net/url"
 	"strconv"
 	"time"
@@ -1058,32 +1057,34 @@ type ServerGetMetricsOpts struct {
 	Step  int
 }
 
-func (o *ServerGetMetricsOpts) addQueryParams(req *http.Request) error {
-	query := req.URL.Query()
-
+func (o ServerGetMetricsOpts) Validate() error {
 	if len(o.Types) == 0 {
 		return fmt.Errorf("no metric types specified")
 	}
+	if o.Start.IsZero() {
+		return fmt.Errorf("no start time specified")
+	}
+	if o.End.IsZero() {
+		return fmt.Errorf("no end time specified")
+	}
+	return nil
+}
+
+func (o ServerGetMetricsOpts) values() url.Values {
+	query := url.Values{}
+
 	for _, typ := range o.Types {
 		query.Add("type", string(typ))
 	}
 
-	if o.Start.IsZero() {
-		return fmt.Errorf("no start time specified")
-	}
 	query.Add("start", o.Start.Format(time.RFC3339))
-
-	if o.End.IsZero() {
-		return fmt.Errorf("no end time specified")
-	}
 	query.Add("end", o.End.Format(time.RFC3339))
 
 	if o.Step > 0 {
 		query.Add("step", strconv.Itoa(o.Step))
 	}
-	req.URL.RawQuery = query.Encode()
 
-	return nil
+	return query
 }
 
 // ServerMetrics contains the metrics requested for a Server.
@@ -1102,29 +1103,27 @@ type ServerMetricsValue struct {
 
 // GetMetrics obtains metrics for Server.
 func (c *ServerClient) GetMetrics(ctx context.Context, server *Server, opts ServerGetMetricsOpts) (*ServerMetrics, *Response, error) {
-	var respBody schema.ServerGetMetricsResponse
-
 	if server == nil {
 		return nil, nil, fmt.Errorf("illegal argument: server is nil")
 	}
 
-	path := fmt.Sprintf("/servers/%d/metrics", server.ID)
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
+	if err := opts.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	reqPath := fmt.Sprintf("/servers/%d/metrics?%s", server.ID, opts.values().Encode())
+
+	respBody, resp, err := getRequest[schema.ServerGetMetricsResponse](ctx, c.client, reqPath)
 	if err != nil {
-		return nil, nil, fmt.Errorf("new request: %v", err)
+		return nil, resp, err
 	}
-	if err := opts.addQueryParams(req); err != nil {
-		return nil, nil, fmt.Errorf("add query params: %v", err)
-	}
-	resp, err := c.client.Do(req, &respBody)
+
+	metrics, err := serverMetricsFromSchema(&respBody)
 	if err != nil {
-		return nil, resp, fmt.Errorf("get metrics: %v", err)
+		return nil, nil, fmt.Errorf("convert response body: %w", err)
 	}
-	ms, err := serverMetricsFromSchema(&respBody)
-	if err != nil {
-		return nil, nil, fmt.Errorf("convert response body: %v", err)
-	}
-	return ms, resp, nil
+
+	return metrics, resp, nil
 }
 
 func (c *ServerClient) AddToPlacementGroup(ctx context.Context, server *Server, placementGroup *PlacementGroup) (*Action, *Response, error) {

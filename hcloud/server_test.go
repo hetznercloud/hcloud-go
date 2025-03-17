@@ -2242,7 +2242,7 @@ func TestServerGetMetrics(t *testing.T) {
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "add query params: no metric types specified",
+			expectedErr: "no metric types specified",
 		},
 		{
 			name:   "no start time",
@@ -2251,7 +2251,7 @@ func TestServerGetMetrics(t *testing.T) {
 				Types: []ServerMetricType{ServerMetricCPU},
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "add query params: no start time specified",
+			expectedErr: "no start time specified",
 		},
 		{
 			name:   "no end time",
@@ -2260,7 +2260,7 @@ func TestServerGetMetrics(t *testing.T) {
 				Types: []ServerMetricType{ServerMetricCPU},
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 			},
-			expectedErr: "add query params: no end time specified",
+			expectedErr: "no end time specified",
 		},
 		{
 			name:   "call to backend API fails",
@@ -2271,7 +2271,7 @@ func TestServerGetMetrics(t *testing.T) {
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
 			respStatus:  http.StatusInternalServerError,
-			expectedErr: "get metrics: hcloud: server responded with status code 500",
+			expectedErr: "hcloud: server responded with status code 500",
 		},
 		{
 			name: "no server passed",

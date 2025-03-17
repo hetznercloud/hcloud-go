@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
-	"net/http"
 	"net/url"
 	"strconv"
 	"time"
@@ -937,32 +936,34 @@ type LoadBalancerGetMetricsOpts struct {
 	Step  int
 }
 
-func (o *LoadBalancerGetMetricsOpts) addQueryParams(req *http.Request) error {
-	query := req.URL.Query()
-
+func (o LoadBalancerGetMetricsOpts) Validate() error {
 	if len(o.Types) == 0 {
 		return fmt.Errorf("no metric types specified")
 	}
+	if o.Start.IsZero() {
+		return fmt.Errorf("no start time specified")
+	}
+	if o.End.IsZero() {
+		return fmt.Errorf("no end time specified")
+	}
+	return nil
+}
+
+func (o LoadBalancerGetMetricsOpts) values() url.Values {
+	query := url.Values{}
+
 	for _, typ := range o.Types {
 		query.Add("type", string(typ))
 	}
 
-	if o.Start.IsZero() {
-		return fmt.Errorf("no start time specified")
-	}
 	query.Add("start", o.Start.Format(time.RFC3339))
-
-	if o.End.IsZero() {
-		return fmt.Errorf("no end time specified")
-	}
 	query.Add("end", o.End.Format(time.RFC3339))
 
 	if o.Step > 0 {
 		query.Add("step", strconv.Itoa(o.Step))
 	}
-	req.URL.RawQuery = query.Encode()
 
-	return nil
+	return query
 }
 
 // LoadBalancerMetrics contains the metrics requested for a Load Balancer.
@@ -981,31 +982,29 @@ type LoadBalancerMetricsValue struct {
 
 // GetMetrics obtains metrics for a Load Balancer.
 func (c *LoadBalancerClient) GetMetrics(
-	ctx context.Context, lb *LoadBalancer, opts LoadBalancerGetMetricsOpts,
+	ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerGetMetricsOpts,
 ) (*LoadBalancerMetrics, *Response, error) {
-	var respBody schema.LoadBalancerGetMetricsResponse
-
-	if lb == nil {
+	if loadBalancer == nil {
 		return nil, nil, fmt.Errorf("illegal argument: load balancer is nil")
 	}
 
-	path := fmt.Sprintf("/load_balancers/%d/metrics", lb.ID)
-	req, err := c.client.NewRequest(ctx, "GET", path, nil)
+	if err := opts.Validate(); err != nil {
+		return nil, nil, err
+	}
+
+	reqPath := fmt.Sprintf("/load_balancers/%d/metrics?%s", loadBalancer.ID, opts.values().Encode())
+
+	respBody, resp, err := getRequest[schema.LoadBalancerGetMetricsResponse](ctx, c.client, reqPath)
 	if err != nil {
-		return nil, nil, fmt.Errorf("new request: %v", err)
+		return nil, resp, err
 	}
-	if err := opts.addQueryParams(req); err != nil {
-		return nil, nil, fmt.Errorf("add query params: %v", err)
-	}
-	resp, err := c.client.Do(req, &respBody)
+
+	metrics, err := loadBalancerMetricsFromSchema(&respBody)
 	if err != nil {
-		return nil, resp, fmt.Errorf("get metrics: %v", err)
+		return nil, nil, fmt.Errorf("convert response body: %w", err)
 	}
-	ms, err := loadBalancerMetricsFromSchema(&respBody)
-	if err != nil {
-		return nil, nil, fmt.Errorf("convert response body: %v", err)
-	}
-	return ms, resp, nil
+
+	return metrics, resp, nil
 }
 
 // ChangeDNSPtr changes or resets the reverse DNS pointer for a Load Balancer.
