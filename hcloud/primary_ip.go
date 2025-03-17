@@ -49,22 +49,14 @@ func (p *PrimaryIP) changeDNSPtr(ctx context.Context, client *Client, ip net.IP,
 		IP:     ip.String(),
 		DNSPtr: ptr,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/primary_ips/%d/actions/change_dns_ptr", p.ID)
-	req, err := client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/primary_ips/%d/actions/change_dns_ptr", p.ID)
 
-	var respBody PrimaryIPChangeDNSPtrResult
-	resp, err := client.Do(req, &respBody)
+	respBody, resp, err := postRequest[PrimaryIPChangeDNSPtrResult](ctx, client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -292,79 +284,54 @@ func (c *PrimaryIPClient) Update(ctx context.Context, primaryIP *PrimaryIP, reqB
 
 // Assign a Primary IP to a resource.
 func (c *PrimaryIPClient) Assign(ctx context.Context, opts PrimaryIPAssignOpts) (*Action, *Response, error) {
-	reqBodyData, err := json.Marshal(opts)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqBody := opts
 
-	path := fmt.Sprintf("/primary_ips/%d/actions/assign", opts.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/primary_ips/%d/actions/assign", opts.ID)
 
-	var respBody PrimaryIPAssignResult
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[PrimaryIPAssignResult](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // Unassign a Primary IP from a resource.
 func (c *PrimaryIPClient) Unassign(ctx context.Context, id int64) (*Action, *Response, error) {
-	path := fmt.Sprintf("/primary_ips/%d/actions/unassign", id)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader([]byte{}))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/primary_ips/%d/actions/unassign", id)
 
-	var respBody PrimaryIPAssignResult
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[PrimaryIPAssignResult](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // ChangeDNSPtr Change the reverse DNS from a Primary IP.
 func (c *PrimaryIPClient) ChangeDNSPtr(ctx context.Context, opts PrimaryIPChangeDNSPtrOpts) (*Action, *Response, error) {
-	reqBodyData, err := json.Marshal(opts)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqBody := opts
 
-	path := fmt.Sprintf("/primary_ips/%d/actions/change_dns_ptr", opts.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/primary_ips/%d/actions/change_dns_ptr", opts.ID)
 
-	var respBody PrimaryIPChangeDNSPtrResult
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[PrimaryIPChangeDNSPtrResult](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // ChangeProtection Changes the protection configuration of a Primary IP.
 func (c *PrimaryIPClient) ChangeProtection(ctx context.Context, opts PrimaryIPChangeProtectionOpts) (*Action, *Response, error) {
-	reqBodyData, err := json.Marshal(opts)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqBody := opts
 
-	path := fmt.Sprintf("/primary_ips/%d/actions/change_protection", opts.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/primary_ips/%d/actions/change_protection", opts.ID)
 
-	var respBody PrimaryIPChangeProtectionResult
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[PrimaryIPChangeProtectionResult](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }

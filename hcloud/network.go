@@ -270,22 +270,14 @@ func (c *NetworkClient) ChangeIPRange(ctx context.Context, network *Network, opt
 	reqBody := schema.NetworkActionChangeIPRangeRequest{
 		IPRange: opts.IPRange.String(),
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/networks/%d/actions/change_ip_range", network.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/networks/%d/actions/change_ip_range", network.ID)
 
-	respBody := schema.NetworkActionChangeIPRangeResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.NetworkActionChangeIPRangeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -306,22 +298,14 @@ func (c *NetworkClient) AddSubnet(ctx context.Context, network *Network, opts Ne
 	if opts.Subnet.VSwitchID != 0 {
 		reqBody.VSwitchID = opts.Subnet.VSwitchID
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/networks/%d/actions/add_subnet", network.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/networks/%d/actions/add_subnet", network.ID)
 
-	respBody := schema.NetworkActionAddSubnetResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.NetworkActionAddSubnetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -335,22 +319,14 @@ func (c *NetworkClient) DeleteSubnet(ctx context.Context, network *Network, opts
 	reqBody := schema.NetworkActionDeleteSubnetRequest{
 		IPRange: opts.Subnet.IPRange.String(),
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/networks/%d/actions/delete_subnet", network.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/networks/%d/actions/delete_subnet", network.ID)
 
-	respBody := schema.NetworkActionDeleteSubnetResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.NetworkActionDeleteSubnetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -365,22 +341,14 @@ func (c *NetworkClient) AddRoute(ctx context.Context, network *Network, opts Net
 		Destination: opts.Route.Destination.String(),
 		Gateway:     opts.Route.Gateway.String(),
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/networks/%d/actions/add_route", network.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/networks/%d/actions/add_route", network.ID)
 
-	respBody := schema.NetworkActionAddSubnetResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.NetworkActionAddSubnetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -395,22 +363,14 @@ func (c *NetworkClient) DeleteRoute(ctx context.Context, network *Network, opts 
 		Destination: opts.Route.Destination.String(),
 		Gateway:     opts.Route.Gateway.String(),
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/networks/%d/actions/delete_route", network.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/networks/%d/actions/delete_route", network.ID)
 
-	respBody := schema.NetworkActionDeleteSubnetResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.NetworkActionDeleteSubnetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -424,21 +384,13 @@ func (c *NetworkClient) ChangeProtection(ctx context.Context, network *Network, 
 	reqBody := schema.NetworkActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/networks/%d/actions/change_protection", network.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/networks/%d/actions/change_protection", network.ID)
 
-	respBody := schema.NetworkActionChangeProtectionResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.NetworkActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }

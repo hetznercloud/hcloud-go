@@ -158,22 +158,14 @@ func (s *Server) changeDNSPtr(ctx context.Context, client *Client, ip net.IP, pt
 		IP:     ip.String(),
 		DNSPtr: ptr,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/servers/%d/actions/change_dns_ptr", s.ID)
-	req, err := client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/change_dns_ptr", s.ID)
 
-	respBody := schema.ServerActionChangeDNSPtrResponse{}
-	resp, err := client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionChangeDNSPtrResponse](ctx, client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -475,81 +467,61 @@ func (c *ServerClient) Update(ctx context.Context, server *Server, opts ServerUp
 
 // Poweron starts a server.
 func (c *ServerClient) Poweron(ctx context.Context, server *Server) (*Action, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/poweron", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/poweron", server.ID)
 
-	respBody := schema.ServerActionPoweronResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionPoweronResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // Reboot reboots a server.
 func (c *ServerClient) Reboot(ctx context.Context, server *Server) (*Action, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/reboot", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/reboot", server.ID)
 
-	respBody := schema.ServerActionRebootResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionRebootResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // Reset resets a server.
 func (c *ServerClient) Reset(ctx context.Context, server *Server) (*Action, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/reset", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/reset", server.ID)
 
-	respBody := schema.ServerActionResetResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionResetResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // Shutdown shuts down a server.
 func (c *ServerClient) Shutdown(ctx context.Context, server *Server) (*Action, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/shutdown", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/shutdown", server.ID)
 
-	respBody := schema.ServerActionShutdownResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionShutdownResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // Poweroff stops a server.
 func (c *ServerClient) Poweroff(ctx context.Context, server *Server) (*Action, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/poweroff", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/poweroff", server.ID)
 
-	respBody := schema.ServerActionPoweroffResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionPoweroffResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -561,21 +533,19 @@ type ServerResetPasswordResult struct {
 
 // ResetPassword resets a server's password.
 func (c *ServerClient) ResetPassword(ctx context.Context, server *Server) (ServerResetPasswordResult, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/reset_password", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	result := ServerResetPasswordResult{}
+
+	reqPath := fmt.Sprintf("/servers/%d/actions/reset_password", server.ID)
+
+	respBody, resp, err := postRequest[schema.ServerActionResetPasswordResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
-		return ServerResetPasswordResult{}, nil, err
+		return result, resp, err
 	}
 
-	respBody := schema.ServerActionResetPasswordResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return ServerResetPasswordResult{}, resp, err
-	}
-	return ServerResetPasswordResult{
-		Action:       ActionFromSchema(respBody.Action),
-		RootPassword: respBody.RootPassword,
-	}, resp, nil
+	result.Action = ActionFromSchema(respBody.Action)
+	result.RootPassword = respBody.RootPassword
+
+	return result, resp, nil
 }
 
 // ServerCreateImageOpts specifies options for creating an image from a server.
@@ -607,10 +577,12 @@ type ServerCreateImageResult struct {
 
 // CreateImage creates an image from a server.
 func (c *ServerClient) CreateImage(ctx context.Context, server *Server, opts *ServerCreateImageOpts) (ServerCreateImageResult, *Response, error) {
-	var reqBody schema.ServerActionCreateImageRequest
+	result := ServerCreateImageResult{}
+
+	reqBody := schema.ServerActionCreateImageRequest{}
 	if opts != nil {
 		if err := opts.Validate(); err != nil {
-			return ServerCreateImageResult{}, nil, fmt.Errorf("invalid options: %s", err)
+			return result, nil, fmt.Errorf("invalid options: %s", err)
 		}
 		if opts.Description != nil {
 			reqBody.Description = opts.Description
@@ -622,26 +594,18 @@ func (c *ServerClient) CreateImage(ctx context.Context, server *Server, opts *Se
 			reqBody.Labels = &opts.Labels
 		}
 	}
-	reqBodyData, err := json.Marshal(reqBody)
+
+	reqPath := fmt.Sprintf("/servers/%d/actions/create_image", server.ID)
+
+	respBody, resp, err := postRequest[schema.ServerActionCreateImageResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return ServerCreateImageResult{}, nil, err
+		return result, resp, err
 	}
 
-	path := fmt.Sprintf("/servers/%d/actions/create_image", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return ServerCreateImageResult{}, nil, err
-	}
+	result.Image = ImageFromSchema(respBody.Image)
+	result.Action = ActionFromSchema(respBody.Action)
 
-	respBody := schema.ServerActionCreateImageResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return ServerCreateImageResult{}, resp, err
-	}
-	return ServerCreateImageResult{
-		Action: ActionFromSchema(respBody.Action),
-		Image:  ImageFromSchema(respBody.Image),
-	}, resp, nil
+	return result, resp, nil
 }
 
 // ServerEnableRescueOpts specifies options for enabling rescue mode for a server.
@@ -658,48 +622,37 @@ type ServerEnableRescueResult struct {
 
 // EnableRescue enables rescue mode for a server.
 func (c *ServerClient) EnableRescue(ctx context.Context, server *Server, opts ServerEnableRescueOpts) (ServerEnableRescueResult, *Response, error) {
+	result := ServerEnableRescueResult{}
+
 	reqBody := schema.ServerActionEnableRescueRequest{
 		Type: Ptr(string(opts.Type)),
 	}
 	for _, sshKey := range opts.SSHKeys {
 		reqBody.SSHKeys = append(reqBody.SSHKeys, sshKey.ID)
 	}
-	reqBodyData, err := json.Marshal(reqBody)
+
+	reqPath := fmt.Sprintf("/servers/%d/actions/enable_rescue", server.ID)
+
+	respBody, resp, err := postRequest[schema.ServerActionEnableRescueResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return ServerEnableRescueResult{}, nil, err
+		return result, resp, err
 	}
 
-	path := fmt.Sprintf("/servers/%d/actions/enable_rescue", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return ServerEnableRescueResult{}, nil, err
-	}
+	result.Action = ActionFromSchema(respBody.Action)
+	result.RootPassword = respBody.RootPassword
 
-	respBody := schema.ServerActionEnableRescueResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return ServerEnableRescueResult{}, resp, err
-	}
-	result := ServerEnableRescueResult{
-		Action:       ActionFromSchema(respBody.Action),
-		RootPassword: respBody.RootPassword,
-	}
 	return result, resp, nil
 }
 
 // DisableRescue disables rescue mode for a server.
 func (c *ServerClient) DisableRescue(ctx context.Context, server *Server) (*Action, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/disable_rescue", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/disable_rescue", server.ID)
 
-	respBody := schema.ServerActionDisableRescueResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionDisableRescueResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -725,30 +678,21 @@ func (c *ServerClient) Rebuild(ctx context.Context, server *Server, opts ServerR
 
 // RebuildWithResult rebuilds a server.
 func (c *ServerClient) RebuildWithResult(ctx context.Context, server *Server, opts ServerRebuildOpts) (ServerRebuildResult, *Response, error) {
+	result := ServerRebuildResult{}
+
 	reqBody := schema.ServerActionRebuildRequest{}
 	if opts.Image.ID != 0 || opts.Image.Name != "" {
 		reqBody.Image = schema.IDOrName{ID: opts.Image.ID, Name: opts.Image.Name}
 	}
-	reqBodyData, err := json.Marshal(reqBody)
+
+	reqPath := fmt.Sprintf("/servers/%d/actions/rebuild", server.ID)
+
+	respBody, resp, err := postRequest[schema.ServerActionRebuildResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return ServerRebuildResult{}, nil, err
+		return result, resp, err
 	}
 
-	path := fmt.Sprintf("/servers/%d/actions/rebuild", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return ServerRebuildResult{}, nil, err
-	}
-
-	respBody := schema.ServerActionRebuildResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return ServerRebuildResult{}, resp, err
-	}
-
-	result := ServerRebuildResult{
-		Action: ActionFromSchema(respBody.Action),
-	}
+	result.Action = ActionFromSchema(respBody.Action)
 	if respBody.RootPassword != nil {
 		result.RootPassword = *respBody.RootPassword
 	}
@@ -762,38 +706,26 @@ func (c *ServerClient) AttachISO(ctx context.Context, server *Server, iso *ISO) 
 	if iso.ID != 0 || iso.Name != "" {
 		reqBody.ISO = schema.IDOrName{ID: iso.ID, Name: iso.Name}
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/servers/%d/actions/attach_iso", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/attach_iso", server.ID)
 
-	respBody := schema.ServerActionAttachISOResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionAttachISOResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // DetachISO detaches the currently attached ISO from a server.
 func (c *ServerClient) DetachISO(ctx context.Context, server *Server) (*Action, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/detach_iso", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/detach_iso", server.ID)
 
-	respBody := schema.ServerActionDetachISOResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionDetachISOResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -802,33 +734,25 @@ func (c *ServerClient) DetachISO(ctx context.Context, server *Server) (*Action, 
 func (c *ServerClient) EnableBackup(ctx context.Context, server *Server, window string) (*Action, *Response, error) {
 	_ = window
 
-	path := fmt.Sprintf("/servers/%d/actions/enable_backup", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/enable_backup", server.ID)
 
-	respBody := schema.ServerActionEnableBackupResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionEnableBackupResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // DisableBackup disables backup for a server.
 func (c *ServerClient) DisableBackup(ctx context.Context, server *Server) (*Action, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/disable_backup", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/disable_backup", server.ID)
 
-	respBody := schema.ServerActionDisableBackupResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionDisableBackupResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -846,22 +770,14 @@ func (c *ServerClient) ChangeType(ctx context.Context, server *Server, opts Serv
 	if opts.ServerType.ID != 0 || opts.ServerType.Name != "" {
 		reqBody.ServerType = schema.IDOrName{ID: opts.ServerType.ID, Name: opts.ServerType.Name}
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/servers/%d/actions/change_type", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/change_type", server.ID)
 
-	respBody := schema.ServerActionChangeTypeResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionChangeTypeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -887,23 +803,15 @@ func (c *ServerClient) ChangeProtection(ctx context.Context, server *Server, opt
 		Rebuild: opts.Rebuild,
 		Delete:  opts.Delete,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/servers/%d/actions/change_protection", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/change_protection", server.ID)
 
-	respBody := schema.ServerActionChangeProtectionResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // ServerRequestConsoleResult is the result of requesting a WebSocket VNC console.
@@ -915,22 +823,20 @@ type ServerRequestConsoleResult struct {
 
 // RequestConsole requests a WebSocket VNC console.
 func (c *ServerClient) RequestConsole(ctx context.Context, server *Server) (ServerRequestConsoleResult, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/request_console", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
+	result := ServerRequestConsoleResult{}
+
+	reqPath := fmt.Sprintf("/servers/%d/actions/request_console", server.ID)
+
+	respBody, resp, err := postRequest[schema.ServerActionRequestConsoleResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
-		return ServerRequestConsoleResult{}, nil, err
+		return result, resp, err
 	}
 
-	respBody := schema.ServerActionRequestConsoleResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return ServerRequestConsoleResult{}, resp, err
-	}
-	return ServerRequestConsoleResult{
-		Action:   ActionFromSchema(respBody.Action),
-		WSSURL:   respBody.WSSURL,
-		Password: respBody.Password,
-	}, resp, nil
+	result.Action = ActionFromSchema(respBody.Action)
+	result.WSSURL = respBody.WSSURL
+	result.Password = respBody.Password
+
+	return result, resp, nil
 }
 
 // ServerAttachToNetworkOpts specifies options for attaching a server to a network.
@@ -951,22 +857,14 @@ func (c *ServerClient) AttachToNetwork(ctx context.Context, server *Server, opts
 	for _, aliasIP := range opts.AliasIPs {
 		reqBody.AliasIPs = append(reqBody.AliasIPs, Ptr(aliasIP.String()))
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/servers/%d/actions/attach_to_network", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/attach_to_network", server.ID)
 
-	respBody := schema.ServerActionAttachToNetworkResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionAttachToNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
@@ -980,22 +878,14 @@ func (c *ServerClient) DetachFromNetwork(ctx context.Context, server *Server, op
 	reqBody := schema.ServerActionDetachFromNetworkRequest{
 		Network: opts.Network.ID,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/servers/%d/actions/detach_from_network", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/detach_from_network", server.ID)
 
-	respBody := schema.ServerActionDetachFromNetworkResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionDetachFromNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
@@ -1014,21 +904,14 @@ func (c *ServerClient) ChangeAliasIPs(ctx context.Context, server *Server, opts 
 	for _, aliasIP := range opts.AliasIPs {
 		reqBody.AliasIPs = append(reqBody.AliasIPs, aliasIP.String())
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
-	path := fmt.Sprintf("/servers/%d/actions/change_alias_ips", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
 
-	respBody := schema.ServerActionDetachFromNetworkResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	reqPath := fmt.Sprintf("/servers/%d/actions/change_alias_ips", server.ID)
+
+	respBody, resp, err := postRequest[schema.ServerActionDetachFromNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
@@ -1124,35 +1007,24 @@ func (c *ServerClient) AddToPlacementGroup(ctx context.Context, server *Server, 
 	reqBody := schema.ServerActionAddToPlacementGroupRequest{
 		PlacementGroup: placementGroup.ID,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
-	path := fmt.Sprintf("/servers/%d/actions/add_to_placement_group", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
 
-	respBody := schema.ServerActionAddToPlacementGroupResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	reqPath := fmt.Sprintf("/servers/%d/actions/add_to_placement_group", server.ID)
+
+	respBody, resp, err := postRequest[schema.ServerActionAddToPlacementGroupResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 func (c *ServerClient) RemoveFromPlacementGroup(ctx context.Context, server *Server) (*Action, *Response, error) {
-	path := fmt.Sprintf("/servers/%d/actions/remove_from_placement_group", server.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/servers/%d/actions/remove_from_placement_group", server.ID)
 
-	respBody := schema.ServerActionRemoveFromPlacementGroupResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.ServerActionRemoveFromPlacementGroupResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }

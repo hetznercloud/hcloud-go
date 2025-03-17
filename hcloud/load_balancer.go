@@ -203,22 +203,14 @@ func (lb *LoadBalancer) changeDNSPtr(ctx context.Context, client *Client, ip net
 		IP:     ip.String(),
 		DNSPtr: ptr,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/change_dns_ptr", lb.ID)
-	req, err := client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/change_dns_ptr", lb.ID)
 
-	respBody := schema.LoadBalancerActionChangeDNSPtrResponse{}
-	resp, err := client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionChangeDNSPtrResponse](ctx, client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -457,42 +449,24 @@ func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalan
 }
 
 func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionAddTargetRequest) (*Action, *Response, error) {
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/add_target", loadBalancer.ID)
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/add_target", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var respBody schema.LoadBalancerActionAddTargetResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionAddTargetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 func (c *LoadBalancerClient) removeTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionRemoveTargetRequest) (*Action, *Response, error) {
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/remove_target", loadBalancer.ID)
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/remove_target", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var respBody schema.LoadBalancerActionRemoveTargetResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionRemoveTargetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -626,22 +600,14 @@ type LoadBalancerAddServiceOptsHealthCheckHTTP struct {
 // AddService adds a service to a Load Balancer.
 func (c *LoadBalancerClient) AddService(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddServiceOpts) (*Action, *Response, error) {
 	reqBody := loadBalancerAddServiceOptsToSchema(opts)
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/add_service", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/add_service", loadBalancer.ID)
 
-	var respBody schema.LoadBalancerActionAddServiceResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionAddServiceResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -688,22 +654,14 @@ type LoadBalancerUpdateServiceOptsHealthCheckHTTP struct {
 func (c *LoadBalancerClient) UpdateService(ctx context.Context, loadBalancer *LoadBalancer, listenPort int, opts LoadBalancerUpdateServiceOpts) (*Action, *Response, error) {
 	reqBody := loadBalancerUpdateServiceOptsToSchema(opts)
 	reqBody.ListenPort = listenPort
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/update_service", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/update_service", loadBalancer.ID)
 
-	var respBody schema.LoadBalancerActionUpdateServiceResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionUpdateServiceResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -712,22 +670,14 @@ func (c *LoadBalancerClient) DeleteService(ctx context.Context, loadBalancer *Lo
 	reqBody := schema.LoadBalancerDeleteServiceRequest{
 		ListenPort: listenPort,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/delete_service", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/delete_service", loadBalancer.ID)
 
-	var respBody schema.LoadBalancerDeleteServiceResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerDeleteServiceResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -741,23 +691,15 @@ func (c *LoadBalancerClient) ChangeProtection(ctx context.Context, loadBalancer 
 	reqBody := schema.LoadBalancerActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/change_protection", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/change_protection", loadBalancer.ID)
 
-	respBody := schema.LoadBalancerActionChangeProtectionResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // LoadBalancerChangeAlgorithmOpts specifies options for changing the algorithm of a Load Balancer.
@@ -770,23 +712,15 @@ func (c *LoadBalancerClient) ChangeAlgorithm(ctx context.Context, loadBalancer *
 	reqBody := schema.LoadBalancerActionChangeAlgorithmRequest{
 		Type: string(opts.Type),
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/change_algorithm", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/change_algorithm", loadBalancer.ID)
 
-	respBody := schema.LoadBalancerActionChangeAlgorithmResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionChangeAlgorithmResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // LoadBalancerAttachToNetworkOpts specifies options for attaching a Load Balancer to a network.
@@ -803,23 +737,15 @@ func (c *LoadBalancerClient) AttachToNetwork(ctx context.Context, loadBalancer *
 	if opts.IP != nil {
 		reqBody.IP = Ptr(opts.IP.String())
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/attach_to_network", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/attach_to_network", loadBalancer.ID)
 
-	respBody := schema.LoadBalancerActionAttachToNetworkResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionAttachToNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // LoadBalancerDetachFromNetworkOpts specifies options for detaching a Load Balancer from a network.
@@ -832,53 +758,39 @@ func (c *LoadBalancerClient) DetachFromNetwork(ctx context.Context, loadBalancer
 	reqBody := schema.LoadBalancerActionDetachFromNetworkRequest{
 		Network: opts.Network.ID,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/detach_from_network", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/detach_from_network", loadBalancer.ID)
 
-	respBody := schema.LoadBalancerActionDetachFromNetworkResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionDetachFromNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // EnablePublicInterface enables the Load Balancer's public network interface.
 func (c *LoadBalancerClient) EnablePublicInterface(ctx context.Context, loadBalancer *LoadBalancer) (*Action, *Response, error) {
-	path := fmt.Sprintf("/load_balancers/%d/actions/enable_public_interface", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-	respBody := schema.LoadBalancerActionEnablePublicInterfaceResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/enable_public_interface", loadBalancer.ID)
+
+	respBody, resp, err := postRequest[schema.LoadBalancerActionEnablePublicInterfaceResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // DisablePublicInterface disables the Load Balancer's public network interface.
 func (c *LoadBalancerClient) DisablePublicInterface(ctx context.Context, loadBalancer *LoadBalancer) (*Action, *Response, error) {
-	path := fmt.Sprintf("/load_balancers/%d/actions/disable_public_interface", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, nil)
-	if err != nil {
-		return nil, nil, err
-	}
-	respBody := schema.LoadBalancerActionDisablePublicInterfaceResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/disable_public_interface", loadBalancer.ID)
+
+	respBody, resp, err := postRequest[schema.LoadBalancerActionDisablePublicInterfaceResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // LoadBalancerChangeTypeOpts specifies options for changing a Load Balancer's type.
@@ -892,22 +804,14 @@ func (c *LoadBalancerClient) ChangeType(ctx context.Context, loadBalancer *LoadB
 	if opts.LoadBalancerType.ID != 0 || opts.LoadBalancerType.Name != "" {
 		reqBody.LoadBalancerType = schema.IDOrName{ID: opts.LoadBalancerType.ID, Name: opts.LoadBalancerType.Name}
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/load_balancers/%d/actions/change_type", loadBalancer.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/load_balancers/%d/actions/change_type", loadBalancer.ID)
 
-	respBody := schema.LoadBalancerActionChangeTypeResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.LoadBalancerActionChangeTypeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 

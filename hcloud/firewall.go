@@ -254,22 +254,13 @@ type FirewallSetRulesOpts struct {
 func (c *FirewallClient) SetRules(ctx context.Context, firewall *Firewall, opts FirewallSetRulesOpts) ([]*Action, *Response, error) {
 	reqBody := firewallSetRulesOptsToSchema(opts)
 
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/firewalls/%d/actions/set_rules", firewall.ID)
 
-	path := fmt.Sprintf("/firewalls/%d/actions/set_rules", firewall.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var respBody schema.FirewallActionSetRulesResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.FirewallActionSetRulesResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionsFromSchema(respBody.Actions), resp, nil
 }
 
@@ -280,22 +271,14 @@ func (c *FirewallClient) ApplyResources(ctx context.Context, firewall *Firewall,
 	}
 
 	reqBody := schema.FirewallActionApplyToResourcesRequest{ApplyTo: applyTo}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/firewalls/%d/actions/apply_to_resources", firewall.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/firewalls/%d/actions/apply_to_resources", firewall.ID)
 
-	var respBody schema.FirewallActionApplyToResourcesResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.FirewallActionApplyToResourcesResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionsFromSchema(respBody.Actions), resp, nil
 }
 
@@ -306,21 +289,13 @@ func (c *FirewallClient) RemoveResources(ctx context.Context, firewall *Firewall
 	}
 
 	reqBody := schema.FirewallActionRemoveFromResourcesRequest{RemoveFrom: removeFrom}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/firewalls/%d/actions/remove_from_resources", firewall.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/firewalls/%d/actions/remove_from_resources", firewall.ID)
 
-	var respBody schema.FirewallActionRemoveFromResourcesResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.FirewallActionRemoveFromResourcesResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionsFromSchema(respBody.Actions), resp, nil
 }
