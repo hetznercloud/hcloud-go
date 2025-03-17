@@ -1,9 +1,7 @@
 package hcloud
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -142,21 +140,14 @@ func (c *SSHKeyClient) Create(ctx context.Context, opts SSHKeyCreateOpts) (*SSHK
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	req, err := c.client.NewRequest(ctx, "POST", "/ssh_keys", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := "/ssh_keys"
 
-	var respBody schema.SSHKeyCreateResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.SSHKeyCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return SSHKeyFromSchema(respBody.SSHKey), resp, nil
 }
 

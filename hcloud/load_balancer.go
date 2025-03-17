@@ -433,25 +433,21 @@ type LoadBalancerCreateResult struct {
 
 // Create creates a new Load Balancer.
 func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreateOpts) (LoadBalancerCreateResult, *Response, error) {
+	result := LoadBalancerCreateResult{}
+
 	reqBody := loadBalancerCreateOptsToSchema(opts)
-	reqBodyData, err := json.Marshal(reqBody)
+
+	reqPath := "/load_balancers"
+
+	respBody, resp, err := postRequest[schema.LoadBalancerCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return LoadBalancerCreateResult{}, nil, err
-	}
-	req, err := c.client.NewRequest(ctx, "POST", "/load_balancers", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return LoadBalancerCreateResult{}, nil, err
+		return result, resp, err
 	}
 
-	respBody := schema.LoadBalancerCreateResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return LoadBalancerCreateResult{}, resp, err
-	}
-	return LoadBalancerCreateResult{
-		LoadBalancer: LoadBalancerFromSchema(respBody.LoadBalancer),
-		Action:       ActionFromSchema(respBody.Action),
-	}, resp, nil
+	result.LoadBalancer = LoadBalancerFromSchema(respBody.LoadBalancer)
+	result.Action = ActionFromSchema(respBody.Action)
+
+	return result, resp, nil
 }
 
 // Delete deletes a Load Balancer.

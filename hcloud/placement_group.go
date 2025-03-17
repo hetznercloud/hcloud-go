@@ -1,9 +1,7 @@
 package hcloud
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -142,27 +140,22 @@ type PlacementGroupCreateResult struct {
 
 // Create creates a new PlacementGroup.
 func (c *PlacementGroupClient) Create(ctx context.Context, opts PlacementGroupCreateOpts) (PlacementGroupCreateResult, *Response, error) {
+	result := PlacementGroupCreateResult{}
+
 	if err := opts.Validate(); err != nil {
-		return PlacementGroupCreateResult{}, nil, err
-	}
-	reqBody := placementGroupCreateOptsToSchema(opts)
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return PlacementGroupCreateResult{}, nil, err
-	}
-	req, err := c.client.NewRequest(ctx, "POST", "/placement_groups", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return PlacementGroupCreateResult{}, nil, err
+		return result, nil, err
 	}
 
-	respBody := schema.PlacementGroupCreateResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	reqBody := placementGroupCreateOptsToSchema(opts)
+
+	reqPath := "/placement_groups"
+
+	respBody, resp, err := postRequest[schema.PlacementGroupCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return PlacementGroupCreateResult{}, resp, err
+		return result, resp, err
 	}
-	result := PlacementGroupCreateResult{
-		PlacementGroup: PlacementGroupFromSchema(respBody.PlacementGroup),
-	}
+
+	result.PlacementGroup = PlacementGroupFromSchema(respBody.PlacementGroup)
 	if respBody.Action != nil {
 		result.Action = ActionFromSchema(*respBody.Action)
 	}

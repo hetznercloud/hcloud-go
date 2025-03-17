@@ -338,8 +338,10 @@ type ServerCreateResult struct {
 
 // Create creates a new server.
 func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (ServerCreateResult, *Response, error) {
+	result := ServerCreateResult{}
+
 	if err := opts.Validate(); err != nil {
-		return ServerCreateResult{}, nil, err
+		return result, nil, err
 	}
 
 	var reqBody schema.ServerCreateRequest
@@ -400,29 +402,21 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 	if opts.PlacementGroup != nil {
 		reqBody.PlacementGroup = opts.PlacementGroup.ID
 	}
-	reqBodyData, err := json.Marshal(reqBody)
+
+	reqPath := "/servers"
+
+	respBody, resp, err := postRequest[schema.ServerCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return ServerCreateResult{}, nil, err
+		return result, resp, err
 	}
 
-	req, err := c.client.NewRequest(ctx, "POST", "/servers", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return ServerCreateResult{}, nil, err
-	}
-
-	var respBody schema.ServerCreateResponse
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return ServerCreateResult{}, resp, err
-	}
-	result := ServerCreateResult{
-		Server:      ServerFromSchema(respBody.Server),
-		Action:      ActionFromSchema(respBody.Action),
-		NextActions: ActionsFromSchema(respBody.NextActions),
-	}
+	result.Server = ServerFromSchema(respBody.Server)
+	result.Action = ActionFromSchema(respBody.Action)
+	result.NextActions = ActionsFromSchema(respBody.NextActions)
 	if respBody.RootPassword != nil {
 		result.RootPassword = *respBody.RootPassword
 	}
+
 	return result, resp, nil
 }
 

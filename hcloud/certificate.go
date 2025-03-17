@@ -1,9 +1,7 @@
 package hcloud
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -229,16 +227,15 @@ func (c *CertificateClient) Create(ctx context.Context, opts CertificateCreateOp
 func (c *CertificateClient) CreateCertificate(
 	ctx context.Context, opts CertificateCreateOpts,
 ) (CertificateCreateResult, *Response, error) {
-	var (
-		action  *Action
-		reqBody schema.CertificateCreateRequest
-	)
+	result := CertificateCreateResult{}
 
 	if err := opts.Validate(); err != nil {
-		return CertificateCreateResult{}, nil, err
+		return result, nil, err
 	}
 
-	reqBody.Name = opts.Name
+	reqBody := schema.CertificateCreateRequest{
+		Name: opts.Name,
+	}
 
 	switch opts.Type {
 	case "", CertificateTypeUploaded:
@@ -255,26 +252,20 @@ func (c *CertificateClient) CreateCertificate(
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	reqBodyData, err := json.Marshal(reqBody)
+
+	reqPath := "/certificates"
+
+	respBody, resp, err := postRequest[schema.CertificateCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
-		return CertificateCreateResult{}, nil, err
-	}
-	req, err := c.client.NewRequest(ctx, "POST", "/certificates", bytes.NewReader(reqBodyData))
-	if err != nil {
-		return CertificateCreateResult{}, nil, err
+		return result, resp, err
 	}
 
-	respBody := schema.CertificateCreateResponse{}
-	resp, err := c.client.Do(req, &respBody)
-	if err != nil {
-		return CertificateCreateResult{}, resp, err
-	}
-	cert := CertificateFromSchema(respBody.Certificate)
+	result.Certificate = CertificateFromSchema(respBody.Certificate)
 	if respBody.Action != nil {
-		action = ActionFromSchema(*respBody.Action)
+		result.Action = ActionFromSchema(*respBody.Action)
 	}
 
-	return CertificateCreateResult{Certificate: cert, Action: action}, resp, nil
+	return result, resp, nil
 }
 
 // CertificateUpdateOpts specifies options for updating a Certificate.
