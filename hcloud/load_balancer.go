@@ -1,9 +1,7 @@
 package hcloud
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"net"
 	"net/url"
