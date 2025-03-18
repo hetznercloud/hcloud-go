@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: releaser-pleaser
-        uses: apricote/releaser-pleaser@v0.4.0
+        uses: apricote/releaser-pleaser@v0.5.0
         with:
           extra-files: |
             hcloud/hcloud.go
