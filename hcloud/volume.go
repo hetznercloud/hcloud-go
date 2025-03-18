@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -54,7 +55,10 @@ const (
 
 // GetByID retrieves a volume by its ID. If the volume does not exist, nil is returned.
 func (c *VolumeClient) GetByID(ctx context.Context, id int64) (*Volume, *Response, error) {
-	reqPath := fmt.Sprintf("/volumes/%d", id)
+	const opPath = "/volumes/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.VolumeGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -107,7 +111,10 @@ func (l VolumeListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *VolumeClient) List(ctx context.Context, opts VolumeListOpts) ([]*Volume, *Response, error) {
-	reqPath := fmt.Sprintf("/volumes?%s", opts.values().Encode())
+	const opPath = "/volumes?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.VolumeListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -170,7 +177,12 @@ type VolumeCreateResult struct {
 
 // Create creates a new volume with the given options.
 func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (VolumeCreateResult, *Response, error) {
+	const opPath = "/volumes"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := VolumeCreateResult{}
+
+	reqPath := opPath
 
 	if err := opts.Validate(); err != nil {
 		return result, nil, err
@@ -193,8 +205,6 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 		}
 	}
 
-	reqPath := "/volumes"
-
 	respBody, resp, err := postRequest[schema.VolumeCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return result, resp, err
@@ -211,7 +221,10 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 
 // Delete deletes a volume.
 func (c *VolumeClient) Delete(ctx context.Context, volume *Volume) (*Response, error) {
-	reqPath := fmt.Sprintf("/volumes/%d", volume.ID)
+	const opPath = "/volumes/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, volume.ID)
 
 	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
@@ -224,14 +237,17 @@ type VolumeUpdateOpts struct {
 
 // Update updates a volume.
 func (c *VolumeClient) Update(ctx context.Context, volume *Volume, opts VolumeUpdateOpts) (*Volume, *Response, error) {
+	const opPath = "/volumes/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, volume.ID)
+
 	reqBody := schema.VolumeUpdateRequest{
 		Name: opts.Name,
 	}
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-
-	reqPath := fmt.Sprintf("/volumes/%d", volume.ID)
 
 	respBody, resp, err := putRequest[schema.VolumeUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -249,12 +265,15 @@ type VolumeAttachOpts struct {
 
 // AttachWithOpts attaches a volume to a server.
 func (c *VolumeClient) AttachWithOpts(ctx context.Context, volume *Volume, opts VolumeAttachOpts) (*Action, *Response, error) {
+	const opPath = "/volumes/%d/actions/attach"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, volume.ID)
+
 	reqBody := schema.VolumeActionAttachVolumeRequest{
 		Server:    opts.Server.ID,
 		Automount: opts.Automount,
 	}
-
-	reqPath := fmt.Sprintf("/volumes/%d/actions/attach", volume.ID)
 
 	respBody, resp, err := postRequest[schema.VolumeActionAttachVolumeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -271,9 +290,12 @@ func (c *VolumeClient) Attach(ctx context.Context, volume *Volume, server *Serve
 
 // Detach detaches a volume from a server.
 func (c *VolumeClient) Detach(ctx context.Context, volume *Volume) (*Action, *Response, error) {
-	var reqBody schema.VolumeActionDetachVolumeRequest
+	const opPath = "/volumes/%d/actions/detach"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf("/volumes/%d/actions/detach", volume.ID)
+	reqPath := fmt.Sprintf(opPath, volume.ID)
+
+	var reqBody schema.VolumeActionDetachVolumeRequest
 
 	respBody, resp, err := postRequest[schema.VolumeActionDetachVolumeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -290,11 +312,14 @@ type VolumeChangeProtectionOpts struct {
 
 // ChangeProtection changes the resource protection level of a volume.
 func (c *VolumeClient) ChangeProtection(ctx context.Context, volume *Volume, opts VolumeChangeProtectionOpts) (*Action, *Response, error) {
+	const opPath = "/volumes/%d/actions/change_protection"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, volume.ID)
+
 	reqBody := schema.VolumeActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
-
-	reqPath := fmt.Sprintf("/volumes/%d/actions/change_protection", volume.ID)
 
 	respBody, resp, err := postRequest[schema.VolumeActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -306,11 +331,14 @@ func (c *VolumeClient) ChangeProtection(ctx context.Context, volume *Volume, opt
 
 // Resize changes the size of a volume.
 func (c *VolumeClient) Resize(ctx context.Context, volume *Volume, size int) (*Action, *Response, error) {
+	const opPath = "/volumes/%d/actions/resize"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, volume.ID)
+
 	reqBody := schema.VolumeActionResizeVolumeRequest{
 		Size: size,
 	}
-
-	reqPath := fmt.Sprintf("/volumes/%d/actions/resize", volume.ID)
 
 	respBody, resp, err := postRequest[schema.VolumeActionResizeVolumeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {

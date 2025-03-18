@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -43,12 +44,15 @@ type PrimaryIPDNSPTR struct {
 // changeDNSPtr changes or resets the reverse DNS pointer for a IP address.
 // Pass a nil ptr to reset the reverse DNS pointer to its default value.
 func (p *PrimaryIP) changeDNSPtr(ctx context.Context, client *Client, ip net.IP, ptr *string) (*Action, *Response, error) {
+	const opPath = "/primary_ips/%d/actions/change_dns_ptr"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, p.ID)
+
 	reqBody := schema.PrimaryIPActionChangeDNSPtrRequest{
 		IP:     ip.String(),
 		DNSPtr: ptr,
 	}
-
-	reqPath := fmt.Sprintf("/primary_ips/%d/actions/change_dns_ptr", p.ID)
 
 	respBody, resp, err := postRequest[PrimaryIPChangeDNSPtrResult](ctx, client, reqPath, reqBody)
 	if err != nil {
@@ -154,7 +158,10 @@ type PrimaryIPClient struct {
 
 // GetByID retrieves a Primary IP by its ID. If the Primary IP does not exist, nil is returned.
 func (c *PrimaryIPClient) GetByID(ctx context.Context, id int64) (*PrimaryIP, *Response, error) {
-	reqPath := fmt.Sprintf("/primary_ips/%d", id)
+	const opPath = "/primary_ips/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.PrimaryIPGetResult](ctx, c.client, reqPath)
 	if err != nil {
@@ -219,7 +226,10 @@ func (l PrimaryIPListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *PrimaryIPClient) List(ctx context.Context, opts PrimaryIPListOpts) ([]*PrimaryIP, *Response, error) {
-	reqPath := fmt.Sprintf("/primary_ips?%s", opts.values().Encode())
+	const opPath = "/primary_ips?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.PrimaryIPListResult](ctx, c.client, reqPath)
 	if err != nil {
@@ -244,9 +254,12 @@ func (c *PrimaryIPClient) AllWithOpts(ctx context.Context, opts PrimaryIPListOpt
 
 // Create creates a Primary IP.
 func (c *PrimaryIPClient) Create(ctx context.Context, reqBody PrimaryIPCreateOpts) (*PrimaryIPCreateResult, *Response, error) {
+	const opPath = "/primary_ips"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := &PrimaryIPCreateResult{}
 
-	reqPath := "/primary_ips"
+	reqPath := opPath
 
 	respBody, resp, err := postRequest[schema.PrimaryIPCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -263,14 +276,20 @@ func (c *PrimaryIPClient) Create(ctx context.Context, reqBody PrimaryIPCreateOpt
 
 // Delete deletes a Primary IP.
 func (c *PrimaryIPClient) Delete(ctx context.Context, primaryIP *PrimaryIP) (*Response, error) {
-	reqPath := fmt.Sprintf("/primary_ips/%d", primaryIP.ID)
+	const opPath = "/primary_ips/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, primaryIP.ID)
 
 	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // Update updates a Primary IP.
 func (c *PrimaryIPClient) Update(ctx context.Context, primaryIP *PrimaryIP, reqBody PrimaryIPUpdateOpts) (*PrimaryIP, *Response, error) {
-	reqPath := fmt.Sprintf("/primary_ips/%d", primaryIP.ID)
+	const opPath = "/primary_ips/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, primaryIP.ID)
 
 	respBody, resp, err := putRequest[schema.PrimaryIPUpdateResult](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -282,9 +301,12 @@ func (c *PrimaryIPClient) Update(ctx context.Context, primaryIP *PrimaryIP, reqB
 
 // Assign a Primary IP to a resource.
 func (c *PrimaryIPClient) Assign(ctx context.Context, opts PrimaryIPAssignOpts) (*Action, *Response, error) {
-	reqBody := opts
+	const opPath = "/primary_ips/%d/actions/assign"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf("/primary_ips/%d/actions/assign", opts.ID)
+	reqPath := fmt.Sprintf(opPath, opts.ID)
+
+	reqBody := opts
 
 	respBody, resp, err := postRequest[PrimaryIPAssignResult](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -296,7 +318,10 @@ func (c *PrimaryIPClient) Assign(ctx context.Context, opts PrimaryIPAssignOpts) 
 
 // Unassign a Primary IP from a resource.
 func (c *PrimaryIPClient) Unassign(ctx context.Context, id int64) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/primary_ips/%d/actions/unassign", id)
+	const opPath = "/primary_ips/%d/actions/unassign"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := postRequest[PrimaryIPAssignResult](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -308,9 +333,12 @@ func (c *PrimaryIPClient) Unassign(ctx context.Context, id int64) (*Action, *Res
 
 // ChangeDNSPtr Change the reverse DNS from a Primary IP.
 func (c *PrimaryIPClient) ChangeDNSPtr(ctx context.Context, opts PrimaryIPChangeDNSPtrOpts) (*Action, *Response, error) {
-	reqBody := opts
+	const opPath = "/primary_ips/%d/actions/change_dns_ptr"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf("/primary_ips/%d/actions/change_dns_ptr", opts.ID)
+	reqPath := fmt.Sprintf(opPath, opts.ID)
+
+	reqBody := opts
 
 	respBody, resp, err := postRequest[PrimaryIPChangeDNSPtrResult](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -322,9 +350,12 @@ func (c *PrimaryIPClient) ChangeDNSPtr(ctx context.Context, opts PrimaryIPChange
 
 // ChangeProtection Changes the protection configuration of a Primary IP.
 func (c *PrimaryIPClient) ChangeProtection(ctx context.Context, opts PrimaryIPChangeProtectionOpts) (*Action, *Response, error) {
-	reqBody := opts
+	const opPath = "/primary_ips/%d/actions/change_protection"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf("/primary_ips/%d/actions/change_protection", opts.ID)
+	reqPath := fmt.Sprintf(opPath, opts.ID)
+
+	reqBody := opts
 
 	respBody, resp, err := postRequest[PrimaryIPChangeProtectionResult](ctx, c.client, reqPath, reqBody)
 	if err != nil {

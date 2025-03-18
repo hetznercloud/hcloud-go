@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -57,7 +58,10 @@ type ServerTypeClient struct {
 
 // GetByID retrieves a server type by its ID. If the server type does not exist, nil is returned.
 func (c *ServerTypeClient) GetByID(ctx context.Context, id int64) (*ServerType, *Response, error) {
-	reqPath := fmt.Sprintf("/server_types/%d", id)
+	const opPath = "/server_types/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.ServerTypeGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -109,7 +113,10 @@ func (l ServerTypeListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *ServerTypeClient) List(ctx context.Context, opts ServerTypeListOpts) ([]*ServerType, *Response, error) {
-	reqPath := fmt.Sprintf("/server_types?%s", opts.values().Encode())
+	const opPath = "/server_types?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.ServerTypeListResponse](ctx, c.client, reqPath)
 	if err != nil {

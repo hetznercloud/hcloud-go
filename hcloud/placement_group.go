@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -35,7 +36,10 @@ type PlacementGroupClient struct {
 
 // GetByID retrieves a PlacementGroup by its ID. If the PlacementGroup does not exist, nil is returned.
 func (c *PlacementGroupClient) GetByID(ctx context.Context, id int64) (*PlacementGroup, *Response, error) {
-	reqPath := fmt.Sprintf("/placement_groups/%d", id)
+	const opPath = "/placement_groups/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.PlacementGroupGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -88,7 +92,10 @@ func (l PlacementGroupListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *PlacementGroupClient) List(ctx context.Context, opts PlacementGroupListOpts) ([]*PlacementGroup, *Response, error) {
-	reqPath := fmt.Sprintf("/placement_groups?%s", opts.values().Encode())
+	const opPath = "/placement_groups?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.PlacementGroupListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -140,15 +147,18 @@ type PlacementGroupCreateResult struct {
 
 // Create creates a new PlacementGroup.
 func (c *PlacementGroupClient) Create(ctx context.Context, opts PlacementGroupCreateOpts) (PlacementGroupCreateResult, *Response, error) {
+	const opPath = "/placement_groups"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := PlacementGroupCreateResult{}
+
+	reqPath := opPath
 
 	if err := opts.Validate(); err != nil {
 		return result, nil, err
 	}
 
 	reqBody := placementGroupCreateOptsToSchema(opts)
-
-	reqPath := "/placement_groups"
 
 	respBody, resp, err := postRequest[schema.PlacementGroupCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -171,6 +181,11 @@ type PlacementGroupUpdateOpts struct {
 
 // Update updates a PlacementGroup.
 func (c *PlacementGroupClient) Update(ctx context.Context, placementGroup *PlacementGroup, opts PlacementGroupUpdateOpts) (*PlacementGroup, *Response, error) {
+	const opPath = "/placement_groups/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, placementGroup.ID)
+
 	reqBody := schema.PlacementGroupUpdateRequest{}
 	if opts.Name != "" {
 		reqBody.Name = &opts.Name
@@ -178,8 +193,6 @@ func (c *PlacementGroupClient) Update(ctx context.Context, placementGroup *Place
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-
-	reqPath := fmt.Sprintf("/placement_groups/%d", placementGroup.ID)
 
 	respBody, resp, err := putRequest[schema.PlacementGroupUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -191,7 +204,10 @@ func (c *PlacementGroupClient) Update(ctx context.Context, placementGroup *Place
 
 // Delete deletes a PlacementGroup.
 func (c *PlacementGroupClient) Delete(ctx context.Context, placementGroup *PlacementGroup) (*Response, error) {
-	reqPath := fmt.Sprintf("/placement_groups/%d", placementGroup.ID)
+	const opPath = "/placement_groups/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, placementGroup.ID)
 
 	return deleteRequestNoResult(ctx, c.client, reqPath)
 }

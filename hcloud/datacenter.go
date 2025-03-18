@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -32,7 +33,10 @@ type DatacenterClient struct {
 
 // GetByID retrieves a datacenter by its ID. If the datacenter does not exist, nil is returned.
 func (c *DatacenterClient) GetByID(ctx context.Context, id int64) (*Datacenter, *Response, error) {
-	reqPath := fmt.Sprintf("/datacenters/%d", id)
+	const opPath = "/datacenters/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.DatacenterGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -84,7 +88,10 @@ func (l DatacenterListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) ([]*Datacenter, *Response, error) {
-	reqPath := fmt.Sprintf("/datacenters?%s", opts.values().Encode())
+	const opPath = "/datacenters?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.DatacenterListResponse](ctx, c.client, reqPath)
 	if err != nil {

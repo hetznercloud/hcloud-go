@@ -3,12 +3,13 @@ package instrumentation
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 )
 
 type Instrumenter struct {
@@ -73,8 +74,11 @@ func (i *Instrumenter) instrumentRoundTripperEndpoint(counter *prometheus.Counte
 	return func(r *http.Request) (*http.Response, error) {
 		resp, err := next.RoundTrip(r)
 		if err == nil {
-			statusCode := strconv.Itoa(resp.StatusCode)
-			counter.WithLabelValues(statusCode, strings.ToLower(resp.Request.Method), preparePathForLabel(resp.Request.URL.Path)).Inc()
+			counter.WithLabelValues(
+				strconv.Itoa(resp.StatusCode),
+				strings.ToLower(resp.Request.Method),
+				ctxutil.OpPath(r.Context()),
+			).Inc()
 		}
 
 		return resp, err
@@ -100,19 +104,4 @@ func registerOrReuse[C prometheus.Collector](registry prometheus.Registerer, col
 	}
 
 	return collector
-}
-
-var pathLabelRegexp = regexp.MustCompile("[^a-z/_]+")
-
-func preparePathForLabel(path string) string {
-	path = strings.ToLower(path)
-
-	// replace all numbers and chars that are not a-z, / or _
-	path = pathLabelRegexp.ReplaceAllString(path, "")
-
-	// replace all artifacts of number replacement (//)
-	path = strings.ReplaceAll(path, "//", "/")
-
-	// replace the /v/ that indicated the API version
-	return strings.Replace(path, "/v/", "/", 1)
 }

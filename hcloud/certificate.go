@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -95,7 +96,10 @@ type CertificateClient struct {
 
 // GetByID retrieves a Certificate by its ID. If the Certificate does not exist, nil is returned.
 func (c *CertificateClient) GetByID(ctx context.Context, id int64) (*Certificate, *Response, error) {
-	reqPath := fmt.Sprintf("/certificates/%d", id)
+	const opPath = "/certificates/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.CertificateGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -143,7 +147,10 @@ func (l CertificateListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *CertificateClient) List(ctx context.Context, opts CertificateListOpts) ([]*Certificate, *Response, error) {
-	reqPath := fmt.Sprintf("/certificates?%s", opts.values().Encode())
+	const opPath = "/certificates?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.CertificateListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -227,6 +234,11 @@ func (c *CertificateClient) Create(ctx context.Context, opts CertificateCreateOp
 func (c *CertificateClient) CreateCertificate(
 	ctx context.Context, opts CertificateCreateOpts,
 ) (CertificateCreateResult, *Response, error) {
+	const opPath = "/certificates"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := opPath
+
 	result := CertificateCreateResult{}
 
 	if err := opts.Validate(); err != nil {
@@ -253,8 +265,6 @@ func (c *CertificateClient) CreateCertificate(
 		reqBody.Labels = &opts.Labels
 	}
 
-	reqPath := "/certificates"
-
 	respBody, resp, err := postRequest[schema.CertificateCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return result, resp, err
@@ -276,6 +286,11 @@ type CertificateUpdateOpts struct {
 
 // Update updates a Certificate.
 func (c *CertificateClient) Update(ctx context.Context, certificate *Certificate, opts CertificateUpdateOpts) (*Certificate, *Response, error) {
+	const opPath = "/certificates/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, certificate.ID)
+
 	reqBody := schema.CertificateUpdateRequest{}
 	if opts.Name != "" {
 		reqBody.Name = &opts.Name
@@ -283,8 +298,6 @@ func (c *CertificateClient) Update(ctx context.Context, certificate *Certificate
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-
-	reqPath := fmt.Sprintf("/certificates/%d", certificate.ID)
 
 	respBody, resp, err := putRequest[schema.CertificateUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -296,14 +309,20 @@ func (c *CertificateClient) Update(ctx context.Context, certificate *Certificate
 
 // Delete deletes a certificate.
 func (c *CertificateClient) Delete(ctx context.Context, certificate *Certificate) (*Response, error) {
-	reqPath := fmt.Sprintf("/certificates/%d", certificate.ID)
+	const opPath = "/certificates/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, certificate.ID)
 
 	return deleteRequestNoResult(ctx, c.client, reqPath)
 }
 
 // RetryIssuance retries the issuance of a failed managed certificate.
 func (c *CertificateClient) RetryIssuance(ctx context.Context, certificate *Certificate) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/certificates/%d/actions/retry", certificate.ID)
+	const opPath = "/certificates/%d/actions/retry"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, certificate.ID)
 
 	respBody, resp, err := postRequest[schema.CertificateIssuanceRetryResponse](ctx, c.client, reqPath, nil)
 	if err != nil {

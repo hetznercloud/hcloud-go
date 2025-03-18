@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -152,12 +153,15 @@ const (
 // changeDNSPtr changes or resets the reverse DNS pointer for a IP address.
 // Pass a nil ptr to reset the reverse DNS pointer to its default value.
 func (s *Server) changeDNSPtr(ctx context.Context, client *Client, ip net.IP, ptr *string) (*Action, *Response, error) {
+	const opPath = "/servers/%d/actions/change_dns_ptr"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, s.ID)
+
 	reqBody := schema.ServerActionChangeDNSPtrRequest{
 		IP:     ip.String(),
 		DNSPtr: ptr,
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/change_dns_ptr", s.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionChangeDNSPtrResponse](ctx, client, reqPath, reqBody)
 	if err != nil {
@@ -187,7 +191,10 @@ type ServerClient struct {
 
 // GetByID retrieves a server by its ID. If the server does not exist, nil is returned.
 func (c *ServerClient) GetByID(ctx context.Context, id int64) (*Server, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d", id)
+	const opPath = "/servers/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, id)
 
 	respBody, resp, err := getRequest[schema.ServerGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -240,7 +247,10 @@ func (l ServerListOpts) values() url.Values {
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
 func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server, *Response, error) {
-	reqPath := fmt.Sprintf("/servers?%s", opts.values().Encode())
+	const opPath = "/servers?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.ServerListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -327,7 +337,12 @@ type ServerCreateResult struct {
 
 // Create creates a new server.
 func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (ServerCreateResult, *Response, error) {
+	const opPath = "/servers"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := ServerCreateResult{}
+
+	reqPath := opPath
 
 	if err := opts.Validate(); err != nil {
 		return result, nil, err
@@ -392,8 +407,6 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 		reqBody.PlacementGroup = opts.PlacementGroup.ID
 	}
 
-	reqPath := "/servers"
-
 	respBody, resp, err := postRequest[schema.ServerCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return result, resp, err
@@ -424,9 +437,12 @@ func (c *ServerClient) Delete(ctx context.Context, server *Server) (*Response, e
 
 // DeleteWithResult deletes a server and returns the parsed response containing the action.
 func (c *ServerClient) DeleteWithResult(ctx context.Context, server *Server) (*ServerDeleteResult, *Response, error) {
+	const opPath = "/servers/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := &ServerDeleteResult{}
 
-	reqPath := fmt.Sprintf("/servers/%d", server.ID)
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := deleteRequest[schema.ServerDeleteResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -446,14 +462,17 @@ type ServerUpdateOpts struct {
 
 // Update updates a server.
 func (c *ServerClient) Update(ctx context.Context, server *Server, opts ServerUpdateOpts) (*Server, *Response, error) {
+	const opPath = "/servers/%d"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
+
 	reqBody := schema.ServerUpdateRequest{
 		Name: opts.Name,
 	}
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d", server.ID)
 
 	respBody, resp, err := putRequest[schema.ServerUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -465,7 +484,10 @@ func (c *ServerClient) Update(ctx context.Context, server *Server, opts ServerUp
 
 // Poweron starts a server.
 func (c *ServerClient) Poweron(ctx context.Context, server *Server) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d/actions/poweron", server.ID)
+	const opPath = "/servers/%d/actions/poweron"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionPoweronResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -477,7 +499,10 @@ func (c *ServerClient) Poweron(ctx context.Context, server *Server) (*Action, *R
 
 // Reboot reboots a server.
 func (c *ServerClient) Reboot(ctx context.Context, server *Server) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d/actions/reboot", server.ID)
+	const opPath = "/servers/%d/actions/reboot"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionRebootResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -489,7 +514,10 @@ func (c *ServerClient) Reboot(ctx context.Context, server *Server) (*Action, *Re
 
 // Reset resets a server.
 func (c *ServerClient) Reset(ctx context.Context, server *Server) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d/actions/reset", server.ID)
+	const opPath = "/servers/%d/actions/reset"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionResetResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -501,7 +529,10 @@ func (c *ServerClient) Reset(ctx context.Context, server *Server) (*Action, *Res
 
 // Shutdown shuts down a server.
 func (c *ServerClient) Shutdown(ctx context.Context, server *Server) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d/actions/shutdown", server.ID)
+	const opPath = "/servers/%d/actions/shutdown"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionShutdownResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -513,7 +544,10 @@ func (c *ServerClient) Shutdown(ctx context.Context, server *Server) (*Action, *
 
 // Poweroff stops a server.
 func (c *ServerClient) Poweroff(ctx context.Context, server *Server) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d/actions/poweroff", server.ID)
+	const opPath = "/servers/%d/actions/poweroff"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionPoweroffResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -531,9 +565,12 @@ type ServerResetPasswordResult struct {
 
 // ResetPassword resets a server's password.
 func (c *ServerClient) ResetPassword(ctx context.Context, server *Server) (ServerResetPasswordResult, *Response, error) {
+	const opPath = "/servers/%d/actions/reset_password"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := ServerResetPasswordResult{}
 
-	reqPath := fmt.Sprintf("/servers/%d/actions/reset_password", server.ID)
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionResetPasswordResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -575,7 +612,12 @@ type ServerCreateImageResult struct {
 
 // CreateImage creates an image from a server.
 func (c *ServerClient) CreateImage(ctx context.Context, server *Server, opts *ServerCreateImageOpts) (ServerCreateImageResult, *Response, error) {
+	const opPath = "/servers/%d/actions/create_image"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := ServerCreateImageResult{}
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	reqBody := schema.ServerActionCreateImageRequest{}
 	if opts != nil {
@@ -592,8 +634,6 @@ func (c *ServerClient) CreateImage(ctx context.Context, server *Server, opts *Se
 			reqBody.Labels = &opts.Labels
 		}
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/create_image", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionCreateImageResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -620,7 +660,12 @@ type ServerEnableRescueResult struct {
 
 // EnableRescue enables rescue mode for a server.
 func (c *ServerClient) EnableRescue(ctx context.Context, server *Server, opts ServerEnableRescueOpts) (ServerEnableRescueResult, *Response, error) {
+	const opPath = "/servers/%d/actions/enable_rescue"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := ServerEnableRescueResult{}
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	reqBody := schema.ServerActionEnableRescueRequest{
 		Type: Ptr(string(opts.Type)),
@@ -628,8 +673,6 @@ func (c *ServerClient) EnableRescue(ctx context.Context, server *Server, opts Se
 	for _, sshKey := range opts.SSHKeys {
 		reqBody.SSHKeys = append(reqBody.SSHKeys, sshKey.ID)
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/enable_rescue", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionEnableRescueResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -644,7 +687,10 @@ func (c *ServerClient) EnableRescue(ctx context.Context, server *Server, opts Se
 
 // DisableRescue disables rescue mode for a server.
 func (c *ServerClient) DisableRescue(ctx context.Context, server *Server) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d/actions/disable_rescue", server.ID)
+	const opPath = "/servers/%d/actions/disable_rescue"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionDisableRescueResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -676,14 +722,17 @@ func (c *ServerClient) Rebuild(ctx context.Context, server *Server, opts ServerR
 
 // RebuildWithResult rebuilds a server.
 func (c *ServerClient) RebuildWithResult(ctx context.Context, server *Server, opts ServerRebuildOpts) (ServerRebuildResult, *Response, error) {
+	const opPath = "/servers/%d/actions/rebuild"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := ServerRebuildResult{}
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	reqBody := schema.ServerActionRebuildRequest{}
 	if opts.Image.ID != 0 || opts.Image.Name != "" {
 		reqBody.Image = schema.IDOrName{ID: opts.Image.ID, Name: opts.Image.Name}
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/rebuild", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionRebuildResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -700,12 +749,15 @@ func (c *ServerClient) RebuildWithResult(ctx context.Context, server *Server, op
 
 // AttachISO attaches an ISO to a server.
 func (c *ServerClient) AttachISO(ctx context.Context, server *Server, iso *ISO) (*Action, *Response, error) {
+	const opPath = "/servers/%d/actions/attach_iso"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
+
 	reqBody := schema.ServerActionAttachISORequest{}
 	if iso.ID != 0 || iso.Name != "" {
 		reqBody.ISO = schema.IDOrName{ID: iso.ID, Name: iso.Name}
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/attach_iso", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionAttachISOResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -717,7 +769,10 @@ func (c *ServerClient) AttachISO(ctx context.Context, server *Server, iso *ISO) 
 
 // DetachISO detaches the currently attached ISO from a server.
 func (c *ServerClient) DetachISO(ctx context.Context, server *Server) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d/actions/detach_iso", server.ID)
+	const opPath = "/servers/%d/actions/detach_iso"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionDetachISOResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -732,7 +787,10 @@ func (c *ServerClient) DetachISO(ctx context.Context, server *Server) (*Action, 
 func (c *ServerClient) EnableBackup(ctx context.Context, server *Server, window string) (*Action, *Response, error) {
 	_ = window
 
-	reqPath := fmt.Sprintf("/servers/%d/actions/enable_backup", server.ID)
+	const opPath = "/servers/%d/actions/enable_backup"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionEnableBackupResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -744,7 +802,10 @@ func (c *ServerClient) EnableBackup(ctx context.Context, server *Server, window 
 
 // DisableBackup disables backup for a server.
 func (c *ServerClient) DisableBackup(ctx context.Context, server *Server) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d/actions/disable_backup", server.ID)
+	const opPath = "/servers/%d/actions/disable_backup"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionDisableBackupResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -762,14 +823,17 @@ type ServerChangeTypeOpts struct {
 
 // ChangeType changes a server's type.
 func (c *ServerClient) ChangeType(ctx context.Context, server *Server, opts ServerChangeTypeOpts) (*Action, *Response, error) {
+	const opPath = "/servers/%d/actions/change_type"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
+
 	reqBody := schema.ServerActionChangeTypeRequest{
 		UpgradeDisk: opts.UpgradeDisk,
 	}
 	if opts.ServerType.ID != 0 || opts.ServerType.Name != "" {
 		reqBody.ServerType = schema.IDOrName{ID: opts.ServerType.ID, Name: opts.ServerType.Name}
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/change_type", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionChangeTypeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -797,12 +861,15 @@ type ServerChangeProtectionOpts struct {
 
 // ChangeProtection changes the resource protection level of a server.
 func (c *ServerClient) ChangeProtection(ctx context.Context, server *Server, opts ServerChangeProtectionOpts) (*Action, *Response, error) {
+	const opPath = "/servers/%d/actions/change_protection"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
+
 	reqBody := schema.ServerActionChangeProtectionRequest{
 		Rebuild: opts.Rebuild,
 		Delete:  opts.Delete,
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/change_protection", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -821,9 +888,12 @@ type ServerRequestConsoleResult struct {
 
 // RequestConsole requests a WebSocket VNC console.
 func (c *ServerClient) RequestConsole(ctx context.Context, server *Server) (ServerRequestConsoleResult, *Response, error) {
+	const opPath = "/servers/%d/actions/request_console"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	result := ServerRequestConsoleResult{}
 
-	reqPath := fmt.Sprintf("/servers/%d/actions/request_console", server.ID)
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionRequestConsoleResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -846,6 +916,11 @@ type ServerAttachToNetworkOpts struct {
 
 // AttachToNetwork attaches a server to a network.
 func (c *ServerClient) AttachToNetwork(ctx context.Context, server *Server, opts ServerAttachToNetworkOpts) (*Action, *Response, error) {
+	const opPath = "/servers/%d/actions/attach_to_network"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
+
 	reqBody := schema.ServerActionAttachToNetworkRequest{
 		Network: opts.Network.ID,
 	}
@@ -855,8 +930,6 @@ func (c *ServerClient) AttachToNetwork(ctx context.Context, server *Server, opts
 	for _, aliasIP := range opts.AliasIPs {
 		reqBody.AliasIPs = append(reqBody.AliasIPs, Ptr(aliasIP.String()))
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/attach_to_network", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionAttachToNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -873,11 +946,14 @@ type ServerDetachFromNetworkOpts struct {
 
 // DetachFromNetwork detaches a server from a network.
 func (c *ServerClient) DetachFromNetwork(ctx context.Context, server *Server, opts ServerDetachFromNetworkOpts) (*Action, *Response, error) {
+	const opPath = "/servers/%d/actions/detach_from_network"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
+
 	reqBody := schema.ServerActionDetachFromNetworkRequest{
 		Network: opts.Network.ID,
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/detach_from_network", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionDetachFromNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -895,6 +971,11 @@ type ServerChangeAliasIPsOpts struct {
 
 // ChangeAliasIPs changes a server's alias IPs in a network.
 func (c *ServerClient) ChangeAliasIPs(ctx context.Context, server *Server, opts ServerChangeAliasIPsOpts) (*Action, *Response, error) {
+	const opPath = "/servers/%d/actions/change_alias_ips"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
+
 	reqBody := schema.ServerActionChangeAliasIPsRequest{
 		Network:  opts.Network.ID,
 		AliasIPs: []string{},
@@ -902,8 +983,6 @@ func (c *ServerClient) ChangeAliasIPs(ctx context.Context, server *Server, opts 
 	for _, aliasIP := range opts.AliasIPs {
 		reqBody.AliasIPs = append(reqBody.AliasIPs, aliasIP.String())
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/change_alias_ips", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionDetachFromNetworkResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -978,6 +1057,9 @@ type ServerMetricsValue struct {
 
 // GetMetrics obtains metrics for Server.
 func (c *ServerClient) GetMetrics(ctx context.Context, server *Server, opts ServerGetMetricsOpts) (*ServerMetrics, *Response, error) {
+	const opPath = "/servers/%d/metrics?%s"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
 	if server == nil {
 		return nil, nil, fmt.Errorf("illegal argument: server is nil")
 	}
@@ -986,7 +1068,7 @@ func (c *ServerClient) GetMetrics(ctx context.Context, server *Server, opts Serv
 		return nil, nil, err
 	}
 
-	reqPath := fmt.Sprintf("/servers/%d/metrics?%s", server.ID, opts.values().Encode())
+	reqPath := fmt.Sprintf(opPath, server.ID, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.ServerGetMetricsResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -1002,11 +1084,14 @@ func (c *ServerClient) GetMetrics(ctx context.Context, server *Server, opts Serv
 }
 
 func (c *ServerClient) AddToPlacementGroup(ctx context.Context, server *Server, placementGroup *PlacementGroup) (*Action, *Response, error) {
+	const opPath = "/servers/%d/actions/add_to_placement_group"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
+
 	reqBody := schema.ServerActionAddToPlacementGroupRequest{
 		PlacementGroup: placementGroup.ID,
 	}
-
-	reqPath := fmt.Sprintf("/servers/%d/actions/add_to_placement_group", server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionAddToPlacementGroupResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -1017,7 +1102,10 @@ func (c *ServerClient) AddToPlacementGroup(ctx context.Context, server *Server, 
 }
 
 func (c *ServerClient) RemoveFromPlacementGroup(ctx context.Context, server *Server) (*Action, *Response, error) {
-	reqPath := fmt.Sprintf("/servers/%d/actions/remove_from_placement_group", server.ID)
+	const opPath = "/servers/%d/actions/remove_from_placement_group"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, server.ID)
 
 	respBody, resp, err := postRequest[schema.ServerActionRemoveFromPlacementGroupResponse](ctx, c.client, reqPath, nil)
 	if err != nil {

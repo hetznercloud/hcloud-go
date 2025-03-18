@@ -3,6 +3,7 @@ package hcloud
 import (
 	"context"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -136,7 +137,10 @@ type PricingClient struct {
 
 // Get retrieves pricing information.
 func (c *PricingClient) Get(ctx context.Context) (Pricing, *Response, error) {
-	reqPath := "/pricing"
+	const opPath = "/pricing"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := opPath
 
 	respBody, resp, err := getRequest[schema.PricingGetResponse](ctx, c.client, reqPath)
 	if err != nil {
