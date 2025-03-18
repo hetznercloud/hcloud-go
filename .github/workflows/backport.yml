@@ -26,7 +26,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
-          # These templates are compatible with release-please and our default commit body (body of PR).
+          # These templates are compatible with releaser-pleaser and our default commit body (body of PR).
           title_template: "<%= title %> [Backport <%= base %>]"
           body_template: |
             <%= body %>

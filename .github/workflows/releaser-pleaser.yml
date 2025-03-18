@@ -1,0 +1,23 @@
+name: Releaser-pleaser
+
+on:
+  push:
+    branches: [main]
+  pull_request_target:
+    types:
+      - edited
+      - labeled
+      - unlabeled
+
+jobs:
+  releaser-pleaser:
+    # Do not run on forks.
+    if: github.repository == 'hetznercloud/hcloud-go'
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: releaser-pleaser
+        uses: apricote/releaser-pleaser@v0.4.0
+        with:
+          extra-files: |
+            hcloud/hcloud.go
