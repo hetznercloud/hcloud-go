@@ -1,5 +1,21 @@
 # Changelog
 
+## [2.20.0](https://github.com/hetznercloud/hcloud-go/compare/v2.19.1...v2.20.0) (2025-03-18)
+
+
+### Features
+
+* drop go v1.21 ([#604](https://github.com/hetznercloud/hcloud-go/issues/604)) ([aeb7a43](https://github.com/hetznercloud/hcloud-go/commit/aeb7a43d2e31f8449d43d6b2596deaedf3f4add5))
+* drop go v1.22 ([#602](https://github.com/hetznercloud/hcloud-go/issues/602)) ([#621](https://github.com/hetznercloud/hcloud-go/issues/621)) ([8971890](https://github.com/hetznercloud/hcloud-go/commit/8971890be2cfb0ff60eae8db16356e4fb3d25d2d))
+* **exp:** remove sliceutil package ([#610](https://github.com/hetznercloud/hcloud-go/issues/610)) ([3405674](https://github.com/hetznercloud/hcloud-go/commit/3405674927d0927f44f2eb002ab2814e600be5a7))
+* support go v1.24 ([#604](https://github.com/hetznercloud/hcloud-go/issues/604)) ([aeb7a43](https://github.com/hetznercloud/hcloud-go/commit/aeb7a43d2e31f8449d43d6b2596deaedf3f4add5))
+
+
+### Bug Fixes
+
+* missing response from requests return values ([#613](https://github.com/hetznercloud/hcloud-go/issues/613)) ([9aa6660](https://github.com/hetznercloud/hcloud-go/commit/9aa6660fb591dd3680937757701013cfeab71854))
+* request in batches of 25 when waiting for actions ([#611](https://github.com/hetznercloud/hcloud-go/issues/611)) ([6addb7a](https://github.com/hetznercloud/hcloud-go/commit/6addb7a135f762c40a26140369c8d75eb130d481))
+
 ## [2.19.1](https://github.com/hetznercloud/hcloud-go/compare/v2.19.0...v2.19.1) (2025-02-03)
 
 
