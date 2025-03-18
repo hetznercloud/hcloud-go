@@ -1,9 +1,7 @@
 package hcloud
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net"
@@ -57,22 +55,14 @@ func (f *FloatingIP) changeDNSPtr(ctx context.Context, client *Client, ip net.IP
 		IP:     ip.String(),
 		DNSPtr: ptr,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/floating_ips/%d/actions/change_dns_ptr", f.ID)
-	req, err := client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/floating_ips/%d/actions/change_dns_ptr", f.ID)
 
-	respBody := schema.FloatingIPActionChangeDNSPtrResponse{}
-	resp, err := client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.FloatingIPActionChangeDNSPtrResponse](ctx, client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -275,44 +265,28 @@ func (c *FloatingIPClient) Assign(ctx context.Context, floatingIP *FloatingIP, s
 	reqBody := schema.FloatingIPActionAssignRequest{
 		Server: server.ID,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/floating_ips/%d/actions/assign", floatingIP.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/floating_ips/%d/actions/assign", floatingIP.ID)
 
-	var respBody schema.FloatingIPActionAssignResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.FloatingIPActionAssignResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // Unassign unassigns a Floating IP from the currently assigned server.
 func (c *FloatingIPClient) Unassign(ctx context.Context, floatingIP *FloatingIP) (*Action, *Response, error) {
-	var reqBody schema.FloatingIPActionUnassignRequest
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqBody := schema.FloatingIPActionUnassignRequest{}
 
-	path := fmt.Sprintf("/floating_ips/%d/actions/unassign", floatingIP.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/floating_ips/%d/actions/unassign", floatingIP.ID)
 
-	var respBody schema.FloatingIPActionUnassignResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.FloatingIPActionUnassignResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -336,21 +310,13 @@ func (c *FloatingIPClient) ChangeProtection(ctx context.Context, floatingIP *Flo
 	reqBody := schema.FloatingIPActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/floating_ips/%d/actions/change_protection", floatingIP.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/floating_ips/%d/actions/change_protection", floatingIP.ID)
 
-	respBody := schema.FloatingIPActionChangeProtectionResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.FloatingIPActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }

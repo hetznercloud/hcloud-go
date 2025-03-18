@@ -1,9 +1,7 @@
 package hcloud
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/url"
@@ -256,22 +254,13 @@ func (c *VolumeClient) AttachWithOpts(ctx context.Context, volume *Volume, opts 
 		Automount: opts.Automount,
 	}
 
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/volumes/%d/actions/attach", volume.ID)
 
-	path := fmt.Sprintf("/volumes/%d/actions/attach", volume.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	var respBody schema.VolumeActionAttachVolumeResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.VolumeActionAttachVolumeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -283,22 +272,14 @@ func (c *VolumeClient) Attach(ctx context.Context, volume *Volume, server *Serve
 // Detach detaches a volume from a server.
 func (c *VolumeClient) Detach(ctx context.Context, volume *Volume) (*Action, *Response, error) {
 	var reqBody schema.VolumeActionDetachVolumeRequest
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/volumes/%d/actions/detach", volume.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/volumes/%d/actions/detach", volume.ID)
 
-	var respBody schema.VolumeActionDetachVolumeResponse
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.VolumeActionDetachVolumeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
@@ -312,23 +293,15 @@ func (c *VolumeClient) ChangeProtection(ctx context.Context, volume *Volume, opt
 	reqBody := schema.VolumeActionChangeProtectionRequest{
 		Delete: opts.Delete,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/volumes/%d/actions/change_protection", volume.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/volumes/%d/actions/change_protection", volume.ID)
 
-	respBody := schema.VolumeActionChangeProtectionResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.VolumeActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, err
+
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // Resize changes the size of a volume.
@@ -336,21 +309,13 @@ func (c *VolumeClient) Resize(ctx context.Context, volume *Volume, size int) (*A
 	reqBody := schema.VolumeActionResizeVolumeRequest{
 		Size: size,
 	}
-	reqBodyData, err := json.Marshal(reqBody)
-	if err != nil {
-		return nil, nil, err
-	}
 
-	path := fmt.Sprintf("/volumes/%d/actions/resize", volume.ID)
-	req, err := c.client.NewRequest(ctx, "POST", path, bytes.NewReader(reqBodyData))
-	if err != nil {
-		return nil, nil, err
-	}
+	reqPath := fmt.Sprintf("/volumes/%d/actions/resize", volume.ID)
 
-	respBody := schema.VolumeActionResizeVolumeResponse{}
-	resp, err := c.client.Do(req, &respBody)
+	respBody, resp, err := postRequest[schema.VolumeActionResizeVolumeResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
+
 	return ActionFromSchema(respBody.Action), resp, err
 }
