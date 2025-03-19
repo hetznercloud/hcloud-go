@@ -1002,18 +1002,18 @@ func (c *converterImpl) SchemaFromPrimaryIPCreateOpts(source PrimaryIPCreateOpts
 	schemaPrimaryIPCreateRequest.Type = string(source.Type)
 	schemaPrimaryIPCreateRequest.AssigneeType = source.AssigneeType
 	schemaPrimaryIPCreateRequest.AssigneeID = source.AssigneeID
+	schemaPrimaryIPCreateRequest.Labels = source.Labels
 	schemaPrimaryIPCreateRequest.AutoDelete = source.AutoDelete
 	schemaPrimaryIPCreateRequest.Datacenter = source.Datacenter
-	schemaPrimaryIPCreateRequest.Labels = source.Labels
 	return schemaPrimaryIPCreateRequest
 }
 func (c *converterImpl) SchemaFromPrimaryIPUpdateOpts(source PrimaryIPUpdateOpts) schema.PrimaryIPUpdateRequest {
 	var schemaPrimaryIPUpdateRequest schema.PrimaryIPUpdateRequest
-	schemaPrimaryIPUpdateRequest.AutoDelete = source.AutoDelete
+	schemaPrimaryIPUpdateRequest.Name = source.Name
 	if source.Labels != nil {
 		schemaPrimaryIPUpdateRequest.Labels = (*source.Labels)
 	}
-	schemaPrimaryIPUpdateRequest.Name = source.Name
+	schemaPrimaryIPUpdateRequest.AutoDelete = source.AutoDelete
 	return schemaPrimaryIPUpdateRequest
 }
 func (c *converterImpl) SchemaFromSSHKey(source *SSHKey) schema.SSHKey {
