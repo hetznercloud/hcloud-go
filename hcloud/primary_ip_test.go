@@ -19,7 +19,7 @@ func TestPrimaryIPClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/primary_ips/1", func(w http.ResponseWriter, r *http.Request) {
-			json.NewEncoder(w).Encode(schema.PrimaryIPGetResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPGetResponse{
 				PrimaryIP: schema.PrimaryIP{
 					ID: 1,
 				},
@@ -84,7 +84,7 @@ func TestPrimaryIPClient(t *testing.T) {
 			if r.URL.RawQuery != "name=fsn1-dc8" {
 				t.Fatal("missing name query")
 			}
-			json.NewEncoder(w).Encode(schema.PrimaryIPListResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPListResponse{
 				PrimaryIPs: []schema.PrimaryIP{
 					{
 						ID: 1,
@@ -137,7 +137,7 @@ func TestPrimaryIPClient(t *testing.T) {
 			if r.URL.RawQuery != "name=123" {
 				t.Fatal("missing name query")
 			}
-			json.NewEncoder(w).Encode(schema.PrimaryIPListResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPListResponse{
 				PrimaryIPs: []schema.PrimaryIP{
 					{
 						ID: 1,
@@ -168,7 +168,7 @@ func TestPrimaryIPClient(t *testing.T) {
 			if r.URL.RawQuery != "name=fsn1-dc8" {
 				t.Fatal("missing name query")
 			}
-			json.NewEncoder(w).Encode(schema.PrimaryIPListResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPListResponse{
 				PrimaryIPs: []schema.PrimaryIP{},
 			})
 		})
@@ -205,7 +205,7 @@ func TestPrimaryIPClient(t *testing.T) {
 			if r.URL.RawQuery != "ip=127.0.0.1" {
 				t.Fatal("missing name query")
 			}
-			json.NewEncoder(w).Encode(schema.PrimaryIPListResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPListResponse{
 				PrimaryIPs: []schema.PrimaryIP{
 					{
 						ID: 1,
@@ -241,7 +241,7 @@ func TestPrimaryIPClient(t *testing.T) {
 			if name := r.URL.Query().Get("name"); name != "nbg1-dc3" {
 				t.Errorf("expected name nbg1-dc3; got %q", name)
 			}
-			json.NewEncoder(w).Encode(schema.PrimaryIPListResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPListResponse{
 				PrimaryIPs: []schema.PrimaryIP{
 					{ID: 1},
 					{ID: 2},
@@ -307,20 +307,17 @@ func TestPrimaryIPClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/primary_ips", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody PrimaryIPCreateOpts
+			var reqBody schema.PrimaryIPCreateRequest
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
 			w.Header().Set("Content-Type", "application/json")
-			expectedReqBody := PrimaryIPCreateOpts{
+			expectedReqBody := schema.PrimaryIPCreateRequest{
 				Name:         "my-primary-ip",
-				Type:         PrimaryIPTypeIPv4,
+				Type:         "ipv4",
 				AssigneeType: "server",
 				Datacenter:   "fsn-dc14",
-				Labels: func() map[string]string {
-					labels := map[string]string{"key": "value"}
-					return labels
-				}(),
+				Labels:       map[string]string{"key": "value"},
 			}
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
@@ -329,9 +326,9 @@ func TestPrimaryIPClient(t *testing.T) {
 				t.Log(cmp.Diff(expectedReqBody, reqBody))
 				t.Error("unexpected request body")
 			}
-			json.NewEncoder(w).Encode(PrimaryIPCreateResult{
-				PrimaryIP: &PrimaryIP{ID: 1},
-				Action:    &Action{ID: 14},
+			json.NewEncoder(w).Encode(schema.PrimaryIPCreateResponse{
+				PrimaryIP: schema.PrimaryIP{ID: 1},
+				Action:    &schema.Action{ID: 14},
 			})
 		})
 
@@ -355,19 +352,16 @@ func TestPrimaryIPClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/primary_ips/1", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody PrimaryIPUpdateOpts
+			var reqBody schema.PrimaryIPUpdateRequest
 			if r.Method != "PUT" {
 				t.Error("expected PUT")
 			}
 			w.Header().Set("Content-Type", "application/json")
 			autoDelete := true
-			expectedReqBody := PrimaryIPUpdateOpts{
+			expectedReqBody := schema.PrimaryIPUpdateRequest{
 				Name:       "my-primary-ip",
 				AutoDelete: &autoDelete,
-				Labels: func() *map[string]string {
-					labels := map[string]string{"key": "value"}
-					return &labels
-				}(),
+				Labels:     map[string]string{"key": "value"},
 			}
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
@@ -376,7 +370,7 @@ func TestPrimaryIPClient(t *testing.T) {
 				t.Log(cmp.Diff(expectedReqBody, reqBody))
 				t.Error("unexpected request body")
 			}
-			json.NewEncoder(w).Encode(schema.PrimaryIPUpdateResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPUpdateResponse{
 				PrimaryIP: schema.PrimaryIP{ID: 1, IP: "2001:db8::/64"},
 			})
 		})
@@ -404,7 +398,7 @@ func TestPrimaryIPClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/primary_ips/1/actions/assign", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody PrimaryIPAssignOpts
+			var reqBody schema.PrimaryIPActionAssignRequest
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
@@ -416,9 +410,8 @@ func TestPrimaryIPClient(t *testing.T) {
 
 			assert.Equal(t, int64(1), reqBody.AssigneeID)
 			assert.Equal(t, "server", reqBody.AssigneeType)
-			assert.Equal(t, int64(0), reqBody.ID)
 
-			json.NewEncoder(w).Encode(PrimaryIPAssignResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPActionAssignResponse{
 				Action: schema.Action{ID: 1},
 			})
 		})
@@ -444,7 +437,7 @@ func TestPrimaryIPClient(t *testing.T) {
 				t.Error("expected POST")
 			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(PrimaryIPAssignResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPActionAssignResponse{
 				Action: schema.Action{ID: 1},
 			})
 		})
@@ -461,7 +454,7 @@ func TestPrimaryIPClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/primary_ips/1/actions/change_dns_ptr", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody PrimaryIPChangeDNSPtrOpts
+			var reqBody schema.PrimaryIPActionChangeDNSPtrRequest
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
@@ -471,11 +464,10 @@ func TestPrimaryIPClient(t *testing.T) {
 				t.Fatal(err)
 			}
 
-			assert.Equal(t, "value", reqBody.DNSPtr)
+			assert.Equal(t, "value", *reqBody.DNSPtr)
 			assert.Equal(t, "127.0.0.1", reqBody.IP)
-			assert.Equal(t, int64(0), reqBody.ID)
 
-			json.NewEncoder(w).Encode(PrimaryIPChangeDNSPtrResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPActionChangeDNSPtrResponse{
 				Action: schema.Action{ID: 1},
 			})
 		})
@@ -497,7 +489,7 @@ func TestPrimaryIPClient(t *testing.T) {
 		defer env.Teardown()
 
 		env.Mux.HandleFunc("/primary_ips/1/actions/change_protection", func(w http.ResponseWriter, r *http.Request) {
-			var reqBody PrimaryIPChangeProtectionOpts
+			var reqBody schema.PrimaryIPActionChangeProtectionRequest
 			if r.Method != "POST" {
 				t.Error("expected POST")
 			}
@@ -507,9 +499,8 @@ func TestPrimaryIPClient(t *testing.T) {
 			}
 
 			assert.True(t, reqBody.Delete)
-			assert.Equal(t, int64(0), reqBody.ID)
 
-			json.NewEncoder(w).Encode(PrimaryIPChangeProtectionResult{
+			json.NewEncoder(w).Encode(schema.PrimaryIPActionChangeProtectionResponse{
 				Action: schema.Action{ID: 1},
 			})
 		})
