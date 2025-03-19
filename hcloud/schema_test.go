@@ -284,7 +284,7 @@ func TestISOSchema(t *testing.T) {
 					t.Fatal(err)
 				}
 				assert.NotNil(t, v.Deprecation)
-				assert.Equal(t, v.Deprecated, expDeprecated)
+				assert.Equal(t, expDeprecated, v.Deprecated)
 			},
 		},
 	} {

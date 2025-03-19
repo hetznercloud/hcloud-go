@@ -39,7 +39,7 @@ func TestRetryHandler(t *testing.T) {
 			},
 			recover: true,
 			want: func(t *testing.T, err error, retryCount int) {
-				assert.Nil(t, err)
+				assert.NoError(t, err)
 				assert.Equal(t, 1, retryCount)
 			},
 		},
@@ -64,7 +64,7 @@ func TestRetryHandler(t *testing.T) {
 			},
 			recover: true,
 			want: func(t *testing.T, err error, retryCount int) {
-				assert.Nil(t, err)
+				assert.NoError(t, err)
 				assert.Equal(t, 1, retryCount)
 			},
 		},

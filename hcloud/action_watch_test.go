@@ -3,12 +3,12 @@ package hcloud
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"net/http"
 	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
@@ -124,14 +124,11 @@ func TestActionClientWatchOverallProgress(t *testing.T) {
 
 	err := errs[0]
 
-	if e, ok := errors.Unwrap(err).(ActionError); !ok || e.Code != "action_failed" {
-		t.Fatalf("expected hcloud.Error, but got: %#v", err)
-	}
-
-	expectedProgressUpdates := []int{25, 62, 100}
-	if !reflect.DeepEqual(progressUpdates, expectedProgressUpdates) {
-		t.Fatalf("expected progresses %v but received %v", expectedProgressUpdates, progressUpdates)
-	}
+	require.Error(t, err)
+	var actionErr ActionError
+	require.ErrorAs(t, err, &actionErr)
+	require.Equal(t, "action_failed", actionErr.Code)
+	require.Equal(t, []int{25, 62, 100}, progressUpdates)
 }
 
 func TestActionClientWatchOverallProgressInvalidID(t *testing.T) {
@@ -274,15 +271,11 @@ loop:
 		}
 	}
 
-	if err == nil {
-		t.Fatal("expected an error")
-	}
-	if e, ok := err.(ActionError); !ok || e.Code != "action_failed" {
-		t.Fatalf("expected hcloud.Error, but got: %#v", err)
-	}
-	if len(progressUpdates) != 1 || progressUpdates[0] != 50 {
-		t.Fatalf("unexpected progress updates: %v", progressUpdates)
-	}
+	require.Error(t, err)
+	var actionErr ActionError
+	require.ErrorAs(t, err, &actionErr)
+	require.Equal(t, "action_failed", actionErr.Code)
+	require.Equal(t, []int{50}, progressUpdates)
 }
 
 func TestActionClientWatchProgressError(t *testing.T) {

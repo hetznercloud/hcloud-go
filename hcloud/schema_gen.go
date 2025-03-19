@@ -946,7 +946,10 @@ func rawSchemaFromErrorDetails(v interface{}) json.RawMessage {
 	if v == nil {
 		return nil
 	}
-	msg, _ := json.Marshal(d)
+	msg, err := json.Marshal(d)
+	if err != nil {
+		return nil
+	}
 	return msg
 }
 

@@ -25,8 +25,8 @@ func TestParseHandler(t *testing.T) {
 			},
 			want: func(t *testing.T, v SomeStruct, resp *Response, err error) {
 				assert.NoError(t, err)
-				assert.Equal(t, v.Data, "Hello")
-				assert.Equal(t, resp.Meta.Pagination.Page, 1)
+				assert.Equal(t, "Hello", v.Data)
+				assert.Equal(t, 1, resp.Meta.Pagination.Page)
 			},
 		},
 		{
@@ -36,7 +36,7 @@ func TestParseHandler(t *testing.T) {
 			},
 			want: func(t *testing.T, v SomeStruct, resp *Response, err error) {
 				assert.EqualError(t, err, "any error")
-				assert.Equal(t, v.Data, "")
+				assert.Equal(t, "", v.Data)
 				assert.Nil(t, resp)
 			},
 		},
