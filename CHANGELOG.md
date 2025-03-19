@@ -1,5 +1,26 @@
 # Changelog
 
+## [v2.20.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.20.0)
+
+In this release, the `api_endpoint` metric labels changed for all our API requests. Please make sure to update your setup if you were relying on them. The new labels are now easier to understand, see the example below:
+
+- the path `/volumes/64314930` now has the label `/volumes/-` instead of `/volumes/`
+- the path `/volumes/64314930/actions/resize` now has the label `/volumes/-/actions/resize` instead of `/volumes/actions/resize`
+
+### Features
+
+- support go v1.24 (#604)
+- drop go v1.21 (#604)
+- **exp**: remove sliceutil package (#610)
+- drop go v1.22 (#602) (#621)
+- redefine `api_endpoint` metric labels (#626)
+
+### Bug Fixes
+
+- request in batches of 25 when waiting for actions (#611)
+- missing response from requests return values (#613)
+- move primary ip client request/response structs to schema package (#633)
+
 ## [2.19.1](https://github.com/hetznercloud/hcloud-go/compare/v2.19.0...v2.19.1) (2025-02-03)
 
 
