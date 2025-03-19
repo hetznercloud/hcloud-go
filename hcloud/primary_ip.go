@@ -54,7 +54,7 @@ func (p *PrimaryIP) changeDNSPtr(ctx context.Context, client *Client, ip net.IP,
 		DNSPtr: ptr,
 	}
 
-	respBody, resp, err := postRequest[PrimaryIPChangeDNSPtrResult](ctx, client, reqPath, reqBody)
+	respBody, resp, err := postRequest[schema.PrimaryIPActionChangeDNSPtrResponse](ctx, client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -85,13 +85,13 @@ const (
 // PrimaryIPCreateOpts defines the request to
 // create a Primary IP.
 type PrimaryIPCreateOpts struct {
-	AssigneeID   *int64            `json:"assignee_id,omitempty"`
-	AssigneeType string            `json:"assignee_type"`
-	AutoDelete   *bool             `json:"auto_delete,omitempty"`
-	Datacenter   string            `json:"datacenter,omitempty"`
-	Labels       map[string]string `json:"labels,omitempty"`
-	Name         string            `json:"name"`
-	Type         PrimaryIPType     `json:"type"`
+	AssigneeID   *int64
+	AssigneeType string
+	AutoDelete   *bool
+	Datacenter   string
+	Labels       map[string]string
+	Name         string
+	Type         PrimaryIPType
 }
 
 // PrimaryIPCreateResult defines the response
@@ -104,51 +104,42 @@ type PrimaryIPCreateResult struct {
 // PrimaryIPUpdateOpts defines the request to
 // update a Primary IP.
 type PrimaryIPUpdateOpts struct {
-	AutoDelete *bool              `json:"auto_delete,omitempty"`
-	Labels     *map[string]string `json:"labels,omitempty"`
-	Name       string             `json:"name,omitempty"`
+	AutoDelete *bool
+	Labels     *map[string]string
+	Name       string
 }
 
 // PrimaryIPAssignOpts defines the request to
 // assign a Primary IP to an assignee (usually a server).
 type PrimaryIPAssignOpts struct {
-	ID           int64  `json:"-"`
-	AssigneeID   int64  `json:"assignee_id"`
-	AssigneeType string `json:"assignee_type"`
+	ID           int64
+	AssigneeID   int64
+	AssigneeType string
 }
 
-// PrimaryIPAssignResult defines the response
-// when assigning a Primary IP to a assignee.
-type PrimaryIPAssignResult struct {
-	Action schema.Action `json:"action"`
-}
+// Deprecated: Please use [schema.PrimaryIPActionAssignResponse] instead.
+type PrimaryIPAssignResult = schema.PrimaryIPActionAssignResponse
 
 // PrimaryIPChangeDNSPtrOpts defines the request to
 // change a DNS PTR entry from a Primary IP.
 type PrimaryIPChangeDNSPtrOpts struct {
-	ID     int64  `json:"-"`
-	DNSPtr string `json:"dns_ptr"`
-	IP     string `json:"ip"`
+	ID     int64
+	DNSPtr string
+	IP     string
 }
 
-// PrimaryIPChangeDNSPtrResult defines the response
-// when assigning a Primary IP to a assignee.
-type PrimaryIPChangeDNSPtrResult struct {
-	Action schema.Action `json:"action"`
-}
+// Deprecated: Please use [schema.PrimaryIPChangeDNSPtrResponse] instead.
+type PrimaryIPChangeDNSPtrResult = schema.PrimaryIPActionChangeDNSPtrResponse
 
 // PrimaryIPChangeProtectionOpts defines the request to
 // change protection configuration of a Primary IP.
 type PrimaryIPChangeProtectionOpts struct {
-	ID     int64 `json:"-"`
-	Delete bool  `json:"delete"`
+	ID     int64
+	Delete bool
 }
 
-// PrimaryIPChangeProtectionResult defines the response
-// when changing a protection of a PrimaryIP.
-type PrimaryIPChangeProtectionResult struct {
-	Action schema.Action `json:"action"`
-}
+// Deprecated: Please use [schema.PrimaryIPActionChangeProtectionResponse] instead.
+type PrimaryIPChangeProtectionResult = schema.PrimaryIPActionChangeProtectionResponse
 
 // PrimaryIPClient is a client for the Primary IP API.
 type PrimaryIPClient struct {
@@ -163,7 +154,7 @@ func (c *PrimaryIPClient) GetByID(ctx context.Context, id int64) (*PrimaryIP, *R
 
 	reqPath := fmt.Sprintf(opPath, id)
 
-	respBody, resp, err := getRequest[schema.PrimaryIPGetResult](ctx, c.client, reqPath)
+	respBody, resp, err := getRequest[schema.PrimaryIPGetResponse](ctx, c.client, reqPath)
 	if err != nil {
 		if IsError(err, ErrorCodeNotFound) {
 			return nil, resp, nil
@@ -231,7 +222,7 @@ func (c *PrimaryIPClient) List(ctx context.Context, opts PrimaryIPListOpts) ([]*
 
 	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
 
-	respBody, resp, err := getRequest[schema.PrimaryIPListResult](ctx, c.client, reqPath)
+	respBody, resp, err := getRequest[schema.PrimaryIPListResponse](ctx, c.client, reqPath)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -253,13 +244,15 @@ func (c *PrimaryIPClient) AllWithOpts(ctx context.Context, opts PrimaryIPListOpt
 }
 
 // Create creates a Primary IP.
-func (c *PrimaryIPClient) Create(ctx context.Context, reqBody PrimaryIPCreateOpts) (*PrimaryIPCreateResult, *Response, error) {
+func (c *PrimaryIPClient) Create(ctx context.Context, opts PrimaryIPCreateOpts) (*PrimaryIPCreateResult, *Response, error) {
 	const opPath = "/primary_ips"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	result := &PrimaryIPCreateResult{}
 
 	reqPath := opPath
+
+	reqBody := SchemaFromPrimaryIPCreateOpts(opts)
 
 	respBody, resp, err := postRequest[schema.PrimaryIPCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
@@ -285,13 +278,15 @@ func (c *PrimaryIPClient) Delete(ctx context.Context, primaryIP *PrimaryIP) (*Re
 }
 
 // Update updates a Primary IP.
-func (c *PrimaryIPClient) Update(ctx context.Context, primaryIP *PrimaryIP, reqBody PrimaryIPUpdateOpts) (*PrimaryIP, *Response, error) {
+func (c *PrimaryIPClient) Update(ctx context.Context, primaryIP *PrimaryIP, opts PrimaryIPUpdateOpts) (*PrimaryIP, *Response, error) {
 	const opPath = "/primary_ips/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, primaryIP.ID)
 
-	respBody, resp, err := putRequest[schema.PrimaryIPUpdateResult](ctx, c.client, reqPath, reqBody)
+	reqBody := SchemaFromPrimaryIPUpdateOpts(opts)
+
+	respBody, resp, err := putRequest[schema.PrimaryIPUpdateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -306,9 +301,9 @@ func (c *PrimaryIPClient) Assign(ctx context.Context, opts PrimaryIPAssignOpts) 
 
 	reqPath := fmt.Sprintf(opPath, opts.ID)
 
-	reqBody := opts
+	reqBody := SchemaFromPrimaryIPAssignOpts(opts)
 
-	respBody, resp, err := postRequest[PrimaryIPAssignResult](ctx, c.client, reqPath, reqBody)
+	respBody, resp, err := postRequest[schema.PrimaryIPActionAssignResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -323,7 +318,7 @@ func (c *PrimaryIPClient) Unassign(ctx context.Context, id int64) (*Action, *Res
 
 	reqPath := fmt.Sprintf(opPath, id)
 
-	respBody, resp, err := postRequest[PrimaryIPAssignResult](ctx, c.client, reqPath, nil)
+	respBody, resp, err := postRequest[schema.PrimaryIPActionUnassignResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -338,9 +333,9 @@ func (c *PrimaryIPClient) ChangeDNSPtr(ctx context.Context, opts PrimaryIPChange
 
 	reqPath := fmt.Sprintf(opPath, opts.ID)
 
-	reqBody := opts
+	reqBody := SchemaFromPrimaryIPChangeDNSPtrOpts(opts)
 
-	respBody, resp, err := postRequest[PrimaryIPChangeDNSPtrResult](ctx, c.client, reqPath, reqBody)
+	respBody, resp, err := postRequest[schema.PrimaryIPActionChangeDNSPtrResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -355,9 +350,9 @@ func (c *PrimaryIPClient) ChangeProtection(ctx context.Context, opts PrimaryIPCh
 
 	reqPath := fmt.Sprintf(opPath, opts.ID)
 
-	reqBody := opts
+	reqBody := SchemaFromPrimaryIPChangeProtectionOpts(opts)
 
-	respBody, resp, err := postRequest[PrimaryIPChangeProtectionResult](ctx, c.client, reqPath, reqBody)
+	respBody, resp, err := postRequest[schema.PrimaryIPActionChangeProtectionResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
