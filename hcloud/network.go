@@ -370,7 +370,7 @@ func (c *NetworkClient) AddRoute(ctx context.Context, network *Network, opts Net
 		Gateway:     opts.Route.Gateway.String(),
 	}
 
-	respBody, resp, err := postRequest[schema.NetworkActionAddSubnetResponse](ctx, c.client, reqPath, reqBody)
+	respBody, resp, err := postRequest[schema.NetworkActionAddRouteResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
@@ -395,7 +395,7 @@ func (c *NetworkClient) DeleteRoute(ctx context.Context, network *Network, opts 
 		Gateway:     opts.Route.Gateway.String(),
 	}
 
-	respBody, resp, err := postRequest[schema.NetworkActionDeleteSubnetResponse](ctx, c.client, reqPath, reqBody)
+	respBody, resp, err := postRequest[schema.NetworkActionDeleteRouteResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}

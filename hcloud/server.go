@@ -984,7 +984,7 @@ func (c *ServerClient) ChangeAliasIPs(ctx context.Context, server *Server, opts 
 		reqBody.AliasIPs = append(reqBody.AliasIPs, aliasIP.String())
 	}
 
-	respBody, resp, err := postRequest[schema.ServerActionDetachFromNetworkResponse](ctx, c.client, reqPath, reqBody)
+	respBody, resp, err := postRequest[schema.ServerActionChangeAliasIPsResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {
 		return nil, resp, err
 	}
