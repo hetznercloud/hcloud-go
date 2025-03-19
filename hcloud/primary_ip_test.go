@@ -437,7 +437,7 @@ func TestPrimaryIPClient(t *testing.T) {
 				t.Error("expected POST")
 			}
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(schema.PrimaryIPActionAssignResponse{
+			json.NewEncoder(w).Encode(schema.PrimaryIPActionUnassignResponse{
 				Action: schema.Action{ID: 1},
 			})
 		})
