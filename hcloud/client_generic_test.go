@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
@@ -23,7 +24,10 @@ func TestGenericRequest(t *testing.T) {
 			},
 		})
 
-		respBody, resp, err := getRequest[schema.ActionGetResponse](ctx, client, "/resource")
+		const opPath = "/resource"
+		ctx = ctxutil.SetOpPath(ctx, opPath)
+
+		respBody, resp, err := getRequest[schema.ActionGetResponse](ctx, client, opPath)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.NotNil(t, respBody)
@@ -47,7 +51,10 @@ func TestGenericRequest(t *testing.T) {
 			},
 		})
 
-		respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, client, "/resource", map[string]string{"hello": "world"})
+		const opPath = "/resource"
+		ctx = ctxutil.SetOpPath(ctx, opPath)
+
+		respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, client, opPath, map[string]string{"hello": "world"})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.NotNil(t, respBody)
@@ -71,7 +78,10 @@ func TestGenericRequest(t *testing.T) {
 			},
 		})
 
-		respBody, resp, err := putRequest[schema.ActionGetResponse](ctx, client, "/resource", map[string]string{"hello": "world"})
+		const opPath = "/resource"
+		ctx = ctxutil.SetOpPath(ctx, opPath)
+
+		respBody, resp, err := putRequest[schema.ActionGetResponse](ctx, client, opPath, map[string]string{"hello": "world"})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.NotNil(t, respBody)
@@ -90,7 +100,10 @@ func TestGenericRequest(t *testing.T) {
 			},
 		})
 
-		respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, client, "/resource")
+		const opPath = "/resource"
+		ctx = ctxutil.SetOpPath(ctx, opPath)
+
+		respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, client, opPath)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.NotNil(t, respBody)
@@ -108,7 +121,10 @@ func TestGenericRequest(t *testing.T) {
 			},
 		})
 
-		resp, err := deleteRequestNoResult(ctx, client, "/resource")
+		const opPath = "/resource"
+		ctx = ctxutil.SetOpPath(ctx, opPath)
+
+		resp, err := deleteRequestNoResult(ctx, client, opPath)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 	})

@@ -3,6 +3,7 @@ package instrumentation
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -74,10 +75,16 @@ func (i *Instrumenter) instrumentRoundTripperEndpoint(counter *prometheus.Counte
 	return func(r *http.Request) (*http.Response, error) {
 		resp, err := next.RoundTrip(r)
 		if err == nil {
+			apiEndpoint := ctxutil.OpPath(r.Context())
+			// If the request does not set the operation path, we must construct it. Happens e.g. for
+			// user crafted requests.
+			if apiEndpoint == "" {
+				apiEndpoint = preparePathForLabel(resp.Request.URL.Path)
+			}
 			counter.WithLabelValues(
 				strconv.Itoa(resp.StatusCode),
 				strings.ToLower(resp.Request.Method),
-				ctxutil.OpPath(r.Context()),
+				apiEndpoint,
 			).Inc()
 		}
 
@@ -104,4 +111,18 @@ func registerOrReuse[C prometheus.Collector](registry prometheus.Registerer, col
 	}
 
 	return collector
+}
+
+var pathLabelRegexp = regexp.MustCompile("[^a-z/_]+")
+
+func preparePathForLabel(path string) string {
+	path = strings.ToLower(path)
+
+	// replace the /v1/ that indicated the API version
+	path, _ = strings.CutPrefix(path, "/v1")
+
+	// replace all numbers and chars that are not a-z, / or _
+	path = pathLabelRegexp.ReplaceAllString(path, "-")
+
+	return path
 }
