@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.20.1](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.20.1)
+
+### Bug Fixes
+
+- panic when a request did not set the OpPath for instrumentation (#635)
+
 ## [v2.20.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.20.0)
 
 In this release, the `api_endpoint` metric labels changed for all our API requests. Please make sure to update your setup if you were relying on them. The new labels are now easier to understand, see the example below:
