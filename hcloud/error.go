@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net"
+	"reflect"
 	"slices"
 )
 
@@ -154,4 +155,48 @@ type DNSNotFoundError struct {
 
 func (e DNSNotFoundError) Error() string {
 	return fmt.Sprintf("dns for ip %s not found", e.IP.String())
+}
+
+type InvalidArgumentError struct {
+	Message string
+	Struct  string
+	Field   string
+	Value   string
+}
+
+func (e *InvalidArgumentError) Error() string {
+	b := []byte{}
+
+	b = fmt.Append(b, e.Message)
+
+	if e.Value != "" {
+		b = fmt.Appendf(b, " '%s'", e.Value)
+	}
+
+	if e.Struct != "" && e.Field == "" {
+		b = fmt.Appendf(b, " for struct [%s]", e.Struct)
+	}
+
+	if e.Struct != "" && e.Field != "" {
+		b = fmt.Appendf(b, " for field [%s] in struct [%s]", e.Field, e.Struct)
+	}
+
+	return string(b)
+}
+
+func missingValue(obj any, field string) error {
+	return &InvalidArgumentError{
+		Message: "missing value",
+		Struct:  reflect.TypeOf(obj).String(),
+		Field:   field,
+	}
+}
+
+func invalidValue(obj any, field string, value any) error {
+	return &InvalidArgumentError{
+		Message: "invalid value",
+		Struct:  reflect.TypeOf(obj).String(),
+		Field:   field,
+		Value:   fmt.Sprint(value),
+	}
 }
