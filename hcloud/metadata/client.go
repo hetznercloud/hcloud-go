@@ -2,6 +2,7 @@ package metadata
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"io"
 	"net"
@@ -12,6 +13,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/internal/instrumentation"
 )
 
@@ -80,9 +82,14 @@ func NewClient(options ...ClientOption) *Client {
 
 // get executes an HTTP request against the API.
 func (c *Client) get(path string) (string, error) {
-	url := c.endpoint + path
+	ctx := ctxutil.SetOpPath(context.Background(), path)
 
-	resp, err := c.httpClient.Get(url)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.endpoint+path, http.NoBody)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := c.httpClient.Do(req)
 	if err != nil {
 		return "", err
 	}

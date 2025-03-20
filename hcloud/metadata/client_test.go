@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -27,6 +28,8 @@ func newTestEnv() testEnv {
 	server := httptest.NewServer(mux)
 	client := NewClient(
 		WithEndpoint(server.URL),
+		// This makes sure that our instrumentation does not cause any panics/errors
+		WithInstrumentation(prometheus.DefaultRegisterer),
 	)
 	return testEnv{
 		Server: server,
