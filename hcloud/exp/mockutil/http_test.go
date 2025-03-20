@@ -46,14 +46,14 @@ func TestHandler(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode)
 	assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-	assert.Equal(t, `{"data":"Hello"}`, readBody(t, resp))
+	assert.JSONEq(t, `{"data":"Hello"}`, readBody(t, resp))
 
 	// Request 2
 	resp, err = http.Get(server.URL)
 	require.NoError(t, err)
 	assert.Equal(t, 400, resp.StatusCode)
 	assert.Equal(t, "application/json", resp.Header.Get("Content-Type"))
-	assert.Equal(t, `{"error": "failed"}`, readBody(t, resp))
+	assert.JSONEq(t, `{"error": "failed"}`, readBody(t, resp))
 
 	// Request 3
 	resp, err = http.Get(server.URL)

@@ -54,10 +54,10 @@ func TestCloneRequest(t *testing.T) {
 	assert.Equal(t, req.Context(), cloned.Context())
 
 	// Check headers
-	assert.Equal(t, req.Header.Get("Authorization"), "sensitive")
+	assert.Equal(t, "sensitive", req.Header.Get("Authorization"))
 
 	// Check body
 	reqBody, err := io.ReadAll(req.Body)
 	require.NoError(t, err)
-	assert.Equal(t, string(reqBody), "Hello")
+	assert.Equal(t, "Hello", string(reqBody))
 }

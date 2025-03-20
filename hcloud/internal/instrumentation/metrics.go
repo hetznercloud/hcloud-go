@@ -1,6 +1,7 @@
 package instrumentation
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"regexp"
@@ -98,9 +99,10 @@ func (i *Instrumenter) instrumentRoundTripperEndpoint(counter *prometheus.Counte
 func registerOrReuse[C prometheus.Collector](registry prometheus.Registerer, collector C) C {
 	err := registry.Register(collector)
 	if err != nil {
+		var arErr prometheus.AlreadyRegisteredError
 		// If we get a AlreadyRegisteredError we can return the existing collector
-		if are, ok := err.(prometheus.AlreadyRegisteredError); ok {
-			if existingCollector, ok := are.ExistingCollector.(C); ok {
+		if errors.As(err, &arErr) {
+			if existingCollector, ok := arErr.ExistingCollector.(C); ok {
 				collector = existingCollector
 			} else {
 				panic("received incompatible existing collector")

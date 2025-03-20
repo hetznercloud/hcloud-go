@@ -201,7 +201,7 @@ func TestWaitForFunc(t *testing.T) {
 						return nil
 					}, actions...)
 
-					assert.Nil(t, err)
+					assert.NoError(t, err)
 					assert.Equal(t, []int{33, 46, 46, 53, 70, 83, 91, 100}, progress)
 				},
 			},

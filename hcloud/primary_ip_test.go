@@ -270,22 +270,11 @@ func TestPrimaryIPClient(t *testing.T) {
 
 		env.Mux.HandleFunc("/primary_ips", func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(struct {
-				PrimaryIPs []PrimaryIP `json:"primary_ips"`
-				Meta       schema.Meta `json:"meta"`
-			}{
-				PrimaryIPs: []PrimaryIP{
+			json.NewEncoder(w).Encode(schema.PrimaryIPListResponse{
+				PrimaryIPs: []schema.PrimaryIP{
 					{ID: 1},
 					{ID: 2},
 					{ID: 3},
-				},
-				Meta: schema.Meta{
-					Pagination: &schema.MetaPagination{
-						Page:         1,
-						LastPage:     1,
-						PerPage:      3,
-						TotalEntries: 3,
-					},
 				},
 			})
 		})

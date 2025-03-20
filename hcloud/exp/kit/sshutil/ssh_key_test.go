@@ -10,7 +10,7 @@ import (
 
 func TestGenerateKeyPair(t *testing.T) {
 	privBytes, pubBytes, err := GenerateKeyPair()
-	assert.Nil(t, err)
+	assert.NoError(t, err)
 
 	priv := string(privBytes)
 	pub := string(pubBytes)

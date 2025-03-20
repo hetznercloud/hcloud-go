@@ -95,7 +95,7 @@ func (m *Server) handler(w http.ResponseWriter, r *http.Request) {
 		expectedCall += " " + expected.Path
 		foundCall += " " + r.RequestURI
 	}
-	require.Equal(m.t, expectedCall, foundCall)
+	require.Equal(m.t, expectedCall, foundCall) // nolint: testifylint
 
 	if expected.Want != nil {
 		expected.Want(m.t, r)

@@ -80,26 +80,26 @@ func TestIDOrNameUnMarshall(t *testing.T) {
 func TestIDOrName(t *testing.T) {
 	// Make sure the behavior does not change from the use of an interface{}.
 	type FakeRequest struct {
-		Old interface{} `json:"old"`
-		New IDOrName    `json:"new"`
+		Old any      `json:"old"`
+		New IDOrName `json:"new"`
 	}
 
 	t.Run("null", func(t *testing.T) {
 		o := FakeRequest{}
 		body, err := json.Marshal(o)
 		require.NoError(t, err)
-		require.Equal(t, `{"old":null,"new":null}`, string(body))
+		require.JSONEq(t, `{"old":null,"new":null}`, string(body))
 	})
 	t.Run("id", func(t *testing.T) {
 		o := FakeRequest{Old: int64(1), New: IDOrName{ID: 1}}
 		body, err := json.Marshal(o)
 		require.NoError(t, err)
-		require.Equal(t, `{"old":1,"new":1}`, string(body))
+		require.JSONEq(t, `{"old":1,"new":1}`, string(body))
 	})
 	t.Run("name", func(t *testing.T) {
 		o := FakeRequest{Old: "name", New: IDOrName{Name: "name"}}
 		body, err := json.Marshal(o)
 		require.NoError(t, err)
-		require.Equal(t, `{"old":"name","new":"name"}`, string(body))
+		require.JSONEq(t, `{"old":"name","new":"name"}`, string(body))
 	})
 }

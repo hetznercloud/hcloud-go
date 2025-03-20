@@ -231,5 +231,5 @@ func TestClient_PrivateNetworks(t *testing.T) {
   network: 192.168.0.0/16
   subnet: 192.168.0.0/24
   gateway: 192.168.0.1`
-	assert.Equal(t, privateNetworks, expectedNetworks)
+	assert.Equal(t, expectedNetworks, privateNetworks)
 }

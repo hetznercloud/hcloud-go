@@ -622,7 +622,7 @@ func (c *ServerClient) CreateImage(ctx context.Context, server *Server, opts *Se
 	reqBody := schema.ServerActionCreateImageRequest{}
 	if opts != nil {
 		if err := opts.Validate(); err != nil {
-			return result, nil, fmt.Errorf("invalid options: %s", err)
+			return result, nil, fmt.Errorf("invalid options: %w", err)
 		}
 		if opts.Description != nil {
 			reqBody.Description = opts.Description

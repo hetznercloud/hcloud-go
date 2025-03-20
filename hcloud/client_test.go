@@ -105,21 +105,11 @@ func TestClientError(t *testing.T) {
 	}
 
 	_, err = env.Client.Do(req, nil)
-	if _, ok := err.(Error); !ok {
-		t.Fatalf("unexpected error of type %T: %v", err, err)
-	}
-
-	apiError := err.(Error)
-
-	if apiError.Code != "service_error" {
-		t.Errorf("unexpected error code: %q", apiError.Code)
-	}
-	if apiError.Message != "An error occurred" {
-		t.Errorf("unexpected error message: %q", apiError.Message)
-	}
-	if apiError.Response().StatusCode != http.StatusUnprocessableEntity {
-		t.Errorf("unexpected http status code: %q", apiError.Response().StatusCode)
-	}
+	var apiError Error
+	require.ErrorAs(t, err, &apiError)
+	require.Equal(t, ErrorCodeServiceError, apiError.Code)
+	require.Equal(t, "An error occurred", apiError.Message)
+	require.Equal(t, http.StatusUnprocessableEntity, apiError.Response().StatusCode)
 }
 
 func TestClientInvalidToken(t *testing.T) {
@@ -352,10 +342,10 @@ func TestExponentialBackoff(t *testing.T) {
 			32 * time.Second,
 		} {
 			backoff := backoffFunc(i)
-			require.Equal(t, backoff, expected)
+			require.Equal(t, expected, backoff)
 			sum += backoff.Seconds()
 		}
-		require.Equal(t, 127.0, sum)
+		require.Equal(t, 127.0, sum) // nolint: testifylint
 	})
 
 	t.Run("with jitter", func(t *testing.T) {
