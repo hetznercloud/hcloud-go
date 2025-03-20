@@ -12,6 +12,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -28,6 +29,8 @@ func makeTestUtils(t *testing.T) (context.Context, *mockutil.Server, *Client) {
 		WithEndpoint(server.URL),
 		WithRetryOpts(RetryOpts{BackoffFunc: ConstantBackoff(0), MaxRetries: 5}),
 		WithPollOpts(PollOpts{BackoffFunc: ConstantBackoff(0)}),
+		// This makes sure that our instrumentation does not cause any panics/errors
+		WithInstrumentation(prometheus.DefaultRegisterer),
 	)
 
 	return ctx, server, client
@@ -63,6 +66,8 @@ func newTestEnvWithServer(server *httptest.Server, mux *http.ServeMux) testEnv {
 		WithPollOpts(PollOpts{
 			BackoffFunc: ConstantBackoff(0),
 		}),
+		// This makes sure that our instrumentation does not cause any panics/errors
+		WithInstrumentation(prometheus.DefaultRegisterer),
 	)
 	return testEnv{
 		Server: server,

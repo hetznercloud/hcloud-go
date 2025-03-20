@@ -11,6 +11,7 @@ type key struct{}
 // opPathKey is the key for operation path in Contexts.
 var opPathKey = key{}
 
+// SetOpPath processes the operation path and save it in the context before returning it.
 func SetOpPath(ctx context.Context, path string) context.Context {
 	path, _, _ = strings.Cut(path, "?")
 	path = strings.ReplaceAll(path, "%d", "-")
@@ -19,7 +20,11 @@ func SetOpPath(ctx context.Context, path string) context.Context {
 	return context.WithValue(ctx, opPathKey, path)
 }
 
+// OpPath returns the operation path from the context.
 func OpPath(ctx context.Context) string {
-	result := ctx.Value(opPathKey).(string)
+	result, ok := ctx.Value(opPathKey).(string)
+	if !ok {
+		return ""
+	}
 	return result
 }
