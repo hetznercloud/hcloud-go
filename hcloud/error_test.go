@@ -3,6 +3,7 @@ package hcloud
 import (
 	"fmt"
 	"net/http"
+	"reflect"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -137,6 +138,51 @@ func TestIsError(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equalf(t, tt.want, IsError(tt.args.err, tt.args.code...), "IsError(%v, %v)", tt.args.err, tt.args.code)
+		})
+	}
+}
+
+func TestInvalidArgumentError(t *testing.T) {
+	type Something struct{ Name string }
+	something := Something{Name: "hello"}
+
+	for _, tt := range []struct {
+		err  error
+		want string
+	}{
+		{
+			err: &InvalidArgumentError{
+				Message: "unexpected nil value",
+				Struct:  reflect.TypeOf(something).String(),
+			},
+			want: "unexpected nil value for struct [hcloud.Something]",
+		},
+		{
+			err: &InvalidArgumentError{
+				Message: "unexpected empty value",
+				Struct:  reflect.TypeOf(something).String(),
+				Field:   "Name",
+			},
+			want: "unexpected empty value for field [Name] in struct [hcloud.Something]",
+		},
+		{
+			err: &InvalidArgumentError{
+				Message: "unexpected value",
+				Value:   "invalid",
+				Struct:  reflect.TypeOf(something).String(),
+				Field:   "Name",
+			},
+			want: "unexpected value 'invalid' for field [Name] in struct [hcloud.Something]",
+		},
+		{
+			err: &InvalidArgumentError{
+				Message: "invalid argument",
+			},
+			want: "invalid argument",
+		},
+	} {
+		t.Run("", func(t *testing.T) {
+			assert.EqualError(t, tt.err, tt.want)
 		})
 	}
 }

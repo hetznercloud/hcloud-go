@@ -25,7 +25,7 @@ func TestCertificateCreateOptsValidate_Uploaded(t *testing.T) {
 				PrivateKey:  "key",
 				Labels:      map[string]string{},
 			},
-			errMsg: "missing name",
+			errMsg: "missing value for field [Name] in struct [hcloud.CertificateCreateOpts]",
 		},
 		{
 			name: "no certificate",
@@ -34,7 +34,7 @@ func TestCertificateCreateOptsValidate_Uploaded(t *testing.T) {
 				PrivateKey: "key",
 				Labels:     map[string]string{},
 			},
-			errMsg: "missing certificate",
+			errMsg: "missing value for field [Certificate] in struct [hcloud.CertificateCreateOpts]",
 		},
 		{
 			name: "no private key",
@@ -43,7 +43,7 @@ func TestCertificateCreateOptsValidate_Uploaded(t *testing.T) {
 				Certificate: "cert",
 				Labels:      map[string]string{},
 			},
-			errMsg: "missing private key",
+			errMsg: "missing value for field [PrivateKey] in struct [hcloud.CertificateCreateOpts]",
 		},
 		{
 			name: "valid without type",
@@ -90,7 +90,7 @@ func TestCertificateCreateOptsValidate_Managed(t *testing.T) {
 				Type:        "managed",
 				DomainNames: []string{"*.example.com", "example.com"},
 			},
-			errMsg: "missing name",
+			errMsg: "missing value for field [Name] in struct [hcloud.CertificateCreateOpts]",
 		},
 		{
 			name: "missing domains",
@@ -125,7 +125,7 @@ func TestCertificateCreateOptsValidate_Managed(t *testing.T) {
 func TestCertificateCreateOptsValidate_InvalidType(t *testing.T) {
 	opts := CertificateCreateOpts{Name: "invalid type", Type: "invalid"}
 	err := opts.Validate()
-	assert.EqualError(t, err, "invalid type: invalid")
+	assert.EqualError(t, err, "invalid value 'invalid' for field [Type] in struct [hcloud.CertificateCreateOpts]")
 }
 
 func TestCertificateClientGetByID(t *testing.T) {
@@ -410,7 +410,7 @@ func TestCertificateCreateValidation(t *testing.T) {
 	ctx := context.Background()
 	opts := CertificateCreateOpts{}
 	_, _, err := env.Client.Certificate.Create(ctx, opts)
-	if err == nil || err.Error() != "missing name" {
+	if err == nil || err.Error() != "missing value for field [Name] in struct [hcloud.CertificateCreateOpts]" {
 		t.Fatalf("unexpected error: %v", err)
 	}
 }
