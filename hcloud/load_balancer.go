@@ -891,13 +891,13 @@ type LoadBalancerGetMetricsOpts struct {
 
 func (o LoadBalancerGetMetricsOpts) Validate() error {
 	if len(o.Types) == 0 {
-		return fmt.Errorf("no metric types specified")
+		return missingField(o, "Types")
 	}
 	if o.Start.IsZero() {
-		return fmt.Errorf("no start time specified")
+		return missingField(o, "Start")
 	}
 	if o.End.IsZero() {
-		return fmt.Errorf("no end time specified")
+		return missingField(o, "End")
 	}
 	return nil
 }
@@ -941,7 +941,7 @@ func (c *LoadBalancerClient) GetMetrics(
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	if loadBalancer == nil {
-		return nil, nil, fmt.Errorf("illegal argument: load balancer is nil")
+		return nil, nil, missingArgument(loadBalancer)
 	}
 
 	if err := opts.Validate(); err != nil {

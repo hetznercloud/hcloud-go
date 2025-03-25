@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -151,19 +150,19 @@ type VolumeCreateOpts struct {
 // Validate checks if options are valid.
 func (o VolumeCreateOpts) Validate() error {
 	if o.Name == "" {
-		return errors.New("missing name")
+		return missingField(o, "Name")
 	}
 	if o.Size <= 0 {
-		return errors.New("size must be greater than 0")
+		return invalidFieldValue(o, "Size", o.Size)
 	}
 	if o.Server == nil && o.Location == nil {
-		return errors.New("one of server or location must be provided")
+		return missingOneOfFields(o, "Server", "Location")
 	}
 	if o.Server != nil && o.Location != nil {
-		return errors.New("only one of server or location must be provided")
+		return mutuallyExclusiveFields(o, "Server", "Location")
 	}
 	if o.Server == nil && (o.Automount != nil && *o.Automount) {
-		return errors.New("server must be provided when automount is true")
+		return missingRequiredTogetherFields(o, "Automount", "Server")
 	}
 	return nil
 }

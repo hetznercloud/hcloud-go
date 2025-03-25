@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -307,22 +306,16 @@ type ServerCreateFirewall struct {
 // Validate checks if options are valid.
 func (o ServerCreateOpts) Validate() error {
 	if o.Name == "" {
-		return errors.New("missing name")
+		return missingField(o, "Name")
 	}
 	if o.ServerType == nil || (o.ServerType.ID == 0 && o.ServerType.Name == "") {
-		return errors.New("missing server type")
+		return missingField(o, "ServerType")
 	}
 	if o.Image == nil || (o.Image.ID == 0 && o.Image.Name == "") {
-		return errors.New("missing image")
+		return missingField(o, "Image")
 	}
 	if o.Location != nil && o.Datacenter != nil {
-		return errors.New("location and datacenter are mutually exclusive")
-	}
-	if o.PublicNet != nil {
-		if !o.PublicNet.EnableIPv4 && !o.PublicNet.EnableIPv6 &&
-			len(o.Networks) == 0 && (o.StartAfterCreate == nil || *o.StartAfterCreate) {
-			return errors.New("missing networks or StartAfterCreate == false when EnableIPv4 and EnableIPv6 is false")
-		}
+		return mutuallyExclusiveFields(o, "Location", "Datacenter")
 	}
 	return nil
 }
@@ -598,7 +591,7 @@ func (o ServerCreateImageOpts) Validate() error {
 	case "":
 		break
 	default:
-		return errors.New("invalid type")
+		return invalidFieldValue(o, "Type", o.Type)
 	}
 
 	return nil
@@ -622,7 +615,7 @@ func (c *ServerClient) CreateImage(ctx context.Context, server *Server, opts *Se
 	reqBody := schema.ServerActionCreateImageRequest{}
 	if opts != nil {
 		if err := opts.Validate(); err != nil {
-			return result, nil, fmt.Errorf("invalid options: %w", err)
+			return result, nil, err
 		}
 		if opts.Description != nil {
 			reqBody.Description = opts.Description
@@ -1013,13 +1006,13 @@ type ServerGetMetricsOpts struct {
 
 func (o ServerGetMetricsOpts) Validate() error {
 	if len(o.Types) == 0 {
-		return fmt.Errorf("no metric types specified")
+		return missingField(o, "Types")
 	}
 	if o.Start.IsZero() {
-		return fmt.Errorf("no start time specified")
+		return missingField(o, "Start")
 	}
 	if o.End.IsZero() {
-		return fmt.Errorf("no end time specified")
+		return missingField(o, "End")
 	}
 	return nil
 }
@@ -1061,7 +1054,7 @@ func (c *ServerClient) GetMetrics(ctx context.Context, server *Server, opts Serv
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	if server == nil {
-		return nil, nil, fmt.Errorf("illegal argument: server is nil")
+		return nil, nil, missingArgument(server)
 	}
 
 	if err := opts.Validate(); err != nil {

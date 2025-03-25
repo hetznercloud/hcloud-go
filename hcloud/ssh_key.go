@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -127,10 +126,10 @@ type SSHKeyCreateOpts struct {
 // Validate checks if options are valid.
 func (o SSHKeyCreateOpts) Validate() error {
 	if o.Name == "" {
-		return errors.New("missing name")
+		return missingField(o, "Name")
 	}
 	if o.PublicKey == "" {
-		return errors.New("missing public key")
+		return missingField(o, "PublicKey")
 	}
 	return nil
 }

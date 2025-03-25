@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
@@ -289,9 +290,8 @@ func TestFirewallCreateValidation(t *testing.T) {
 	ctx := context.Background()
 	opts := FirewallCreateOpts{}
 	_, _, err := env.Client.Firewall.Create(ctx, opts)
-	if err == nil || err.Error() != "missing name" {
-		t.Fatalf("unexpected error: %v", err)
-	}
+
+	require.EqualError(t, err, "missing field [Name] in [hcloud.FirewallCreateOpts]")
 }
 
 func TestFirewallDelete(t *testing.T) {

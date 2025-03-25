@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -186,7 +185,7 @@ type CertificateCreateOpts struct {
 // Validate checks if options are valid.
 func (o CertificateCreateOpts) Validate() error {
 	if o.Name == "" {
-		return errors.New("missing name")
+		return missingField(o, "Name")
 	}
 	switch o.Type {
 	case "", CertificateTypeUploaded:
@@ -194,23 +193,23 @@ func (o CertificateCreateOpts) Validate() error {
 	case CertificateTypeManaged:
 		return o.validateManaged()
 	default:
-		return fmt.Errorf("invalid type: %s", o.Type)
+		return invalidFieldValue(o, "Type", o.Type)
 	}
 }
 
 func (o CertificateCreateOpts) validateManaged() error {
 	if len(o.DomainNames) == 0 {
-		return errors.New("no domain names")
+		return missingField(o, "DomainNames")
 	}
 	return nil
 }
 
 func (o CertificateCreateOpts) validateUploaded() error {
 	if o.Certificate == "" {
-		return errors.New("missing certificate")
+		return missingField(o, "Certificate")
 	}
 	if o.PrivateKey == "" {
-		return errors.New("missing private key")
+		return missingField(o, "PrivateKey")
 	}
 	return nil
 }
@@ -221,7 +220,7 @@ func (o CertificateCreateOpts) validateUploaded() error {
 // CreateCertificate to create such certificates.
 func (c *CertificateClient) Create(ctx context.Context, opts CertificateCreateOpts) (*Certificate, *Response, error) {
 	if !(opts.Type == "" || opts.Type == CertificateTypeUploaded) {
-		return nil, nil, fmt.Errorf("invalid certificate type: %s", opts.Type)
+		return nil, nil, invalidFieldValue(opts, "Type", opts.Type)
 	}
 	result, resp, err := c.CreateCertificate(ctx, opts)
 	if err != nil {
@@ -258,7 +257,7 @@ func (c *CertificateClient) CreateCertificate(
 		reqBody.Type = string(CertificateTypeManaged)
 		reqBody.DomainNames = opts.DomainNames
 	default:
-		return CertificateCreateResult{}, nil, fmt.Errorf("invalid certificate type: %v", opts.Type)
+		return result, nil, invalidFieldValue(opts, "Type", opts.Type)
 	}
 
 	if opts.Labels != nil {

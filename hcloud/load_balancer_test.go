@@ -1155,7 +1155,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "no metric types specified",
+			expectedErr: "missing field [Types] in [hcloud.LoadBalancerGetMetricsOpts]",
 		},
 		{
 			name: "no start time",
@@ -1164,7 +1164,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				Types: []LoadBalancerMetricType{LoadBalancerMetricBandwidth},
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "no start time specified",
+			expectedErr: "missing field [Start] in [hcloud.LoadBalancerGetMetricsOpts]",
 		},
 		{
 			name: "no end time",
@@ -1173,7 +1173,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				Types: []LoadBalancerMetricType{LoadBalancerMetricBandwidth},
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 			},
-			expectedErr: "no end time specified",
+			expectedErr: "missing field [End] in [hcloud.LoadBalancerGetMetricsOpts]",
 		},
 		{
 			name: "call to backend API fails",
@@ -1193,7 +1193,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "illegal argument: load balancer is nil",
+			expectedErr: "missing argument [*hcloud.LoadBalancer]",
 		},
 	}
 

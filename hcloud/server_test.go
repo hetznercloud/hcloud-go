@@ -2242,7 +2242,7 @@ func TestServerGetMetrics(t *testing.T) {
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "no metric types specified",
+			expectedErr: "missing field [Types] in [hcloud.ServerGetMetricsOpts]",
 		},
 		{
 			name:   "no start time",
@@ -2251,7 +2251,7 @@ func TestServerGetMetrics(t *testing.T) {
 				Types: []ServerMetricType{ServerMetricCPU},
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "no start time specified",
+			expectedErr: "missing field [Start] in [hcloud.ServerGetMetricsOpts]",
 		},
 		{
 			name:   "no end time",
@@ -2260,7 +2260,7 @@ func TestServerGetMetrics(t *testing.T) {
 				Types: []ServerMetricType{ServerMetricCPU},
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 			},
-			expectedErr: "no end time specified",
+			expectedErr: "missing field [End] in [hcloud.ServerGetMetricsOpts]",
 		},
 		{
 			name:   "call to backend API fails",
@@ -2280,7 +2280,7 @@ func TestServerGetMetrics(t *testing.T) {
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "illegal argument: server is nil",
+			expectedErr: "missing argument [*hcloud.Server]",
 		},
 	}
 

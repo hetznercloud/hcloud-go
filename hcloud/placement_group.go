@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -134,7 +133,7 @@ type PlacementGroupCreateOpts struct {
 // Validate checks if options are valid.
 func (o PlacementGroupCreateOpts) Validate() error {
 	if o.Name == "" {
-		return errors.New("missing name")
+		return missingField(o, "Name")
 	}
 	return nil
 }
