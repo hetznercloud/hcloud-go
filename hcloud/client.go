@@ -267,7 +267,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.buildUserAgent()
 	if client.instrumentationRegistry != nil {
 		i := instrumentation.New("api", client.instrumentationRegistry)
-		client.httpClient.Transport = i.InstrumentedRoundTripper()
+		client.httpClient.Transport = i.InstrumentedRoundTripper(client.httpClient.Transport)
 	}
 
 	client.handler = assembleHandlerChain(client)

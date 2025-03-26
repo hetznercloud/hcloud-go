@@ -25,7 +25,12 @@ func New(subsystemIdentifier string, instrumentationRegistry prometheus.Register
 }
 
 // InstrumentedRoundTripper returns an instrumented round tripper.
-func (i *Instrumenter) InstrumentedRoundTripper() http.RoundTripper {
+func (i *Instrumenter) InstrumentedRoundTripper(transport http.RoundTripper) http.RoundTripper {
+	// By default, http client would use DefaultTransport on nil, but we internally are relying on it being configured
+	if transport == nil {
+		transport = http.DefaultTransport
+	}
+
 	inFlightRequestsGauge := registerOrReuse(
 		i.instrumentationRegistry,
 		prometheus.NewGauge(prometheus.GaugeOpts{
@@ -60,7 +65,7 @@ func (i *Instrumenter) InstrumentedRoundTripper() http.RoundTripper {
 	return promhttp.InstrumentRoundTripperInFlight(inFlightRequestsGauge,
 		promhttp.InstrumentRoundTripperDuration(requestLatencyHistogram,
 			i.instrumentRoundTripperEndpoint(requestsPerEndpointCounter,
-				http.DefaultTransport,
+				transport,
 			),
 		),
 	)
