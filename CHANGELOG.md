@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.21.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.21.0)
+
+### Features
+
+- consistent argument errors (#637)
+
+### Bug Fixes
+
+- http transport ignored when using instrumentation (#642)
+
 ## [v2.20.1](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.20.1)
 
 ### Bug Fixes
