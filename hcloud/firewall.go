@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -183,7 +182,7 @@ type FirewallCreateOpts struct {
 // Validate checks if options are valid.
 func (o FirewallCreateOpts) Validate() error {
 	if o.Name == "" {
-		return errors.New("missing name")
+		return missingField(o, "Name")
 	}
 	return nil
 }

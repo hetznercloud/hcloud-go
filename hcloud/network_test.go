@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -206,9 +208,7 @@ func TestNetworkCreate(t *testing.T) {
 
 		opts := NetworkCreateOpts{}
 		_, _, err := env.Client.Network.Create(ctx, opts)
-		if err == nil || err.Error() != "missing name" {
-			t.Fatalf("Network.Create should fail with \"missing name\" but failed with %s", err)
-		}
+		require.EqualError(t, err, "missing field [Name] in [hcloud.NetworkCreateOpts]")
 	})
 
 	t.Run("missing required field ip range", func(t *testing.T) {
@@ -219,9 +219,7 @@ func TestNetworkCreate(t *testing.T) {
 			Name: "my-network",
 		}
 		_, _, err := env.Client.Network.Create(ctx, opts)
-		if err == nil || err.Error() != "missing IP range" {
-			t.Fatalf("Network.Create should fail with \"missing IP range\" but failed with %s", err)
-		}
+		require.EqualError(t, err, "missing field [IPRange] in [hcloud.NetworkCreateOpts]")
 	})
 
 	t.Run("required fields", func(t *testing.T) {

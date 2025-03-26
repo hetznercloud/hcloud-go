@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -222,10 +221,10 @@ type NetworkCreateOpts struct {
 // Validate checks if options are valid.
 func (o NetworkCreateOpts) Validate() error {
 	if o.Name == "" {
-		return errors.New("missing name")
+		return missingField(o, "Name")
 	}
 	if o.IPRange == nil || o.IPRange.String() == "" {
-		return errors.New("missing IP range")
+		return missingField(o, "IPRange")
 	}
 	return nil
 }

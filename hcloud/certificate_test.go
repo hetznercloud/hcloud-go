@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
@@ -25,7 +26,7 @@ func TestCertificateCreateOptsValidate_Uploaded(t *testing.T) {
 				PrivateKey:  "key",
 				Labels:      map[string]string{},
 			},
-			errMsg: "missing name",
+			errMsg: "missing field [Name] in [hcloud.CertificateCreateOpts]",
 		},
 		{
 			name: "no certificate",
@@ -34,7 +35,7 @@ func TestCertificateCreateOptsValidate_Uploaded(t *testing.T) {
 				PrivateKey: "key",
 				Labels:     map[string]string{},
 			},
-			errMsg: "missing certificate",
+			errMsg: "missing field [Certificate] in [hcloud.CertificateCreateOpts]",
 		},
 		{
 			name: "no private key",
@@ -43,7 +44,7 @@ func TestCertificateCreateOptsValidate_Uploaded(t *testing.T) {
 				Certificate: "cert",
 				Labels:      map[string]string{},
 			},
-			errMsg: "missing private key",
+			errMsg: "missing field [PrivateKey] in [hcloud.CertificateCreateOpts]",
 		},
 		{
 			name: "valid without type",
@@ -90,7 +91,7 @@ func TestCertificateCreateOptsValidate_Managed(t *testing.T) {
 				Type:        "managed",
 				DomainNames: []string{"*.example.com", "example.com"},
 			},
-			errMsg: "missing name",
+			errMsg: "missing field [Name] in [hcloud.CertificateCreateOpts]",
 		},
 		{
 			name: "missing domains",
@@ -98,7 +99,7 @@ func TestCertificateCreateOptsValidate_Managed(t *testing.T) {
 				Name: "I have no domains",
 				Type: "managed",
 			},
-			errMsg: "no domain names",
+			errMsg: "missing field [DomainNames] in [hcloud.CertificateCreateOpts]",
 		},
 		{
 			name: "valid certificate",
@@ -125,7 +126,7 @@ func TestCertificateCreateOptsValidate_Managed(t *testing.T) {
 func TestCertificateCreateOptsValidate_InvalidType(t *testing.T) {
 	opts := CertificateCreateOpts{Name: "invalid type", Type: "invalid"}
 	err := opts.Validate()
-	assert.EqualError(t, err, "invalid type: invalid")
+	assert.EqualError(t, err, "invalid value 'invalid' for field [Type] in [hcloud.CertificateCreateOpts]")
 }
 
 func TestCertificateClientGetByID(t *testing.T) {
@@ -410,9 +411,8 @@ func TestCertificateCreateValidation(t *testing.T) {
 	ctx := context.Background()
 	opts := CertificateCreateOpts{}
 	_, _, err := env.Client.Certificate.Create(ctx, opts)
-	if err == nil || err.Error() != "missing name" {
-		t.Fatalf("unexpected error: %v", err)
-	}
+
+	require.EqualError(t, err, "missing field [Name] in [hcloud.CertificateCreateOpts]")
 }
 
 func TestCertificateDelete(t *testing.T) {

@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net"
 	"net/url"
@@ -184,10 +183,10 @@ func (o FloatingIPCreateOpts) Validate() error {
 	case FloatingIPTypeIPv4, FloatingIPTypeIPv6:
 		break
 	default:
-		return errors.New("missing or invalid type")
+		return invalidFieldValue(o, "Type", o.Type)
 	}
 	if o.HomeLocation == nil && o.Server == nil {
-		return errors.New("one of home location or server is required")
+		return missingOneOfFields(o, "HomeLocation", "Server")
 	}
 	return nil
 }

@@ -140,3 +140,42 @@ func TestIsError(t *testing.T) {
 		})
 	}
 }
+
+func TestArgumentError(t *testing.T) {
+	type Something struct{ Name string }
+	something := Something{Name: "hello"}
+
+	for _, tt := range []struct {
+		err  error
+		want string
+	}{
+		{
+			err:  missingArgument(something),
+			want: "missing argument [hcloud.Something]",
+		},
+		{
+			err:  missingField(something, "Name"),
+			want: "missing field [Name] in [hcloud.Something]",
+		},
+		{
+			err:  invalidFieldValue(something, "Name", something.Name),
+			want: "invalid value 'hello' for field [Name] in [hcloud.Something]",
+		},
+		{
+			err:  missingOneOfFields(something, "Name", "Type"),
+			want: "missing one of fields [Name, Type] in [hcloud.Something]",
+		},
+		{
+			err:  mutuallyExclusiveFields(something, "Name", "Type"),
+			want: "found mutually exclusive fields [Name, Type] in [hcloud.Something]",
+		},
+		{
+			err:  missingRequiredTogetherFields(something, "Name", "Type"),
+			want: "missing required together fields [Name, Type] in [hcloud.Something]",
+		},
+	} {
+		t.Run("", func(t *testing.T) {
+			assert.EqualError(t, tt.err, tt.want)
+		})
+	}
+}
