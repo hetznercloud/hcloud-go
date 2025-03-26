@@ -75,7 +75,7 @@ func NewClient(options ...ClientOption) *Client {
 
 	if client.instrumentationRegistry != nil {
 		i := instrumentation.New("metadata", client.instrumentationRegistry)
-		client.httpClient.Transport = i.InstrumentedRoundTripper()
+		client.httpClient.Transport = i.InstrumentedRoundTripper(client.httpClient.Transport)
 	}
 	return client
 }
