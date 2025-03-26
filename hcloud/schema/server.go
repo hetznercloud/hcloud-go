@@ -398,17 +398,7 @@ type ServerActionChangeAliasIPsResponse struct {
 // ServerGetMetricsResponse defines the schema of the response when requesting
 // metrics for a server.
 type ServerGetMetricsResponse struct {
-	Metrics struct {
-		Start      time.Time                       `json:"start"`
-		End        time.Time                       `json:"end"`
-		Step       float64                         `json:"step"`
-		TimeSeries map[string]ServerTimeSeriesVals `json:"time_series"`
-	} `json:"metrics"`
-}
-
-// ServerTimeSeriesVals contains the values for a Server time series.
-type ServerTimeSeriesVals struct {
-	Values []interface{} `json:"values"`
+	Metrics Metrics `json:"metrics"`
 }
 
 // ServerActionAddToPlacementGroupRequest defines the schema for the request to

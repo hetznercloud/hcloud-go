@@ -223,11 +223,7 @@ func (c *converterImpl) LoadBalancerMetricsFromSchema(source *schema.LoadBalance
 		if (*source).Metrics.TimeSeries != nil {
 			hcloudLoadBalancerMetrics.TimeSeries = make(map[string][]LoadBalancerMetricsValue, len((*source).Metrics.TimeSeries))
 			for key, value := range (*source).Metrics.TimeSeries {
-				hcloudLoadBalancerMetricsValueList, err := loadBalancerMetricsTimeSeriesFromSchema(value)
-				if err != nil {
-					return nil, err
-				}
-				hcloudLoadBalancerMetrics.TimeSeries[key] = hcloudLoadBalancerMetricsValueList
+				hcloudLoadBalancerMetrics.TimeSeries[key] = loadBalancerMetricsValueFromSchema(value)
 			}
 		}
 		pHcloudLoadBalancerMetrics = &hcloudLoadBalancerMetrics
@@ -1225,11 +1221,7 @@ func (c *converterImpl) ServerMetricsFromSchema(source *schema.ServerGetMetricsR
 		if (*source).Metrics.TimeSeries != nil {
 			hcloudServerMetrics.TimeSeries = make(map[string][]ServerMetricsValue, len((*source).Metrics.TimeSeries))
 			for key, value := range (*source).Metrics.TimeSeries {
-				hcloudServerMetricsValueList, err := serverMetricsTimeSeriesFromSchema(value)
-				if err != nil {
-					return nil, err
-				}
-				hcloudServerMetrics.TimeSeries[key] = hcloudServerMetricsValueList
+				hcloudServerMetrics.TimeSeries[key] = serverMetricsValueFromSchema(value)
 			}
 		}
 		pHcloudServerMetrics = &hcloudServerMetrics

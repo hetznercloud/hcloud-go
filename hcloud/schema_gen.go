@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"encoding/json"
-	"fmt"
 	"net"
 	"time"
 
@@ -69,8 +68,8 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend durationFromIntSeconds
 // goverter:extend intSecondsFromDuration
 // goverter:extend serverFromImageCreatedFromSchema
-// goverter:extend serverMetricsTimeSeriesFromSchema
-// goverter:extend loadBalancerMetricsTimeSeriesFromSchema
+// goverter:extend serverMetricsValueFromSchema
+// goverter:extend loadBalancerMetricsValueFromSchema
 // goverter:extend stringPtrFromLoadBalancerServiceProtocol
 // goverter:extend stringPtrFromNetworkZone
 // goverter:extend schemaFromLoadBalancerCreateOptsTargetLabelSelector
@@ -824,64 +823,28 @@ func volumePricingFromSchema(s schema.Pricing) VolumePricing {
 	}
 }
 
-func serverMetricsTimeSeriesFromSchema(s schema.ServerTimeSeriesVals) ([]ServerMetricsValue, error) {
-	vals := make([]ServerMetricsValue, len(s.Values))
-
-	for i, rawVal := range s.Values {
-		var val ServerMetricsValue
-
-		tup, ok := rawVal.([]interface{})
-		if !ok {
-			return nil, fmt.Errorf("failed to convert value to tuple: %v", rawVal)
-		}
-		if len(tup) != 2 {
-			return nil, fmt.Errorf("invalid tuple size: %d: %v", len(tup), rawVal)
-		}
-		ts, ok := tup[0].(float64)
-		if !ok {
-			return nil, fmt.Errorf("convert to float64: %v", tup[0])
-		}
-		val.Timestamp = ts
-
-		v, ok := tup[1].(string)
-		if !ok {
-			return nil, fmt.Errorf("not a string: %v", tup[1])
-		}
-		val.Value = v
-		vals[i] = val
+func serverMetricsValueFromSchema(s schema.MetricsTimeSerie) []ServerMetricsValue {
+	values := make([]ServerMetricsValue, len(s.Values))
+	for i, schemaValue := range s.Values {
+		var value ServerMetricsValue
+		value.Timestamp = float64(schemaValue.Timestamp)
+		value.Value = schemaValue.Value.String()
+		values[i] = value
 	}
 
-	return vals, nil
+	return values
 }
 
-func loadBalancerMetricsTimeSeriesFromSchema(s schema.LoadBalancerTimeSeriesVals) ([]LoadBalancerMetricsValue, error) {
-	vals := make([]LoadBalancerMetricsValue, len(s.Values))
-
-	for i, rawVal := range s.Values {
-		var val LoadBalancerMetricsValue
-
-		tup, ok := rawVal.([]interface{})
-		if !ok {
-			return nil, fmt.Errorf("failed to convert value to tuple: %v", rawVal)
-		}
-		if len(tup) != 2 {
-			return nil, fmt.Errorf("invalid tuple size: %d: %v", len(tup), rawVal)
-		}
-		ts, ok := tup[0].(float64)
-		if !ok {
-			return nil, fmt.Errorf("convert to float64: %v", tup[0])
-		}
-		val.Timestamp = ts
-
-		v, ok := tup[1].(string)
-		if !ok {
-			return nil, fmt.Errorf("not a string: %v", tup[1])
-		}
-		val.Value = v
-		vals[i] = val
+func loadBalancerMetricsValueFromSchema(s schema.MetricsTimeSerie) []LoadBalancerMetricsValue {
+	values := make([]LoadBalancerMetricsValue, len(s.Values))
+	for i, schemaValue := range s.Values {
+		var value LoadBalancerMetricsValue
+		value.Timestamp = float64(schemaValue.Timestamp)
+		value.Value = schemaValue.Value.String()
+		values[i] = value
 	}
 
-	return vals, nil
+	return values
 }
 
 func mapEmptyStringToNil(s string) *string {
