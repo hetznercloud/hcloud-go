@@ -7,17 +7,20 @@ on:
   pull_request:
 
 jobs:
-  lint:
+  pre-commit:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
       - uses: actions/setup-go@v5
         with:
           go-version: "1.24"
 
-      - uses: golangci/golangci-lint-action@v6
-        with:
-          version: v1.64.8 # renovate: datasource=github-releases depName=golangci/golangci-lint
+      - uses: pre-commit/action@v3.0.1
 
   test:
     strategy:
@@ -41,39 +44,3 @@ jobs:
           !startsWith(github.head_ref, 'releaser-pleaser--')
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-
-  generate:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.24"
-          cache: false
-
-      - run: go generate ./...
-
-      - run: git diff --exit-code
-
-      - if: failure()
-        run: echo "::error::Check failed, please run 'go generate ./...' and commit the changes."
-
-  go-mod-tidy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Go
-        uses: actions/setup-go@v5
-        with:
-          go-version-file: go.mod
-
-      - name: Run go mod tidy
-        run: go mod tidy
-
-      - name: Check uncommitted changes
-        run: git diff --exit-code
-
-      - if: failure()
-        run: echo "::error::Check failed, please run 'go mod tidy' and commit the changes."
