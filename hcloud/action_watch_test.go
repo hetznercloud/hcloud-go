@@ -228,7 +228,7 @@ func TestActionClientWatchProgress(t *testing.T) {
 		case 2:
 			w.WriteHeader(http.StatusConflict)
 			_, _ = w.Write([]byte(`{
-				"error": { 
+				"error": {
 					"code": "conflict",
 					"message": "conflict"
 				}

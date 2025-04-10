@@ -162,9 +162,9 @@ func TestWaitForFunc(t *testing.T) {
 						Status: 200,
 						JSONRaw: `{
 							"actions": [
-								{ "id": 1509772238, "status": "error", "progress": 75, 
+								{ "id": 1509772238, "status": "error", "progress": 75,
 									"error": {
-										"code": "action_failed", 
+										"code": "action_failed",
 										"message": "Something went wrong with the action"
 									}
 								}
