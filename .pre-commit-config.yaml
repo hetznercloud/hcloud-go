@@ -1,0 +1,54 @@
+---
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+      - id: check-symlinks
+      - id: destroyed-symlinks
+
+      - id: check-json
+      - id: check-yaml
+      - id: check-toml
+
+      - id: check-merge-conflict
+      - id: end-of-file-fixer
+      - id: mixed-line-ending
+        args: [--fix=lf]
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        language: node
+        additional_dependencies: [prettier@3.3.3]
+        entry: prettier --write --ignore-unknown
+        types: [text]
+        require_serial: false
+        files: \.(md|ya?ml)$
+
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.64.8
+    hooks:
+      - id: golangci-lint-full
+        args: [--timeout=5m]
+
+  - repo: local
+    hooks:
+      - id: go-mod-tidy
+        name: go mod tidy
+        language: golang
+        entry: go mod tidy
+        pass_filenames: false
+
+      - id: go-generate
+        name: go generate
+        language: golang
+        entry: go generate ./...
+        pass_filenames: false
