@@ -1193,7 +1193,7 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
 				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
 			},
-			expectedErr: "missing argument [*hcloud.LoadBalancer]",
+			expectedErr: "missing argument 'loadBalancer' [*hcloud.LoadBalancer]",
 		},
 	}
 

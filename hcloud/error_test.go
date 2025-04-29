@@ -150,8 +150,12 @@ func TestArgumentError(t *testing.T) {
 		want string
 	}{
 		{
-			err:  missingArgument(something),
-			want: "missing argument [hcloud.Something]",
+			err:  missingArgument("something", something),
+			want: "missing argument 'something' [hcloud.Something]",
+		},
+		{
+			err:  invalidArgument("something", "hello"),
+			want: "invalid value 'hello' for argument 'something' [string]",
 		},
 		{
 			err:  missingField(something, "Name"),
