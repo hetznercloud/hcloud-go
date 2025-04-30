@@ -33,12 +33,6 @@ repos:
         require_serial: false
         files: \.(md|ya?ml)$
 
-  - repo: https://github.com/golangci/golangci-lint
-    rev: v1.64.8
-    hooks:
-      - id: golangci-lint-full
-        args: [--timeout=5m]
-
   - repo: local
     hooks:
       - id: go-mod-tidy
@@ -52,3 +46,9 @@ repos:
         language: golang
         entry: go generate ./...
         pass_filenames: false
+
+  - repo: https://github.com/golangci/golangci-lint
+    rev: v1.64.8
+    hooks:
+      - id: golangci-lint-full
+        args: [--timeout=5m]
