@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.21.1](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.21.1)
+
+### Bug Fixes
+
+- add arg name in missing or invalid argument errors (#652)
+
 ## [v2.21.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.21.0)
 
 ### Features
