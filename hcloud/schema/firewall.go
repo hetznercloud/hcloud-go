@@ -52,9 +52,21 @@ type FirewallCreateRequest struct {
 
 // FirewallResource defines the schema of a resource to apply the new Firewall on.
 type FirewallResource struct {
-	Type          string                         `json:"type"`
-	Server        *FirewallResourceServer        `json:"server,omitempty"`
-	LabelSelector *FirewallResourceLabelSelector `json:"label_selector,omitempty"`
+	Type               string                         `json:"type"`
+	Server             *FirewallResourceServer        `json:"server,omitempty"`
+	LabelSelector      *FirewallResourceLabelSelector `json:"label_selector,omitempty"`
+	AppliedToResources []*FirewallAppliedResource     `json:"applied_to_resources"`
+}
+
+// FirewallAppliedResource defines the schema of a resource that has a Firewall applied to it.
+type FirewallAppliedResource struct {
+	Type   string                         `json:"type"`
+	Server *FirewallAppliedResourceServer `json:"server,omitempty"`
+}
+
+// FirewallAppliedResourceServer defines the schema of a Server that has a Firewall applied to it.
+type FirewallAppliedResourceServer struct {
+	ID int64 `json:"id"`
 }
 
 // FirewallResourceLabelSelector defines the schema of a LabelSelector to apply a Firewall on.

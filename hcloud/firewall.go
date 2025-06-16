@@ -70,9 +70,24 @@ const (
 
 // FirewallResource represents a resource to apply the new Firewall on.
 type FirewallResource struct {
-	Type          FirewallResourceType
-	Server        *FirewallResourceServer
-	LabelSelector *FirewallResourceLabelSelector
+	Type               FirewallResourceType
+	Server             *FirewallResourceServer
+	LabelSelector      *FirewallResourceLabelSelector
+	AppliedToResources []*FirewallAppliedResource
+}
+
+// FirewallAppliedResourceType specifies the type of resource that the Firewall is applied to.
+type FirewallAppliedResourceType string
+
+const (
+	// FirewallAppliedResourceTypeServer specifies a Server that a Firewall is applied to.
+	FirewallAppliedResourceTypeServer FirewallAppliedResourceType = "server"
+)
+
+// FirewallAppliedResource represents a resource that the Firewall is applied to.
+type FirewallAppliedResource struct {
+	Type   FirewallAppliedResourceType
+	Server *FirewallResourceServer
 }
 
 // FirewallResourceServer represents a Server to apply a Firewall on.
