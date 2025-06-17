@@ -70,9 +70,10 @@ const (
 
 // FirewallResource represents a resource to apply the new Firewall on.
 type FirewallResource struct {
-	Type               FirewallResourceType
-	Server             *FirewallResourceServer
-	LabelSelector      *FirewallResourceLabelSelector
+	Type          FirewallResourceType
+	Server        *FirewallResourceServer
+	LabelSelector *FirewallResourceLabelSelector
+	// AppliedToResources is only used if the Type is FirewallResourceTypeLabelSelector.
 	AppliedToResources []FirewallAppliedResource
 }
 
