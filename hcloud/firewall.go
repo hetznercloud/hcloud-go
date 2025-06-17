@@ -73,7 +73,7 @@ type FirewallResource struct {
 	Type               FirewallResourceType
 	Server             *FirewallResourceServer
 	LabelSelector      *FirewallResourceLabelSelector
-	AppliedToResources []*FirewallAppliedResource
+	AppliedToResources []FirewallAppliedResource
 }
 
 // FirewallAppliedResourceType specifies the type of resource that the Firewall is applied to.
