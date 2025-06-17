@@ -55,7 +55,7 @@ type FirewallResource struct {
 	Type               string                         `json:"type"`
 	Server             *FirewallResourceServer        `json:"server,omitempty"`
 	LabelSelector      *FirewallResourceLabelSelector `json:"label_selector,omitempty"`
-	AppliedToResources []FirewallAppliedResource      `json:"applied_to_resources"`
+	AppliedToResources []FirewallAppliedResource      `json:"applied_to_resources,omitempty"`
 }
 
 // FirewallAppliedResource defines the schema of a resource that has a Firewall applied to it.
