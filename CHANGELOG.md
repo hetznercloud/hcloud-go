@@ -733,7 +733,7 @@ Add support for firewall protocols ESP and GRE (#173)
 
 ## v1.12.0
 
-- Add missing constants for all [documented error codes](https://docs.hetzner.cloud/#overview-errors)
+- Add missing constants for all [documented error codes](https://docs.hetzner.cloud/reference/cloud#errors)
 - Add support for automounting volumes
 - Add support for attaching volumes when creating a server
 
