@@ -13,27 +13,25 @@ type ErrorCode string
 
 // Error codes returned from the API.
 const (
-	ErrorCodeServiceError                   ErrorCode = "service_error"                      // Generic service error
-	ErrorCodeRateLimitExceeded              ErrorCode = "rate_limit_exceeded"                // Rate limit exceeded
-	ErrorCodeUnknownError                   ErrorCode = "unknown_error"                      // Unknown error
-	ErrorCodeNotFound                       ErrorCode = "not_found"                          // Resource not found
-	ErrorCodeInvalidInput                   ErrorCode = "invalid_input"                      // Validation error
-	ErrorCodeForbidden                      ErrorCode = "forbidden"                          // Insufficient permissions
-	ErrorCodeUnauthorized                   ErrorCode = "unauthorized"                       // Request was made with an invalid or unknown token
-	ErrorCodeJSONError                      ErrorCode = "json_error"                         // Invalid JSON in request
-	ErrorCodeLocked                         ErrorCode = "locked"                             // Item is locked (Another action is running)
-	ErrorCodeResourceLimitExceeded          ErrorCode = "resource_limit_exceeded"            // Resource limit exceeded
-	ErrorCodeResourceUnavailable            ErrorCode = "resource_unavailable"               // Resource currently unavailable
-	ErrorCodeUniquenessError                ErrorCode = "uniqueness_error"                   // One or more fields must be unique
-	ErrorCodeProtected                      ErrorCode = "protected"                          // The actions you are trying is protected
-	ErrorCodeMaintenance                    ErrorCode = "maintenance"                        // Cannot perform operation due to maintenance
-	ErrorCodeConflict                       ErrorCode = "conflict"                           // The resource has changed during the request, please retry
-	ErrorCodeRobotUnavailable               ErrorCode = "robot_unavailable"                  // Robot was not available. The caller may retry the operation after a short delay
-	ErrorCodeResourceLocked                 ErrorCode = "resource_locked"                    // The resource is locked. The caller should contact support
-	ErrorCodePrivateNetOnlyServer           ErrorCode = "private_net_only_server"            // The Server the Firewall should be applied to has no public interface
-	ErrorCodeFirewallManagedByLabelSelector ErrorCode = "firewall_managed_by_label_selector" // Firewall is applied via a Label Selector and cannot be removed manually
-	ErrorUnsupportedError                   ErrorCode = "unsupported_error"                  // The given resource does not support this
-	ErrorDeprecatedAPIEndpoint              ErrorCode = "deprecated_api_endpoint"            // The request can not be answered because the API functionality was removed
+	ErrorCodeServiceError          ErrorCode = "service_error"           // Generic service error
+	ErrorCodeRateLimitExceeded     ErrorCode = "rate_limit_exceeded"     // Rate limit exceeded
+	ErrorCodeUnknownError          ErrorCode = "unknown_error"           // Unknown error
+	ErrorCodeNotFound              ErrorCode = "not_found"               // Resource not found
+	ErrorCodeInvalidInput          ErrorCode = "invalid_input"           // Validation error
+	ErrorCodeForbidden             ErrorCode = "forbidden"               // Insufficient permissions
+	ErrorCodeUnauthorized          ErrorCode = "unauthorized"            // Request was made with an invalid or unknown token
+	ErrorCodeJSONError             ErrorCode = "json_error"              // Invalid JSON in request
+	ErrorCodeLocked                ErrorCode = "locked"                  // Item is locked (Another action is running)
+	ErrorCodeResourceLimitExceeded ErrorCode = "resource_limit_exceeded" // Resource limit exceeded
+	ErrorCodeResourceUnavailable   ErrorCode = "resource_unavailable"    // Resource currently unavailable
+	ErrorCodeUniquenessError       ErrorCode = "uniqueness_error"        // One or more fields must be unique
+	ErrorCodeProtected             ErrorCode = "protected"               // The actions you are trying is protected
+	ErrorCodeMaintenance           ErrorCode = "maintenance"             // Cannot perform operation due to maintenance
+	ErrorCodeConflict              ErrorCode = "conflict"                // The resource has changed during the request, please retry
+	ErrorCodeRobotUnavailable      ErrorCode = "robot_unavailable"       // Robot was not available. The caller may retry the operation after a short delay
+	ErrorCodeResourceLocked        ErrorCode = "resource_locked"         // The resource is locked. The caller should contact support
+	ErrorUnsupportedError          ErrorCode = "unsupported_error"       // The given resource does not support this
+	ErrorDeprecatedAPIEndpoint     ErrorCode = "deprecated_api_endpoint" // The request can not be answered because the API functionality was removed
 
 	// Server related error codes.
 
@@ -68,12 +66,14 @@ const (
 
 	// Firewall related error codes.
 
-	ErrorCodeFirewallAlreadyApplied   ErrorCode = "firewall_already_applied"    // Firewall was already applied on resource
-	ErrorCodeFirewallAlreadyRemoved   ErrorCode = "firewall_already_removed"    // Firewall was already removed from the resource
-	ErrorCodeIncompatibleNetworkType  ErrorCode = "incompatible_network_type"   // The Network type is incompatible for the given resource
-	ErrorCodeResourceInUse            ErrorCode = "resource_in_use"             // Firewall must not be in use to be deleted
-	ErrorCodeServerAlreadyAdded       ErrorCode = "server_already_added"        // Server added more than one time to resource
-	ErrorCodeFirewallResourceNotFound ErrorCode = "firewall_resource_not_found" // Resource a firewall should be attached to / detached from not found
+	ErrorCodeFirewallAlreadyApplied         ErrorCode = "firewall_already_applied"           // Firewall was already applied on resource
+	ErrorCodeFirewallAlreadyRemoved         ErrorCode = "firewall_already_removed"           // Firewall was already removed from the resource
+	ErrorCodeIncompatibleNetworkType        ErrorCode = "incompatible_network_type"          // The Network type is incompatible for the given resource
+	ErrorCodeResourceInUse                  ErrorCode = "resource_in_use"                    // Firewall must not be in use to be deleted
+	ErrorCodeServerAlreadyAdded             ErrorCode = "server_already_added"               // Server added more than one time to resource
+	ErrorCodeFirewallResourceNotFound       ErrorCode = "firewall_resource_not_found"        // Resource a firewall should be attached to / detached from not found
+	ErrorCodeFirewallManagedByLabelSelector ErrorCode = "firewall_managed_by_label_selector" // Firewall is applied via a Label Selector and cannot be removed manually
+	ErrorCodePrivateNetOnlyServer           ErrorCode = "private_net_only_server"            // The Server the Firewall should be applied to has no public interface
 
 	// Certificate related error codes.
 
