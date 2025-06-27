@@ -30,16 +30,26 @@ const (
 	ErrorCodeConflict              ErrorCode = "conflict"                // The resource has changed during the request, please retry
 	ErrorCodeRobotUnavailable      ErrorCode = "robot_unavailable"       // Robot was not available. The caller may retry the operation after a short delay
 	ErrorCodeResourceLocked        ErrorCode = "resource_locked"         // The resource is locked. The caller should contact support
+	ErrorCodeServerError           ErrorCode = "server_error"            // Error within the API backend
+	ErrorCodeTokenReadonly         ErrorCode = "token_readonly"          // The token is only allowed to perform GET requests
+	ErrorCodeTimeout               ErrorCode = "timeout"                 // The request could not be answered in time, please retry
 	ErrorUnsupportedError          ErrorCode = "unsupported_error"       // The given resource does not support this
 	ErrorDeprecatedAPIEndpoint     ErrorCode = "deprecated_api_endpoint" // The request can not be answered because the API functionality was removed
 
 	// Server related error codes.
 
-	ErrorCodeInvalidServerType     ErrorCode = "invalid_server_type"     // The server type does not fit for the given server or is deprecated
-	ErrorCodeServerNotStopped      ErrorCode = "server_not_stopped"      // The action requires a stopped server
-	ErrorCodeNetworksOverlap       ErrorCode = "networks_overlap"        // The network IP range overlaps with one of the server networks
-	ErrorCodePlacementError        ErrorCode = "placement_error"         // An error during the placement occurred
-	ErrorCodeServerAlreadyAttached ErrorCode = "server_already_attached" // The server is already attached to the resource
+	ErrorCodeInvalidServerType           ErrorCode = "invalid_server_type"            // The server type does not fit for the given server or is deprecated
+	ErrorCodeServerNotStopped            ErrorCode = "server_not_stopped"             // The action requires a stopped server
+	ErrorCodeNetworksOverlap             ErrorCode = "networks_overlap"               // The network IP range overlaps with one of the server networks
+	ErrorCodePlacementError              ErrorCode = "placement_error"                // An error during the placement occurred
+	ErrorCodeServerAlreadyAttached       ErrorCode = "server_already_attached"        // The server is already attached to the resource
+	ErrorCodePrimaryIPAssigned           ErrorCode = "primary_ip_assigned"            // The specified Primary IP is already assigned to a server
+	ErrorCodePrimaryIPDatacenterMismatch ErrorCode = "primary_ip_datacenter_mismatch" // The specified Primary IP is in a different datacenter
+	ErrorCodePrimaryIPVersionMismatch    ErrorCode = "primary_ip_version_mismatch"    // The specified Primary IP has the wrong IP Version
+	ErrorCodeServerHasIPv4               ErrorCode = "server_has_ipv4"                // The Server already has an ipv4 address
+	ErrorCodeServerHasIPv6               ErrorCode = "server_has_ipv6"                // The Server already has an ipv6 address
+	ErrorCodePrimaryIPAlreadyAssigned    ErrorCode = "primary_ip_already_assigned"    // Primary IP is already assigned to a different Server
+	ErrorCodeServerIsLoadBalancerTarget  ErrorCode = "server_is_load_balancer_target" // The Server IPv4 address is a loadbalancer target
 
 	// Load Balancer related error codes.
 
@@ -52,6 +62,7 @@ const (
 	ErrorCodeLoadBalancerAlreadyAttached      ErrorCode = "load_balancer_already_attached"        // The Load Balancer is already attached to a network
 	ErrorCodeTargetsWithoutUsePrivateIP       ErrorCode = "targets_without_use_private_ip"        // The Load Balancer has targets that use the public IP instead of the private IP
 	ErrorCodeLoadBalancerNotAttachedToNetwork ErrorCode = "load_balancer_not_attached_to_network" // The Load Balancer is not attached to a network
+	ErrorCodeMissingIPv4                      ErrorCode = "missing_ipv4"                          // The server that you are trying to add as a public target does not have a public IPv4 address
 
 	// Network related error codes.
 
@@ -84,6 +95,7 @@ const (
 	ErrorCodeCATooManyDuplicateCertificates                 ErrorCode = "ca_too_many_duplicate_certificates"                    // Certificate Authority: Too many duplicate certificates
 	ErrorCodeCloudNotVerifyDomainDelegatedToZone            ErrorCode = "could_not_verify_domain_delegated_to_zone"             // Could not verify domain delegated to zone
 	ErrorCodeDNSZoneNotFound                                ErrorCode = "dns_zone_not_found"                                    // DNS zone not found
+	ErrorCodeDNSZoneIsSecondaryZone                         ErrorCode = "dns_zone_is_secondary_zone"                            // DNS zone is a secondary zone
 
 	// Deprecated error codes.
 
