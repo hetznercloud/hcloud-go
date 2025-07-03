@@ -590,9 +590,9 @@ func (c *converterImpl) SchemaFromFirewallResource(source FirewallResource) sche
 	schemaFirewallResource.Server = c.pHcloudFirewallResourceServerToPSchemaFirewallResourceServer(source.Server)
 	schemaFirewallResource.LabelSelector = c.pHcloudFirewallResourceLabelSelectorToPSchemaFirewallResourceLabelSelector(source.LabelSelector)
 	if source.AppliedToResources != nil {
-		schemaFirewallResource.AppliedToResources = make([]schema.FirewallAppliedResource, len(source.AppliedToResources))
+		schemaFirewallResource.AppliedToResources = make([]schema.FirewallResource, len(source.AppliedToResources))
 		for i := 0; i < len(source.AppliedToResources); i++ {
-			schemaFirewallResource.AppliedToResources[i] = c.hcloudFirewallAppliedResourceToSchemaFirewallAppliedResource(source.AppliedToResources[i])
+			schemaFirewallResource.AppliedToResources[i] = c.SchemaFromFirewallResource(source.AppliedToResources[i])
 		}
 	}
 	return schemaFirewallResource
@@ -1366,12 +1366,6 @@ func (c *converterImpl) hcloudDeprecatableResourceToSchemaDeprecatableResource(s
 	schemaDeprecatableResource.Deprecation = c.SchemaFromDeprecation(source.Deprecation)
 	return schemaDeprecatableResource
 }
-func (c *converterImpl) hcloudFirewallAppliedResourceToSchemaFirewallAppliedResource(source FirewallAppliedResource) schema.FirewallAppliedResource {
-	var schemaFirewallAppliedResource schema.FirewallAppliedResource
-	schemaFirewallAppliedResource.Type = string(source.Type)
-	schemaFirewallAppliedResource.Server = c.pHcloudFirewallResourceServerToPSchemaFirewallAppliedResourceServer(source.Server)
-	return schemaFirewallAppliedResource
-}
 func (c *converterImpl) hcloudFirewallRuleToSchemaFirewallRule(source FirewallRule) schema.FirewallRule {
 	var schemaFirewallRule schema.FirewallRule
 	schemaFirewallRule.Direction = string(source.Direction)
@@ -1607,15 +1601,6 @@ func (c *converterImpl) pHcloudFirewallResourceLabelSelectorToPSchemaFirewallRes
 		pSchemaFirewallResourceLabelSelector = &schemaFirewallResourceLabelSelector
 	}
 	return pSchemaFirewallResourceLabelSelector
-}
-func (c *converterImpl) pHcloudFirewallResourceServerToPSchemaFirewallAppliedResourceServer(source *FirewallResourceServer) *schema.FirewallAppliedResourceServer {
-	var pSchemaFirewallAppliedResourceServer *schema.FirewallAppliedResourceServer
-	if source != nil {
-		var schemaFirewallAppliedResourceServer schema.FirewallAppliedResourceServer
-		schemaFirewallAppliedResourceServer.ID = (*source).ID
-		pSchemaFirewallAppliedResourceServer = &schemaFirewallAppliedResourceServer
-	}
-	return pSchemaFirewallAppliedResourceServer
 }
 func (c *converterImpl) pHcloudFirewallResourceServerToPSchemaFirewallResourceServer(source *FirewallResourceServer) *schema.FirewallResourceServer {
 	var pSchemaFirewallResourceServer *schema.FirewallResourceServer
@@ -1958,15 +1943,6 @@ func (c *converterImpl) pSchemaErrorToPHcloudError(source *schema.Error) *Error 
 	}
 	return pHcloudError
 }
-func (c *converterImpl) pSchemaFirewallAppliedResourceServerToPHcloudFirewallResourceServer(source *schema.FirewallAppliedResourceServer) *FirewallResourceServer {
-	var pHcloudFirewallResourceServer *FirewallResourceServer
-	if source != nil {
-		var hcloudFirewallResourceServer FirewallResourceServer
-		hcloudFirewallResourceServer.ID = (*source).ID
-		pHcloudFirewallResourceServer = &hcloudFirewallResourceServer
-	}
-	return pHcloudFirewallResourceServer
-}
 func (c *converterImpl) pSchemaFirewallResourceLabelSelectorToPHcloudFirewallResourceLabelSelector(source *schema.FirewallResourceLabelSelector) *FirewallResourceLabelSelector {
 	var pHcloudFirewallResourceLabelSelector *FirewallResourceLabelSelector
 	if source != nil {
@@ -2153,21 +2129,15 @@ func (c *converterImpl) schemaDeprecatableResourceToHcloudDeprecatableResource(s
 	hcloudDeprecatableResource.Deprecation = c.DeprecationFromSchema(source.Deprecation)
 	return hcloudDeprecatableResource
 }
-func (c *converterImpl) schemaFirewallAppliedResourceToHcloudFirewallAppliedResource(source schema.FirewallAppliedResource) FirewallAppliedResource {
-	var hcloudFirewallAppliedResource FirewallAppliedResource
-	hcloudFirewallAppliedResource.Type = FirewallAppliedResourceType(source.Type)
-	hcloudFirewallAppliedResource.Server = c.pSchemaFirewallAppliedResourceServerToPHcloudFirewallResourceServer(source.Server)
-	return hcloudFirewallAppliedResource
-}
 func (c *converterImpl) schemaFirewallResourceToHcloudFirewallResource(source schema.FirewallResource) FirewallResource {
 	var hcloudFirewallResource FirewallResource
 	hcloudFirewallResource.Type = FirewallResourceType(source.Type)
 	hcloudFirewallResource.Server = c.pSchemaFirewallResourceServerToPHcloudFirewallResourceServer(source.Server)
 	hcloudFirewallResource.LabelSelector = c.pSchemaFirewallResourceLabelSelectorToPHcloudFirewallResourceLabelSelector(source.LabelSelector)
 	if source.AppliedToResources != nil {
-		hcloudFirewallResource.AppliedToResources = make([]FirewallAppliedResource, len(source.AppliedToResources))
+		hcloudFirewallResource.AppliedToResources = make([]FirewallResource, len(source.AppliedToResources))
 		for i := 0; i < len(source.AppliedToResources); i++ {
-			hcloudFirewallResource.AppliedToResources[i] = c.schemaFirewallAppliedResourceToHcloudFirewallAppliedResource(source.AppliedToResources[i])
+			hcloudFirewallResource.AppliedToResources[i] = c.schemaFirewallResourceToHcloudFirewallResource(source.AppliedToResources[i])
 		}
 	}
 	return hcloudFirewallResource

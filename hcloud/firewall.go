@@ -74,21 +74,8 @@ type FirewallResource struct {
 	Server        *FirewallResourceServer
 	LabelSelector *FirewallResourceLabelSelector
 	// AppliedToResources is only used if the Type is FirewallResourceTypeLabelSelector.
-	AppliedToResources []FirewallAppliedResource
-}
-
-// FirewallAppliedResourceType specifies the type of resource that the Firewall is applied to.
-type FirewallAppliedResourceType string
-
-const (
-	// FirewallAppliedResourceTypeServer specifies a Server that a Firewall is applied to.
-	FirewallAppliedResourceTypeServer FirewallAppliedResourceType = "server"
-)
-
-// FirewallAppliedResource represents a resource that the Firewall is applied to.
-type FirewallAppliedResource struct {
-	Type   FirewallAppliedResourceType
-	Server *FirewallResourceServer
+	// FirewallResources contained here cannot be of type FirewallResourceTypeLabelSelector.
+	AppliedToResources []FirewallResource
 }
 
 // FirewallResourceServer represents a Server to apply a Firewall on.
