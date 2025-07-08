@@ -27,6 +27,7 @@ func TestDebugHandler(t *testing.T) {
 GET /v1/ HTTP/1.1
 Host: api.hetzner.cloud
 User-Agent: hcloud-go/testing
+Accept: application/json
 Authorization: REDACTED
 Accept-Encoding: gzip
 
@@ -43,6 +44,7 @@ Accept-Encoding: gzip
 GET /v1/ HTTP/1.1
 Host: api.hetzner.cloud
 User-Agent: hcloud-go/testing
+Accept: application/json
 Authorization: REDACTED
 Accept-Encoding: gzip
 
@@ -65,6 +67,7 @@ Connection: close
 GET /v1/ HTTP/1.1
 Host: api.hetzner.cloud
 User-Agent: hcloud-go/testing
+Accept: application/json
 Authorization: REDACTED
 Accept-Encoding: gzip
 
