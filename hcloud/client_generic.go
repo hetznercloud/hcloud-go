@@ -15,6 +15,8 @@ func getRequest[Schema any](ctx context.Context, client *Client, url string) (Sc
 		return respBody, nil, err
 	}
 
+	req.Header.Add("Accept", "application/json")
+
 	resp, err := client.Do(req, &respBody)
 	if err != nil {
 		return respBody, resp, err
