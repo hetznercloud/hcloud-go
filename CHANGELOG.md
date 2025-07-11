@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.22.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.22.0)
+
+### Features
+
+- **firewall**: add `applied_to_resources` property (#667)
+- add missing error codes (#671)
+
 ## [v2.21.1](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.21.1)
 
 ### Bug Fixes
