@@ -52,19 +52,32 @@ func main() {
 
 ## Experimental Features
 
-Experimental features may undergo breaking changes even in minor releases. These features are marked accordingly in their docstrings. Do not use them in production.
+**Breaking changes may occur without notice.**
+**Do not use them in production.**
 
-### Contributors
-
-To mark a feature as experimental, add the following static comment above the relevant declaration:
+They are marked with:
 
 ```go
 // Experimental: Breaking changes may occur within minor releases.
 ```
 
-Additionally, include a link to the corresponding changelog entry that announces the experimental status of the feature.
+### For Contributors
 
-For example:
+When adding an experimental feature:
+
+1. Add the marker comment above the declaration:
+
+   ```go
+   // Experimental: Breaking changes may occur within minor releases.
+   ```
+
+2. Include a link to the changelog entry:
+
+   ```go
+   // See https://docs.hetzner.cloud/changelog#slug
+   ```
+
+Example:
 
 ```go
 // String returns a pointer to the passed string s.
