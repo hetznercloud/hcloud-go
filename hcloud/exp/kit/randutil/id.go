@@ -8,6 +8,8 @@ import (
 
 // GenerateID returns a hex encoded random string with a len of 8 chars similar to
 // "2873fce7".
+//
+// Experimental: Breaking changes may occur within minor releases.
 func GenerateID() string {
 	b := make([]byte, 4)
 	_, err := rand.Read(b)
