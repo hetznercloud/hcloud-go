@@ -55,7 +55,7 @@ func main() {
 **Breaking changes may occur within minor releases.**
 **Do not use them in production.**
 
-They are marked with:
+They are announced in the release notes and marked with:
 
 ```go
 // Experimental: Breaking changes may occur within minor releases.
@@ -76,6 +76,8 @@ When adding an experimental feature:
    ```go
    // See https://docs.hetzner.cloud/changelog#slug
    ```
+
+3. Add an announcement to the release notes
 
 Example:
 
