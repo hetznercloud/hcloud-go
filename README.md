@@ -52,7 +52,7 @@ func main() {
 
 ## Experimental Features
 
-**Breaking changes may occur without notice.**
+**Breaking changes may occur within minor releases.**
 **Do not use them in production.**
 
 They are marked with:
