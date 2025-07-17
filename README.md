@@ -58,7 +58,7 @@ func main() {
 They are announced in the release notes and marked with:
 
 ```go
-// Experimental: Breaking changes may occur within minor releases.
+// Experimental: $PRODUCT is experimental, breaking changes may occur within minor releases. See https://docs.hetzner.cloud/changelog#$SLUG for more details.
 ```
 
 ### For Contributors
