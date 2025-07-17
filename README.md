@@ -57,7 +57,7 @@ public beta). During an experimental phase, breaking changes on those features m
 within minor releases.
 
 While experimental features will be announced in the release notes, you can also find
-whether a struct or function is experimental in its docstring:
+whether a struct or function is experimental in its Go code comment:
 
 ```go
 // Experimental: $PRODUCT is experimental, breaking changes may occur within minor releases.
