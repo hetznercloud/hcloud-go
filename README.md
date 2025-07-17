@@ -50,45 +50,18 @@ func main() {
 }
 ```
 
-## Experimental Features
+## Experimental features
 
-**Breaking changes may occur within minor releases.**
-**Do not use them in production.**
+Experimental features are published as part of our regular releases (e.g. a product
+public beta). During an experimental phase, breaking changes on those features may occur
+within minor releases.
 
-They are announced in the release notes and marked with:
-
-```go
-// Experimental: $PRODUCT is experimental, breaking changes may occur within minor releases. See https://docs.hetzner.cloud/changelog#$SLUG for more details.
-```
-
-### For Contributors
-
-When adding an experimental feature:
-
-1. Add the marker comment above the declaration:
-
-   ```go
-   // Experimental: Breaking changes may occur within minor releases.
-   ```
-
-2. Include a link to the changelog entry:
-
-   ```go
-   // See https://docs.hetzner.cloud/changelog#slug
-   ```
-
-3. Add an announcement to the release notes
-
-Example:
+While experimental features will be announced in the release notes, you can also find
+whether a struct or function is experimental in its docstring:
 
 ```go
-// String returns a pointer to the passed string s.
-//
-// Experimental: Breaking changes may occur within minor releases.
-// See https://docs.hetzner.cloud/changelog#slug
-//
-// Deprecated: Use [Ptr] instead.
-func String(s string) *string { return Ptr(s) }
+// Experimental: $PRODUCT is experimental, breaking changes may occur within minor releases.
+// See https://docs.hetzner.cloud/changelog#$SLUG for more details.
 ```
 
 ## Upgrading
@@ -123,6 +96,38 @@ The library supports the latest two Go minor versions, e.g. at the time Go 1.19 
 This matches the official [Go Release Policy](https://go.dev/doc/devel/release#policy).
 
 When the minimum required Go version is changed, it is announced in the release notes for that version.
+
+## Development
+
+### Experimental Features
+
+When adding an experimental feature:
+
+1. Add the marker comment above the declaration:
+
+   ```go
+   // Experimental: $PRODUCT is experimental, breaking changes may occur within minor releases.
+   ```
+
+2. Include a link to the changelog entry:
+
+   ```go
+   // See https://docs.hetzner.cloud/changelog#slug
+   ```
+
+3. Add an announcement to the release notes
+
+Example:
+
+```go
+// String returns a pointer to the passed string s.
+//
+// Experimental: Breaking changes may occur within minor releases.
+// See https://docs.hetzner.cloud/changelog#slug
+//
+// Deprecated: Use [Ptr] instead.
+func String(s string) *string { return Ptr(s) }
+```
 
 ## License
 

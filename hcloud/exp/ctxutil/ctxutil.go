@@ -13,7 +13,7 @@ var opPathKey = key{}
 
 // SetOpPath processes the operation path and save it in the context before returning it.
 //
-// Experimental: Breaking changes may occur within minor releases.
+// Experimental: `exp` package is experimental, breaking changes may occur within minor releases.
 func SetOpPath(ctx context.Context, path string) context.Context {
 	path, _, _ = strings.Cut(path, "?")
 	path = strings.ReplaceAll(path, "%d", "-")
@@ -24,7 +24,7 @@ func SetOpPath(ctx context.Context, path string) context.Context {
 
 // OpPath returns the operation path from the context.
 //
-// Experimental: Breaking changes may occur within minor releases.
+// Experimental: `exp` package is experimental, breaking changes may occur within minor releases.
 func OpPath(ctx context.Context) string {
 	result, ok := ctx.Value(opPathKey).(string)
 	if !ok {

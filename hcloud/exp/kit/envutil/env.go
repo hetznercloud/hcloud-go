@@ -15,7 +15,7 @@ import (
 //
 // The value from the environment takes precedence over the value from the file.
 //
-// Experimental: Breaking changes may occur within minor releases.
+// Experimental: `exp` package is experimental, breaking changes may occur within minor releases.
 func LookupEnvWithFile(key string) (string, error) {
 	// Check if the value is set in the environment (e.g. HCLOUD_TOKEN)
 	value, ok := os.LookupEnv(key)
