@@ -124,8 +124,6 @@ Example:
 //
 // Experimental: Breaking changes may occur within minor releases.
 // See https://docs.hetzner.cloud/changelog#slug
-//
-// Deprecated: Use [Ptr] instead.
 func String(s string) *string { return Ptr(s) }
 ```
 
