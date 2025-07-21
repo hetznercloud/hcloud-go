@@ -112,18 +112,18 @@ When adding an experimental feature:
 2. Include a link to the changelog entry:
 
    ```go
-   // See https://docs.hetzner.cloud/changelog#slug
+   // See https://docs.hetzner.cloud/changelog#slug for more details.
    ```
 
-3. Add an announcement to the release notes
+3. Add an announcement to the release notes.
 
 Example:
 
 ```go
 // String returns a pointer to the passed string s.
 //
-// Experimental: Breaking changes may occur within minor releases.
-// See https://docs.hetzner.cloud/changelog#slug
+// Experimental: Product is experimental, breaking changes may occur within minor releases.
+// See https://docs.hetzner.cloud/changelog#slug for more details.
 func String(s string) *string { return Ptr(s) }
 ```
 
