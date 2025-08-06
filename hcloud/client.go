@@ -133,6 +133,7 @@ func WithEndpoint(endpoint string) ClientOption {
 }
 
 // WithHetznerEndpoint configures a Client to use the specified Hetzner API endpoint.
+//
 // Experimental: This option is experimental, breaking changes may occur within minor releases.
 // See https://docs.hetzner.cloud/changelog#2025-06-25-new-api-for-storage-boxes for more details.
 func WithHetznerEndpoint(endpoint string) ClientOption {
