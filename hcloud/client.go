@@ -23,6 +23,9 @@ import (
 // Endpoint is the base URL of the API.
 const Endpoint = "https://api.hetzner.cloud/v1"
 
+// Endpoint is the base URL of the Hetzner API.
+const HetznerEndpoint = "https://api.hetzner.com/v1"
+
 // UserAgent is the value for the library part of the User-Agent header
 // that is sent with each request.
 const UserAgent = "hcloud-go/" + Version
@@ -84,6 +87,7 @@ func ExponentialBackoffWithOpts(opts ExponentialBackoffOpts) BackoffFunc {
 // Client is a client for the Hetzner Cloud API.
 type Client struct {
 	endpoint                string
+	hetznerEndpoint         string
 	token                   string
 	tokenValid              bool
 	retryBackoffFunc        BackoffFunc
@@ -125,6 +129,15 @@ type ClientOption func(*Client)
 func WithEndpoint(endpoint string) ClientOption {
 	return func(client *Client) {
 		client.endpoint = strings.TrimRight(endpoint, "/")
+	}
+}
+
+// WithHetznerEndpoint configures a Client to use the specified Hetzner API endpoint.
+// Experimental: This option is experimental, breaking changes may occur within minor releases.
+// See https://docs.hetzner.cloud/changelog#2025-06-25-new-api-for-storage-boxes for more details.
+func WithHetznerEndpoint(endpoint string) ClientOption {
+	return func(client *Client) {
+		client.hetznerEndpoint = strings.TrimRight(endpoint, "/")
 	}
 }
 
@@ -245,9 +258,10 @@ func WithInstrumentation(registry prometheus.Registerer) ClientOption {
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
-		endpoint:   Endpoint,
-		tokenValid: true,
-		httpClient: &http.Client{},
+		endpoint:        Endpoint,
+		hetznerEndpoint: HetznerEndpoint,
+		tokenValid:      true,
+		httpClient:      &http.Client{},
 
 		retryBackoffFunc: ExponentialBackoffWithOpts(ExponentialBackoffOpts{
 			Base:       time.Second,
@@ -271,6 +285,11 @@ func NewClient(options ...ClientOption) *Client {
 	}
 
 	client.handler = assembleHandlerChain(client)
+
+	// Shallow copy of the client and overwrite of the API endpoint.
+	hetznerClient := new(Client)
+	*hetznerClient = *client
+	hetznerClient.endpoint = hetznerClient.hetznerEndpoint
 
 	client.Action = ActionClient{action: &ResourceActionClient{client: client}}
 	client.Datacenter = DatacenterClient{client: client}
