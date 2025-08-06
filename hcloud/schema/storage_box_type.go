@@ -8,7 +8,7 @@ type StorageBoxType struct {
 	SnapshotLimit          *int                  `json:"snapshot_limit"`
 	AutomaticSnapshotLimit *int                  `json:"automatic_snapshot_limit"`
 	SubaccountsLimit       int                   `json:"subaccounts_limit"`
-	Size                   int                   `json:"size"`
+	Size                   int64                 `json:"size"`
 	Prices                 []StorageBoxTypePrice `json:"prices"`
 	DeprecatableResource
 }
