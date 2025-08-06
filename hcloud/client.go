@@ -20,8 +20,11 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/internal/instrumentation"
 )
 
-// Endpoint is the base URL of the API.
+// Endpoint is the base URL of the Cloud API.
 const Endpoint = "https://api.hetzner.cloud/v1"
+
+// Endpoint is the base URL of the Hetzner API.
+const HetznerEndpoint = "https://api.hetzner.com/v1"
 
 // UserAgent is the value for the library part of the User-Agent header
 // that is sent with each request.
@@ -84,6 +87,7 @@ func ExponentialBackoffWithOpts(opts ExponentialBackoffOpts) BackoffFunc {
 // Client is a client for the Hetzner Cloud API.
 type Client struct {
 	endpoint                string
+	hetznerEndpoint         string
 	token                   string
 	tokenValid              bool
 	retryBackoffFunc        BackoffFunc
@@ -126,6 +130,16 @@ type ClientOption func(*Client)
 func WithEndpoint(endpoint string) ClientOption {
 	return func(client *Client) {
 		client.endpoint = strings.TrimRight(endpoint, "/")
+	}
+}
+
+// WithHetznerEndpoint configures a Client to use the specified Hetzner API endpoint.
+//
+// Experimental: This option is experimental, breaking changes may occur within minor releases.
+// See https://docs.hetzner.cloud/changelog#2025-06-25-new-api-for-storage-boxes for more details.
+func WithHetznerEndpoint(endpoint string) ClientOption {
+	return func(client *Client) {
+		client.hetznerEndpoint = strings.TrimRight(endpoint, "/")
 	}
 }
 
@@ -246,9 +260,10 @@ func WithInstrumentation(registry prometheus.Registerer) ClientOption {
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
-		endpoint:   Endpoint,
-		tokenValid: true,
-		httpClient: &http.Client{},
+		endpoint:        Endpoint,
+		hetznerEndpoint: HetznerEndpoint,
+		tokenValid:      true,
+		httpClient:      &http.Client{},
 
 		retryBackoffFunc: ExponentialBackoffWithOpts(ExponentialBackoffOpts{
 			Base:       time.Second,
@@ -272,6 +287,13 @@ func NewClient(options ...ClientOption) *Client {
 	}
 
 	client.handler = assembleHandlerChain(client)
+
+	// Shallow copy of the client and overwrite of the API endpoint.
+	// We have two "base clients" because the endpoint is only added to the requests URL 3 layers deep, and we want to avoid passing this info through all the layers. By embedding it in the client, we can easily select which "base client" is used for each "resource client".
+	// We create a shallow copy so the handler chain and prometheus registry are the same values and it is transparent to the user.
+	hetznerClient := new(Client)
+	*hetznerClient = *client
+	hetznerClient.endpoint = hetznerClient.hetznerEndpoint
 
 	client.Action = ActionClient{action: &ResourceActionClient{client: client}}
 	client.Datacenter = DatacenterClient{client: client}
