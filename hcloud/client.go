@@ -20,7 +20,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/internal/instrumentation"
 )
 
-// Endpoint is the base URL of the API.
+// Endpoint is the base URL of the Cloud API.
 const Endpoint = "https://api.hetzner.cloud/v1"
 
 // Endpoint is the base URL of the Hetzner API.
@@ -288,6 +288,8 @@ func NewClient(options ...ClientOption) *Client {
 	client.handler = assembleHandlerChain(client)
 
 	// Shallow copy of the client and overwrite of the API endpoint.
+	// We have two "base clients" because the endpoint is only added to the requests URL 3 layers deep, and we want to avoid passing this info through all the layers. By embedding it in the client, we can easily select which "base client" is used for each "resource client".
+	// We create a shallow copy so the handler chain and prometheus registry are the same values and it is transparent to the user.
 	hetznerClient := new(Client)
 	*hetznerClient = *client
 	hetznerClient.endpoint = hetznerClient.hetznerEndpoint
