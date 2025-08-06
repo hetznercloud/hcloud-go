@@ -27,6 +27,7 @@ func makeTestUtils(t *testing.T) (context.Context, *mockutil.Server, *Client) {
 
 	client := NewClient(
 		WithEndpoint(server.URL),
+		WithHetznerEndpoint(server.URL),
 		WithRetryOpts(RetryOpts{BackoffFunc: ConstantBackoff(0), MaxRetries: 5}),
 		WithPollOpts(PollOpts{BackoffFunc: ConstantBackoff(0)}),
 		// This makes sure that our instrumentation does not cause any panics/errors
