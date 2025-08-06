@@ -1322,9 +1322,9 @@ func (c *converterImpl) StorageBoxTypeFromSchema(source schema.StorageBoxType) *
 	hcloudStorageBoxType.SubaccountsLimit = source.SubaccountsLimit
 	hcloudStorageBoxType.Size = source.Size
 	if source.Prices != nil {
-		hcloudStorageBoxType.Pricings = make([]StorageBoxTypeLocationPricing, len(source.Prices))
+		hcloudStorageBoxType.Prices = make([]StorageBoxTypeLocationPricing, len(source.Prices))
 		for i := 0; i < len(source.Prices); i++ {
-			hcloudStorageBoxType.Pricings[i] = c.schemaStorageBoxTypePriceToHcloudStorageBoxTypeLocationPricing(source.Prices[i])
+			hcloudStorageBoxType.Prices[i] = c.schemaStorageBoxTypePriceToHcloudStorageBoxTypeLocationPricing(source.Prices[i])
 		}
 	}
 	hcloudStorageBoxType.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
