@@ -24,6 +24,7 @@ type StorageBoxTypePrice struct {
 // StorageBoxTypeListResponse represents the response for listing Storage Box Types.
 type StorageBoxTypeListResponse struct {
 	StorageBoxTypes []StorageBoxType `json:"storage_box_types"`
+	Meta            Meta             `json:"meta"`
 }
 
 // StorageBoxTypeGetResponse represents the response for getting a single Storage Box Type.
