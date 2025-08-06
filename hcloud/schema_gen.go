@@ -352,6 +352,10 @@ type converter interface {
 	DeprecationFromSchema(*schema.DeprecationInfo) *DeprecationInfo
 
 	SchemaFromDeprecation(*DeprecationInfo) *schema.DeprecationInfo
+
+	// StorageBoxType conversions
+	// goverter:map Prices Pricings
+	StorageBoxTypeFromSchema(schema.StorageBoxType) *StorageBoxType
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {
