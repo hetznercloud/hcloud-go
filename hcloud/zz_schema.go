@@ -1324,7 +1324,7 @@ func (c *converterImpl) StorageBoxTypeFromSchema(source schema.StorageBoxType) *
 	if source.Prices != nil {
 		hcloudStorageBoxType.Pricings = make([]StorageBoxTypeLocationPricing, len(source.Prices))
 		for i := 0; i < len(source.Prices); i++ {
-			hcloudStorageBoxType.Pricings[i] = c.schemaPricingStorageBoxTypePricesToHcloudStorageBoxTypeLocationPricing(source.Prices[i])
+			hcloudStorageBoxType.Pricings[i] = c.schemaStorageBoxTypePriceToHcloudStorageBoxTypeLocationPricing(source.Prices[i])
 		}
 	}
 	hcloudStorageBoxType.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
@@ -2349,14 +2349,6 @@ func (c *converterImpl) schemaPricingServerBackupToHcloudServerBackupPricing(sou
 	hcloudServerBackupPricing.Percentage = source.Percentage
 	return hcloudServerBackupPricing
 }
-func (c *converterImpl) schemaPricingStorageBoxTypePricesToHcloudStorageBoxTypeLocationPricing(source schema.PricingStorageBoxTypePrices) StorageBoxTypeLocationPricing {
-	var hcloudStorageBoxTypeLocationPricing StorageBoxTypeLocationPricing
-	hcloudStorageBoxTypeLocationPricing.Location = source.Location
-	hcloudStorageBoxTypeLocationPricing.PriceHourly = c.PriceFromSchema(source.PriceHourly)
-	hcloudStorageBoxTypeLocationPricing.PriceMonthly = c.PriceFromSchema(source.PriceMonthly)
-	hcloudStorageBoxTypeLocationPricing.SetupFee = c.PriceFromSchema(source.SetupFee)
-	return hcloudStorageBoxTypeLocationPricing
-}
 func (c *converterImpl) schemaPrimaryIPProtectionToHcloudPrimaryIPProtection(source schema.PrimaryIPProtection) PrimaryIPProtection {
 	var hcloudPrimaryIPProtection PrimaryIPProtection
 	hcloudPrimaryIPProtection.Delete = source.Delete
@@ -2367,6 +2359,14 @@ func (c *converterImpl) schemaServerProtectionToHcloudServerProtection(source sc
 	hcloudServerProtection.Delete = source.Delete
 	hcloudServerProtection.Rebuild = source.Rebuild
 	return hcloudServerProtection
+}
+func (c *converterImpl) schemaStorageBoxTypePriceToHcloudStorageBoxTypeLocationPricing(source schema.StorageBoxTypePrice) StorageBoxTypeLocationPricing {
+	var hcloudStorageBoxTypeLocationPricing StorageBoxTypeLocationPricing
+	hcloudStorageBoxTypeLocationPricing.Location = source.Location
+	hcloudStorageBoxTypeLocationPricing.PriceHourly = c.PriceFromSchema(source.PriceHourly)
+	hcloudStorageBoxTypeLocationPricing.PriceMonthly = c.PriceFromSchema(source.PriceMonthly)
+	hcloudStorageBoxTypeLocationPricing.SetupFee = c.PriceFromSchema(source.SetupFee)
+	return hcloudStorageBoxTypeLocationPricing
 }
 func (c *converterImpl) schemaVolumeProtectionToHcloudVolumeProtection(source schema.VolumeProtection) VolumeProtection {
 	var hcloudVolumeProtection VolumeProtection

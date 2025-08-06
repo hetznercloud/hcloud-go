@@ -2,19 +2,19 @@ package schema
 
 // StorageBoxType represents a Storage Box type as returned by the Hetzner Cloud API.
 type StorageBoxType struct {
-	ID                     int64                         `json:"id"`
-	Name                   string                        `json:"name"`
-	Description            string                        `json:"description"`
-	SnapshotLimit          *int                          `json:"snapshot_limit"`
-	AutomaticSnapshotLimit *int                          `json:"automatic_snapshot_limit"`
-	SubaccountsLimit       int                           `json:"subaccounts_limit"`
-	Size                   int                           `json:"size"`
-	Prices                 []PricingStorageBoxTypePrices `json:"prices"`
+	ID                     int64                 `json:"id"`
+	Name                   string                `json:"name"`
+	Description            string                `json:"description"`
+	SnapshotLimit          *int                  `json:"snapshot_limit"`
+	AutomaticSnapshotLimit *int                  `json:"automatic_snapshot_limit"`
+	SubaccountsLimit       int                   `json:"subaccounts_limit"`
+	Size                   int                   `json:"size"`
+	Prices                 []StorageBoxTypePrice `json:"prices"`
 	DeprecatableResource
 }
 
 // PricePerLocation represents pricing for a Storage Box type in a specific location.
-type PricingStorageBoxTypePrices struct {
+type StorageBoxTypePrice struct {
 	Location     string `json:"location"`
 	PriceHourly  Price  `json:"price_hourly"`
 	PriceMonthly Price  `json:"price_monthly"`
