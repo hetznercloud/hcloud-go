@@ -354,6 +354,7 @@ type converter interface {
 	SchemaFromDeprecation(*DeprecationInfo) *schema.DeprecationInfo
 
 	// StorageBoxType conversions
+	// goverter:map Prices Pricings
 	StorageBoxTypeFromSchema(schema.StorageBoxType) *StorageBoxType
 }
 

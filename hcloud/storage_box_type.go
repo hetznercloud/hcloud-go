@@ -18,7 +18,7 @@ type StorageBoxType struct {
 	AutomaticSnapshotLimit *int
 	SubaccountsLimit       int
 	Size                   int64
-	Prices                 []StorageBoxTypeLocationPricing
+	Pricings               []StorageBoxTypeLocationPricing
 	DeprecatableResource
 }
 
