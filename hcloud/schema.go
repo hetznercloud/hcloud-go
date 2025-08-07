@@ -389,11 +389,30 @@ func loadBalancerMetricsFromSchema(s *schema.LoadBalancerGetMetricsResponse) (*L
 	return c.LoadBalancerMetricsFromSchema(s)
 }
 
+// StorageBoxTypeFromSchema converts a schema.StorageBoxType to a StorageBoxType.
+func StorageBoxTypeFromSchema(s schema.StorageBoxType) *StorageBoxType {
+	return c.StorageBoxTypeFromSchema(s)
+}
+
+// SchemaFromStorageBoxType converts a StorageBoxType to a schema.StorageBoxType.
 func SchemaFromStorageBoxType(s *StorageBoxType) schema.StorageBoxType {
 	return c.SchemaFromStorageBoxType(s)
 }
 
-// StorageBoxTypeFromSchema converts a schema.StorageBoxType to a StorageBoxType.
-func StorageBoxTypeFromSchema(s schema.StorageBoxType) *StorageBoxType {
-	return c.StorageBoxTypeFromSchema(s)
+// StorageBoxFromSchema converts a schema.StorageBox to a StorageBox.
+func StorageBoxFromSchema(s schema.StorageBox) *StorageBox {
+	return c.StorageBoxFromSchema(s)
+}
+
+// SchemaFromStorageBox converts a StorageBox to a schema.StorageBox.
+func SchemaFromStorageBox(s *StorageBox) schema.StorageBox {
+	return c.SchemaFromStorageBox(s)
+}
+
+func SchemaFromStorageBoxCreateOpts(opts StorageBoxCreateOpts) schema.StorageBoxCreateRequest {
+	return c.SchemaFromStorageBoxCreateOpts(opts)
+}
+
+func SchemaFromStorageBoxUpdateOpts(opts StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest {
+	return c.SchemaFromStorageBoxUpdateOpts(opts)
 }

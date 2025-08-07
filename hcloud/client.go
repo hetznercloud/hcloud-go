@@ -115,6 +115,7 @@ type Client struct {
 	Pricing          PricingClient
 	Server           ServerClient
 	ServerType       ServerTypeClient
+	StorageBox       StorageBoxClient
 	SSHKey           SSHKeyClient
 	Volume           VolumeClient
 	PlacementGroup   PlacementGroupClient
@@ -318,6 +319,7 @@ func NewClient(options ...ClientOption) *Client {
 	*hetznerClient = *client
 	hetznerClient.endpoint = hetznerClient.hetznerEndpoint
 
+	client.StorageBox = StorageBoxClient{client: hetznerClient}
 	client.StorageBoxType = StorageBoxTypeClient{client: hetznerClient}
 
 	return client
