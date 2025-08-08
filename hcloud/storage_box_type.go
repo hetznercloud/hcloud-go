@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -92,4 +93,20 @@ func (c *StorageBoxTypeClient) GetByID(ctx context.Context, id int64) (*StorageB
 	}
 
 	return StorageBoxTypeFromSchema(respBody.StorageBoxType), resp, nil
+}
+
+// GetByName retrieves a Storage Box Type by its name. If the Storage Box Type does not exist, nil is returned.
+func (c *StorageBoxTypeClient) GetByName(ctx context.Context, name string) (*StorageBoxType, *Response, error) {
+	return firstByName(name, func() ([]*StorageBoxType, *Response, error) {
+		return c.List(ctx, StorageBoxTypeListOpts{Name: name})
+	})
+}
+
+// Get retrieves a Storage Box Type by its ID if the input can be parsed as an integer, otherwise it
+// retrieves a Storage Box Type by its name. If the Storage Box Type does not exist, nil is returned.
+func (c *StorageBoxTypeClient) Get(ctx context.Context, idOrName string) (*StorageBoxType, *Response, error) {
+	if id, err := strconv.ParseInt(idOrName, 10, 64); err == nil {
+		return c.GetByID(ctx, id)
+	}
+	return c.GetByName(ctx, idOrName)
 }

@@ -68,6 +68,65 @@ func TestStorageBoxTypeClientGetByID(t *testing.T) {
 	})
 }
 
+func TestStorageBoxTypeClientGetByName(t *testing.T) {
+	t.Run("GetByName", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_box_types?name=bx11",
+				Status: 200,
+				JSONRaw: `
+				{
+					"storage_box_types": [{
+						"id": 42,
+						"name": "bx11",
+						"description": "BX11",
+						"snapshot_limit": 10,
+						"automatic_snapshot_limit": 10,
+						"subaccounts_limit": 200,
+						"size": 1073741824,
+						"prices": [
+							{
+								"location": "fsn1",
+								"price_hourly": {"net": "1.0000", "gross": "1.1900"},
+								"price_monthly": {"net": "1.0000", "gross": "1.1900"},
+								"setup_fee": {"net": "1.0000", "gross": "1.1900"}
+							}
+						],
+						"deprecation": {
+							"unavailable_after": "2023-09-01T00:00:00+00:00",
+							"announced": "2023-06-01T00:00:00+00:00"
+						}
+					}]
+				}`,
+			},
+		})
+
+		storageBoxType, _, err := client.StorageBoxType.GetByName(ctx, "bx11")
+		require.NoError(t, err)
+		require.NotNil(t, storageBoxType, "no storage box type")
+		assert.Equal(t, int64(42), storageBoxType.ID, "unexpected storage box type ID")
+		assert.Equal(t, "bx11", storageBoxType.Name, "unexpected storage box type name")
+	})
+
+	t.Run("GetByName (not found)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_box_types?name=foo",
+				Status:  200,
+				JSONRaw: `{ "storage_box_types": [] }`,
+			},
+		})
+
+		storageBoxType, _, err := client.StorageBoxType.GetByName(ctx, "foo")
+		require.NoError(t, err)
+		assert.Nil(t, storageBoxType, "expected no storage box type")
+	})
+}
+
 func TestStorageBoxTypeClientList(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 

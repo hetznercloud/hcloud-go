@@ -13,7 +13,7 @@ type StorageBoxType struct {
 	DeprecatableResource
 }
 
-// PricePerLocation represents pricing for a Storage Box type in a specific location.
+// StorageBoxTypePrice represents pricing for a Storage Box type in a specific location.
 type StorageBoxTypePrice struct {
 	Location     string `json:"location"`
 	PriceHourly  Price  `json:"price_hourly"`
