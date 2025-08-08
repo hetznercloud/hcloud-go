@@ -1154,6 +1154,28 @@ func (c *converterImpl) SchemaFromServerType(source *ServerType) schema.ServerTy
 	}
 	return schemaServerType
 }
+func (c *converterImpl) SchemaFromStorageBoxType(source *StorageBoxType) schema.StorageBoxType {
+	var schemaStorageBoxType schema.StorageBoxType
+	if source != nil {
+		var schemaStorageBoxType2 schema.StorageBoxType
+		schemaStorageBoxType2.ID = (*source).ID
+		schemaStorageBoxType2.Name = (*source).Name
+		schemaStorageBoxType2.Description = (*source).Description
+		schemaStorageBoxType2.SnapshotLimit = (*source).SnapshotLimit
+		schemaStorageBoxType2.AutomaticSnapshotLimit = (*source).AutomaticSnapshotLimit
+		schemaStorageBoxType2.SubaccountsLimit = (*source).SubaccountsLimit
+		schemaStorageBoxType2.Size = (*source).Size
+		if (*source).Pricings != nil {
+			schemaStorageBoxType2.Prices = make([]schema.StorageBoxTypePrice, len((*source).Pricings))
+			for i := 0; i < len((*source).Pricings); i++ {
+				schemaStorageBoxType2.Prices[i] = c.hcloudStorageBoxTypeLocationPricingToSchemaStorageBoxTypePrice((*source).Pricings[i])
+			}
+		}
+		schemaStorageBoxType2.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource((*source).DeprecatableResource)
+		schemaStorageBoxType = schemaStorageBoxType2
+	}
+	return schemaStorageBoxType
+}
 func (c *converterImpl) SchemaFromVolume(source *Volume) schema.Volume {
 	var schemaVolume schema.Volume
 	if source != nil {
@@ -1534,6 +1556,14 @@ func (c *converterImpl) hcloudServerProtectionToSchemaServerProtection(source Se
 	schemaServerProtection.Delete = source.Delete
 	schemaServerProtection.Rebuild = source.Rebuild
 	return schemaServerProtection
+}
+func (c *converterImpl) hcloudStorageBoxTypeLocationPricingToSchemaStorageBoxTypePrice(source StorageBoxTypeLocationPricing) schema.StorageBoxTypePrice {
+	var schemaStorageBoxTypePrice schema.StorageBoxTypePrice
+	schemaStorageBoxTypePrice.Location = source.Location
+	schemaStorageBoxTypePrice.PriceHourly = c.hcloudPriceToSchemaPrice(source.PriceHourly)
+	schemaStorageBoxTypePrice.PriceMonthly = c.hcloudPriceToSchemaPrice(source.PriceMonthly)
+	schemaStorageBoxTypePrice.SetupFee = c.hcloudPriceToSchemaPrice(source.SetupFee)
+	return schemaStorageBoxTypePrice
 }
 func (c *converterImpl) hcloudVolumeProtectionToSchemaVolumeProtection(source VolumeProtection) schema.VolumeProtection {
 	var schemaVolumeProtection schema.VolumeProtection
