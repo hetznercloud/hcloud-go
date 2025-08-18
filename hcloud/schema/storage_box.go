@@ -91,8 +91,8 @@ type StorageBoxGetRequest struct {
 // StorageBoxCreateResponse defines the schema of the response when
 // creating a storage box.
 type StorageBoxCreateResponse struct {
-	// StorageBox StorageBox `json:"storage_box"` // TODO: Currently not returned from API
-	Action Action `json:"action"`
+	StorageBox StorageBox `json:"storage_box"`
+	Action     Action     `json:"action"`
 }
 
 // StorageBoxUpdateRequest defines the schema of the request to update a storage box.

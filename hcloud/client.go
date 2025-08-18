@@ -319,7 +319,7 @@ func NewClient(options ...ClientOption) *Client {
 	*hetznerClient = *client
 	hetznerClient.endpoint = hetznerClient.hetznerEndpoint
 
-	client.StorageBox = StorageBoxClient{client: hetznerClient}
+	client.StorageBox = StorageBoxClient{client: hetznerClient, Action: &ResourceActionClient{client: hetznerClient, resource: "storage_boxes"}}
 	client.StorageBoxType = StorageBoxTypeClient{client: hetznerClient}
 
 	return client

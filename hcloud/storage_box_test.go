@@ -167,7 +167,7 @@ func TestStorageBoxClientAll(t *testing.T) {
 					},
 					{
 						"id": 2,
-						"name": "storage-box-2", 
+						"name": "storage-box-2",
 						"status": "active",
 						"storage_box_type": {"id": 2, "name": "bx21"},
 						"location": {"id": 2, "name": "nbg1"},
@@ -277,7 +277,68 @@ func TestStorageBoxClientCreate(t *testing.T) {
 					"resources": [
 						{"id": 42, "type": "storage_box"}
 					]
-				}
+				},
+				"storage_box": {
+					"id": 42,
+					"status": "initializing",
+					"name": "my-resource",
+					"storage_box_type": {
+						"id": 1,
+						"name": "bx20",
+						"description": "BX20",
+						"snapshot_limit": 10,
+						"automatic_snapshot_limit": 10,
+						"subaccounts_limit": 100,
+						"size": 1073741824,
+						"prices": [
+							{
+								"location": "fsn1",
+								"price_hourly": {
+									"gross": "0.0061",
+									"net": "0.0051"
+								},
+								"price_monthly": {
+									"gross": "3.8080",
+									"net": "3.2000"
+								},
+								"setup_fee": {
+									"gross": "0.0000",
+									"net": "0.0000"
+								}
+							}
+						]
+					},
+					"location": {
+						"id": 1,
+						"country": "DE",
+						"city": "Falkenstein",
+						"name": "fsn1",
+						"network_zone": "eu-central",
+						"latitude": 50.476119,
+						"longitude": 12.370071,
+						"description": "Falkenstein DC Park 1"
+					},
+					"access_settings": {
+						"reachable_externally": false,
+						"samba_enabled": false,
+						"ssh_enabled": false,
+						"webdav_enabled": false,
+						"zfs_enabled": false
+					},
+					"server": null,
+					"system": null,
+					"stats": null,
+					"labels": {
+						"environment": "prod",
+						"example.com/my": "label",
+						"just-a-key": ""
+					},
+					"protection": {
+						"delete": false
+					},
+					"snapshot_plan": null,
+					"created": "2016-01-30T23:50:00Z"
+				  }
 			}`,
 		},
 	})

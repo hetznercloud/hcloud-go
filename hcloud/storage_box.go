@@ -75,7 +75,7 @@ const (
 // StorageBoxClient is a client for the storage box API.
 type StorageBoxClient struct {
 	client *Client
-	// TODO: ResourceActionClient
+	Action *ResourceActionClient
 }
 
 // GetByID retrieves a storage box by its ID. If the storage box does not exist, nil is returned.
@@ -191,8 +191,8 @@ func (c *StorageBoxClient) Create(ctx context.Context, opts StorageBoxCreateOpts
 	}
 
 	return StorageBoxCreateResult{
-		// StorageBox: StorageBoxFromSchema(respBody.StorageBox),
-		Action: ActionFromSchema(respBody.Action),
+		StorageBox: StorageBoxFromSchema(respBody.StorageBox),
+		Action:     ActionFromSchema(respBody.Action),
 	}, resp, nil
 }
 
@@ -235,6 +235,6 @@ func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (
 
 // StorageBoxCreateResult is the result of a create storage box operation.
 type StorageBoxCreateResult struct {
-	// StorageBox *StorageBox
-	Action *Action
+	StorageBox *StorageBox
+	Action     *Action
 }
