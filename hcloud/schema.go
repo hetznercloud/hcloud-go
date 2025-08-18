@@ -462,3 +462,11 @@ func serverMetricsFromSchema(s *schema.ServerGetMetricsResponse) (*ServerMetrics
 func loadBalancerMetricsFromSchema(s *schema.LoadBalancerGetMetricsResponse) (*LoadBalancerMetrics, error) {
 	return c.LoadBalancerMetricsFromSchema(s)
 }
+
+func StorageBoxTypeFromSchema(s schema.StorageBoxType) *StorageBoxType {
+	return c.StorageBoxTypeFromSchema(s)
+}
+
+func SchemaFromStorageBoxType(s *StorageBoxType) schema.StorageBoxType {
+	return c.SchemaFromStorageBoxType(s)
+}

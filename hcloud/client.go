@@ -120,6 +120,7 @@ type Client struct {
 	PlacementGroup   PlacementGroupClient
 	RDNS             RDNSClient
 	PrimaryIP        PrimaryIPClient
+	StorageBoxType   StorageBoxTypeClient
 	Zone             ZoneClient
 }
 
@@ -288,13 +289,7 @@ func NewClient(options ...ClientOption) *Client {
 
 	client.handler = assembleHandlerChain(client)
 
-	// Shallow copy of the client and overwrite of the API endpoint.
-	// We have two "base clients" because the endpoint is only added to the requests URL 3 layers deep, and we want to avoid passing this info through all the layers. By embedding it in the client, we can easily select which "base client" is used for each "resource client".
-	// We create a shallow copy so the handler chain and prometheus registry are the same values and it is transparent to the user.
-	hetznerClient := new(Client)
-	*hetznerClient = *client
-	hetznerClient.endpoint = hetznerClient.hetznerEndpoint
-
+	// Cloud API
 	client.Action = ActionClient{action: &ResourceActionClient{client: client}}
 	client.Datacenter = DatacenterClient{client: client}
 	client.FloatingIP = FloatingIPClient{client: client, Action: &ResourceActionClient{client: client, resource: "floating_ips"}}
@@ -315,6 +310,17 @@ func NewClient(options ...ClientOption) *Client {
 	client.RDNS = RDNSClient{client: client}
 	client.PrimaryIP = PrimaryIPClient{client: client, Action: &ResourceActionClient{client: client, resource: "primary_ips"}}
 	client.Zone = ZoneClient{client: client, Action: &ResourceActionClient{client: client, resource: "zones"}}
+
+	// Hetzner API
+
+	// Shallow copy of the client and overwrite of the API endpoint.
+	// We have two "base clients" because the endpoint is only added to the requests URL 3 layers deep, and we want to avoid passing this info through all the layers. By embedding it in the client, we can easily select which "base client" is used for each "resource client".
+	// We create a shallow copy so the handler chain and prometheus registry are the same values and it is transparent to the user.
+	hetznerClient := new(Client)
+	*hetznerClient = *client
+	hetznerClient.endpoint = hetznerClient.hetznerEndpoint
+
+	client.StorageBoxType = StorageBoxTypeClient{client: hetznerClient}
 
 	return client
 }
