@@ -56,8 +56,6 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend stringFromLocation
 // goverter:extend serverTypeFromInt64
 // goverter:extend int64FromServerType
-// goverter:extend storageBoxTypeFromInt64
-// goverter:extend int64FromStorageBoxType
 // goverter:extend floatingIPFromInt64
 // goverter:extend int64FromFloatingIP
 // goverter:extend mapFromFloatingIPDNSPtrSchema
@@ -367,7 +365,7 @@ type converter interface {
 	SchemaFromStorageBox(*StorageBox) schema.StorageBox
 
 	SchemaFromStorageBoxCreateOpts(StorageBoxCreateOpts) schema.StorageBoxCreateRequest
-	
+
 	SchemaFromStorageBoxUpdateOpts(StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest
 }
 
@@ -453,17 +451,6 @@ func serverTypeFromInt64(id int64) *ServerType {
 }
 
 func int64FromServerType(s *ServerType) int64 {
-	if s == nil {
-		return 0
-	}
-	return s.ID
-}
-
-func storageBoxTypeFromInt64(id int64) *StorageBoxType {
-	return &StorageBoxType{ID: id}
-}
-
-func int64FromStorageBoxType(s *StorageBoxType) int64 {
 	if s == nil {
 		return 0
 	}
