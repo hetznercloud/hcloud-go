@@ -20,3 +20,4 @@ package hcloud
 //go:generate go run github.com/vburenin/ifacemaker -f placement_group.go -s PlacementGroupClient -i IPlacementGroupClient -p hcloud -o zz_placement_group_client_iface.go
 //go:generate go run github.com/vburenin/ifacemaker -f rdns.go -s RDNSClient -i IRDNSClient -p hcloud -o zz_rdns_client_iface.go
 //go:generate go run github.com/vburenin/ifacemaker -f primary_ip.go -s PrimaryIPClient -i IPrimaryIPClient -p hcloud -o zz_primary_ip_client_iface.go
+//go:generate go run github.com/vburenin/ifacemaker -f storage_box_type.go -s StorageBoxTypeClient -i IStorageBoxTypeClient -p hcloud -o zz_storage_box_type_client_iface.go
