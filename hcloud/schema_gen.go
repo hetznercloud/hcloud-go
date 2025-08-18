@@ -387,6 +387,12 @@ type converter interface {
 	SchemaFromZoneRRSetSetRecordsOpts(ZoneRRSetSetRecordsOpts) schema.ZoneRRSetSetRecordsRequest
 	SchemaFromZoneRRSetAddRecordsOpts(ZoneRRSetAddRecordsOpts) schema.ZoneRRSetAddRecordsRequest
 	SchemaFromZoneRRSetRemoveRecordsOpts(ZoneRRSetRemoveRecordsOpts) schema.ZoneRRSetRemoveRecordsRequest
+
+	// goverter:map Prices Pricings
+	StorageBoxTypeFromSchema(schema.StorageBoxType) *StorageBoxType
+
+	// goverter:map Pricings Prices
+	SchemaFromStorageBoxType(*StorageBoxType) schema.StorageBoxType
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {
