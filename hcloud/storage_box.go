@@ -178,6 +178,12 @@ type StorageBoxCreateOptsAccessSettings struct {
 	ZFSEnabled          *bool
 }
 
+// StorageBoxCreateResult is the result of a create storage box operation.
+type StorageBoxCreateResult struct {
+	StorageBox *StorageBox
+	Action     *Action
+}
+
 // Create creates a new storage box with the given options.
 func (c *StorageBoxClient) Create(ctx context.Context, opts StorageBoxCreateOpts) (StorageBoxCreateResult, *Response, error) {
 	const opPath = "/storage_boxes"
@@ -185,15 +191,17 @@ func (c *StorageBoxClient) Create(ctx context.Context, opts StorageBoxCreateOpts
 
 	reqBody := SchemaFromStorageBoxCreateOpts(opts)
 
+	result := StorageBoxCreateResult{}
+
 	respBody, resp, err := postRequest[schema.StorageBoxCreateResponse](ctx, c.client, opPath, reqBody)
 	if err != nil {
-		return StorageBoxCreateResult{}, resp, err
+		return result, resp, err
 	}
 
-	return StorageBoxCreateResult{
-		StorageBox: StorageBoxFromSchema(respBody.StorageBox),
-		Action:     ActionFromSchema(respBody.Action),
-	}, resp, nil
+	result.StorageBox = StorageBoxFromSchema(respBody.StorageBox)
+	result.Action = ActionFromSchema(respBody.Action)
+
+	return result, resp, nil
 }
 
 // StorageBoxUpdateOpts specifies options for updating a storage box.
@@ -231,10 +239,4 @@ func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (
 		return nil, resp, err
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
-}
-
-// StorageBoxCreateResult is the result of a create storage box operation.
-type StorageBoxCreateResult struct {
-	StorageBox *StorageBox
-	Action     *Action
 }
