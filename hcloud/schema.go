@@ -428,3 +428,15 @@ func SchemaFromStorageBoxSnapshotCreateOpts(opts StorageBoxSnapshotCreateOpts) s
 func SchemaFromStorageBoxSnapshotUpdateOpts(opts StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest {
 	return c.SchemaFromStorageBoxSnapshotUpdateOpts(opts)
 }
+
+func StorageBoxSubaccountFromSchema(s schema.StorageBoxSubaccount) *StorageBoxSubaccount {
+	return c.StorageBoxSubaccountFromSchema(s)
+}
+
+func SchemaFromStorageBoxSubaccountCreateOpts(opts StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest {
+	return c.SchemaFromStorageBoxSubaccountCreateOpts(opts)
+}
+
+func SchemaFromStorageBoxSubaccountUpdateOpts(opts StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest {
+	return c.SchemaFromStorageBoxSubaccountUpdateOpts(opts)
+}
