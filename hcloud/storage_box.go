@@ -240,3 +240,42 @@ func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (
 	}
 	return ActionFromSchema(respBody.Action), resp, nil
 }
+
+type StorageBoxFoldersResult struct {
+	Folders []string
+}
+
+type StorageBoxFoldersOpts struct {
+	Path string
+}
+
+func (o StorageBoxFoldersOpts) values() url.Values {
+	vals := url.Values{}
+	if o.Path != "" {
+		vals.Add("path", o.Path)
+	}
+	return vals
+}
+
+// Lists folders in a storage box.
+func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error) {
+	const opPath = "/storage_boxes/%d/folders"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+
+	if len(opts.values()) > 0 {
+		reqPath += "?" + opts.values().Encode()
+	}
+
+	result := StorageBoxFoldersResult{}
+
+	respBody, resp, err := getRequest[schema.StorageBoxFoldersResponse](ctx, c.client, reqPath)
+	if err != nil {
+		return result, resp, err
+	}
+
+	result.Folders = respBody.Folders
+
+	return result, resp, nil
+}

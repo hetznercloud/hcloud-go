@@ -441,3 +441,54 @@ func TestStorageBoxClientDelete(t *testing.T) {
 	assert.Equal(t, int64(2), action.ID, "unexpected action ID")
 	assert.Equal(t, "delete_storage_box", action.Command, "unexpected action command")
 }
+
+func TestStorageBoxClientFolders(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	t.Run("folders", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_boxes/42/folders",
+				Status: 200,
+				JSONRaw: `{
+				"folders": ["foo", "bar"]
+			}`,
+			},
+		})
+
+		storageBox := &StorageBox{ID: 42}
+
+		result, _, err := client.StorageBox.Folders(ctx, storageBox, StorageBoxFoldersOpts{})
+		require.NoError(t, err)
+		require.NotNil(t, result.Folders, "no result returned")
+
+		assert.Len(t, result.Folders, 2, "unexpected number of folders")
+		assert.Equal(t, "foo", result.Folders[0], "unexpected first folder")
+		assert.Equal(t, "bar", result.Folders[1], "unexpected second folder")
+	})
+
+	t.Run("sub folders", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_boxes/42/folders?path=%2Ffoo",
+				Status: 200,
+				Want: func(t *testing.T, r *http.Request) {
+					vals := r.URL.Query()
+					path := vals.Get("path")
+					assert.Equal(t, "/foo", path, "unexpected path query parameter")
+				},
+				JSONRaw: `{
+				"folders": ["subfoo", "subbar"]
+			}`,
+			},
+		})
+
+		storageBox := &StorageBox{ID: 42}
+
+		result, _, err := client.StorageBox.Folders(ctx, storageBox, StorageBoxFoldersOpts{Path: "/foo"})
+		require.NoError(t, err)
+		require.NotNil(t, result.Folders, "no result returned")
+
+		assert.Len(t, result.Folders, 2, "unexpected number of folders")
+	})
+}

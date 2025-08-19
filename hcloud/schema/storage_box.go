@@ -105,3 +105,7 @@ type StorageBoxUpdateRequest struct {
 type StorageBoxUpdateResponse struct {
 	StorageBox StorageBox `json:"storage_box"`
 }
+
+type StorageBoxFoldersResponse struct {
+	Folders []string `json:"folders"`
+}
