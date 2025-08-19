@@ -374,6 +374,15 @@ type converter interface {
 	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
 
 	SchemaFromStorageBoxSnapshotUpdateOpts(StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest
+
+	SchemaFromStorageBoxChangeProtectionOpts(StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest
+
+	// goverter:map StorageBoxType.ID StorageBoxType
+	SchemaFromStorageBoxChangeTypeOpts(StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest
+
+	SchemaFromStorageBoxResetPasswordOpts(StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest
+
+	SchemaFromStorageBoxUpdateAccessSettingsOpts(StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {

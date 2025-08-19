@@ -103,3 +103,23 @@ type StorageBoxUpdateResponse struct {
 type StorageBoxFoldersResponse struct {
 	Folders []string `json:"folders"`
 }
+
+type StorageBoxChangeProtectionRequest struct {
+	Delete bool `json:"delete"`
+}
+
+type StorageBoxChangeTypeRequest struct {
+	StorageBoxType int64 `json:"storage_box_type"`
+}
+
+type StorageBoxResetPasswordRequest struct {
+	Password string `json:"password"`
+}
+
+type StorageBoxUpdateAccessSettingsRequest struct {
+	ReachableExternally *bool `json:"reachable_externally"`
+	SambaEnabled        *bool `json:"samba_enabled"`
+	SSHEnabled          *bool `json:"ssh_enabled"`
+	WebDAVEnabled       *bool `json:"webdav_enabled"`
+	ZFSEnabled          *bool `json:"zfs_enabled"`
+}

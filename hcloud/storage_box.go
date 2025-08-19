@@ -278,3 +278,91 @@ func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, 
 
 	return result, resp, nil
 }
+
+type StorageBoxChangeProtectionOpts struct {
+	Delete bool
+}
+
+func (c *StorageBoxClient) ChangeProtection(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeProtectionOpts) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/change_protection"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxChangeProtectionOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	action := ActionFromSchema(respBody.Action)
+
+	return action, resp, nil
+}
+
+type StorageBoxChangeTypeOpts struct {
+	StorageBoxType *StorageBoxType
+}
+
+func (c *StorageBoxClient) ChangeType(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeTypeOpts) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/change_type"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxChangeTypeOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	action := ActionFromSchema(respBody.Action)
+
+	return action, resp, nil
+}
+
+type StorageBoxResetPasswordOpts struct {
+	Password string
+}
+
+func (c *StorageBoxClient) ResetPassword(ctx context.Context, storageBox *StorageBox, opts StorageBoxResetPasswordOpts) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/reset_password"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxResetPasswordOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	action := ActionFromSchema(respBody.Action)
+
+	return action, resp, nil
+}
+
+type StorageBoxUpdateAccessSettingsOpts struct {
+	SambaEnabled        *bool
+	SSHEnabled          *bool
+	WebDAVEnabled       *bool
+	ZFSEnabled          *bool
+	ReachableExternally *bool
+}
+
+func (c *StorageBoxClient) UpdateAccessSettings(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateAccessSettingsOpts) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/update_access_settings"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxUpdateAccessSettingsOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	action := ActionFromSchema(respBody.Action)
+
+	return action, resp, nil
+}

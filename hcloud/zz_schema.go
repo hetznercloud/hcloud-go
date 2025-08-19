@@ -1144,6 +1144,22 @@ func (c *converterImpl) SchemaFromStorageBox(source *StorageBox) schema.StorageB
 	}
 	return schemaStorageBox
 }
+func (c *converterImpl) SchemaFromStorageBoxChangeProtectionOpts(source StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest {
+	var schemaStorageBoxChangeProtectionRequest schema.StorageBoxChangeProtectionRequest
+	schemaStorageBoxChangeProtectionRequest.Delete = source.Delete
+	return schemaStorageBoxChangeProtectionRequest
+}
+func (c *converterImpl) SchemaFromStorageBoxChangeTypeOpts(source StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest {
+	var schemaStorageBoxChangeTypeRequest schema.StorageBoxChangeTypeRequest
+	var pInt64 *int64
+	if source.StorageBoxType != nil {
+		pInt64 = &source.StorageBoxType.ID
+	}
+	if pInt64 != nil {
+		schemaStorageBoxChangeTypeRequest.StorageBoxType = *pInt64
+	}
+	return schemaStorageBoxChangeTypeRequest
+}
 func (c *converterImpl) SchemaFromStorageBoxCreateOpts(source StorageBoxCreateOpts) schema.StorageBoxCreateRequest {
 	var schemaStorageBoxCreateRequest schema.StorageBoxCreateRequest
 	schemaStorageBoxCreateRequest.Name = source.Name
@@ -1154,6 +1170,11 @@ func (c *converterImpl) SchemaFromStorageBoxCreateOpts(source StorageBoxCreateOp
 	schemaStorageBoxCreateRequest.SSHKeys = source.SSHKeys
 	schemaStorageBoxCreateRequest.AccessSettings = c.pHcloudStorageBoxCreateOptsAccessSettingsToSchemaStorageBoxCreateRequestAccessSettings(source.AccessSettings)
 	return schemaStorageBoxCreateRequest
+}
+func (c *converterImpl) SchemaFromStorageBoxResetPasswordOpts(source StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest {
+	var schemaStorageBoxResetPasswordRequest schema.StorageBoxResetPasswordRequest
+	schemaStorageBoxResetPasswordRequest.Password = source.Password
+	return schemaStorageBoxResetPasswordRequest
 }
 func (c *converterImpl) SchemaFromStorageBoxSnapshotCreateOpts(source StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest {
 	var schemaStorageBoxSnapshotCreateRequest schema.StorageBoxSnapshotCreateRequest
@@ -1185,6 +1206,15 @@ func (c *converterImpl) SchemaFromStorageBoxType(source *StorageBoxType) schema.
 		schemaStorageBoxType.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource((*source).DeprecatableResource)
 	}
 	return schemaStorageBoxType
+}
+func (c *converterImpl) SchemaFromStorageBoxUpdateAccessSettingsOpts(source StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest {
+	var schemaStorageBoxUpdateAccessSettingsRequest schema.StorageBoxUpdateAccessSettingsRequest
+	schemaStorageBoxUpdateAccessSettingsRequest.ReachableExternally = source.ReachableExternally
+	schemaStorageBoxUpdateAccessSettingsRequest.SambaEnabled = source.SambaEnabled
+	schemaStorageBoxUpdateAccessSettingsRequest.SSHEnabled = source.SSHEnabled
+	schemaStorageBoxUpdateAccessSettingsRequest.WebDAVEnabled = source.WebDAVEnabled
+	schemaStorageBoxUpdateAccessSettingsRequest.ZFSEnabled = source.ZFSEnabled
+	return schemaStorageBoxUpdateAccessSettingsRequest
 }
 func (c *converterImpl) SchemaFromStorageBoxUpdateOpts(source StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest {
 	var schemaStorageBoxUpdateRequest schema.StorageBoxUpdateRequest
