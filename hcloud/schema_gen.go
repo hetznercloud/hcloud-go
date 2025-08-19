@@ -367,6 +367,13 @@ type converter interface {
 	SchemaFromStorageBoxCreateOpts(StorageBoxCreateOpts) schema.StorageBoxCreateRequest
 
 	SchemaFromStorageBoxUpdateOpts(StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest
+
+	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
+	StorageBoxSnapshotFromSchema(schema.StorageBoxSnapshot) *StorageBoxSnapshot
+
+	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
+
+	SchemaFromStorageBoxSnapshotUpdateOpts(StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {
@@ -996,4 +1003,8 @@ func stringSlicePtrFromStringSlice(s []string) *[]string {
 		return nil
 	}
 	return &s
+}
+
+func mapStorageBoxIDStorageBoxPtr(id int64) *StorageBox {
+	return &StorageBox{ID: id}
 }

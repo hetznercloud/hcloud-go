@@ -416,3 +416,15 @@ func SchemaFromStorageBoxCreateOpts(opts StorageBoxCreateOpts) schema.StorageBox
 func SchemaFromStorageBoxUpdateOpts(opts StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest {
 	return c.SchemaFromStorageBoxUpdateOpts(opts)
 }
+
+func StorageBoxSnapshotFromSchema(s schema.StorageBoxSnapshot) *StorageBoxSnapshot {
+	return c.StorageBoxSnapshotFromSchema(s)
+}
+
+func SchemaFromStorageBoxSnapshotCreateOpts(opts StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest {
+	return c.SchemaFromStorageBoxSnapshotCreateOpts(opts)
+}
+
+func SchemaFromStorageBoxSnapshotUpdateOpts(opts StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest {
+	return c.SchemaFromStorageBoxSnapshotUpdateOpts(opts)
+}
