@@ -245,13 +245,13 @@ type StorageBoxFoldersResult struct {
 }
 
 type StorageBoxFoldersOpts struct {
-	Path string
+	Path *string
 }
 
 func (o StorageBoxFoldersOpts) values() url.Values {
 	vals := url.Values{}
-	if o.Path != "" {
-		vals.Add("path", o.Path)
+	if o.Path != nil {
+		vals.Add("path", *o.Path)
 	}
 	return vals
 }

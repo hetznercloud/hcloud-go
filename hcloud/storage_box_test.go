@@ -486,7 +486,7 @@ func TestStorageBoxClientFolders(t *testing.T) {
 
 		storageBox := &StorageBox{ID: 42}
 
-		result, _, err := client.StorageBox.Folders(ctx, storageBox, StorageBoxFoldersOpts{Path: "/foo"})
+		result, _, err := client.StorageBox.Folders(ctx, storageBox, StorageBoxFoldersOpts{Path: Ptr("/foo")})
 		require.NoError(t, err)
 		require.NotNil(t, result.Folders, "no result returned")
 
