@@ -226,8 +226,7 @@ func (c *StorageBoxClient) Update(ctx context.Context, storageBox *StorageBox, o
 	return StorageBoxFromSchema(respBody.StorageBox), resp, nil
 }
 
-// Delete deletes a storage box. Deleting a storage box is only possible if it is not attached
-// to any servers.
+// Delete deletes a storage box.
 func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -257,7 +256,7 @@ func (o StorageBoxFoldersOpts) values() url.Values {
 	return vals
 }
 
-// Lists folders in a storage box.
+// Folders lists folders in a storage box.
 func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error) {
 	const opPath = "/storage_boxes/%d/folders"
 	ctx = ctxutil.SetOpPath(ctx, opPath)

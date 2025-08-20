@@ -28,9 +28,8 @@ type IStorageBoxClient interface {
 	Create(ctx context.Context, opts StorageBoxCreateOpts) (StorageBoxCreateResult, *Response, error)
 	// Update updates a storage box with the given options.
 	Update(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateOpts) (*StorageBox, *Response, error)
-	// Delete deletes a storage box. Deleting a storage box is only possible if it is not attached
-	// to any servers.
+	// Delete deletes a storage box.
 	Delete(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error)
-	// Lists folders in a storage box.
+	// Folders lists folders in a storage box.
 	Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error)
 }
