@@ -412,6 +412,8 @@ func (c *converterImpl) PriceFromSchema(source schema.Price) Price {
 }
 func (c *converterImpl) PricingFromSchema(source schema.Pricing) Pricing {
 	var hcloudPricing Pricing
+	hcloudPricing.Currency = source.Currency
+	hcloudPricing.VATRate = source.VATRate
 	hcloudPricing.Image = imagePricingFromSchema(source)
 	hcloudPricing.FloatingIP = floatingIPPricingFromSchema(source)
 	hcloudPricing.FloatingIPs = floatingIPTypePricingFromSchema(source)
