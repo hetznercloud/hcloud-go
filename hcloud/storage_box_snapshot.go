@@ -53,6 +53,23 @@ func (c *StorageBoxClient) GetSnapshotByName(
 	})
 }
 
+func (c *StorageBoxClient) GetSnapshot(
+	ctx context.Context,
+	storageBox *StorageBox,
+	idOrName string,
+) (*StorageBoxSnapshot, *Response, error) {
+	return getByIDOrName(
+		ctx,
+		func(ctx context.Context, id int64) (*StorageBoxSnapshot, *Response, error) {
+			return c.GetSnapshotByID(ctx, storageBox, id)
+		},
+		func(ctx context.Context, name string) (*StorageBoxSnapshot, *Response, error) {
+			return c.GetSnapshotByName(ctx, storageBox, name)
+		},
+		idOrName,
+	)
+}
+
 type StorageBoxSnapshotListOpts struct {
 	LabelSelector string
 	Name          string
