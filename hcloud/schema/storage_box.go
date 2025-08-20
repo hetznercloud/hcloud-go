@@ -82,12 +82,6 @@ type StorageBoxCreateRequestAccessSettings struct {
 	ZFSEnabled          *bool `json:"zfs_enabled,omitempty"`
 }
 
-// StorageBoxGetRequest defines the schema of the request to
-// retrieve a single storage box.
-type StorageBoxGetRequest struct {
-	StorageBox StorageBox `json:"storage_box"`
-}
-
 // StorageBoxCreateResponse defines the schema of the response when
 // creating a storage box.
 type StorageBoxCreateResponse struct {
