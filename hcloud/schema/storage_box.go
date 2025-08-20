@@ -31,9 +31,9 @@ type StorageBoxAccessSettings struct {
 
 // StorageBoxStats defines the schema of a storage box's disk usage statistics.
 type StorageBoxStats struct {
-	Size          int64 `json:"size"`
-	SizeData      int64 `json:"size_data"`
-	SizeSnapshots int64 `json:"size_snapshots"`
+	Size          uint64 `json:"size"`
+	SizeData      uint64 `json:"size_data"`
+	SizeSnapshots uint64 `json:"size_snapshots"`
 }
 
 // StorageBoxProtection defines the schema of a storage box's resource protection.

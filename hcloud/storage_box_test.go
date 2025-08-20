@@ -80,6 +80,7 @@ func TestStorageBoxClientGetByID(t *testing.T) {
 		assert.Equal(t, "my-storage-box", storageBox.Name, "unexpected storage box name")
 		assert.Equal(t, StorageBoxStatusActive, storageBox.Status, "unexpected storage box status")
 		assert.Equal(t, "u123456", *storageBox.Username, "unexpected storage box username")
+		assert.Equal(t, uint64(1073741824), storageBox.Stats.Size, "unexpected storage box size")
 	})
 
 	t.Run("GetByID (not found)", func(t *testing.T) {

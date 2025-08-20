@@ -39,9 +39,9 @@ type StorageBoxAccessSettings struct {
 
 // StorageBoxStats represents the disk usage statistics of a storage box.
 type StorageBoxStats struct {
-	Size          int64
-	SizeData      int64
-	SizeSnapshots int64
+	Size          uint64
+	SizeData      uint64
+	SizeSnapshots uint64
 }
 
 // StorageBoxProtection represents the protection level of a storage box.
