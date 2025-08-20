@@ -10,7 +10,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
-// StorageBox represents a storage box in the Hetzner Cloud.
+// StorageBox represents a storage box in Hetzner.
 type StorageBox struct {
 	ID             int64
 	Username       *string

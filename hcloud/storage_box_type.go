@@ -10,7 +10,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
-// StorageBoxType represents a Storage Box type in the hcloud package.
+// StorageBoxType represents a Storage Box type in the Hetzner API.
 type StorageBoxType struct {
 	ID                     int64
 	Name                   string
@@ -30,7 +30,7 @@ type StorageBoxTypeLocationPricing struct {
 	SetupFee     Price
 }
 
-// StorageBoxTypeClient provides access to Storage Box Types in the Hetzner Cloud API.
+// StorageBoxTypeClient provides access to Storage Box Types in the Hetzner API.
 type StorageBoxTypeClient struct {
 	client *Client
 }
