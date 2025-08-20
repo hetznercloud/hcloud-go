@@ -306,7 +306,7 @@ func TestPrimaryIPClient(t *testing.T) {
 				Type:         "ipv4",
 				AssigneeType: "server",
 				Datacenter:   "fsn-dc14",
-				Labels:       map[string]string{"key": "value"},
+				Labels:       Ptr(map[string]string{"key": "value"}),
 			}
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
@@ -350,7 +350,7 @@ func TestPrimaryIPClient(t *testing.T) {
 			expectedReqBody := schema.PrimaryIPUpdateRequest{
 				Name:       "my-primary-ip",
 				AutoDelete: &autoDelete,
-				Labels:     map[string]string{"key": "value"},
+				Labels:     Ptr(map[string]string{"key": "value"}),
 			}
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 				t.Fatal(err)
