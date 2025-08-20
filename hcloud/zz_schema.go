@@ -982,7 +982,7 @@ func (c *converterImpl) SchemaFromPrimaryIPCreateOpts(source PrimaryIPCreateOpts
 	schemaPrimaryIPCreateRequest.Type = string(source.Type)
 	schemaPrimaryIPCreateRequest.AssigneeType = source.AssigneeType
 	schemaPrimaryIPCreateRequest.AssigneeID = source.AssigneeID
-	schemaPrimaryIPCreateRequest.Labels = source.Labels
+	schemaPrimaryIPCreateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	schemaPrimaryIPCreateRequest.AutoDelete = source.AutoDelete
 	schemaPrimaryIPCreateRequest.Datacenter = source.Datacenter
 	return schemaPrimaryIPCreateRequest
@@ -990,9 +990,7 @@ func (c *converterImpl) SchemaFromPrimaryIPCreateOpts(source PrimaryIPCreateOpts
 func (c *converterImpl) SchemaFromPrimaryIPUpdateOpts(source PrimaryIPUpdateOpts) schema.PrimaryIPUpdateRequest {
 	var schemaPrimaryIPUpdateRequest schema.PrimaryIPUpdateRequest
 	schemaPrimaryIPUpdateRequest.Name = source.Name
-	if source.Labels != nil {
-		schemaPrimaryIPUpdateRequest.Labels = (*source.Labels)
-	}
+	schemaPrimaryIPUpdateRequest.Labels = source.Labels
 	schemaPrimaryIPUpdateRequest.AutoDelete = source.AutoDelete
 	return schemaPrimaryIPUpdateRequest
 }
