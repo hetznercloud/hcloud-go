@@ -10,6 +10,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
+// StorageBoxSnapshot represents a snapshot of a Storage Box.
 type StorageBoxSnapshot struct {
 	ID          int64
 	Name        string
@@ -21,12 +22,13 @@ type StorageBoxSnapshot struct {
 	StorageBox  *StorageBox
 }
 
+// StorageBoxSnapshotStats represents the size of a Storage Box snapshot.
 type StorageBoxSnapshotStats struct {
 	Size           uint64
 	SizeFilesystem uint64
 }
 
-// GetSnapshotByID gets a Storeage Box Snapshot by its ID.
+// GetSnapshotByID gets a Storage Box Snapshot by its ID.
 func (c *StorageBoxClient) GetSnapshotByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSnapshot, *Response, error) {
 	const optPath = "/storage_boxes/%d/snapshots/%d"
 	ctx = ctxutil.SetOpPath(ctx, optPath)
@@ -44,7 +46,7 @@ func (c *StorageBoxClient) GetSnapshotByID(ctx context.Context, storageBox *Stor
 	return StorageBoxSnapshotFromSchema(respBody.Snapshot), resp, nil
 }
 
-// GetSnapshotByName gets a Storeage Box Snapshot by its name.
+// GetSnapshotByName gets a Storage Box snapshot by its name.
 func (c *StorageBoxClient) GetSnapshotByName(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -55,7 +57,7 @@ func (c *StorageBoxClient) GetSnapshotByName(
 	})
 }
 
-// GetSnapshot gets a Storeage Box Snapshot by its ID or name.
+// GetSnapshot gets a Storage Box snapshot by its ID or name.
 func (c *StorageBoxClient) GetSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -73,6 +75,7 @@ func (c *StorageBoxClient) GetSnapshot(
 	)
 }
 
+// StorageBoxSnapshotListOpts specifies options for listing Storage Box snapshots.
 type StorageBoxSnapshotListOpts struct {
 	LabelSelector string
 	Name          string
@@ -136,10 +139,12 @@ func (c *StorageBoxClient) AllSnapshots(
 	return snapshots, nil
 }
 
+// StorageBoxSnapshotCreateOpts specifies options for creating a Storage Box snapshot.
 type StorageBoxSnapshotCreateOpts struct {
 	Description string
 }
 
+// StorageBoxSnapshotCreateResult represents the result of creating a Storage Box snapshot.
 type StorageBoxSnapshotCreateResult struct {
 	Snapshot *StorageBoxSnapshot
 	Action   *Action
@@ -170,6 +175,7 @@ func (c *StorageBoxClient) CreateSnapshot(
 	return result, resp, err
 }
 
+// StorageBoxSnapshotUpdateOpts specifies options for updating a Storage Box snapshot.
 type StorageBoxSnapshotUpdateOpts struct {
 	Description string
 	Labels      map[string]string
