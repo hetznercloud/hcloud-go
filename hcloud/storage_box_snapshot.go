@@ -135,7 +135,8 @@ type StorageBoxSnapshotCreateOpts struct {
 }
 
 type StorageBoxSnapshotCreateResult struct {
-	Action *Action
+	Snapshot *StorageBoxSnapshot
+	Action   *Action
 }
 
 func (c *StorageBoxClient) CreateSnapshot(
@@ -156,6 +157,7 @@ func (c *StorageBoxClient) CreateSnapshot(
 		return result, resp, err
 	}
 
+	result.Snapshot = StorageBoxSnapshotFromSchema(respBody.Snapshot)
 	result.Action = ActionFromSchema(respBody.Action)
 
 	return result, resp, err

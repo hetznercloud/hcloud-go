@@ -31,7 +31,8 @@ type StorageBoxSnapshotCreateRequest struct {
 }
 
 type StorageBoxSnapshotCreateResponse struct {
-	Action Action `json:"action"`
+	Snapshot StorageBoxSnapshot `json:"snapshot"`
+	Action   Action             `json:"action"`
 }
 
 // TODO: Both are required by the spec? Why?

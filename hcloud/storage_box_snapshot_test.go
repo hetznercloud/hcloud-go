@@ -1,6 +1,8 @@
 package hcloud
 
 import (
+	"io"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -127,4 +129,143 @@ func TestGetSnapshot(t *testing.T) {
 		assert.Equal(t, int64(42), storageBoxSnapshot.ID)
 		assert.Equal(t, "my-resource", storageBoxSnapshot.Name)
 	})
+}
+
+func TestListSnapshot(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "GET", Path: "/storage_boxes/42/snapshots?label_selector=environment%3Dprod",
+			Status: 200,
+			JSONRaw: `{
+				"snapshots": [{
+					"id": 42,
+					"name": "my-resource",
+					"stats": {
+				  		"size": 0,
+				  		"size_filesystem": 0
+						},
+					"is_automatic": false,
+					"labels": {
+						"environment": "prod",
+						"example.com/my": "label",
+						"just-a-key": ""
+					},
+					"created": "2016-01-30T23:55:00+00:00",
+					"storage_box": 42
+				}]
+			}`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	opts := StorageBoxSnapshotListOpts{
+		LabelSelector: "environment=prod",
+	}
+	snapshots, err := client.StorageBox.AllSnapshotsWithOpts(ctx, storageBox, opts)
+	require.NoError(t, err)
+	require.Len(t, snapshots, 1)
+
+	assert.Equal(t, int64(42), snapshots[0].ID)
+	assert.Equal(t, "my-resource", snapshots[0].Name)
+}
+
+func TestCreateSnapshot(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/snapshots",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+
+				assert.JSONEq(t, `{ "description": "Test Snapshot" }`, string(body))
+			},
+			JSONRaw: `{
+				"snapshot": { "id": 14, "storage_box": 42 },
+				"action": { "id": 13 }
+			}`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	opts := StorageBoxSnapshotCreateOpts{
+		"Test Snapshot",
+	}
+	result, _, err := client.StorageBox.CreateSnapshot(ctx, storageBox, opts)
+	require.NoError(t, err)
+	require.NotNil(t, result.Action)
+	require.NotNil(t, result.Snapshot)
+}
+
+func TestUpdateSnapshot(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "PUT", Path: "/storage_boxes/42/snapshots/13",
+			Status: 200,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+
+				assert.JSONEq(t, `{ "description": "", "labels": { "environment": "prod" } }`, string(body))
+			},
+			JSONRaw: `{
+				"snapshot": {
+					"id": 42,
+					"name": "my-resource",
+					"description": "This describes my resource",
+					"stats": {
+				  		"size": 0,
+				  		"size_filesystem": 0
+						},
+					"is_automatic": false,
+					"labels": {
+						"environment": "prod"
+					},
+					"created": "2016-01-30T23:55:00+00:00",
+					"storage_box": 42
+				}
+			}`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+	storageBoxSnapshot := &StorageBoxSnapshot{ID: 13}
+
+	opts := StorageBoxSnapshotUpdateOpts{
+		Labels: map[string]string{
+			"environment": "prod",
+		},
+	}
+	storageBoxSnapshot, _, err := client.StorageBox.UpdateSnapshot(ctx, storageBox, storageBoxSnapshot, opts)
+	require.NoError(t, err)
+	require.NotNil(t, storageBoxSnapshot)
+
+	assert.Equal(t, "prod", storageBoxSnapshot.Labels["environment"])
+}
+
+func TestDeleteSnapshot(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "DELETE", Path: "/storage_boxes/42/snapshots/13",
+			Status:  200,
+			JSONRaw: `{ "action": { "id": 5 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+	storageBoxSnapshot := &StorageBoxSnapshot{ID: 13}
+
+	action, _, err := client.StorageBox.DeleteSnapshot(ctx, storageBox, storageBoxSnapshot)
+	require.NoError(t, err)
+	require.NotNil(t, action)
 }
