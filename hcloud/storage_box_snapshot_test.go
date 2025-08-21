@@ -12,7 +12,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 )
 
-func TestGetSnapshot(t *testing.T) {
+func TestStorageBoxClientGetSnapshot(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
 	t.Run("GetSnapshot (ByID)", func(t *testing.T) {
@@ -160,7 +160,7 @@ func TestGetSnapshot(t *testing.T) {
 	})
 }
 
-func TestListSnapshot(t *testing.T) {
+func TestStorageBoxClientListSnapshot(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
 	server.Expect([]mockutil.Request{
@@ -201,7 +201,7 @@ func TestListSnapshot(t *testing.T) {
 	assert.Equal(t, "my-resource", snapshots[0].Name)
 }
 
-func TestCreateSnapshot(t *testing.T) {
+func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
 	t.Run("CreateSnapshot (With Description)", func(t *testing.T) {
@@ -261,7 +261,7 @@ func TestCreateSnapshot(t *testing.T) {
 	})
 }
 
-func TestUpdateSnapshot(t *testing.T) {
+func TestStorageBoxClientUpdateSnapshot(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
 	server.Expect([]mockutil.Request{
@@ -309,7 +309,7 @@ func TestUpdateSnapshot(t *testing.T) {
 	assert.Equal(t, "prod", storageBoxSnapshot.Labels["environment"])
 }
 
-func TestDeleteSnapshot(t *testing.T) {
+func TestStorageBoxClientDeleteSnapshot(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
 	server.Expect([]mockutil.Request{
