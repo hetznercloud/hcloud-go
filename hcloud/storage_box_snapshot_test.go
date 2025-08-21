@@ -45,12 +45,13 @@ func TestGetSnapshot(t *testing.T) {
 
 		storageBoxSnapshot, _, err := client.StorageBox.GetSnapshotByID(ctx, storageBox, 13)
 		require.NoError(t, err)
-		require.NotNil(t, storageBox)
+		require.NotNil(t, storageBoxSnapshot)
+		require.NotNil(t, storageBoxSnapshot.Description)
 
 		assert.Equal(t, int64(42), storageBoxSnapshot.ID)
 		assert.Equal(t, "my-resource", storageBoxSnapshot.Name)
-		assert.Equal(t, "This describes my resource", storageBoxSnapshot.Description)
-		assert.Equal(t, int64(0), storageBoxSnapshot.Stats.Size)
+		assert.Equal(t, "This describes my resource", *storageBoxSnapshot.Description)
+		assert.Equal(t, uint64(0), storageBoxSnapshot.Stats.Size)
 
 	})
 

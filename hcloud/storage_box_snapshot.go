@@ -13,7 +13,7 @@ import (
 type StorageBoxSnapshot struct {
 	ID          int64
 	Name        string
-	Description string
+	Description *string
 	Stats       *StorageBoxSnapshotStats
 	IsAutomatic bool
 	Labels      map[string]string
@@ -22,8 +22,8 @@ type StorageBoxSnapshot struct {
 }
 
 type StorageBoxSnapshotStats struct {
-	Size           int64
-	SizeFilesystem int64
+	Size           uint64
+	SizeFilesystem uint64
 }
 
 func (c *StorageBoxClient) GetSnapshotByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSnapshot, *Response, error) {
