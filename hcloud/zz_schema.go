@@ -1439,7 +1439,7 @@ func (c *converterImpl) StorageBoxSubaccountFromSchema(source schema.StorageBoxS
 	hcloudStorageBoxSubaccount.Username = source.Username
 	hcloudStorageBoxSubaccount.HomeDirectory = source.HomeDirectory
 	hcloudStorageBoxSubaccount.Server = source.Server
-	hcloudStorageBoxSubaccount.AccessSettings = c.schemaStorageBoxSubaccountAccessSettingsToPHcloudStorageBoxSubaccountAccessSettings(source.AccessSettings)
+	hcloudStorageBoxSubaccount.AccessSettings = c.schemaStorageBoxSubaccountAccessSettingsToHcloudStorageBoxSubaccountAccessSettings(source.AccessSettings)
 	hcloudStorageBoxSubaccount.Description = source.Description
 	hcloudStorageBoxSubaccount.Labels = source.Labels
 	hcloudStorageBoxSubaccount.Created = c.timeTimeToTimeTime(source.Created)
@@ -2610,7 +2610,7 @@ func (c *converterImpl) schemaStorageBoxSnapshotStatsToPHcloudStorageBoxSnapshot
 	hcloudStorageBoxSnapshotStats.SizeFilesystem = source.SizeFilesystem
 	return &hcloudStorageBoxSnapshotStats
 }
-func (c *converterImpl) schemaStorageBoxSubaccountAccessSettingsToPHcloudStorageBoxSubaccountAccessSettings(source schema.StorageBoxSubaccountAccessSettings) *StorageBoxSubaccountAccessSettings {
+func (c *converterImpl) schemaStorageBoxSubaccountAccessSettingsToHcloudStorageBoxSubaccountAccessSettings(source schema.StorageBoxSubaccountAccessSettings) StorageBoxSubaccountAccessSettings {
 	var hcloudStorageBoxSubaccountAccessSettings StorageBoxSubaccountAccessSettings
 	if source.ReachableExternally != nil {
 		hcloudStorageBoxSubaccountAccessSettings.ReachableExternally = *source.ReachableExternally
@@ -2627,7 +2627,7 @@ func (c *converterImpl) schemaStorageBoxSubaccountAccessSettingsToPHcloudStorage
 	if source.WebDAVEnabled != nil {
 		hcloudStorageBoxSubaccountAccessSettings.WebDAVEnabled = *source.WebDAVEnabled
 	}
-	return &hcloudStorageBoxSubaccountAccessSettings
+	return hcloudStorageBoxSubaccountAccessSettings
 }
 func (c *converterImpl) schemaStorageBoxTypePriceToHcloudStorageBoxTypeLocationPricing(source schema.StorageBoxTypePrice) StorageBoxTypeLocationPricing {
 	var hcloudStorageBoxTypeLocationPricing StorageBoxTypeLocationPricing
