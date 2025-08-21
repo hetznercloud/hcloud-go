@@ -120,10 +120,7 @@ func (c *StorageBoxClient) AllSnapshotsWithOpts(
 	opts StorageBoxSnapshotListOpts,
 ) ([]*StorageBoxSnapshot, error) {
 	snapshots, _, err := c.ListSnapshots(ctx, storageBox, opts)
-	if err != nil {
-		return nil, err
-	}
-	return snapshots, nil
+	return snapshots, err
 }
 
 // AllSnapshots lists all snapshots of a Storage Box without any options.
@@ -133,10 +130,7 @@ func (c *StorageBoxClient) AllSnapshots(
 ) ([]*StorageBoxSnapshot, error) {
 	opts := StorageBoxSnapshotListOpts{}
 	snapshots, _, err := c.ListSnapshots(ctx, storageBox, opts)
-	if err != nil {
-		return nil, err
-	}
-	return snapshots, nil
+	return snapshots, err
 }
 
 // StorageBoxSnapshotCreateOpts specifies options for creating a Storage Box snapshot.
