@@ -27,7 +27,7 @@ type StorageBoxSnapshotListResponse struct {
 }
 
 type StorageBoxSnapshotCreateRequest struct {
-	Description string `json:"description"`
+	Description string `json:"description,omitempty"`
 }
 
 type StorageBoxSnapshotCreateResponse struct {

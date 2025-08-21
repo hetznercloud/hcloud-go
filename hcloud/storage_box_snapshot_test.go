@@ -176,32 +176,61 @@ func TestListSnapshot(t *testing.T) {
 func TestCreateSnapshot(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
-	server.Expect([]mockutil.Request{
-		{
-			Method: "POST", Path: "/storage_boxes/42/snapshots",
-			Status: 201,
-			Want: func(t *testing.T, r *http.Request) {
-				body, err := io.ReadAll(r.Body)
-				require.NoError(t, err)
+	t.Run("CreateSnapshot (With Description)", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/storage_boxes/42/snapshots",
+				Status: 201,
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
 
-				assert.JSONEq(t, `{ "description": "Test Snapshot" }`, string(body))
-			},
-			JSONRaw: `{
+					assert.JSONEq(t, `{ "description": "Test Snapshot" }`, string(body))
+				},
+				JSONRaw: `{
 				"snapshot": { "id": 14, "storage_box": 42 },
 				"action": { "id": 13 }
 			}`,
-		},
+			},
+		})
+
+		storageBox := &StorageBox{ID: 42}
+
+		opts := StorageBoxSnapshotCreateOpts{
+			"Test Snapshot",
+		}
+		result, _, err := client.StorageBox.CreateSnapshot(ctx, storageBox, opts)
+		require.NoError(t, err)
+		require.NotNil(t, result.Action)
+		require.NotNil(t, result.Snapshot)
 	})
 
-	storageBox := &StorageBox{ID: 42}
+	t.Run("CreateSnapshot (Without Description)", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/storage_boxes/42/snapshots",
+				Status: 201,
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
 
-	opts := StorageBoxSnapshotCreateOpts{
-		"Test Snapshot",
-	}
-	result, _, err := client.StorageBox.CreateSnapshot(ctx, storageBox, opts)
-	require.NoError(t, err)
-	require.NotNil(t, result.Action)
-	require.NotNil(t, result.Snapshot)
+					assert.JSONEq(t, `{}`, string(body))
+				},
+				JSONRaw: `{
+				"snapshot": { "id": 14, "storage_box": 42 },
+				"action": { "id": 13 }
+			}`,
+			},
+		})
+
+		storageBox := &StorageBox{ID: 42}
+
+		opts := StorageBoxSnapshotCreateOpts{}
+		result, _, err := client.StorageBox.CreateSnapshot(ctx, storageBox, opts)
+		require.NoError(t, err)
+		require.NotNil(t, result.Action)
+		require.NotNil(t, result.Snapshot)
+	})
 }
 
 func TestUpdateSnapshot(t *testing.T) {
