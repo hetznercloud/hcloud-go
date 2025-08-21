@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -27,14 +28,14 @@ func TestGetSnapshot(t *testing.T) {
 					"stats": {
 				  		"size": 0,
 				  		"size_filesystem": 0
-						},
+					},
 					"is_automatic": false,
 					"labels": {
 						"environment": "prod",
 						"example.com/my": "label",
 						"just-a-key": ""
 					},
-					"created": "2016-01-30T23:55:00+00:00",
+					"created": "2025-08-21T00:00:00Z",
 					"storage_box": 42
 				}
 			}`,
@@ -52,7 +53,8 @@ func TestGetSnapshot(t *testing.T) {
 		assert.Equal(t, "my-resource", storageBoxSnapshot.Name)
 		assert.Equal(t, "This describes my resource", *storageBoxSnapshot.Description)
 		assert.Equal(t, uint64(0), storageBoxSnapshot.Stats.Size)
-
+		assert.Equal(t, time.Date(2025, 8, 21, 00, 00, 0, 0, time.UTC), storageBoxSnapshot.Created)
+		assert.Equal(t, "prod", storageBoxSnapshot.Labels["environment"])
 	})
 
 	t.Run("GetSnapshot (ByName)", func(t *testing.T) {
