@@ -26,6 +26,7 @@ type StorageBoxSnapshotStats struct {
 	SizeFilesystem uint64
 }
 
+// GetSnapshotByID gets a Storeage Box Snapshot by its ID.
 func (c *StorageBoxClient) GetSnapshotByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSnapshot, *Response, error) {
 	const optPath = "/storage_boxes/%d/snapshots/%d"
 	ctx = ctxutil.SetOpPath(ctx, optPath)
@@ -43,6 +44,7 @@ func (c *StorageBoxClient) GetSnapshotByID(ctx context.Context, storageBox *Stor
 	return StorageBoxSnapshotFromSchema(respBody.Snapshot), resp, nil
 }
 
+// GetSnapshotByName gets a Storeage Box Snapshot by its name.
 func (c *StorageBoxClient) GetSnapshotByName(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -53,6 +55,7 @@ func (c *StorageBoxClient) GetSnapshotByName(
 	})
 }
 
+// GetSnapshot gets a Storeage Box Snapshot by its ID or name.
 func (c *StorageBoxClient) GetSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -86,6 +89,9 @@ func (o StorageBoxSnapshotListOpts) values() url.Values {
 	return values
 }
 
+// ListSnapshots lists all snapshots of a Storage Box with the given options.
+//
+// Pagination is not supported, so this will return all snapshots at once.
 func (c *StorageBoxClient) ListSnapshots(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -104,7 +110,7 @@ func (c *StorageBoxClient) ListSnapshots(
 	return allFromSchemaFunc(respBody.Snapshots, StorageBoxSnapshotFromSchema), resp, nil
 }
 
-// Implementing this as an alias as other integrations depend on this.
+// AllSnapshotsWithOpts lists all snapshots of a Storage Box with the given options.
 func (c *StorageBoxClient) AllSnapshotsWithOpts(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -117,7 +123,7 @@ func (c *StorageBoxClient) AllSnapshotsWithOpts(
 	return snapshots, nil
 }
 
-// Implementing this as an alias as other integrations depend on this.
+// AllSnapshots lists all snapshots of a Storage Box without any options.
 func (c *StorageBoxClient) AllSnapshots(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -139,6 +145,7 @@ type StorageBoxSnapshotCreateResult struct {
 	Action   *Action
 }
 
+// CreateSnapshot creates a new snapshot for the given Storage Box with the provided options.
 func (c *StorageBoxClient) CreateSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -168,6 +175,7 @@ type StorageBoxSnapshotUpdateOpts struct {
 	Labels      map[string]string
 }
 
+// UpdateSnapshot updates the given snapshot of a Storage Box with the provided options.
 func (c *StorageBoxClient) UpdateSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -190,6 +198,7 @@ func (c *StorageBoxClient) UpdateSnapshot(
 	return updatedSnapshot, resp, nil
 }
 
+// DeleteSnapshot deletes the given snapshot of a Storage Box.
 func (c *StorageBoxClient) DeleteSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
