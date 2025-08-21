@@ -132,6 +132,32 @@ func TestGetSnapshot(t *testing.T) {
 		assert.Equal(t, int64(42), storageBoxSnapshot.ID)
 		assert.Equal(t, "my-resource", storageBoxSnapshot.Name)
 	})
+
+	t.Run("GetSnapshot (NotFound)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_boxes/42/snapshots/13",
+				Status: 404,
+				JSONRaw: `{
+					"error": {
+						"code": "not_found",
+						"message": "The resource you requested could not be found."
+					}
+				}`,
+			},
+		})
+
+		storageBox := &StorageBox{ID: 42}
+
+		storageBoxSnapshot, resp, err := client.StorageBox.GetSnapshotByID(ctx, storageBox, 13)
+		require.NotNil(t, resp)
+		require.NoError(t, err)
+		require.Nil(t, storageBoxSnapshot)
+
+		assert.Equal(t, 404, resp.StatusCode)
+	})
 }
 
 func TestListSnapshot(t *testing.T) {
