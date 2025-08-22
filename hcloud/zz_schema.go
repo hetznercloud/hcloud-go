@@ -1154,6 +1154,17 @@ func (c *converterImpl) SchemaFromStorageBoxCreateOpts(source StorageBoxCreateOp
 	schemaStorageBoxCreateRequest.AccessSettings = c.pHcloudStorageBoxCreateOptsAccessSettingsToSchemaStorageBoxCreateRequestAccessSettings(source.AccessSettings)
 	return schemaStorageBoxCreateRequest
 }
+func (c *converterImpl) SchemaFromStorageBoxSnapshotCreateOpts(source StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest {
+	var schemaStorageBoxSnapshotCreateRequest schema.StorageBoxSnapshotCreateRequest
+	schemaStorageBoxSnapshotCreateRequest.Description = source.Description
+	return schemaStorageBoxSnapshotCreateRequest
+}
+func (c *converterImpl) SchemaFromStorageBoxSnapshotUpdateOpts(source StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest {
+	var schemaStorageBoxSnapshotUpdateRequest schema.StorageBoxSnapshotUpdateRequest
+	schemaStorageBoxSnapshotUpdateRequest.Description = source.Description
+	schemaStorageBoxSnapshotUpdateRequest.Labels = source.Labels
+	return schemaStorageBoxSnapshotUpdateRequest
+}
 func (c *converterImpl) SchemaFromStorageBoxType(source *StorageBoxType) schema.StorageBoxType {
 	var schemaStorageBoxType schema.StorageBoxType
 	if source != nil {
@@ -1354,6 +1365,18 @@ func (c *converterImpl) StorageBoxFromSchema(source schema.StorageBox) *StorageB
 	hcloudStorageBox.SnapshotPlan = c.pSchemaStorageBoxSnapshotPlanToPHcloudStorageBoxSnapshotPlan(source.SnapshotPlan)
 	hcloudStorageBox.Created = c.timeTimeToTimeTime(source.Created)
 	return &hcloudStorageBox
+}
+func (c *converterImpl) StorageBoxSnapshotFromSchema(source schema.StorageBoxSnapshot) *StorageBoxSnapshot {
+	var hcloudStorageBoxSnapshot StorageBoxSnapshot
+	hcloudStorageBoxSnapshot.ID = source.ID
+	hcloudStorageBoxSnapshot.Name = source.Name
+	hcloudStorageBoxSnapshot.Description = source.Description
+	hcloudStorageBoxSnapshot.Stats = c.schemaStorageBoxSnapshotStatsToPHcloudStorageBoxSnapshotStats(source.Stats)
+	hcloudStorageBoxSnapshot.IsAutomatic = source.IsAutomatic
+	hcloudStorageBoxSnapshot.Labels = source.Labels
+	hcloudStorageBoxSnapshot.Created = c.timeTimeToTimeTime(source.Created)
+	hcloudStorageBoxSnapshot.StorageBox = mapStorageBoxIDStorageBoxPtr(source.StorageBox)
+	return &hcloudStorageBoxSnapshot
 }
 func (c *converterImpl) StorageBoxTypeFromSchema(source schema.StorageBoxType) *StorageBoxType {
 	var hcloudStorageBoxType StorageBoxType
@@ -2499,6 +2522,12 @@ func (c *converterImpl) schemaStorageBoxProtectionToHcloudStorageBoxProtection(s
 	var hcloudStorageBoxProtection StorageBoxProtection
 	hcloudStorageBoxProtection.Delete = source.Delete
 	return hcloudStorageBoxProtection
+}
+func (c *converterImpl) schemaStorageBoxSnapshotStatsToPHcloudStorageBoxSnapshotStats(source schema.StorageBoxSnapshotStats) *StorageBoxSnapshotStats {
+	var hcloudStorageBoxSnapshotStats StorageBoxSnapshotStats
+	hcloudStorageBoxSnapshotStats.Size = source.Size
+	hcloudStorageBoxSnapshotStats.SizeFilesystem = source.SizeFilesystem
+	return &hcloudStorageBoxSnapshotStats
 }
 func (c *converterImpl) schemaStorageBoxTypePriceToHcloudStorageBoxTypeLocationPricing(source schema.StorageBoxTypePrice) StorageBoxTypeLocationPricing {
 	var hcloudStorageBoxTypeLocationPricing StorageBoxTypeLocationPricing
