@@ -123,3 +123,15 @@ type StorageBoxUpdateAccessSettingsRequest struct {
 	WebDAVEnabled       *bool `json:"webdav_enabled"`
 	ZFSEnabled          *bool `json:"zfs_enabled"`
 }
+
+type StorageBoxRollbackSnapshotRequest struct {
+	SnapshotID int64 `json:"snapshot_id"`
+}
+
+type StorageBoxEnableSnapshotPlanRequest struct {
+	MaxSnapshots int  `json:"max_snapshots"`
+	Minute       *int `json:"minute"`
+	Hour         *int `json:"hour"`
+	DayOfWeek    *int `json:"day_of_week"`
+	DayOfMonth   *int `json:"day_of_month"`
+}

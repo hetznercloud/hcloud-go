@@ -444,3 +444,11 @@ func SchemaFromStorageBoxResetPasswordOpts(opts StorageBoxResetPasswordOpts) sch
 func SchemaFromStorageBoxUpdateAccessSettingsOpts(opts StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest {
 	return c.SchemaFromStorageBoxUpdateAccessSettingsOpts(opts)
 }
+
+func SchemaFromStorageBoxRollbackSnapshotOpts(opts StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest {
+	return c.SchemaFromStorageBoxRollbackSnapshotOpts(opts)
+}
+
+func SchemaFromStorageBoxEnableSnapshotPlan(opts StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest {
+	return c.SchemaFromStorageBoxEnableSnapshotPlanOpts(opts)
+}

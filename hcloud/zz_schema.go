@@ -1171,10 +1171,24 @@ func (c *converterImpl) SchemaFromStorageBoxCreateOpts(source StorageBoxCreateOp
 	schemaStorageBoxCreateRequest.AccessSettings = c.pHcloudStorageBoxCreateOptsAccessSettingsToSchemaStorageBoxCreateRequestAccessSettings(source.AccessSettings)
 	return schemaStorageBoxCreateRequest
 }
+func (c *converterImpl) SchemaFromStorageBoxEnableSnapshotPlanOpts(source StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest {
+	var schemaStorageBoxEnableSnapshotPlanRequest schema.StorageBoxEnableSnapshotPlanRequest
+	schemaStorageBoxEnableSnapshotPlanRequest.MaxSnapshots = source.MaxSnapshots
+	schemaStorageBoxEnableSnapshotPlanRequest.Minute = source.Minute
+	schemaStorageBoxEnableSnapshotPlanRequest.Hour = source.Hour
+	schemaStorageBoxEnableSnapshotPlanRequest.DayOfWeek = source.DayOfWeek
+	schemaStorageBoxEnableSnapshotPlanRequest.DayOfMonth = source.DayOfMonth
+	return schemaStorageBoxEnableSnapshotPlanRequest
+}
 func (c *converterImpl) SchemaFromStorageBoxResetPasswordOpts(source StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest {
 	var schemaStorageBoxResetPasswordRequest schema.StorageBoxResetPasswordRequest
 	schemaStorageBoxResetPasswordRequest.Password = source.Password
 	return schemaStorageBoxResetPasswordRequest
+}
+func (c *converterImpl) SchemaFromStorageBoxRollbackSnapshotOpts(source StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest {
+	var schemaStorageBoxRollbackSnapshotRequest schema.StorageBoxRollbackSnapshotRequest
+	schemaStorageBoxRollbackSnapshotRequest.SnapshotID = mapStorageBoxSnapshotPtrStorageBoxSnapshotID(source.Snapshot)
+	return schemaStorageBoxRollbackSnapshotRequest
 }
 func (c *converterImpl) SchemaFromStorageBoxSnapshotCreateOpts(source StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest {
 	var schemaStorageBoxSnapshotCreateRequest schema.StorageBoxSnapshotCreateRequest

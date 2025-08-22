@@ -32,8 +32,18 @@ type IStorageBoxClient interface {
 	Delete(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error)
 	// Folders lists folders in a storage box.
 	Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error)
+	// ChangeProtection changes the protection level of a storage box.
 	ChangeProtection(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeProtectionOpts) (*Action, *Response, error)
+	// ChangeType changes the type of a storage box.
 	ChangeType(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeTypeOpts) (*Action, *Response, error)
+	// ResetPassword resets the password of a storage box.
 	ResetPassword(ctx context.Context, storageBox *StorageBox, opts StorageBoxResetPasswordOpts) (*Action, *Response, error)
+	// UpdateAccessSettings updates the access settings of a storage box.
 	UpdateAccessSettings(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateAccessSettingsOpts) (*Action, *Response, error)
+	// RollbackSnapshot rolls back a storage box to a snapshot.
+	RollbackSnapshot(ctx context.Context, storageBox *StorageBox, opts StorageBoxRollbackSnapshotOpts) (*Action, *Response, error)
+	// EnableSnapshotPlan enables a snapshot plan for a storage box.
+	EnableSnapshotPlan(ctx context.Context, storageBox *StorageBox, opts StorageBoxEnableSnapshotPlanOpts) (*Action, *Response, error)
+	// DisableSnapshotPlan disables the snapshot plan for a storage box.
+	DisableSnapshotPlan(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error)
 }

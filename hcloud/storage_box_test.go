@@ -621,3 +621,85 @@ func TestStorageBoxUpdateAccessSettings(t *testing.T) {
 		require.NotNil(t, action, "no action returned")
 	})
 }
+
+func TestStorageBoxRollbackSnapshot(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/actions/rollback_snapshot",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err, "failed to read request body")
+
+				assert.JSONEq(t, `{ "snapshot_id": 10 }`, string(body), "unexpected request body")
+			},
+			JSONRaw: `{ "action": { "id": 13 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	opts := StorageBoxRollbackSnapshotOpts{
+		Snapshot: &StorageBoxSnapshot{ID: 10},
+	}
+	action, _, err := client.StorageBox.RollbackSnapshot(ctx, storageBox, opts)
+	require.NoError(t, err, "RollbackSnapshot failed")
+	require.NotNil(t, action, "no action returned")
+}
+
+func TestStorageBoxEnableSnapshotPlan(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/actions/enable_snapshot_plan",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err, "failed to read request body")
+
+				expectedBody := `{
+					"max_snapshots": 10,
+					"minute": 5,
+					"hour": 6,
+					"day_of_week": 1,
+					"day_of_month": null
+				}`
+				assert.JSONEq(t, expectedBody, string(body))
+			},
+			JSONRaw: `{ "action": { "id": 13 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	opts := StorageBoxEnableSnapshotPlanOpts{
+		MaxSnapshots: 10,
+		Minute:       Ptr(5),
+		Hour:         Ptr(6),
+		DayOfWeek:    Ptr(1),
+	}
+	action, _, err := client.StorageBox.EnableSnapshotPlan(ctx, storageBox, opts)
+	require.NoError(t, err, "RollbackSnapshot failed")
+	require.NotNil(t, action, "no action returned")
+}
+
+func TestStorageBoxDisableSnapshotPlan(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/actions/disable_snapshot_plan",
+			Status:  201,
+			JSONRaw: `{ "action": { "id": 13 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	action, _, err := client.StorageBox.DisableSnapshotPlan(ctx, storageBox)
+	require.NoError(t, err, "RollbackSnapshot failed")
+	require.NotNil(t, action, "no action returned")
+}
