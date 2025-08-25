@@ -15,7 +15,7 @@ type StorageBoxSubaccount struct {
 	Username       string
 	HomeDirectory  string
 	Server         string
-	AccessSettings StorageBoxSubaccountAccessSettings
+	AccessSettings *StorageBoxSubaccountAccessSettings
 	Description    string
 	Labels         map[string]string
 	Created        time.Time
