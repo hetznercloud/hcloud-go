@@ -377,7 +377,6 @@ type converter interface {
 
 	SchemaFromStorageBoxChangeProtectionOpts(StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest
 
-	// goverter:map StorageBoxType.ID StorageBoxType
 	SchemaFromStorageBoxChangeTypeOpts(StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest
 
 	SchemaFromStorageBoxResetPasswordOpts(StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest

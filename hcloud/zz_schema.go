@@ -1151,13 +1151,7 @@ func (c *converterImpl) SchemaFromStorageBoxChangeProtectionOpts(source StorageB
 }
 func (c *converterImpl) SchemaFromStorageBoxChangeTypeOpts(source StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest {
 	var schemaStorageBoxChangeTypeRequest schema.StorageBoxChangeTypeRequest
-	var pInt64 *int64
-	if source.StorageBoxType != nil {
-		pInt64 = &source.StorageBoxType.ID
-	}
-	if pInt64 != nil {
-		schemaStorageBoxChangeTypeRequest.StorageBoxType = *pInt64
-	}
+	schemaStorageBoxChangeTypeRequest.StorageBoxType = c.pHcloudStorageBoxTypeToSchemaIDOrName(source.StorageBoxType)
 	return schemaStorageBoxChangeTypeRequest
 }
 func (c *converterImpl) SchemaFromStorageBoxCreateOpts(source StorageBoxCreateOpts) schema.StorageBoxCreateRequest {

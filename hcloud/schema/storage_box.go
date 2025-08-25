@@ -109,7 +109,7 @@ type StorageBoxChangeProtectionRequest struct {
 }
 
 type StorageBoxChangeTypeRequest struct {
-	StorageBoxType int64 `json:"storage_box_type"`
+	StorageBoxType IDOrName `json:"storage_box_type"`
 }
 
 type StorageBoxResetPasswordRequest struct {
