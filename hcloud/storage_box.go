@@ -286,7 +286,7 @@ type StorageBoxChangeProtectionOpts struct {
 
 // ChangeProtection changes the protection level of a storage box.
 func (c *StorageBoxClient) ChangeProtection(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeProtectionOpts) (*Action, *Response, error) {
-	const opPath = "/storage_boxes/%d/change_protection"
+	const opPath = "/storage_boxes/%d/actions/change_protection"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, storageBox.ID)
@@ -309,7 +309,7 @@ type StorageBoxChangeTypeOpts struct {
 
 // ChangeType changes the type of a storage box.
 func (c *StorageBoxClient) ChangeType(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeTypeOpts) (*Action, *Response, error) {
-	const opPath = "/storage_boxes/%d/change_type"
+	const opPath = "/storage_boxes/%d/actions/change_type"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, storageBox.ID)
@@ -332,7 +332,7 @@ type StorageBoxResetPasswordOpts struct {
 
 // ResetPassword resets the password of a storage box.
 func (c *StorageBoxClient) ResetPassword(ctx context.Context, storageBox *StorageBox, opts StorageBoxResetPasswordOpts) (*Action, *Response, error) {
-	const opPath = "/storage_boxes/%d/reset_password"
+	const opPath = "/storage_boxes/%d/actions/reset_password"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, storageBox.ID)
@@ -359,7 +359,7 @@ type StorageBoxUpdateAccessSettingsOpts struct {
 
 // UpdateAccessSettings updates the access settings of a storage box.
 func (c *StorageBoxClient) UpdateAccessSettings(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateAccessSettingsOpts) (*Action, *Response, error) {
-	const opPath = "/storage_boxes/%d/update_access_settings"
+	const opPath = "/storage_boxes/%d/actions/update_access_settings"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, storageBox.ID)

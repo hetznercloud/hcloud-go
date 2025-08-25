@@ -499,7 +499,7 @@ func TestStorageBoxClientChangeProtection(t *testing.T) {
 
 	server.Expect([]mockutil.Request{
 		{
-			Method: "POST", Path: "/storage_boxes/42/change_protection",
+			Method: "POST", Path: "/storage_boxes/42/actions/change_protection",
 			Status: 201,
 			Want: func(t *testing.T, r *http.Request) {
 				body, err := io.ReadAll(r.Body)
@@ -526,7 +526,7 @@ func TestStorageBoxResetPassword(t *testing.T) {
 
 	server.Expect([]mockutil.Request{
 		{
-			Method: "POST", Path: "/storage_boxes/42/reset_password",
+			Method: "POST", Path: "/storage_boxes/42/actions/reset_password",
 			Status: 201,
 			Want: func(t *testing.T, r *http.Request) {
 				body, err := io.ReadAll(r.Body)
@@ -555,7 +555,7 @@ func TestStorageBoxUpdateAccessSettings(t *testing.T) {
 	t.Run("UpdateAccessSettings (all)", func(t *testing.T) {
 		server.Expect([]mockutil.Request{
 			{
-				Method: "POST", Path: "/storage_boxes/42/update_access_settings",
+				Method: "POST", Path: "/storage_boxes/42/actions/update_access_settings",
 				Status: 201,
 				Want: func(t *testing.T, r *http.Request) {
 					body, err := io.ReadAll(r.Body)
@@ -592,7 +592,7 @@ func TestStorageBoxUpdateAccessSettings(t *testing.T) {
 	t.Run("UpdateAccessSettings (some)", func(t *testing.T) {
 		server.Expect([]mockutil.Request{
 			{
-				Method: "POST", Path: "/storage_boxes/42/update_access_settings",
+				Method: "POST", Path: "/storage_boxes/42/actions/update_access_settings",
 				Status: 201,
 				Want: func(t *testing.T, r *http.Request) {
 					body, err := io.ReadAll(r.Body)
