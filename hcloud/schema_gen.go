@@ -409,6 +409,19 @@ type converter interface {
 	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
 
 	SchemaFromStorageBoxSnapshotUpdateOpts(StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest
+
+	SchemaFromStorageBoxChangeProtectionOpts(StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest
+
+	SchemaFromStorageBoxChangeTypeOpts(StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest
+
+	SchemaFromStorageBoxResetPasswordOpts(StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest
+
+	SchemaFromStorageBoxUpdateAccessSettingsOpts(StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest
+
+	// goverter:map Snapshot SnapshotID | mapStorageBoxSnapshotPtrStorageBoxSnapshotID
+	SchemaFromStorageBoxRollbackSnapshotOpts(StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest
+
+	SchemaFromStorageBoxEnableSnapshotPlanOpts(StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {
@@ -1060,4 +1073,12 @@ func locationFromServerTypeLocationSchema(serverTypeLocation schema.ServerTypeLo
 
 func mapStorageBoxIDStorageBoxPtr(id int64) *StorageBox {
 	return &StorageBox{ID: id}
+}
+
+func mapStorageBoxSnapshotPtrStorageBoxSnapshotID(snapshot *StorageBoxSnapshot) int64 {
+	if snapshot == nil {
+		return 0
+	}
+
+	return snapshot.ID
 }

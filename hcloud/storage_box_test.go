@@ -493,3 +493,213 @@ func TestStorageBoxClientFolders(t *testing.T) {
 		assert.Len(t, result.Folders, 2, "unexpected number of folders")
 	})
 }
+
+func TestStorageBoxClientChangeProtection(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/actions/change_protection",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err, "failed to read request body")
+
+				assert.JSONEq(t, `{ "delete": true }`, string(body))
+			},
+			JSONRaw: `{ "action": { "id": 13 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	opts := StorageBoxChangeProtectionOpts{Delete: true}
+	action, _, err := client.StorageBox.ChangeProtection(ctx, storageBox, opts)
+	require.NoError(t, err, "ChangeProtection failed")
+	require.NotNil(t, action, "no action returned")
+
+	assert.Equal(t, int64(13), action.ID, "unexpected action ID")
+}
+
+func TestStorageBoxResetPassword(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/actions/reset_password",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err, "failed to read request body")
+
+				assert.JSONEq(t, `{ "password": "newpassword123" }`, string(body))
+			},
+			JSONRaw: `{ "action": { "id": 13 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	opts := StorageBoxResetPasswordOpts{Password: "newpassword123"}
+	action, _, err := client.StorageBox.ResetPassword(ctx, storageBox, opts)
+	require.NoError(t, err, "ResetPassword failed")
+	require.NotNil(t, action, "no action returned")
+
+	assert.Equal(t, int64(13), action.ID, "unexpected action ID")
+}
+
+func TestStorageBoxUpdateAccessSettings(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+	storageBox := &StorageBox{ID: 42}
+
+	t.Run("UpdateAccessSettings (all)", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/storage_boxes/42/actions/update_access_settings",
+				Status: 201,
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err, "failed to read request body")
+
+					expected := `{
+						"samba_enabled": true,
+						"ssh_enabled": false,
+						"webdav_enabled": true,
+						"zfs_enabled": false,
+						"reachable_externally": true
+					}`
+
+					assert.JSONEq(t, expected, string(body), "unexpected request body")
+				},
+				JSONRaw: `{ "action": { "id": 13 } }`,
+			},
+		})
+
+		opts := StorageBoxUpdateAccessSettingsOpts{
+			SambaEnabled:        Ptr(true),
+			SSHEnabled:          Ptr(false),
+			WebDAVEnabled:       Ptr(true),
+			ZFSEnabled:          Ptr(false),
+			ReachableExternally: Ptr(true),
+		}
+		action, _, err := client.StorageBox.UpdateAccessSettings(ctx, storageBox, opts)
+		require.NoError(t, err, "UpdateAccessSettings failed")
+		require.NotNil(t, action, "no action returned")
+
+		assert.Equal(t, int64(13), action.ID, "unexpected action ID")
+	})
+
+	t.Run("UpdateAccessSettings (some)", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/storage_boxes/42/actions/update_access_settings",
+				Status: 201,
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err, "failed to read request body")
+
+					expected := `{
+						"samba_enabled": true,
+						"ssh_enabled": false,
+						"webdav_enabled": null,
+						"zfs_enabled": null,
+						"reachable_externally": null
+					}`
+
+					assert.JSONEq(t, expected, string(body), "unexpected request body")
+				},
+				JSONRaw: `{ "action": { "id": 13 } }`,
+			},
+		})
+
+		opts := StorageBoxUpdateAccessSettingsOpts{
+			SambaEnabled: Ptr(true),
+			SSHEnabled:   Ptr(false),
+		}
+		action, _, err := client.StorageBox.UpdateAccessSettings(ctx, storageBox, opts)
+		require.NoError(t, err, "UpdateAccessSettings failed")
+		require.NotNil(t, action, "no action returned")
+	})
+}
+
+func TestStorageBoxRollbackSnapshot(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/actions/rollback_snapshot",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err, "failed to read request body")
+
+				assert.JSONEq(t, `{ "snapshot_id": 10 }`, string(body), "unexpected request body")
+			},
+			JSONRaw: `{ "action": { "id": 13 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	opts := StorageBoxRollbackSnapshotOpts{
+		Snapshot: &StorageBoxSnapshot{ID: 10},
+	}
+	action, _, err := client.StorageBox.RollbackSnapshot(ctx, storageBox, opts)
+	require.NoError(t, err, "RollbackSnapshot failed")
+	require.NotNil(t, action, "no action returned")
+}
+
+func TestStorageBoxEnableSnapshotPlan(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/actions/enable_snapshot_plan",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err, "failed to read request body")
+
+				expectedBody := `{
+					"max_snapshots": 10,
+					"minute": 5,
+					"hour": 6,
+					"day_of_week": 1,
+					"day_of_month": null
+				}`
+				assert.JSONEq(t, expectedBody, string(body))
+			},
+			JSONRaw: `{ "action": { "id": 13 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	opts := StorageBoxEnableSnapshotPlanOpts{
+		MaxSnapshots: 10,
+		Minute:       Ptr(5),
+		Hour:         Ptr(6),
+		DayOfWeek:    Ptr(1),
+	}
+	action, _, err := client.StorageBox.EnableSnapshotPlan(ctx, storageBox, opts)
+	require.NoError(t, err, "RollbackSnapshot failed")
+	require.NotNil(t, action, "no action returned")
+}
+
+func TestStorageBoxDisableSnapshotPlan(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/actions/disable_snapshot_plan",
+			Status:  201,
+			JSONRaw: `{ "action": { "id": 13 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	action, _, err := client.StorageBox.DisableSnapshotPlan(ctx, storageBox)
+	require.NoError(t, err, "RollbackSnapshot failed")
+	require.NotNil(t, action, "no action returned")
+}
