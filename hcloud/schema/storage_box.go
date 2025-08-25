@@ -103,3 +103,35 @@ type StorageBoxUpdateResponse struct {
 type StorageBoxFoldersResponse struct {
 	Folders []string `json:"folders"`
 }
+
+type StorageBoxChangeProtectionRequest struct {
+	Delete bool `json:"delete"`
+}
+
+type StorageBoxChangeTypeRequest struct {
+	StorageBoxType IDOrName `json:"storage_box_type"`
+}
+
+type StorageBoxResetPasswordRequest struct {
+	Password string `json:"password"`
+}
+
+type StorageBoxUpdateAccessSettingsRequest struct {
+	ReachableExternally *bool `json:"reachable_externally"`
+	SambaEnabled        *bool `json:"samba_enabled"`
+	SSHEnabled          *bool `json:"ssh_enabled"`
+	WebDAVEnabled       *bool `json:"webdav_enabled"`
+	ZFSEnabled          *bool `json:"zfs_enabled"`
+}
+
+type StorageBoxRollbackSnapshotRequest struct {
+	SnapshotID int64 `json:"snapshot_id"`
+}
+
+type StorageBoxEnableSnapshotPlanRequest struct {
+	MaxSnapshots int  `json:"max_snapshots"`
+	Minute       *int `json:"minute"`
+	Hour         *int `json:"hour"`
+	DayOfWeek    *int `json:"day_of_week"`
+	DayOfMonth   *int `json:"day_of_month"`
+}
