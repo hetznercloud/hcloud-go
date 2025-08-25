@@ -1198,9 +1198,7 @@ func (c *converterImpl) SchemaFromStorageBoxSnapshotUpdateOpts(source StorageBox
 func (c *converterImpl) SchemaFromStorageBoxSubaccountCreateOpts(source StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest {
 	var schemaStorageBoxSubaccountCreateRequest schema.StorageBoxSubaccountCreateRequest
 	schemaStorageBoxSubaccountCreateRequest.Password = source.Password
-	if source.HomeDirectory != nil {
-		schemaStorageBoxSubaccountCreateRequest.HomeDirectory = *source.HomeDirectory
-	}
+	schemaStorageBoxSubaccountCreateRequest.HomeDirectory = source.HomeDirectory
 	schemaStorageBoxSubaccountCreateRequest.AccessSettings = c.pHcloudStorageBoxSubaccountAccessSettingsOptsToPSchemaStorageBoxSubaccountAccessSettings(source.AccessSettings)
 	schemaStorageBoxSubaccountCreateRequest.Description = source.Description
 	schemaStorageBoxSubaccountCreateRequest.Labels = source.Labels
