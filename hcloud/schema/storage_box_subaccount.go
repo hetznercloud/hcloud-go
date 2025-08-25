@@ -32,7 +32,7 @@ type StorageBoxSubaccountListResponse struct {
 
 type StorageBoxSubaccountCreateRequest struct {
 	Password       string                              `json:"password"`
-	HomeDirectory  string                              `json:"home_directory"`
+	HomeDirectory  *string                             `json:"home_directory"`
 	AccessSettings *StorageBoxSubaccountAccessSettings `json:"access_settings,omitempty"`
 	Description    *string                             `json:"description,omitempty"`
 	Labels         map[string]string                   `json:"labels,omitempty"`
