@@ -502,3 +502,27 @@ func SchemaFromStorageBoxSnapshotCreateOpts(opts StorageBoxSnapshotCreateOpts) s
 func SchemaFromStorageBoxSnapshotUpdateOpts(opts StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest {
 	return c.SchemaFromStorageBoxSnapshotUpdateOpts(opts)
 }
+
+func SchemaFromStorageBoxChangeProtectionOpts(opts StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest {
+	return c.SchemaFromStorageBoxChangeProtectionOpts(opts)
+}
+
+func SchemaFromStorageBoxChangeTypeOpts(opts StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest {
+	return c.SchemaFromStorageBoxChangeTypeOpts(opts)
+}
+
+func SchemaFromStorageBoxResetPasswordOpts(opts StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest {
+	return c.SchemaFromStorageBoxResetPasswordOpts(opts)
+}
+
+func SchemaFromStorageBoxUpdateAccessSettingsOpts(opts StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest {
+	return c.SchemaFromStorageBoxUpdateAccessSettingsOpts(opts)
+}
+
+func SchemaFromStorageBoxRollbackSnapshotOpts(opts StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest {
+	return c.SchemaFromStorageBoxRollbackSnapshotOpts(opts)
+}
+
+func SchemaFromStorageBoxEnableSnapshotPlan(opts StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest {
+	return c.SchemaFromStorageBoxEnableSnapshotPlanOpts(opts)
+}
