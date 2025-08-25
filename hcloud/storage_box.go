@@ -278,3 +278,171 @@ func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, 
 
 	return result, resp, nil
 }
+
+// StorageBoxChangeProtectionOpts specifies options for changing the protection level of a storage box.
+type StorageBoxChangeProtectionOpts struct {
+	Delete bool
+}
+
+// ChangeProtection changes the protection level of a storage box.
+func (c *StorageBoxClient) ChangeProtection(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeProtectionOpts) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/actions/change_protection"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxChangeProtectionOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	action := ActionFromSchema(respBody.Action)
+
+	return action, resp, nil
+}
+
+// StorageBoxChangeTypeOpts specifies options for changing the type of a storage box.
+type StorageBoxChangeTypeOpts struct {
+	StorageBoxType *StorageBoxType
+}
+
+// ChangeType changes the type of a storage box.
+func (c *StorageBoxClient) ChangeType(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeTypeOpts) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/actions/change_type"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxChangeTypeOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	action := ActionFromSchema(respBody.Action)
+
+	return action, resp, nil
+}
+
+// StorageBoxResetPasswordOpts specifies options for resetting the password of a storage box.
+type StorageBoxResetPasswordOpts struct {
+	Password string
+}
+
+// ResetPassword resets the password of a storage box.
+func (c *StorageBoxClient) ResetPassword(ctx context.Context, storageBox *StorageBox, opts StorageBoxResetPasswordOpts) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/actions/reset_password"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxResetPasswordOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	action := ActionFromSchema(respBody.Action)
+
+	return action, resp, nil
+}
+
+// StorageBoxUpdateAccessSettingsOpts specifies options for updating the access settings of a storage box.
+type StorageBoxUpdateAccessSettingsOpts struct {
+	SambaEnabled        *bool
+	SSHEnabled          *bool
+	WebDAVEnabled       *bool
+	ZFSEnabled          *bool
+	ReachableExternally *bool
+}
+
+// UpdateAccessSettings updates the access settings of a storage box.
+func (c *StorageBoxClient) UpdateAccessSettings(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateAccessSettingsOpts) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/actions/update_access_settings"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxUpdateAccessSettingsOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	action := ActionFromSchema(respBody.Action)
+
+	return action, resp, nil
+}
+
+// StorageBoxRollbackSnapshotOpts specifies options for rolling back a storage box to a snapshot.
+type StorageBoxRollbackSnapshotOpts struct {
+	Snapshot *StorageBoxSnapshot
+}
+
+// RollbackSnapshot rolls back a storage box to a snapshot.
+func (c *StorageBoxClient) RollbackSnapshot(
+	ctx context.Context,
+	storageBox *StorageBox,
+	opts StorageBoxRollbackSnapshotOpts,
+) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/actions/rollback_snapshot"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxRollbackSnapshotOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// StorageBoxEnableSnapshotPlanOpts specifies options for enabling a snapshot plan for a storage box.
+type StorageBoxEnableSnapshotPlanOpts struct {
+	MaxSnapshots int
+	Minute       *int // Null means every minute.
+	Hour         *int // Null means every hour.
+	DayOfWeek    *int // Null means every day. // TODO: Starts with 1 for Monday and goes to 7 for Sunday
+	DayOfMonth   *int // Null means every day.
+}
+
+// EnableSnapshotPlan enables a snapshot plan for a storage box.
+func (c *StorageBoxClient) EnableSnapshotPlan(
+	ctx context.Context,
+	storageBox *StorageBox,
+	opts StorageBoxEnableSnapshotPlanOpts,
+) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/actions/enable_snapshot_plan"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+	reqBody := SchemaFromStorageBoxEnableSnapshotPlan(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ActionFromSchema(respBody.Action), resp, nil
+}
+
+// DisableSnapshotPlan disables the snapshot plan for a storage box.
+func (c *StorageBoxClient) DisableSnapshotPlan(
+	ctx context.Context,
+	storageBox *StorageBox,
+) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/actions/disable_snapshot_plan"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, nil)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ActionFromSchema(respBody.Action), resp, nil
+}
