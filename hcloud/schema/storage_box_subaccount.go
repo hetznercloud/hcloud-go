@@ -3,15 +3,15 @@ package schema
 import "time"
 
 type StorageBoxSubaccount struct {
-	ID             int64                              `json:"id"`
-	Username       string                             `json:"username"`
-	HomeDirectory  string                             `json:"home_directory"`
-	Server         string                             `json:"server"`
-	AccessSettings StorageBoxSubaccountAccessSettings `json:"access_settings"`
-	Description    string                             `json:"description"`
-	Labels         map[string]string                  `json:"labels"`
-	Created        time.Time                          `json:"created"`
-	StorageBox     int64                              `json:"storage_box"`
+	ID             int64                               `json:"id"`
+	Username       string                              `json:"username"`
+	HomeDirectory  string                              `json:"home_directory"`
+	Server         string                              `json:"server"`
+	AccessSettings *StorageBoxSubaccountAccessSettings `json:"access_settings"`
+	Description    string                              `json:"description"`
+	Labels         map[string]string                   `json:"labels"`
+	Created        time.Time                           `json:"created"`
+	StorageBox     int64                               `json:"storage_box"`
 }
 
 type StorageBoxSubaccountAccessSettings struct {

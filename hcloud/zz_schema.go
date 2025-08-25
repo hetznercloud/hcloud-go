@@ -1399,7 +1399,7 @@ func (c *converterImpl) StorageBoxSubaccountFromSchema(source schema.StorageBoxS
 	hcloudStorageBoxSubaccount.Username = source.Username
 	hcloudStorageBoxSubaccount.HomeDirectory = source.HomeDirectory
 	hcloudStorageBoxSubaccount.Server = source.Server
-	hcloudStorageBoxSubaccount.AccessSettings = c.schemaStorageBoxSubaccountAccessSettingsToHcloudStorageBoxSubaccountAccessSettings(source.AccessSettings)
+	hcloudStorageBoxSubaccount.AccessSettings = c.pSchemaStorageBoxSubaccountAccessSettingsToPHcloudStorageBoxSubaccountAccessSettings(source.AccessSettings)
 	hcloudStorageBoxSubaccount.Description = source.Description
 	hcloudStorageBoxSubaccount.Labels = source.Labels
 	hcloudStorageBoxSubaccount.Created = c.timeTimeToTimeTime(source.Created)
@@ -2291,6 +2291,29 @@ func (c *converterImpl) pSchemaStorageBoxStatsToPHcloudStorageBoxStats(source *s
 	}
 	return pHcloudStorageBoxStats
 }
+func (c *converterImpl) pSchemaStorageBoxSubaccountAccessSettingsToPHcloudStorageBoxSubaccountAccessSettings(source *schema.StorageBoxSubaccountAccessSettings) *StorageBoxSubaccountAccessSettings {
+	var pHcloudStorageBoxSubaccountAccessSettings *StorageBoxSubaccountAccessSettings
+	if source != nil {
+		var hcloudStorageBoxSubaccountAccessSettings StorageBoxSubaccountAccessSettings
+		if (*source).ReachableExternally != nil {
+			hcloudStorageBoxSubaccountAccessSettings.ReachableExternally = *(*source).ReachableExternally
+		}
+		if (*source).Readonly != nil {
+			hcloudStorageBoxSubaccountAccessSettings.Readonly = *(*source).Readonly
+		}
+		if (*source).SambaEnabled != nil {
+			hcloudStorageBoxSubaccountAccessSettings.SambaEnabled = *(*source).SambaEnabled
+		}
+		if (*source).SSHEnabled != nil {
+			hcloudStorageBoxSubaccountAccessSettings.SSHEnabled = *(*source).SSHEnabled
+		}
+		if (*source).WebDAVEnabled != nil {
+			hcloudStorageBoxSubaccountAccessSettings.WebDAVEnabled = *(*source).WebDAVEnabled
+		}
+		pHcloudStorageBoxSubaccountAccessSettings = &hcloudStorageBoxSubaccountAccessSettings
+	}
+	return pHcloudStorageBoxSubaccountAccessSettings
+}
 func (c *converterImpl) pTimeTimeToTimeTime(source *time.Time) time.Time {
 	var timeTime time.Time
 	if source != nil {
@@ -2569,25 +2592,6 @@ func (c *converterImpl) schemaStorageBoxSnapshotStatsToPHcloudStorageBoxSnapshot
 	hcloudStorageBoxSnapshotStats.Size = source.Size
 	hcloudStorageBoxSnapshotStats.SizeFilesystem = source.SizeFilesystem
 	return &hcloudStorageBoxSnapshotStats
-}
-func (c *converterImpl) schemaStorageBoxSubaccountAccessSettingsToHcloudStorageBoxSubaccountAccessSettings(source schema.StorageBoxSubaccountAccessSettings) StorageBoxSubaccountAccessSettings {
-	var hcloudStorageBoxSubaccountAccessSettings StorageBoxSubaccountAccessSettings
-	if source.ReachableExternally != nil {
-		hcloudStorageBoxSubaccountAccessSettings.ReachableExternally = *source.ReachableExternally
-	}
-	if source.Readonly != nil {
-		hcloudStorageBoxSubaccountAccessSettings.Readonly = *source.Readonly
-	}
-	if source.SambaEnabled != nil {
-		hcloudStorageBoxSubaccountAccessSettings.SambaEnabled = *source.SambaEnabled
-	}
-	if source.SSHEnabled != nil {
-		hcloudStorageBoxSubaccountAccessSettings.SSHEnabled = *source.SSHEnabled
-	}
-	if source.WebDAVEnabled != nil {
-		hcloudStorageBoxSubaccountAccessSettings.WebDAVEnabled = *source.WebDAVEnabled
-	}
-	return hcloudStorageBoxSubaccountAccessSettings
 }
 func (c *converterImpl) schemaStorageBoxTypePriceToHcloudStorageBoxTypeLocationPricing(source schema.StorageBoxTypePrice) StorageBoxTypeLocationPricing {
 	var hcloudStorageBoxTypeLocationPricing StorageBoxTypeLocationPricing
