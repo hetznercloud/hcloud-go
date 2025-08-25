@@ -352,6 +352,41 @@ type converter interface {
 	DeprecationFromSchema(*schema.DeprecationInfo) *DeprecationInfo
 
 	SchemaFromDeprecation(*DeprecationInfo) *schema.DeprecationInfo
+
+	// goverter:map Pricings Prices
+	SchemaFromStorageBoxType(*StorageBoxType) schema.StorageBoxType
+	// StorageBoxType conversions
+	// goverter:map Prices Pricings
+	StorageBoxTypeFromSchema(schema.StorageBoxType) *StorageBoxType
+
+	// StorageBox conversions
+	StorageBoxFromSchema(schema.StorageBox) *StorageBox
+
+	SchemaFromStorageBox(*StorageBox) schema.StorageBox
+
+	SchemaFromStorageBoxCreateOpts(StorageBoxCreateOpts) schema.StorageBoxCreateRequest
+
+	SchemaFromStorageBoxUpdateOpts(StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest
+
+	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
+	StorageBoxSnapshotFromSchema(schema.StorageBoxSnapshot) *StorageBoxSnapshot
+
+	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
+
+	SchemaFromStorageBoxSnapshotUpdateOpts(StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest
+
+	SchemaFromStorageBoxChangeProtectionOpts(StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest
+
+	SchemaFromStorageBoxChangeTypeOpts(StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest
+
+	SchemaFromStorageBoxResetPasswordOpts(StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest
+
+	SchemaFromStorageBoxUpdateAccessSettingsOpts(StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest
+
+	// goverter:map Snapshot SnapshotID | mapStorageBoxSnapshotPtrStorageBoxSnapshotID
+	SchemaFromStorageBoxRollbackSnapshotOpts(StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest
+
+	SchemaFromStorageBoxEnableSnapshotPlanOpts(StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {
@@ -981,4 +1016,16 @@ func stringSlicePtrFromStringSlice(s []string) *[]string {
 		return nil
 	}
 	return &s
+}
+
+func mapStorageBoxIDStorageBoxPtr(id int64) *StorageBox {
+	return &StorageBox{ID: id}
+}
+
+func mapStorageBoxSnapshotPtrStorageBoxSnapshotID(snapshot *StorageBoxSnapshot) int64 {
+	if snapshot == nil {
+		return 0
+	}
+
+	return snapshot.ID
 }
