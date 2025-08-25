@@ -10,6 +10,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
+// StorageBoxSubaccount represents a subaccount of a Storage Box.
 type StorageBoxSubaccount struct {
 	ID             int64
 	Username       string
@@ -22,6 +23,7 @@ type StorageBoxSubaccount struct {
 	StorageBox     *StorageBox
 }
 
+// StorageBoxSubaccountAccessSettings represents the access settings of a Storage Box subaccount.
 type StorageBoxSubaccountAccessSettings struct {
 	ReachableExternally bool
 	Readonly            bool
@@ -30,6 +32,7 @@ type StorageBoxSubaccountAccessSettings struct {
 	WebDAVEnabled       bool
 }
 
+// StorageBoxSubaccountAccessSettingsOpts represents the options for access settings of a Storage Box subaccount.
 type StorageBoxSubaccountAccessSettingsOpts struct {
 	ReachableExternally *bool
 	Readonly            *bool
@@ -38,6 +41,7 @@ type StorageBoxSubaccountAccessSettingsOpts struct {
 	WebDAVEnabled       *bool
 }
 
+// GetSubaccountByID retrieves a Storage Box subaccount by its ID.
 func (c *StorageBoxClient) GetSubaccountByID(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -61,6 +65,7 @@ func (c *StorageBoxClient) GetSubaccountByID(
 	return subaccount, resp, nil
 }
 
+// StorageBoxSubaccountListOpts represents the options for listing Storage Box subaccounts.
 type StorageBoxSubaccountListOpts struct {
 	LabelSelector string
 }
@@ -73,6 +78,7 @@ func (o StorageBoxSubaccountListOpts) values() url.Values {
 	return vals
 }
 
+// ListSubaccounts lists all subaccounts of a Storage Box.
 func (c *StorageBoxClient) ListSubaccounts(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -92,6 +98,7 @@ func (c *StorageBoxClient) ListSubaccounts(
 	return allFromSchemaFunc(respBody.Subaccounts, StorageBoxSubaccountFromSchema), resp, nil
 }
 
+// AllSubaccountsWithOpts retrieves all subaccounts of a Storage Box with the given options.
 func (c *StorageBoxClient) AllSubaccountsWithOpts(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -101,6 +108,7 @@ func (c *StorageBoxClient) AllSubaccountsWithOpts(
 	return subaccounts, err
 }
 
+// AllSubaccounts retrieves all subaccounts of a Storage Box.
 func (c *StorageBoxClient) AllSubaccounts(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -110,6 +118,7 @@ func (c *StorageBoxClient) AllSubaccounts(
 	return subaccounts, err
 }
 
+// StorageBoxSubaccountCreateOpts represents the options for creating a Storage Box subaccount.
 type StorageBoxSubaccountCreateOpts struct {
 	Password       string
 	HomeDirectory  *string
@@ -118,11 +127,13 @@ type StorageBoxSubaccountCreateOpts struct {
 	Labels         map[string]string
 }
 
+// StorageBoxSubaccountCreateResult represents the result of creating a Storage Box subaccount.
 type StorageBoxSubaccountCreateResult struct {
 	Subaccount *StorageBoxSubaccount
 	Action     *Action
 }
 
+// CreateSubaccount creates a new subaccount for a Storage Box.
 func (c *StorageBoxClient) CreateSubaccount(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -153,11 +164,13 @@ func (c *StorageBoxClient) CreateSubaccount(
 	return result, resp, nil
 }
 
+// StorageBoxSubaccountUpdateOpts represents the options for updating a Storage Box subaccount.
 type StorageBoxSubaccountUpdateOpts struct {
 	Labels      map[string]string
 	Description string
 }
 
+// UpdateSubaccount updates a subaccount of a Storage Box.
 func (c *StorageBoxClient) UpdateSubaccount(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -180,6 +193,7 @@ func (c *StorageBoxClient) UpdateSubaccount(
 	return updatedSubaccount, resp, nil
 }
 
+// DeleteSubaccount deletes a subaccount from a Storage Box.
 func (c *StorageBoxClient) DeleteSubaccount(
 	ctx context.Context,
 	storageBox *StorageBox,

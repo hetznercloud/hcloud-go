@@ -2,6 +2,7 @@ package schema
 
 import "time"
 
+// StorageBoxSubaccount defines the schema of a Storage Box subaccount.
 type StorageBoxSubaccount struct {
 	ID             int64                               `json:"id"`
 	Username       string                              `json:"username"`
@@ -14,6 +15,7 @@ type StorageBoxSubaccount struct {
 	StorageBox     int64                               `json:"storage_box"`
 }
 
+// StorageBoxSubaccountAccessSettings defines the schema of a Storage Box subaccount's access settings.
 type StorageBoxSubaccountAccessSettings struct {
 	ReachableExternally *bool `json:"reachable_externally,omitempty"`
 	Readonly            *bool `json:"readonly,omitempty"`
@@ -22,14 +24,17 @@ type StorageBoxSubaccountAccessSettings struct {
 	WebDAVEnabled       *bool `json:"webdav_enabled,omitempty"`
 }
 
+// StorageBoxSubaccountGetResponse defines the schema of the response when retrieving a single Storage Box subaccount.
 type StorageBoxSubaccountGetResponse struct {
 	Subaccount StorageBoxSubaccount `json:"subaccount"`
 }
 
+// StorageBoxSubaccountListResponse defines the schema of the response when listing Storage Box subaccounts.
 type StorageBoxSubaccountListResponse struct {
 	Subaccounts []StorageBoxSubaccount `json:"subaccounts"`
 }
 
+// StorageBoxSubaccountCreateRequest defines the schema of the request when creating a Storage Box subaccount.
 type StorageBoxSubaccountCreateRequest struct {
 	Password       string                              `json:"password"`
 	HomeDirectory  *string                             `json:"home_directory"`
@@ -38,6 +43,7 @@ type StorageBoxSubaccountCreateRequest struct {
 	Labels         map[string]string                   `json:"labels,omitempty"`
 }
 
+// StorageBoxSubaccountCreateResponse defines the schema of the response when creating a Storage Box subaccount.
 type StorageBoxSubaccountCreateResponse struct {
 	Subaccount struct {
 		ID         int64 `json:"id"`
@@ -46,11 +52,13 @@ type StorageBoxSubaccountCreateResponse struct {
 	Action Action `json:"action"`
 }
 
+// StorageBoxSubaccountUpdateRequest defines the schema of the request when updating a Storage Box subaccount.
 type StorageBoxSubaccountUpdateRequest struct {
 	Labels      map[string]string `json:"labels"`
 	Description string            `json:"description"`
 }
 
+// StorageBoxSubaccountUpdateResponse defines the schema of the response when updating a Storage Box subaccount.
 type StorageBoxSubaccountUpdateResponse struct {
 	Subaccount StorageBoxSubaccount `json:"subaccount"`
 }
