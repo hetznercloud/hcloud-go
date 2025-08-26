@@ -207,3 +207,60 @@ func (c *StorageBoxClient) DeleteSubaccount(
 
 	return action, resp, nil
 }
+
+// StorageBoxSubaccountResetPasswordOpts represents the options for resetting a Storage Box subaccount's password.
+type StorageBoxSubaccountResetPasswordOpts struct {
+	Password string
+}
+
+// ResetSubaccountPassword resets the password of a Storage Box subaccount.
+func (c *StorageBoxClient) ResetSubaccountPassword(
+	ctx context.Context,
+	storageBox *StorageBox,
+	subaccount *StorageBoxSubaccount,
+	opts StorageBoxSubaccountResetPasswordOpts,
+) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/subaccounts/%d/actions/reset_subaccount_password"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID, subaccount.ID)
+	reqBody := SchemaFromStorageBoxSubaccountResetPasswordOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ActionFromSchema(respBody.Action), resp, err
+}
+
+// StorageBoxSubaccountAccessSettingsUpdateOpts represents the options for updating access settings of a Storage Box subaccount.
+type StorageBoxSubaccountAccessSettingsUpdateOpts struct {
+	HomeDirectory       *string
+	ReachableExternally *bool
+	Readonly            *bool
+	SambaEnabled        *bool
+	SSHEnabled          *bool
+	WebDAVEnabled       *bool
+}
+
+// UpdateSubaccountAccessSettings updates the access settings of a Storage Box subaccount.
+func (c *StorageBoxClient) UpdateSubaccountAccessSettings(
+	ctx context.Context,
+	storageBox *StorageBox,
+	subaccount *StorageBoxSubaccount,
+	opts StorageBoxSubaccountAccessSettingsUpdateOpts,
+) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/subaccounts/%d/actions/update_access_settings"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, storageBox.ID, subaccount.ID)
+	reqBody := SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ActionFromSchema(respBody.Action), resp, err
+}

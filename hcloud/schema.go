@@ -542,3 +542,11 @@ func SchemaFromStorageBoxSubaccountUpdateOpts(opts StorageBoxSubaccountUpdateOpt
 func StorageBoxSubaccountFromCreateResponse(s schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount {
 	return c.StorageBoxSubaccountFromCreateResponse(s)
 }
+
+func SchemaFromStorageBoxSubaccountResetPasswordOpts(opts StorageBoxSubaccountResetPasswordOpts) schema.StorageBoxSubaccountResetPasswordRequest {
+	return c.SchemaFromStorageBoxSubaccountResetPasswordOpts(opts)
+}
+
+func SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(opts StorageBoxSubaccountAccessSettingsUpdateOpts) schema.StorageBoxSubaccountUpdateAccessSettingsRequest {
+	return c.SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(opts)
+}
