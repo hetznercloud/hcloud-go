@@ -15,8 +15,8 @@ type StorageBoxType struct {
 	ID                     int64
 	Name                   string
 	Description            string
-	SnapshotLimit          int
-	AutomaticSnapshotLimit int
+	SnapshotLimit          *int
+	AutomaticSnapshotLimit *int
 	SubaccountsLimit       int
 	Size                   int64
 	Pricings               []StorageBoxTypeLocationPricing
