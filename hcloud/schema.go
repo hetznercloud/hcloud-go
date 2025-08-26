@@ -452,3 +452,19 @@ func SchemaFromStorageBoxRollbackSnapshotOpts(opts StorageBoxRollbackSnapshotOpt
 func SchemaFromStorageBoxEnableSnapshotPlan(opts StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest {
 	return c.SchemaFromStorageBoxEnableSnapshotPlanOpts(opts)
 }
+
+func StorageBoxSubaccountFromSchema(s schema.StorageBoxSubaccount) *StorageBoxSubaccount {
+	return c.StorageBoxSubaccountFromSchema(s)
+}
+
+func SchemaFromStorageBoxSubaccountCreateOpts(opts StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest {
+	return c.SchemaFromStorageBoxSubaccountCreateOpts(opts)
+}
+
+func SchemaFromStorageBoxSubaccountUpdateOpts(opts StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest {
+	return c.SchemaFromStorageBoxSubaccountUpdateOpts(opts)
+}
+
+func StorageBoxSubaccountFromCreateResponse(s schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount {
+	return c.StorageBoxSubaccountFromCreateResponse(s)
+}
