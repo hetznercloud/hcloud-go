@@ -51,6 +51,39 @@ func TestStorageBoxTypeClientGetByID(t *testing.T) {
 		assert.Equal(t, "bx11", storageBoxType.Name, "unexpected storage box type name")
 	})
 
+	t.Run("GetByID (nullables)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_box_types/42",
+				Status: 200,
+				JSONRaw: `
+				{
+					"storage_box_type": {
+						"id": 42,
+						"name": "bx11",
+						"description": "BX11",
+						"snapshot_limit": null,
+						"automatic_snapshot_limit": null,
+						"subaccounts_limit": 200,
+						"size": 1073741824,
+						"prices": [],
+						"deprecation": null
+					}
+				}`,
+			},
+		})
+
+		storageBoxType, _, err := client.StorageBoxType.GetByID(ctx, 42)
+		require.NoError(t, err)
+		require.NotNil(t, storageBoxType, "no storage box type")
+		assert.Equal(t, int64(42), storageBoxType.ID, "unexpected storage box type ID")
+		assert.Nil(t, storageBoxType.SnapshotLimit, "expected nil snapshot limit")
+		assert.Nil(t, storageBoxType.AutomaticSnapshotLimit, "expected nil automatic snapshot limit")
+		assert.Nil(t, storageBoxType.Deprecation, "expected nil deprecation")
+	})
+
 	t.Run("GetByID (not found)", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
