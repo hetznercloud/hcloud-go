@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
@@ -1289,4 +1290,64 @@ func loadBalancerMetricsOptsFromURL(t *testing.T, u *url.URL) LoadBalancerGetMet
 	}
 
 	return opts
+}
+
+func TestLoadBalancerClientAddServerTargetUsePrivateIP(t *testing.T) {
+	env := newTestEnv()
+	defer env.Teardown()
+
+	testCases := []struct {
+		name           string
+		targetIP       string
+		loadBalancerID int64
+		isPrivate      bool
+	}{
+		{
+			name:           "private ip",
+			targetIP:       "10.6.0.2",
+			isPrivate:      true,
+			loadBalancerID: 1,
+		},
+		{
+			name:           "public ip",
+			targetIP:       "1.2.3.4",
+			isPrivate:      false,
+			loadBalancerID: 2,
+		},
+	}
+
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			env.Mux.HandleFunc(fmt.Sprintf("/load_balancers/%d/actions/add_target", testCase.loadBalancerID), func(w http.ResponseWriter, r *http.Request) {
+				var reqBody schema.LoadBalancerActionAddTargetRequest
+
+				require.NoError(t, json.NewDecoder(r.Body).Decode(&reqBody))
+
+				if reqBody.IP.IP != testCase.targetIP {
+					t.Errorf("unexpected IP target %v", reqBody.IP)
+				}
+
+				if testCase.isPrivate {
+					if reqBody.UsePrivateIP == nil {
+						t.Fatalf("UsePrviateIP is not populate")
+					}
+
+					if *reqBody.UsePrivateIP != testCase.isPrivate {
+						t.Fatal("UsePrivateIP of request did not match expected")
+					}
+				}
+
+				require.NoError(t, json.NewEncoder(w).Encode(schema.LoadBalancerActionAddTargetResponse{
+					Action: schema.Action{
+						ID: 1,
+					},
+				}))
+			})
+
+			_, _, err := env.Client.LoadBalancer.AddIPTarget(context.Background(), &LoadBalancer{ID: testCase.loadBalancerID}, LoadBalancerAddIPTargetOpts{
+				IP: net.ParseIP(testCase.targetIP),
+			})
+			require.NoError(t, err)
+		})
+	}
 }

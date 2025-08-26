@@ -562,8 +562,9 @@ type LoadBalancerAddIPTargetOpts struct {
 // AddIPTarget adds an IP target to a Load Balancer.
 func (c *LoadBalancerClient) AddIPTarget(ctx context.Context, loadBalancer *LoadBalancer, opts LoadBalancerAddIPTargetOpts) (*Action, *Response, error) {
 	reqBody := schema.LoadBalancerActionAddTargetRequest{
-		Type: string(LoadBalancerTargetTypeIP),
-		IP:   &schema.LoadBalancerActionAddTargetRequestIP{IP: opts.IP.String()},
+		Type:         string(LoadBalancerTargetTypeIP),
+		IP:           &schema.LoadBalancerActionAddTargetRequestIP{IP: opts.IP.String()},
+		UsePrivateIP: Ptr(opts.IP.IsPrivate()),
 	}
 	return c.addTarget(ctx, loadBalancer, reqBody)
 }
