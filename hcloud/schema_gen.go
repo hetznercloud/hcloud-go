@@ -387,6 +387,17 @@ type converter interface {
 	SchemaFromStorageBoxRollbackSnapshotOpts(StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest
 
 	SchemaFromStorageBoxEnableSnapshotPlanOpts(StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest
+
+	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
+	StorageBoxSubaccountFromSchema(schema.StorageBoxSubaccount) *StorageBoxSubaccount
+
+	SchemaFromStorageBoxSubaccountCreateOpts(StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest
+
+	SchemaFromStorageBoxSubaccountUpdateOpts(StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest
+
+	// goverter:ignoreMissing
+	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
+	StorageBoxSubaccountFromCreateResponse(schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {
