@@ -433,6 +433,10 @@ type converter interface {
 	// goverter:ignoreMissing
 	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
 	StorageBoxSubaccountFromCreateResponse(schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount
+
+	SchemaFromStorageBoxSubaccountResetPasswordOpts(StorageBoxSubaccountResetPasswordOpts) schema.StorageBoxSubaccountResetPasswordRequest
+
+	SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(StorageBoxSubaccountAccessSettingsUpdateOpts) schema.StorageBoxSubaccountUpdateAccessSettingsRequest
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {

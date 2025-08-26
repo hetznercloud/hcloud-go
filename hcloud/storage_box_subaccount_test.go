@@ -346,3 +346,75 @@ func TestStorageBoxClientDeleteSubaccount(t *testing.T) {
 		require.NotNil(t, action)
 	})
 }
+
+func TestStorageBoxClientResetSubaccountPassword(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/subaccounts/13/actions/reset_subaccount_password",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+
+				assert.JSONEq(t, `{"password":"foobar"}`, string(body))
+			},
+			JSONRaw: `{ "action": { "id": 5 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+	subaccount := &StorageBoxSubaccount{ID: 13}
+
+	opts := StorageBoxSubaccountResetPasswordOpts{
+		Password: "foobar",
+	}
+	action, resp, err := client.StorageBox.ResetSubaccountPassword(ctx, storageBox, subaccount, opts)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.NotNil(t, action)
+}
+
+func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/subaccounts/13/actions/update_access_settings",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+
+				expected := `{
+					"home_directory": "/foobar",
+					"samba_enabled": false,
+					"ssh_enabled": true,
+					"webdav_enabled": false,
+					"readonly": false,
+					"reachable_externally": true
+				}`
+
+				assert.JSONEq(t, expected, string(body))
+			},
+			JSONRaw: `{ "action": { "id": 5 } }`,
+		},
+	})
+
+	storageBox := &StorageBox{ID: 42}
+	subaccount := &StorageBoxSubaccount{ID: 13}
+
+	opts := StorageBoxSubaccountAccessSettingsUpdateOpts{
+		HomeDirectory:       Ptr("/foobar"),
+		SambaEnabled:        Ptr(false),
+		SSHEnabled:          Ptr(true),
+		WebDAVEnabled:       Ptr(false),
+		Readonly:            Ptr(false),
+		ReachableExternally: Ptr(true),
+	}
+	action, resp, err := client.StorageBox.UpdateSubaccountAccessSettings(ctx, storageBox, subaccount, opts)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.NotNil(t, action)
+}

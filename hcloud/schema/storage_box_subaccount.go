@@ -73,3 +73,16 @@ type StorageBoxSubaccountUpdateRequest struct {
 type StorageBoxSubaccountUpdateResponse struct {
 	Subaccount StorageBoxSubaccount `json:"subaccount"`
 }
+
+type StorageBoxSubaccountResetPasswordRequest struct {
+	Password string `json:"password"`
+}
+
+type StorageBoxSubaccountUpdateAccessSettingsRequest struct {
+	HomeDirectory       *string `json:"home_directory,omitempty"`
+	ReachableExternally *bool   `json:"reachable_externally,omitempty"`
+	Readonly            *bool   `json:"readonly,omitempty"`
+	SambaEnabled        *bool   `json:"samba_enabled,omitempty"`
+	SSHEnabled          *bool   `json:"ssh_enabled,omitempty"`
+	WebDAVEnabled       *bool   `json:"webdav_enabled,omitempty"`
+}
