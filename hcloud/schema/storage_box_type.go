@@ -5,8 +5,8 @@ type StorageBoxType struct {
 	ID                     int64                 `json:"id"`
 	Name                   string                `json:"name"`
 	Description            string                `json:"description"`
-	SnapshotLimit          int                   `json:"snapshot_limit"`
-	AutomaticSnapshotLimit int                   `json:"automatic_snapshot_limit"`
+	SnapshotLimit          *int                  `json:"snapshot_limit"`
+	AutomaticSnapshotLimit *int                  `json:"automatic_snapshot_limit"`
 	SubaccountsLimit       int                   `json:"subaccounts_limit"`
 	Size                   int64                 `json:"size"`
 	Prices                 []StorageBoxTypePrice `json:"prices"`
