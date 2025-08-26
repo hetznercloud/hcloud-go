@@ -1431,6 +1431,12 @@ func (c *converterImpl) StorageBoxSnapshotFromSchema(source schema.StorageBoxSna
 	hcloudStorageBoxSnapshot.StorageBox = mapStorageBoxIDStorageBoxPtr(source.StorageBox)
 	return &hcloudStorageBoxSnapshot
 }
+func (c *converterImpl) StorageBoxSubaccountFromCreateResponse(source schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount {
+	var hcloudStorageBoxSubaccount StorageBoxSubaccount
+	hcloudStorageBoxSubaccount.ID = source.ID
+	hcloudStorageBoxSubaccount.StorageBox = mapStorageBoxIDStorageBoxPtr(source.StorageBox)
+	return &hcloudStorageBoxSubaccount
+}
 func (c *converterImpl) StorageBoxSubaccountFromSchema(source schema.StorageBoxSubaccount) *StorageBoxSubaccount {
 	var hcloudStorageBoxSubaccount StorageBoxSubaccount
 	hcloudStorageBoxSubaccount.ID = source.ID

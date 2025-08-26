@@ -394,6 +394,10 @@ type converter interface {
 	SchemaFromStorageBoxSubaccountCreateOpts(StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest
 
 	SchemaFromStorageBoxSubaccountUpdateOpts(StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest
+
+	// goverter:ignoreMissing
+	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
+	StorageBoxSubaccountFromCreateResponse(schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {

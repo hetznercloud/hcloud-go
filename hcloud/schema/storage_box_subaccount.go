@@ -45,11 +45,13 @@ type StorageBoxSubaccountCreateRequest struct {
 
 // StorageBoxSubaccountCreateResponse defines the schema of the response when creating a Storage Box subaccount.
 type StorageBoxSubaccountCreateResponse struct {
-	Subaccount struct {
-		ID         int64 `json:"id"`
-		StorageBox int64 `json:"storage_box"`
-	} `json:"subaccount"`
-	Action Action `json:"action"`
+	Subaccount StorageBoxSubaccountCreateResponseSubaccount `json:"subaccount"`
+	Action     Action                                       `json:"action"`
+}
+
+type StorageBoxSubaccountCreateResponseSubaccount struct {
+	ID         int64 `json:"id"`
+	StorageBox int64 `json:"storage_box"`
 }
 
 // StorageBoxSubaccountUpdateRequest defines the schema of the request when updating a Storage Box subaccount.

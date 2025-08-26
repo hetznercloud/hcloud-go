@@ -153,13 +153,7 @@ func (c *StorageBoxClient) CreateSubaccount(
 	}
 
 	result.Action = ActionFromSchema(respBody.Action)
-
-	result.Subaccount = &StorageBoxSubaccount{
-		ID: respBody.Subaccount.ID,
-		StorageBox: &StorageBox{
-			ID: respBody.Subaccount.StorageBox,
-		},
-	}
+	result.Subaccount = StorageBoxSubaccountFromCreateResponse(respBody.Subaccount)
 
 	return result, resp, nil
 }
