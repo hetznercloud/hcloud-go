@@ -16,7 +16,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/jmattheis/goverter v1.9.1
 	github.com/prometheus/client_golang v1.23.0
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.1
 	github.com/vburenin/ifacemaker v1.3.0
 	golang.org/x/crypto v0.41.0
 	golang.org/x/net v0.43.0
