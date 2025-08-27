@@ -272,7 +272,7 @@ func TestStorageBoxClientUpdateSnapshot(t *testing.T) {
 				body, err := io.ReadAll(r.Body)
 				require.NoError(t, err)
 
-				assert.JSONEq(t, `{ "description": "", "labels": { "environment": "prod" } }`, string(body))
+				assert.JSONEq(t, `{ "labels": { "environment": "prod" } }`, string(body))
 			},
 			JSONRaw: `{
 				"snapshot": {

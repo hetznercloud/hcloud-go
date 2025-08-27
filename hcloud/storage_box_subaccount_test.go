@@ -309,7 +309,7 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 		subaccount := &StorageBoxSubaccount{ID: 13}
 
 		opts := StorageBoxSubaccountUpdateOpts{
-			Description: "Updated description",
+			Description: Ptr("Updated description"),
 			Labels: map[string]string{
 				"environment":    "prod",
 				"example.com/my": "label",
