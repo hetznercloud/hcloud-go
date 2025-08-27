@@ -1191,7 +1191,7 @@ func (c *converterImpl) SchemaFromStorageBoxSnapshotCreateOpts(source StorageBox
 func (c *converterImpl) SchemaFromStorageBoxSnapshotUpdateOpts(source StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest {
 	var schemaStorageBoxSnapshotUpdateRequest schema.StorageBoxSnapshotUpdateRequest
 	schemaStorageBoxSnapshotUpdateRequest.Description = source.Description
-	schemaStorageBoxSnapshotUpdateRequest.Labels = source.Labels
+	schemaStorageBoxSnapshotUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	return schemaStorageBoxSnapshotUpdateRequest
 }
 func (c *converterImpl) SchemaFromStorageBoxSubaccountCreateOpts(source StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest {
@@ -1220,8 +1220,8 @@ func (c *converterImpl) SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(s
 }
 func (c *converterImpl) SchemaFromStorageBoxSubaccountUpdateOpts(source StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest {
 	var schemaStorageBoxSubaccountUpdateRequest schema.StorageBoxSubaccountUpdateRequest
-	schemaStorageBoxSubaccountUpdateRequest.Labels = source.Labels
 	schemaStorageBoxSubaccountUpdateRequest.Description = source.Description
+	schemaStorageBoxSubaccountUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	return schemaStorageBoxSubaccountUpdateRequest
 }
 func (c *converterImpl) SchemaFromStorageBoxType(source *StorageBoxType) schema.StorageBoxType {
@@ -1255,8 +1255,8 @@ func (c *converterImpl) SchemaFromStorageBoxUpdateAccessSettingsOpts(source Stor
 }
 func (c *converterImpl) SchemaFromStorageBoxUpdateOpts(source StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest {
 	var schemaStorageBoxUpdateRequest schema.StorageBoxUpdateRequest
-	schemaStorageBoxUpdateRequest.Name = source.Name
-	schemaStorageBoxUpdateRequest.Labels = source.Labels
+	schemaStorageBoxUpdateRequest.Name = mapEmptyStringToNil(source.Name)
+	schemaStorageBoxUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	return schemaStorageBoxUpdateRequest
 }
 func (c *converterImpl) SchemaFromVolume(source *Volume) schema.Volume {

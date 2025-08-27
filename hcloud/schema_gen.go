@@ -366,6 +366,7 @@ type converter interface {
 
 	SchemaFromStorageBoxCreateOpts(StorageBoxCreateOpts) schema.StorageBoxCreateRequest
 
+	// goverter:map Name | mapEmptyStringToNil
 	SchemaFromStorageBoxUpdateOpts(StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest
 
 	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr

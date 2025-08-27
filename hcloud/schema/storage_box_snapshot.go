@@ -44,8 +44,8 @@ type StorageBoxSnapshotCreateResponse struct {
 // TODO: Both are required by the spec? Why?
 // StorageBoxSnapshotUpdateRequest defines the schema of the request to update a Storage Box snapshot.
 type StorageBoxSnapshotUpdateRequest struct {
-	Description string            `json:"description"`
-	Labels      map[string]string `json:"labels"`
+	Description *string            `json:"description,omitempty"`
+	Labels      *map[string]string `json:"labels,omitempty"`
 }
 
 // StorageBoxSnapshotUpdateResponse defines the schema of the response when updating a Storage Box snapshot.

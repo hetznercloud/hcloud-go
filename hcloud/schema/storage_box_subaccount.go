@@ -65,8 +65,8 @@ type StorageBoxSubaccountCreateResponseSubaccount struct {
 
 // StorageBoxSubaccountUpdateRequest defines the schema of the request when updating a Storage Box subaccount.
 type StorageBoxSubaccountUpdateRequest struct {
-	Labels      map[string]string `json:"labels"`
-	Description string            `json:"description"`
+	Description *string            `json:"description,omitempty"`
+	Labels      *map[string]string `json:"labels,omitempty"`
 }
 
 // StorageBoxSubaccountUpdateResponse defines the schema of the response when updating a Storage Box subaccount.
