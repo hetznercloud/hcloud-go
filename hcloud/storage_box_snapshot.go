@@ -171,7 +171,7 @@ func (c *StorageBoxClient) CreateSnapshot(
 
 // StorageBoxSnapshotUpdateOpts specifies options for updating a Storage Box snapshot.
 type StorageBoxSnapshotUpdateOpts struct {
-	Description string
+	Description *string
 	Labels      map[string]string
 }
 

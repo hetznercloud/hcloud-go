@@ -1189,7 +1189,7 @@ func (c *converterImpl) SchemaFromStorageBoxSnapshotCreateOpts(source StorageBox
 }
 func (c *converterImpl) SchemaFromStorageBoxSnapshotUpdateOpts(source StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest {
 	var schemaStorageBoxSnapshotUpdateRequest schema.StorageBoxSnapshotUpdateRequest
-	schemaStorageBoxSnapshotUpdateRequest.Description = mapEmptyStringToNil(source.Description)
+	schemaStorageBoxSnapshotUpdateRequest.Description = source.Description
 	schemaStorageBoxSnapshotUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	return schemaStorageBoxSnapshotUpdateRequest
 }
@@ -1219,7 +1219,7 @@ func (c *converterImpl) SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(s
 }
 func (c *converterImpl) SchemaFromStorageBoxSubaccountUpdateOpts(source StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest {
 	var schemaStorageBoxSubaccountUpdateRequest schema.StorageBoxSubaccountUpdateRequest
-	schemaStorageBoxSubaccountUpdateRequest.Description = mapEmptyStringToNil(source.Description)
+	schemaStorageBoxSubaccountUpdateRequest.Description = source.Description
 	schemaStorageBoxSubaccountUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	return schemaStorageBoxSubaccountUpdateRequest
 }
