@@ -206,7 +206,7 @@ func (c *StorageBoxClient) Create(ctx context.Context, opts StorageBoxCreateOpts
 
 // StorageBoxUpdateOpts specifies options for updating a storage box.
 type StorageBoxUpdateOpts struct {
-	Name   string
+	Name   string // TODO: should we make this a pointer
 	Labels map[string]string
 }
 

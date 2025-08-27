@@ -160,8 +160,8 @@ func (c *StorageBoxClient) CreateSubaccount(
 
 // StorageBoxSubaccountUpdateOpts represents the options for updating a Storage Box subaccount.
 type StorageBoxSubaccountUpdateOpts struct {
+	Description *string
 	Labels      map[string]string
-	Description string
 }
 
 // UpdateSubaccount updates a subaccount of a Storage Box.
