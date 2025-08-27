@@ -366,6 +366,7 @@ type converter interface {
 
 	SchemaFromStorageBoxCreateOpts(StorageBoxCreateOpts) schema.StorageBoxCreateRequest
 
+	// goverter:map Name | mapEmptyStringToNil
 	SchemaFromStorageBoxUpdateOpts(StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest
 
 	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
@@ -373,6 +374,7 @@ type converter interface {
 
 	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
 
+	// goverter:map Description | mapEmptyStringToNil
 	SchemaFromStorageBoxSnapshotUpdateOpts(StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest
 
 	SchemaFromStorageBoxChangeProtectionOpts(StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest
@@ -393,6 +395,7 @@ type converter interface {
 
 	SchemaFromStorageBoxSubaccountCreateOpts(StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest
 
+	// goverter:map Description | mapEmptyStringToNil
 	SchemaFromStorageBoxSubaccountUpdateOpts(StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest
 
 	// goverter:ignoreMissing
