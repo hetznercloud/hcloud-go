@@ -1120,6 +1120,12 @@ func (c *converterImpl) SchemaFromServerType(source *ServerType) schema.ServerTy
 		}
 		schemaServerType.Deprecated = isDeprecationNotNil((*source).DeprecatableResource.Deprecation)
 		schemaServerType.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource((*source).DeprecatableResource)
+		if (*source).Locations != nil {
+			schemaServerType.Locations = make([]schema.ServerTypeLocation, len((*source).Locations))
+			for j := 0; j < len((*source).Locations); j++ {
+				schemaServerType.Locations[j] = c.schemaFromServerTypeLocation((*source).Locations[j])
+			}
+		}
 	}
 	return schemaServerType
 }
@@ -1278,6 +1284,12 @@ func (c *converterImpl) ServerTypeFromSchema(source schema.ServerType) *ServerTy
 		}
 	}
 	hcloudServerType.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
+	if source.Locations != nil {
+		hcloudServerType.Locations = make([]ServerTypeLocation, len(source.Locations))
+		for j := 0; j < len(source.Locations); j++ {
+			hcloudServerType.Locations[j] = c.serverTypeLocationFromSchema(source.Locations[j])
+		}
+	}
 	return &hcloudServerType
 }
 func (c *converterImpl) VolumeFromSchema(source schema.Volume) *Volume {
@@ -2199,6 +2211,25 @@ func (c *converterImpl) schemaFromPrimaryIPTypePricing(source PrimaryIPTypePrici
 	schemaPricingPrimaryIPTypePrice.PriceMonthly = c.hcloudPrimaryIPPriceToSchemaPrice(source.Monthly)
 	return schemaPricingPrimaryIPTypePrice
 }
+func (c *converterImpl) schemaFromServerTypeLocation(source ServerTypeLocation) schema.ServerTypeLocation {
+	var schemaServerTypeLocation schema.ServerTypeLocation
+	var pInt64 *int64
+	if source.Location != nil {
+		pInt64 = &source.Location.ID
+	}
+	if pInt64 != nil {
+		schemaServerTypeLocation.ID = *pInt64
+	}
+	var pString *string
+	if source.Location != nil {
+		pString = &source.Location.Name
+	}
+	if pString != nil {
+		schemaServerTypeLocation.Name = *pString
+	}
+	schemaServerTypeLocation.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource(source.DeprecatableResource)
+	return schemaServerTypeLocation
+}
 func (c *converterImpl) schemaFromServerTypeLocationPricing(source ServerTypeLocationPricing) schema.PricingServerTypePrice {
 	var schemaPricingServerTypePrice schema.PricingServerTypePrice
 	schemaPricingServerTypePrice.Location = c.pHcloudLocationToString(source.Location)
@@ -2308,6 +2339,12 @@ func (c *converterImpl) schemaVolumeProtectionToHcloudVolumeProtection(source sc
 	var hcloudVolumeProtection VolumeProtection
 	hcloudVolumeProtection.Delete = source.Delete
 	return hcloudVolumeProtection
+}
+func (c *converterImpl) serverTypeLocationFromSchema(source schema.ServerTypeLocation) ServerTypeLocation {
+	var hcloudServerTypeLocation ServerTypeLocation
+	hcloudServerTypeLocation.Location = locationFromServerTypeLocationSchema(source)
+	hcloudServerTypeLocation.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
+	return hcloudServerTypeLocation
 }
 func (c *converterImpl) serverTypePricingFromSchema(source schema.PricingServerTypePrice) ServerTypeLocationPricing {
 	var hcloudServerTypeLocationPricing ServerTypeLocationPricing
