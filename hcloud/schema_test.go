@@ -2245,3 +2245,135 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 		})
 	}
 }
+
+func TestStorageBoxTypeSchema(t *testing.T) {
+	data := []byte(`
+	{
+		"id": 42,
+		"name": "bx11",
+		"description": "BX11",
+		"snapshot_limit": 10,
+		"automatic_snapshot_limit": 10,
+		"subaccounts_limit": 200,
+		"size": 1073741824,
+		"prices": [
+			{
+				"location": "fsn1",
+				"price_hourly": {
+					"net": "1.0000",
+					"gross": "1.1900"
+				},
+				"price_monthly": {
+					"net": "1.0000",
+			  		"gross": "1.1900"
+				},
+				"setup_fee": {
+					"net": "1.0000",
+					"gross": "1.1900"
+				}
+			}
+		],
+		"deprecation": {
+			"unavailable_after": "2023-09-01T00:00:00+00:00",
+			"announced": "2023-06-01T00:00:00+00:00"
+		}
+	 }
+	`)
+
+	var s schema.StorageBoxType
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromStorageBoxType(StorageBoxTypeFromSchema(s)))
+
+	sb := StorageBoxTypeFromSchema(s)
+	assert.Equal(t, sb, StorageBoxTypeFromSchema(SchemaFromStorageBoxType(sb)))
+}
+
+func TestStorageBoxSchema(t *testing.T) {
+	data := []byte(`
+    {
+      "id": 42,
+      "username": "u12345",
+      "status": "active",
+      "name": "string",
+      "storage_box_type": {
+        "id": 42,
+        "name": "bx11",
+        "description": "BX11",
+        "snapshot_limit": 10,
+        "automatic_snapshot_limit": 10,
+        "subaccounts_limit": 200,
+        "size": 1073741824,
+        "prices": [
+          {
+            "location": "fsn1",
+            "price_hourly": {
+              "net": "1.0000",
+              "gross": "1.1900"
+            },
+            "price_monthly": {
+              "net": "1.0000",
+              "gross": "1.1900"
+            },
+            "setup_fee": {
+              "net": "1.0000",
+              "gross": "1.1900"
+            }
+          }
+        ],
+        "deprecation": {
+          "unavailable_after": "2023-09-01T00:00:00+00:00",
+          "announced": "2023-06-01T00:00:00+00:00"
+        }
+      },
+      "location": {
+        "id": 42,
+        "name": "fsn1",
+        "description": "Falkenstein DC Park 1",
+        "country": "DE",
+        "city": "Falkenstein",
+        "latitude": 50.47612,
+        "longitude": 12.370071,
+        "network_zone": "eu-central"
+      },
+      "access_settings": {
+        "reachable_externally": false,
+        "samba_enabled": false,
+        "ssh_enabled": false,
+        "webdav_enabled": false,
+        "zfs_enabled": false
+      },
+      "server": "u1337.your-storagebox.de",
+      "system": "FSN1-BX355",
+      "stats": {
+        "size": 0,
+        "size_data": 0,
+        "size_snapshots": 0
+      },
+      "labels": {
+        "environment": "prod",
+        "example.com/my": "label",
+        "just-a-key": ""
+      },
+      "protection": {
+        "delete": false
+      },
+      "snapshot_plan": {
+        "max_snapshots": 0,
+        "minute": null,
+        "hour": null,
+        "day_of_week": null,
+        "day_of_month": null
+      },
+      "created": "2016-01-30T23:55:00+00:00"
+    }
+	`)
+
+	var s schema.StorageBox
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromStorageBox(StorageBoxFromSchema(s)))
+
+	sb := StorageBoxFromSchema(s)
+	assert.Equal(t, sb, StorageBoxFromSchema(SchemaFromStorageBox(sb)))
+}
