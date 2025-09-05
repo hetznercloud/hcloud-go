@@ -46,6 +46,9 @@ func TestClient_Base(t *testing.T) {
 	env.Mux.HandleFunc("/sanitized", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("sanitized  \n"))
 	})
+	env.Mux.HandleFunc("/no-content", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(204)
+	})
 	env.Mux.HandleFunc("/not-found", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(404)
 		w.Write([]byte("not found"))
@@ -56,6 +59,9 @@ func TestClient_Base(t *testing.T) {
 	}
 	if body, err := env.Client.get("/sanitized"); assert.NoError(t, err) {
 		assert.Equal(t, "sanitized", body)
+	}
+	if body, err := env.Client.get("/no-content"); assert.NoError(t, err) {
+		assert.Equal(t, "", body)
 	}
 	if body, err := env.Client.get("/not-found"); assert.EqualError(t, err, "response status was 404") {
 		assert.Equal(t, "not found", body)
