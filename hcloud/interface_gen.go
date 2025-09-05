@@ -22,4 +22,4 @@ package hcloud
 //go:generate go run github.com/vburenin/ifacemaker -f primary_ip.go -s PrimaryIPClient -i IPrimaryIPClient -p hcloud -o zz_primary_ip_client_iface.go
 //go:generate go run github.com/vburenin/ifacemaker -f zone.go -f zone_rrset.go -s ZoneClient -i IZoneClient -p hcloud -o zz_zone_client_iface.go
 //go:generate go run github.com/vburenin/ifacemaker -f storage_box_type.go -s StorageBoxTypeClient -i IStorageBoxTypeClient -p hcloud -o zz_storage_box_type_client_iface.go
-//go:generate go run github.com/vburenin/ifacemaker -f storage_box.go -s StorageBoxClient -i IStorageBoxClient -p hcloud -o zz_storage_box_client_iface.go
+//go:generate go run github.com/vburenin/ifacemaker -f storage_box.go -f storage_box_snapshot.go -f storage_box_subaccount.go -s StorageBoxClient -i IStorageBoxClient -p hcloud -o zz_storage_box_client_iface.go
