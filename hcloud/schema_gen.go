@@ -362,6 +362,9 @@ type converter interface {
 	// StorageBox conversions
 	StorageBoxFromSchema(schema.StorageBox) *StorageBox
 
+	// goverter:map DayOfWeek | mapStorageBoxIntPtrToWeekdayPtr
+	StorageBoxSnapshotPlanFromSchema(schema.StorageBoxSnapshotPlan) StorageBoxSnapshotPlan
+
 	SchemaFromStorageBox(*StorageBox) schema.StorageBox
 
 	SchemaFromStorageBoxCreateOpts(StorageBoxCreateOpts) schema.StorageBoxCreateRequest
@@ -387,6 +390,7 @@ type converter interface {
 	// goverter:map Snapshot SnapshotID | mapStorageBoxSnapshotPtrStorageBoxSnapshotID
 	SchemaFromStorageBoxRollbackSnapshotOpts(StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest
 
+	// goverter:map DayOfWeek | mapStorageBoxWeekdayPtrToIntPtr
 	SchemaFromStorageBoxEnableSnapshotPlanOpts(StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest
 
 	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
@@ -1044,4 +1048,28 @@ func mapStorageBoxSnapshotPtrStorageBoxSnapshotID(snapshot *StorageBoxSnapshot) 
 	}
 
 	return snapshot.ID
+}
+
+func mapStorageBoxWeekdayPtrToIntPtr(w *time.Weekday) *int {
+	if w == nil {
+		return nil
+	}
+
+	if *w == time.Sunday {
+		return Ptr(7)
+	}
+
+	return Ptr(int(*w))
+}
+
+func mapStorageBoxIntPtrToWeekdayPtr(i *int) *time.Weekday {
+	if i == nil {
+		return nil
+	}
+
+	if *i == 7 {
+		return Ptr(time.Sunday)
+	}
+
+	return Ptr(time.Weekday(*i))
 }

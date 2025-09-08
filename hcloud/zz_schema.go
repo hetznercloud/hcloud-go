@@ -1169,7 +1169,7 @@ func (c *converterImpl) SchemaFromStorageBoxEnableSnapshotPlanOpts(source Storag
 	schemaStorageBoxEnableSnapshotPlanRequest.MaxSnapshots = source.MaxSnapshots
 	schemaStorageBoxEnableSnapshotPlanRequest.Minute = source.Minute
 	schemaStorageBoxEnableSnapshotPlanRequest.Hour = source.Hour
-	schemaStorageBoxEnableSnapshotPlanRequest.DayOfWeek = source.DayOfWeek
+	schemaStorageBoxEnableSnapshotPlanRequest.DayOfWeek = mapStorageBoxWeekdayPtrToIntPtr(source.DayOfWeek)
 	schemaStorageBoxEnableSnapshotPlanRequest.DayOfMonth = source.DayOfMonth
 	return schemaStorageBoxEnableSnapshotPlanRequest
 }
@@ -1445,6 +1445,15 @@ func (c *converterImpl) StorageBoxSnapshotFromSchema(source schema.StorageBoxSna
 	hcloudStorageBoxSnapshot.Created = c.timeTimeToTimeTime(source.Created)
 	hcloudStorageBoxSnapshot.StorageBox = mapStorageBoxIDStorageBoxPtr(source.StorageBox)
 	return &hcloudStorageBoxSnapshot
+}
+func (c *converterImpl) StorageBoxSnapshotPlanFromSchema(source schema.StorageBoxSnapshotPlan) StorageBoxSnapshotPlan {
+	var hcloudStorageBoxSnapshotPlan StorageBoxSnapshotPlan
+	hcloudStorageBoxSnapshotPlan.MaxSnapshots = source.MaxSnapshots
+	hcloudStorageBoxSnapshotPlan.Minute = source.Minute
+	hcloudStorageBoxSnapshotPlan.Hour = source.Hour
+	hcloudStorageBoxSnapshotPlan.DayOfMonth = source.DayOfMonth
+	hcloudStorageBoxSnapshotPlan.DayOfWeek = mapStorageBoxIntPtrToWeekdayPtr(source.DayOfWeek)
+	return hcloudStorageBoxSnapshotPlan
 }
 func (c *converterImpl) StorageBoxSubaccountFromCreateResponse(source schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount {
 	var hcloudStorageBoxSubaccount StorageBoxSubaccount
@@ -2124,7 +2133,10 @@ func (c *converterImpl) pHcloudStorageBoxSnapshotPlanToPSchemaStorageBoxSnapshot
 		schemaStorageBoxSnapshotPlan.MaxSnapshots = (*source).MaxSnapshots
 		schemaStorageBoxSnapshotPlan.Minute = (*source).Minute
 		schemaStorageBoxSnapshotPlan.Hour = (*source).Hour
-		schemaStorageBoxSnapshotPlan.DayOfWeek = (*source).DayOfWeek
+		if (*source).DayOfWeek != nil {
+			xint := int(*(*source).DayOfWeek)
+			schemaStorageBoxSnapshotPlan.DayOfWeek = &xint
+		}
 		schemaStorageBoxSnapshotPlan.DayOfMonth = (*source).DayOfMonth
 		pSchemaStorageBoxSnapshotPlan = &schemaStorageBoxSnapshotPlan
 	}
@@ -2339,12 +2351,7 @@ func (c *converterImpl) pSchemaPlacementGroupToPHcloudPlacementGroup(source *sch
 func (c *converterImpl) pSchemaStorageBoxSnapshotPlanToPHcloudStorageBoxSnapshotPlan(source *schema.StorageBoxSnapshotPlan) *StorageBoxSnapshotPlan {
 	var pHcloudStorageBoxSnapshotPlan *StorageBoxSnapshotPlan
 	if source != nil {
-		var hcloudStorageBoxSnapshotPlan StorageBoxSnapshotPlan
-		hcloudStorageBoxSnapshotPlan.MaxSnapshots = (*source).MaxSnapshots
-		hcloudStorageBoxSnapshotPlan.Minute = (*source).Minute
-		hcloudStorageBoxSnapshotPlan.Hour = (*source).Hour
-		hcloudStorageBoxSnapshotPlan.DayOfWeek = (*source).DayOfWeek
-		hcloudStorageBoxSnapshotPlan.DayOfMonth = (*source).DayOfMonth
+		hcloudStorageBoxSnapshotPlan := c.StorageBoxSnapshotPlanFromSchema((*source))
 		pHcloudStorageBoxSnapshotPlan = &hcloudStorageBoxSnapshotPlan
 	}
 	return pHcloudStorageBoxSnapshotPlan
