@@ -60,6 +60,9 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend int64FromZone
 // goverter:extend floatingIPFromInt64
 // goverter:extend int64FromFloatingIP
+// goverter:extend storageBoxFromInt64
+// goverter:extend int64FromStorageBox
+// goverter:extend int64FromStorageBoxSnapshot
 // goverter:extend mapFromFloatingIPDNSPtrSchema
 // goverter:extend floatingIPDNSPtrSchemaFromMap
 // goverter:extend mapFromPrimaryIPDNSPtrSchema
@@ -407,8 +410,9 @@ type converter interface {
 	// goverter:map Name | mapEmptyStringToNil
 	SchemaFromStorageBoxUpdateOpts(StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest
 
-	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
 	StorageBoxSnapshotFromSchema(schema.StorageBoxSnapshot) *StorageBoxSnapshot
+
+	SchemaFromStorageBoxSnapshot(*StorageBoxSnapshot) schema.StorageBoxSnapshot
 
 	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
 
@@ -422,21 +426,21 @@ type converter interface {
 
 	SchemaFromStorageBoxUpdateAccessSettingsOpts(StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest
 
-	// goverter:map Snapshot SnapshotID | mapStorageBoxSnapshotPtrStorageBoxSnapshotID
+	// goverter:map Snapshot SnapshotID
 	SchemaFromStorageBoxRollbackSnapshotOpts(StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest
 
 	// goverter:map DayOfWeek | mapStorageBoxWeekdayPtrToIntPtr
 	SchemaFromStorageBoxEnableSnapshotPlanOpts(StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest
 
-	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
 	StorageBoxSubaccountFromSchema(schema.StorageBoxSubaccount) *StorageBoxSubaccount
+
+	SchemaFromStorageBoxSubaccount(*StorageBoxSubaccount) schema.StorageBoxSubaccount
 
 	SchemaFromStorageBoxSubaccountCreateOpts(StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest
 
 	SchemaFromStorageBoxSubaccountUpdateOpts(StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest
 
 	// goverter:ignoreMissing
-	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
 	StorageBoxSubaccountFromCreateResponse(schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount
 
 	SchemaFromStorageBoxSubaccountResetPasswordOpts(StorageBoxSubaccountResetPasswordOpts) schema.StorageBoxSubaccountResetPasswordRequest
@@ -642,6 +646,24 @@ func int64FromFloatingIP(f *FloatingIP) int64 {
 		return 0
 	}
 	return f.ID
+}
+
+func storageBoxFromInt64(id int64) *StorageBox {
+	return &StorageBox{ID: id}
+}
+
+func int64FromStorageBox(sb *StorageBox) int64 {
+	if sb == nil {
+		return 0
+	}
+	return sb.ID
+}
+
+func int64FromStorageBoxSnapshot(sbs *StorageBoxSnapshot) int64 {
+	if sbs == nil {
+		return 0
+	}
+	return sbs.ID
 }
 
 func firewallStatusFromSchemaServerFirewall(fw schema.ServerFirewall) *ServerFirewallStatus {
