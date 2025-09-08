@@ -54,8 +54,15 @@ type StorageBoxSnapshotPlan struct {
 	MaxSnapshots int
 	Minute       *int
 	Hour         *int
-	DayOfWeek    *int
 	DayOfMonth   *int
+
+	// DayOfWeek represents the day of the week for scheduling.
+	// A nil value means the schedule applies to every day.
+	//
+	// The Hetzner API uses 1–7 to represent Monday–Sunday,
+	// while Go’s time.Weekday uses 0–6 for Sunday–Saturday.
+	// This field maps the API’s values to Go’s time.Weekday.
+	DayOfWeek *time.Weekday
 }
 
 // StorageBoxStatus specifies a storage box's status.
@@ -405,8 +412,15 @@ type StorageBoxEnableSnapshotPlanOpts struct {
 	MaxSnapshots int
 	Minute       *int // Null means every minute.
 	Hour         *int // Null means every hour.
-	DayOfWeek    *int // Null means every day. // TODO: Starts with 1 for Monday and goes to 7 for Sunday
 	DayOfMonth   *int // Null means every day.
+
+	// DayOfWeek represents the day of the week for scheduling.
+	// A nil value means the schedule applies to every day.
+	//
+	// The Hetzner API uses 1–7 to represent Monday–Sunday,
+	// while Go’s time.Weekday uses 0–6 for Sunday–Saturday.
+	// This field maps the API’s values to Go’s time.Weekday.
+	DayOfWeek *time.Weekday
 }
 
 // EnableSnapshotPlan enables a snapshot plan for a storage box.
