@@ -362,7 +362,7 @@ type converter interface {
 	// StorageBox conversions
 	StorageBoxFromSchema(schema.StorageBox) *StorageBox
 
-	// goverter:map DayOfWeek | mapIntPtrToWeekdayPtr
+	// goverter:map DayOfWeek | mapStorageBoxIntPtrToWeekdayPtr
 	StorageBoxSnapshotPlanFromSchema(schema.StorageBoxSnapshotPlan) StorageBoxSnapshotPlan
 
 	SchemaFromStorageBox(*StorageBox) schema.StorageBox
@@ -390,7 +390,7 @@ type converter interface {
 	// goverter:map Snapshot SnapshotID | mapStorageBoxSnapshotPtrStorageBoxSnapshotID
 	SchemaFromStorageBoxRollbackSnapshotOpts(StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest
 
-	// goverter:map DayOfWeek | mapWeekdayPtrToIntPtr
+	// goverter:map DayOfWeek | mapStorageBoxWeekdayPtrToIntPtr
 	SchemaFromStorageBoxEnableSnapshotPlanOpts(StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest
 
 	// goverter:map StorageBox | mapStorageBoxIDStorageBoxPtr
@@ -1050,7 +1050,7 @@ func mapStorageBoxSnapshotPtrStorageBoxSnapshotID(snapshot *StorageBoxSnapshot) 
 	return snapshot.ID
 }
 
-func mapWeekdayPtrToIntPtr(w *time.Weekday) *int {
+func mapStorageBoxWeekdayPtrToIntPtr(w *time.Weekday) *int {
 	if w == nil {
 		return nil
 	}
@@ -1062,7 +1062,7 @@ func mapWeekdayPtrToIntPtr(w *time.Weekday) *int {
 	return Ptr(int(*w))
 }
 
-func mapIntPtrToWeekdayPtr(i *int) *time.Weekday {
+func mapStorageBoxIntPtrToWeekdayPtr(i *int) *time.Weekday {
 	if i == nil {
 		return nil
 	}

@@ -2378,7 +2378,7 @@ func TestStorageBoxSchema(t *testing.T) {
 	assert.Equal(t, sb, StorageBoxFromSchema(SchemaFromStorageBox(sb)))
 }
 
-func TestMapWeekdayPtrToIntrPtr(t *testing.T) {
+func TestMapStorageBoxWeekdayPtrToIntrPtr(t *testing.T) {
 	tests := []struct {
 		Name       string
 		WeekdayPtr *time.Weekday
@@ -2408,13 +2408,13 @@ func TestMapWeekdayPtrToIntrPtr(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
-			intPtr := mapWeekdayPtrToIntPtr(tt.WeekdayPtr)
+			intPtr := mapStorageBoxWeekdayPtrToIntPtr(tt.WeekdayPtr)
 			assert.Equal(t, tt.IntPtr, intPtr)
 		})
 	}
 }
 
-func TestMapIntPtrToWeekdayPtr(t *testing.T) {
+func TestMapStorageBoxIntPtrToWeekdayPtr(t *testing.T) {
 	tests := []struct {
 		Name       string
 		WeekdayPtr *time.Weekday
@@ -2444,7 +2444,7 @@ func TestMapIntPtrToWeekdayPtr(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.Name, func(t *testing.T) {
-			weekdayPtr := mapIntPtrToWeekdayPtr(tt.IntPtr)
+			weekdayPtr := mapStorageBoxIntPtrToWeekdayPtr(tt.IntPtr)
 			assert.Equal(t, tt.WeekdayPtr, weekdayPtr)
 		})
 	}
