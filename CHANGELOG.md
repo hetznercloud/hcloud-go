@@ -1,5 +1,16 @@
 # Changelog
 
+## [v2.23.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.23.0)
+
+### Features
+
+- expose account currency information (#695)
+- add category property to server type (#717)
+
+### Bug Fixes
+
+- **primary-ip**: labels not clearable (#699)
+
 ## [v2.22.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.22.0)
 
 ### Features
