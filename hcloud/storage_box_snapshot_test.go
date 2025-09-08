@@ -225,7 +225,7 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 		storageBox := &StorageBox{ID: 42}
 
 		opts := StorageBoxSnapshotCreateOpts{
-			"Test Snapshot",
+			Ptr("Test Snapshot"),
 		}
 		result, _, err := client.StorageBox.CreateSnapshot(ctx, storageBox, opts)
 		require.NoError(t, err)
