@@ -294,15 +294,19 @@ func TestStorageBoxClientUpdateSnapshot(t *testing.T) {
 		},
 	})
 
-	storageBox := &StorageBox{ID: 42}
-	storageBoxSnapshot := &StorageBoxSnapshot{ID: 13}
+	storageBoxSnapshot := &StorageBoxSnapshot{
+		ID: 13,
+		StorageBox: &StorageBox{
+			ID: 42,
+		},
+	}
 
 	opts := StorageBoxSnapshotUpdateOpts{
 		Labels: map[string]string{
 			"environment": "prod",
 		},
 	}
-	storageBoxSnapshot, _, err := client.StorageBox.UpdateSnapshot(ctx, storageBox, storageBoxSnapshot, opts)
+	storageBoxSnapshot, _, err := client.StorageBox.UpdateSnapshot(ctx, storageBoxSnapshot, opts)
 	require.NoError(t, err)
 	require.NotNil(t, storageBoxSnapshot)
 
@@ -320,10 +324,14 @@ func TestStorageBoxClientDeleteSnapshot(t *testing.T) {
 		},
 	})
 
-	storageBox := &StorageBox{ID: 42}
-	storageBoxSnapshot := &StorageBoxSnapshot{ID: 13}
+	storageBoxSnapshot := &StorageBoxSnapshot{
+		ID: 13,
+		StorageBox: &StorageBox{
+			ID: 42,
+		},
+	}
 
-	action, _, err := client.StorageBox.DeleteSnapshot(ctx, storageBox, storageBoxSnapshot)
+	action, _, err := client.StorageBox.DeleteSnapshot(ctx, storageBoxSnapshot)
 	require.NoError(t, err)
 	require.NotNil(t, action)
 }

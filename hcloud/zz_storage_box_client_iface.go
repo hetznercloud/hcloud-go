@@ -63,9 +63,9 @@ type IStorageBoxClient interface {
 	// CreateSnapshot creates a new snapshot for the given Storage Box with the provided options.
 	CreateSnapshot(ctx context.Context, storageBox *StorageBox, opts StorageBoxSnapshotCreateOpts) (StorageBoxSnapshotCreateResult, *Response, error)
 	// UpdateSnapshot updates the given snapshot of a Storage Box with the provided options.
-	UpdateSnapshot(ctx context.Context, storageBox *StorageBox, snapshot *StorageBoxSnapshot, opts StorageBoxSnapshotUpdateOpts) (*StorageBoxSnapshot, *Response, error)
+	UpdateSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot, opts StorageBoxSnapshotUpdateOpts) (*StorageBoxSnapshot, *Response, error)
 	// DeleteSnapshot deletes the given snapshot of a Storage Box.
-	DeleteSnapshot(ctx context.Context, storageBox *StorageBox, snapshot *StorageBoxSnapshot) (*Action, *Response, error)
+	DeleteSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot) (*Action, *Response, error)
 	// GetSubaccountByID retrieves a Storage Box subaccount by its ID.
 	GetSubaccountByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSubaccount, *Response, error)
 	// ListSubaccounts lists all subaccounts of a Storage Box.
@@ -77,11 +77,11 @@ type IStorageBoxClient interface {
 	// CreateSubaccount creates a new subaccount for a Storage Box.
 	CreateSubaccount(ctx context.Context, storageBox *StorageBox, opts StorageBoxSubaccountCreateOpts) (StorageBoxSubaccountCreateResult, *Response, error)
 	// UpdateSubaccount updates a subaccount of a Storage Box.
-	UpdateSubaccount(ctx context.Context, storageBox *StorageBox, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountUpdateOpts) (*StorageBoxSubaccount, *Response, error)
+	UpdateSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountUpdateOpts) (*StorageBoxSubaccount, *Response, error)
 	// DeleteSubaccount deletes a subaccount from a Storage Box.
-	DeleteSubaccount(ctx context.Context, storageBox *StorageBox, subaccount *StorageBoxSubaccount) (*Action, *Response, error)
+	DeleteSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount) (*Action, *Response, error)
 	// ResetSubaccountPassword resets the password of a Storage Box subaccount.
-	ResetSubaccountPassword(ctx context.Context, storageBox *StorageBox, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountResetPasswordOpts) (*Action, *Response, error)
+	ResetSubaccountPassword(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountResetPasswordOpts) (*Action, *Response, error)
 	// UpdateSubaccountAccessSettings updates the access settings of a Storage Box subaccount.
-	UpdateSubaccountAccessSettings(ctx context.Context, storageBox *StorageBox, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountAccessSettingsUpdateOpts) (*Action, *Response, error)
+	UpdateSubaccountAccessSettings(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountAccessSettingsUpdateOpts) (*Action, *Response, error)
 }

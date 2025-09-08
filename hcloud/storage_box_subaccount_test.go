@@ -305,8 +305,12 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 			},
 		})
 
-		storageBox := &StorageBox{ID: 42}
-		subaccount := &StorageBoxSubaccount{ID: 13}
+		subaccount := &StorageBoxSubaccount{
+			ID: 13,
+			StorageBox: &StorageBox{
+				ID: 42,
+			},
+		}
 
 		opts := StorageBoxSubaccountUpdateOpts{
 			Description: Ptr("Updated description"),
@@ -317,7 +321,7 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 			},
 		}
 
-		result, _, err := client.StorageBox.UpdateSubaccount(ctx, storageBox, subaccount, opts)
+		result, _, err := client.StorageBox.UpdateSubaccount(ctx, subaccount, opts)
 
 		require.NoError(t, err)
 
@@ -337,10 +341,14 @@ func TestStorageBoxClientDeleteSubaccount(t *testing.T) {
 			},
 		})
 
-		storageBox := &StorageBox{ID: 42}
-		subaccount := &StorageBoxSubaccount{ID: 13}
+		subaccount := &StorageBoxSubaccount{
+			ID: 13,
+			StorageBox: &StorageBox{
+				ID: 42,
+			},
+		}
 
-		action, resp, err := client.StorageBox.DeleteSubaccount(ctx, storageBox, subaccount)
+		action, resp, err := client.StorageBox.DeleteSubaccount(ctx, subaccount)
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.NotNil(t, action)
@@ -364,13 +372,17 @@ func TestStorageBoxClientResetSubaccountPassword(t *testing.T) {
 		},
 	})
 
-	storageBox := &StorageBox{ID: 42}
-	subaccount := &StorageBoxSubaccount{ID: 13}
+	subaccount := &StorageBoxSubaccount{
+		ID: 13,
+		StorageBox: &StorageBox{
+			ID: 42,
+		},
+	}
 
 	opts := StorageBoxSubaccountResetPasswordOpts{
 		Password: "foobar",
 	}
-	action, resp, err := client.StorageBox.ResetSubaccountPassword(ctx, storageBox, subaccount, opts)
+	action, resp, err := client.StorageBox.ResetSubaccountPassword(ctx, subaccount, opts)
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 	require.NotNil(t, action)
@@ -402,8 +414,12 @@ func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
 		},
 	})
 
-	storageBox := &StorageBox{ID: 42}
-	subaccount := &StorageBoxSubaccount{ID: 13}
+	subaccount := &StorageBoxSubaccount{
+		ID: 13,
+		StorageBox: &StorageBox{
+			ID: 42,
+		},
+	}
 
 	opts := StorageBoxSubaccountAccessSettingsUpdateOpts{
 		HomeDirectory:       Ptr("/foobar"),
@@ -413,7 +429,7 @@ func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
 		Readonly:            Ptr(false),
 		ReachableExternally: Ptr(true),
 	}
-	action, resp, err := client.StorageBox.UpdateSubaccountAccessSettings(ctx, storageBox, subaccount, opts)
+	action, resp, err := client.StorageBox.UpdateSubaccountAccessSettings(ctx, subaccount, opts)
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 	require.NotNil(t, action)
