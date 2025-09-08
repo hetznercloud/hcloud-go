@@ -2377,3 +2377,75 @@ func TestStorageBoxSchema(t *testing.T) {
 	sb := StorageBoxFromSchema(s)
 	assert.Equal(t, sb, StorageBoxFromSchema(SchemaFromStorageBox(sb)))
 }
+
+func TestMapWeekdayPtrToIntrPtr(t *testing.T) {
+	tests := []struct {
+		Name       string
+		WeekdayPtr *time.Weekday
+		IntPtr     *int
+	}{
+		{
+			Name:       "monday",
+			WeekdayPtr: Ptr(time.Monday),
+			IntPtr:     Ptr(1),
+		},
+		{
+			Name:       "sunday",
+			WeekdayPtr: Ptr(time.Sunday),
+			IntPtr:     Ptr(7),
+		},
+		{
+			Name:       "nil",
+			WeekdayPtr: nil,
+			IntPtr:     nil,
+		},
+		{
+			Name:       "wednesday",
+			WeekdayPtr: Ptr(time.Wednesday),
+			IntPtr:     Ptr(3),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			intPtr := mapWeekdayPtrToIntPtr(tt.WeekdayPtr)
+			assert.Equal(t, tt.IntPtr, intPtr)
+		})
+	}
+}
+
+func TestMapIntPtrToWeekdayPtr(t *testing.T) {
+	tests := []struct {
+		Name       string
+		WeekdayPtr *time.Weekday
+		IntPtr     *int
+	}{
+		{
+			Name:       "monday",
+			WeekdayPtr: Ptr(time.Monday),
+			IntPtr:     Ptr(1),
+		},
+		{
+			Name:       "sunday",
+			WeekdayPtr: Ptr(time.Sunday),
+			IntPtr:     Ptr(7),
+		},
+		{
+			Name:       "nil",
+			WeekdayPtr: nil,
+			IntPtr:     nil,
+		},
+		{
+			Name:       "wednesday",
+			WeekdayPtr: Ptr(time.Wednesday),
+			IntPtr:     Ptr(3),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.Name, func(t *testing.T) {
+			weekdayPtr := mapIntPtrToWeekdayPtr(tt.IntPtr)
+			assert.Equal(t, tt.WeekdayPtr, weekdayPtr)
+		})
+	}
+}
