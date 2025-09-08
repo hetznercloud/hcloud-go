@@ -4,6 +4,7 @@ import (
 	"io"
 	"net/http"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -664,7 +665,7 @@ func TestStorageBoxEnableSnapshotPlan(t *testing.T) {
 					"max_snapshots": 10,
 					"minute": 5,
 					"hour": 6,
-					"day_of_week": 1,
+					"day_of_week": 7,
 					"day_of_month": null
 				}`
 				assert.JSONEq(t, expectedBody, string(body))
@@ -679,7 +680,7 @@ func TestStorageBoxEnableSnapshotPlan(t *testing.T) {
 		MaxSnapshots: 10,
 		Minute:       Ptr(5),
 		Hour:         Ptr(6),
-		DayOfWeek:    Ptr(1),
+		DayOfWeek:    Ptr(time.Sunday),
 	}
 	action, _, err := client.StorageBox.EnableSnapshotPlan(ctx, storageBox, opts)
 	require.NoError(t, err, "RollbackSnapshot failed")
