@@ -135,7 +135,7 @@ func (c *StorageBoxClient) AllSnapshots(
 
 // StorageBoxSnapshotCreateOpts specifies options for creating a Storage Box snapshot.
 type StorageBoxSnapshotCreateOpts struct {
-	Description string
+	Description *string
 }
 
 // StorageBoxSnapshotCreateResult represents the result of creating a Storage Box snapshot.
