@@ -1104,6 +1104,7 @@ func (c *converterImpl) SchemaFromServerType(source *ServerType) schema.ServerTy
 		schemaServerType.ID = (*source).ID
 		schemaServerType.Name = (*source).Name
 		schemaServerType.Description = (*source).Description
+		schemaServerType.Category = (*source).Category
 		schemaServerType.Cores = (*source).Cores
 		schemaServerType.Memory = (*source).Memory
 		schemaServerType.Disk = (*source).Disk
@@ -1262,6 +1263,7 @@ func (c *converterImpl) ServerTypeFromSchema(source schema.ServerType) *ServerTy
 	hcloudServerType.ID = source.ID
 	hcloudServerType.Name = source.Name
 	hcloudServerType.Description = source.Description
+	hcloudServerType.Category = source.Category
 	hcloudServerType.Cores = source.Cores
 	hcloudServerType.Memory = source.Memory
 	hcloudServerType.Disk = source.Disk
