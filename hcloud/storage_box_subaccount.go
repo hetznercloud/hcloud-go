@@ -167,14 +167,13 @@ type StorageBoxSubaccountUpdateOpts struct {
 // UpdateSubaccount updates a subaccount of a Storage Box.
 func (c *StorageBoxClient) UpdateSubaccount(
 	ctx context.Context,
-	storageBox *StorageBox,
 	subaccount *StorageBoxSubaccount,
 	opts StorageBoxSubaccountUpdateOpts,
 ) (*StorageBoxSubaccount, *Response, error) {
 	const opPath = "/storage_boxes/%d/subaccounts/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, storageBox.ID, subaccount.ID)
+	reqPath := fmt.Sprintf(opPath, subaccount.StorageBox.ID, subaccount.ID)
 	reqBody := SchemaFromStorageBoxSubaccountUpdateOpts(opts)
 
 	respBody, resp, err := putRequest[schema.StorageBoxSubaccountUpdateResponse](ctx, c.client, reqPath, reqBody)
@@ -190,13 +189,12 @@ func (c *StorageBoxClient) UpdateSubaccount(
 // DeleteSubaccount deletes a subaccount from a Storage Box.
 func (c *StorageBoxClient) DeleteSubaccount(
 	ctx context.Context,
-	storageBox *StorageBox,
 	subaccount *StorageBoxSubaccount,
 ) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/subaccounts/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, storageBox.ID, subaccount.ID)
+	reqPath := fmt.Sprintf(opPath, subaccount.StorageBox.ID, subaccount.ID)
 
 	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -216,14 +214,13 @@ type StorageBoxSubaccountResetPasswordOpts struct {
 // ResetSubaccountPassword resets the password of a Storage Box subaccount.
 func (c *StorageBoxClient) ResetSubaccountPassword(
 	ctx context.Context,
-	storageBox *StorageBox,
 	subaccount *StorageBoxSubaccount,
 	opts StorageBoxSubaccountResetPasswordOpts,
 ) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/subaccounts/%d/actions/reset_subaccount_password"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, storageBox.ID, subaccount.ID)
+	reqPath := fmt.Sprintf(opPath, subaccount.StorageBox.ID, subaccount.ID)
 	reqBody := SchemaFromStorageBoxSubaccountResetPasswordOpts(opts)
 
 	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
@@ -247,14 +244,13 @@ type StorageBoxSubaccountAccessSettingsUpdateOpts struct {
 // UpdateSubaccountAccessSettings updates the access settings of a Storage Box subaccount.
 func (c *StorageBoxClient) UpdateSubaccountAccessSettings(
 	ctx context.Context,
-	storageBox *StorageBox,
 	subaccount *StorageBoxSubaccount,
 	opts StorageBoxSubaccountAccessSettingsUpdateOpts,
 ) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/subaccounts/%d/actions/update_access_settings"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, storageBox.ID, subaccount.ID)
+	reqPath := fmt.Sprintf(opPath, subaccount.StorageBox.ID, subaccount.ID)
 	reqBody := SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(opts)
 
 	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)

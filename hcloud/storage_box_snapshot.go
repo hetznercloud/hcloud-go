@@ -178,14 +178,13 @@ type StorageBoxSnapshotUpdateOpts struct {
 // UpdateSnapshot updates the given snapshot of a Storage Box with the provided options.
 func (c *StorageBoxClient) UpdateSnapshot(
 	ctx context.Context,
-	storageBox *StorageBox,
 	snapshot *StorageBoxSnapshot,
 	opts StorageBoxSnapshotUpdateOpts,
 ) (*StorageBoxSnapshot, *Response, error) {
 	const opPath = "/storage_boxes/%d/snapshots/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, storageBox.ID, snapshot.ID)
+	reqPath := fmt.Sprintf(opPath, snapshot.StorageBox.ID, snapshot.ID)
 	reqBody := SchemaFromStorageBoxSnapshotUpdateOpts(opts)
 
 	respBody, resp, err := putRequest[schema.StorageBoxSnapshotUpdateResponse](ctx, c.client, reqPath, reqBody)
@@ -201,13 +200,12 @@ func (c *StorageBoxClient) UpdateSnapshot(
 // DeleteSnapshot deletes the given snapshot of a Storage Box.
 func (c *StorageBoxClient) DeleteSnapshot(
 	ctx context.Context,
-	storageBox *StorageBox,
 	snapshot *StorageBoxSnapshot,
 ) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/snapshots/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, storageBox.ID, snapshot.ID)
+	reqPath := fmt.Sprintf(opPath, snapshot.StorageBox.ID, snapshot.ID)
 
 	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
 
