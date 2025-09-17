@@ -1998,6 +1998,9 @@ func TestServerClientAttachToNetwork(t *testing.T) {
 			if len(reqBody.AliasIPs) == 0 || *reqBody.AliasIPs[0] != "10.0.1.1" {
 				t.Errorf("unexpected AliasIPs: %v", *reqBody.IP)
 			}
+			if reqBody.IPRange != nil && *reqBody.IPRange != "10.0.1.0/24" {
+				t.Errorf("unexpected IPRange: %v", *reqBody.IPRange)
+			}
 			json.NewEncoder(w).Encode(schema.ServerActionAttachToNetworkResponse{
 				Action: schema.Action{
 					ID: 1,
@@ -2008,10 +2011,12 @@ func TestServerClientAttachToNetwork(t *testing.T) {
 		aliasIPs := []net.IP{
 			ip,
 		}
+		_, ipRange, _ := net.ParseCIDR("10.0.1.0/24")
 		opts := ServerAttachToNetworkOpts{
 			Network:  &Network{ID: 1},
 			IP:       ip,
 			AliasIPs: aliasIPs,
+			IPRange:  ipRange,
 		}
 		action, _, err := env.Client.Server.AttachToNetwork(ctx, server, opts)
 		if err != nil {
