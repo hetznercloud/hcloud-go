@@ -713,6 +713,7 @@ func TestLoadBalancerClientAttachToNetwork(t *testing.T) {
 		expectedReqBody := schema.LoadBalancerActionAttachToNetworkRequest{
 			Network: 1,
 			IP:      Ptr("10.0.1.1"),
+			IPRange: Ptr("10.0.1.0/24"),
 		}
 		if !cmp.Equal(expectedReqBody, reqBody) {
 			t.Log(cmp.Diff(expectedReqBody, reqBody))
@@ -731,9 +732,11 @@ func TestLoadBalancerClientAttachToNetwork(t *testing.T) {
 		network      = &Network{ID: 1}
 	)
 
+	_, ipRange, _ := net.ParseCIDR("10.0.1.0/24")
 	opts := LoadBalancerAttachToNetworkOpts{
 		Network: network,
 		IP:      net.ParseIP("10.0.1.1"),
+		IPRange: ipRange,
 	}
 	action, _, err := env.Client.LoadBalancer.AttachToNetwork(ctx, loadBalancer, opts)
 	if err != nil {
