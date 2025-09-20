@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.24.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.24.0)
+
+### Features
+
+- add new ip_range param to ServerAttachToNetwork (#723)
+- add new ip_range param to LoadBalancerAttachToNetwork (#724)
+
 ## [v2.23.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.23.0)
 
 ### Features
