@@ -32,15 +32,6 @@ type StorageBoxSubaccountAccessSettings struct {
 	WebDAVEnabled       bool
 }
 
-// StorageBoxSubaccountAccessSettingsOpts represents the options for access settings of a Storage Box subaccount.
-type StorageBoxSubaccountAccessSettingsOpts struct {
-	ReachableExternally *bool
-	Readonly            *bool
-	SambaEnabled        *bool
-	SSHEnabled          *bool
-	WebDAVEnabled       *bool
-}
-
 // GetSubaccountByID retrieves a Storage Box subaccount by its ID.
 func (c *StorageBoxClient) GetSubaccountByID(
 	ctx context.Context,
@@ -122,9 +113,18 @@ func (c *StorageBoxClient) AllSubaccounts(
 type StorageBoxSubaccountCreateOpts struct {
 	Password       string
 	HomeDirectory  *string
-	AccessSettings *StorageBoxSubaccountAccessSettingsOpts
+	AccessSettings *StorageBoxSubaccountCreateOptsAccessSettings
 	Description    *string
 	Labels         map[string]string
+}
+
+// StorageBoxSubaccountAccessSettingsOpts represents the options for access settings of a Storage Box subaccount.
+type StorageBoxSubaccountCreateOptsAccessSettings struct {
+	ReachableExternally *bool
+	Readonly            *bool
+	SambaEnabled        *bool
+	SSHEnabled          *bool
+	WebDAVEnabled       *bool
 }
 
 // StorageBoxSubaccountCreateResult represents the result of creating a Storage Box subaccount.

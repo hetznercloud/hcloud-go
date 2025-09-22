@@ -233,7 +233,7 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 		opts := StorageBoxSubaccountCreateOpts{
 			HomeDirectory: Ptr("/home/my-user"),
 			Password:      "my-password",
-			AccessSettings: &StorageBoxSubaccountAccessSettingsOpts{
+			AccessSettings: &StorageBoxSubaccountCreateOptsAccessSettings{
 				ReachableExternally: Ptr(true),
 				Readonly:            Ptr(false),
 				SambaEnabled:        Ptr(true),
