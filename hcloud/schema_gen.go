@@ -1113,18 +1113,6 @@ func locationFromServerTypeLocationSchema(serverTypeLocation schema.ServerTypeLo
 	}
 }
 
-func mapStorageBoxIDStorageBoxPtr(id int64) *StorageBox {
-	return &StorageBox{ID: id}
-}
-
-func mapStorageBoxSnapshotPtrStorageBoxSnapshotID(snapshot *StorageBoxSnapshot) int64 {
-	if snapshot == nil {
-		return 0
-	}
-
-	return snapshot.ID
-}
-
 func mapStorageBoxWeekdayPtrToIntPtr(w *time.Weekday) *int {
 	if w == nil {
 		return nil
