@@ -56,11 +56,14 @@ Experimental features are published as part of our regular releases (e.g. a prod
 public beta). During an experimental phase, breaking changes on those features may occur
 within minor releases.
 
+Experimental features have different levels of maturity (e.g. experimental, alpha, beta)
+based on the maturity of the upstream API.
+
 While experimental features will be announced in the release notes, you can also find
 whether a struct or function is experimental in its Go code comment:
 
 ```go
-// Experimental: $PRODUCT is experimental, breaking changes may occur within minor releases.
+// Experimental: $PRODUCT is $MATURITY, breaking changes may occur within minor releases.
 // See https://docs.hetzner.cloud/changelog#$SLUG for more details.
 ```
 
@@ -106,7 +109,7 @@ When adding an experimental feature:
 1. Add the marker comment above the declaration:
 
    ```go
-   // Experimental: $PRODUCT is experimental, breaking changes may occur within minor releases.
+   // Experimental: $PRODUCT is $MATURITY, breaking changes may occur within minor releases.
    ```
 
 2. Include a link to the changelog entry:
@@ -122,7 +125,7 @@ Example:
 ```go
 // String returns a pointer to the passed string s.
 //
-// Experimental: Product is experimental, breaking changes may occur within minor releases.
+// Experimental: Product is beta, breaking changes may occur within minor releases.
 // See https://docs.hetzner.cloud/changelog#slug for more details.
 func String(s string) *string { return Ptr(s) }
 ```
