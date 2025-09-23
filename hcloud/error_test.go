@@ -144,18 +144,40 @@ func TestIsError(t *testing.T) {
 func TestArgumentError(t *testing.T) {
 	type Something struct{ Name string }
 	something := Something{Name: "hello"}
+	var somethingNil *Something
 
 	for _, tt := range []struct {
 		err  error
 		want string
 	}{
 		{
-			err:  missingArgument("something", something),
-			want: "missing argument 'something' [hcloud.Something]",
+			err:  invalidArgument("something", something, fmt.Errorf("a custom error")),
+			want: "invalid argument 'something' [hcloud.Something]: a custom error",
 		},
 		{
-			err:  invalidArgument("something", "hello"),
-			want: "invalid value 'hello' for argument 'something' [string]",
+			err:  invalidArgument("something", somethingNil, emptyValue(somethingNil)),
+			want: "invalid argument 'something' [*hcloud.Something]: empty value '<nil>'",
+		},
+		// Validation errors:
+		{
+			err:  invalidValue("hello"),
+			want: "invalid value 'hello'",
+		},
+		{
+			err:  invalidValue(somethingNil),
+			want: "invalid value '<nil>'",
+		},
+		{
+			err:  invalidValue(something),
+			want: "invalid value '{hello}'",
+		},
+		{
+			err:  emptyValue(""),
+			want: "empty value ''",
+		},
+		{
+			err:  emptyValue(somethingNil),
+			want: "empty value '<nil>'",
 		},
 		{
 			err:  missingField(something, "Name"),

@@ -945,7 +945,7 @@ func (c *LoadBalancerClient) GetMetrics(
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	if loadBalancer == nil {
-		return nil, nil, missingArgument("loadBalancer", loadBalancer)
+		return nil, nil, invalidArgument("loadBalancer", loadBalancer, emptyValue(loadBalancer))
 	}
 
 	if err := opts.Validate(); err != nil {
