@@ -56,6 +56,8 @@ Experimental features are published as part of our regular releases (e.g. a prod
 public beta). During an experimental phase, breaking changes on those features may occur
 within minor releases.
 
+The stability of experimental features is not related to the stability of its upstream API.
+
 Experimental features have different levels of maturity (e.g. experimental, alpha, beta)
 based on the maturity of the upstream API.
 
