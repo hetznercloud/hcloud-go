@@ -99,6 +99,7 @@ func TestClient_IsHcloudServer_HttpError(t *testing.T) {
 
 	assert.False(t, isHcloudServer)
 }
+
 func TestClient_Hostname(t *testing.T) {
 	env := newTestEnv()
 	env.Mux.HandleFunc("/hostname", func(w http.ResponseWriter, r *http.Request) {
