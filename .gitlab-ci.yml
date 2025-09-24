@@ -13,7 +13,7 @@ pre-commit:
 
 test:
   stage: test
-  image: golang:1.24
+  image: golang:1.25
   variables:
     GOMODCACHE: $CI_PROJECT_DIR/.cache/go-mod
   cache:
