@@ -16,7 +16,7 @@ See our [changelog](https://docs.hetzner.cloud/changelog#2025-09-24-per-location
 // Before
 func ValidateServerType(serverType *hcloud.ServerType) error {
 	if serverType.IsDeprecated() {
-		return fmt.Errorf(&#34;server type %s is deprecated&#34;, serverType.Name)
+		return fmt.Errorf("server type %s is deprecated", serverType.Name)
 	}
 	return nil
 }
@@ -28,12 +28,12 @@ func ValidateServerType(serverType *hcloud.ServerType, location *hcloud.Location
 	serverTypeLocationIndex := slices.IndexFunc(serverType.Locations, func(e hcloud.ServerTypeLocation) bool {
 		return e.Location.Name == location.Name
 	})
-	if serverTypeLocationIndex &lt; 0 {
-		return fmt.Errorf(&#34;server type %s is not supported in location %q&#34;, serverType.Name, location.Name)
+	if serverTypeLocationIndex < 0 {
+		return fmt.Errorf("server type %s is not supported in location %q", serverType.Name, location.Name)
 	}
 
 	if serverType.Locations[serverTypeLocationIndex].IsDeprecated() {
-		return fmt.Errorf(&#34;server type %q is deprecated in location %q&#34;, serverType.Name, location.Name)
+		return fmt.Errorf("server type %q is deprecated in location %q", serverType.Name, location.Name)
 	}
 
 	return nil
