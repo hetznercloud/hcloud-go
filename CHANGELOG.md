@@ -1,5 +1,50 @@
 # Changelog
 
+## [v2.25.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.25.0)
+
+[Server Types](https://docs.hetzner.cloud/reference/cloud#server-types) now depend on [Locations](https://docs.hetzner.cloud/reference/cloud#locations).
+
+- We added a new `locations` property to the [Server Types](https://docs.hetzner.cloud/reference/cloud#server-types) resource. The new property defines a list of supported [Locations](https://docs.hetzner.cloud/reference/cloud#locations) and additional per [Locations](https://docs.hetzner.cloud/reference/cloud#locations) details such as deprecations information.
+
+- We deprecated the `deprecation` property from the [Server Types](https://docs.hetzner.cloud/reference/cloud#server-types) resource. The property will gradually be phased out as per [Locations](https://docs.hetzner.cloud/reference/cloud#locations) deprecations are being announced. Please use the new per [Locations](https://docs.hetzner.cloud/reference/cloud#locations) deprecation information instead.
+
+See our [changelog](https://docs.hetzner.cloud/changelog#2025-09-24-per-location-server-types) for more details.
+
+#### Upgrading
+
+```go
+// Before
+func ValidateServerType(serverType *hcloud.ServerType) error {
+	if serverType.IsDeprecated() {
+		return fmt.Errorf(&#34;server type %s is deprecated&#34;, serverType.Name)
+	}
+	return nil
+}
+```
+
+```go
+// After
+func ValidateServerType(serverType *hcloud.ServerType, location *hcloud.Location) error {
+	serverTypeLocationIndex := slices.IndexFunc(serverType.Locations, func(e hcloud.ServerTypeLocation) bool {
+		return e.Location.Name == location.Name
+	})
+	if serverTypeLocationIndex &lt; 0 {
+		return fmt.Errorf(&#34;server type %s is not supported in location %q&#34;, serverType.Name, location.Name)
+	}
+
+	if serverType.Locations[serverTypeLocationIndex].IsDeprecated() {
+		return fmt.Errorf(&#34;server type %q is deprecated in location %q&#34;, serverType.Name, location.Name)
+	}
+
+	return nil
+}
+```
+
+### Features
+
+- **exp**: add `sliceutil.Transform` function (#731)
+- per locations server types (#730)
+
 ## [v2.24.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.24.0)
 
 ### Features
