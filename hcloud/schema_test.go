@@ -621,6 +621,16 @@ func TestServerTypeSchema(t *testing.T) {
 					"gross": "1.19"
 				}
 			}
+		],
+		"locations": [
+			{
+				"id": 1,
+				"name": "fsn1",
+				"deprecation": {
+					"announced": "2025-01-01T00:00:00Z",
+					"unavailable_after": "2025-04-01T00:00:00Z"
+				}
+			}
 		]
 	}`)
 
