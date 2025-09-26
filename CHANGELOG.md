@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.25.1](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.25.1)
+
+### Bug Fixes
+
+- **exp**: improve deprecation message helpers  (#734)
+
 ## [v2.25.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.25.0)
 
 [Server Types](https://docs.hetzner.cloud/reference/cloud#server-types) now depend on [Locations](https://docs.hetzner.cloud/reference/cloud#locations).
