@@ -10,11 +10,11 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/kit/sliceutil"
 )
 
-// ServerTypeWarning return a warning message when the given Server Type is
+// ServerTypeMessage return a deprecation message when the given Server Type is
 // deprecated and whether the given Server Type is unavailable.
 //
 // Experimental: `exp` package is experimental, breaking changes may occur within minor releases.
-func ServerTypeWarning(serverType *hcloud.ServerType, locationName string) (string, bool) {
+func ServerTypeMessage(serverType *hcloud.ServerType, locationName string) (string, bool) {
 	if serverType.IsDeprecated() {
 		if time.Now().After(serverType.UnavailableAfter()) {
 			return fmt.Sprintf(
