@@ -4,7 +4,7 @@
 
 ### Bug Fixes
 
-- **exp**: improve deprecation message helpers  (#734)
+- **exp**: improve deprecation message helpers (#734)
 
 ## [v2.25.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.25.0)
 
