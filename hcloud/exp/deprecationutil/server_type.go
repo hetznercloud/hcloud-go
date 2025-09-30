@@ -18,12 +18,12 @@ func ServerTypeMessage(serverType *hcloud.ServerType, locationName string) (stri
 	if serverType.IsDeprecated() {
 		if time.Now().After(serverType.UnavailableAfter()) {
 			return fmt.Sprintf(
-				"Server Type %q is unavailable in all locations and can no longer be ordered.",
+				"Server Type %q is unavailable in all locations and can no longer be ordered",
 				serverType.Name,
 			), true
 		}
 		return fmt.Sprintf(
-			"Server Type %q is deprecated in all locations and will no longer be available for order as of %s.",
+			"Server Type %q is deprecated in all locations and will no longer be available for order as of %s",
 			serverType.Name,
 			serverType.UnavailableAfter().Format(time.DateOnly),
 		), false
@@ -58,13 +58,13 @@ func ServerTypeMessage(serverType *hcloud.ServerType, locationName string) (stri
 
 		if time.Now().After(deprecated[locationIndex].UnavailableAfter()) {
 			return fmt.Sprintf(
-				"Server Type %q is unavailable in %q and can no longer be ordered.",
+				"Server Type %q is unavailable in %q and can no longer be ordered",
 				serverType.Name,
 				deprecated[locationIndex].Location.Name,
 			), true
 		}
 		return fmt.Sprintf(
-			"Server Type %q is deprecated in %q and will no longer be available for order as of %s.",
+			"Server Type %q is deprecated in %q and will no longer be available for order as of %s",
 			serverType.Name,
 			deprecated[locationIndex].Location.Name,
 			deprecated[locationIndex].UnavailableAfter().Format(time.DateOnly),
@@ -83,14 +83,14 @@ func ServerTypeMessage(serverType *hcloud.ServerType, locationName string) (stri
 		if len(deprecated) == len(unavailable) {
 			// All are deprecated and all are unavailable
 			return fmt.Sprintf(
-				"Server Type %q is unavailable in all locations (%s) and can no longer be ordered.",
+				"Server Type %q is unavailable in all locations (%s) and can no longer be ordered",
 				serverType.Name,
 				strings.Join(unavailableNames, ","),
 			), true
 		}
 		// All are deprecated and some are unavailable
 		return fmt.Sprintf(
-			"Server Type %q is deprecated in all locations (%s) and can no longer be ordered some locations (%s).",
+			"Server Type %q is deprecated in all locations (%s) and can no longer be ordered some locations (%s)",
 			serverType.Name,
 			strings.Join(deprecatedNames, ","),
 			strings.Join(unavailableNames, ","),
@@ -98,7 +98,7 @@ func ServerTypeMessage(serverType *hcloud.ServerType, locationName string) (stri
 	}
 	// All are deprecated and none are unavailable
 	return fmt.Sprintf(
-		"Server Type %q is deprecated in all locations (%s) and will no longer be available for order.",
+		"Server Type %q is deprecated in all locations (%s) and will no longer be available for order",
 		serverType.Name,
 		strings.Join(deprecatedNames, ","),
 	), false
