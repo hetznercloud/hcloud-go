@@ -18,12 +18,12 @@ func ImageMessage(image *hcloud.Image) (string, bool) {
 
 		if time.Now().After(unavailableAfter) {
 			return fmt.Sprintf(
-				"Image %q is unavailable and can no longer be ordered.",
+				"Image %q is unavailable and can no longer be ordered",
 				image.Name,
 			), true
 		}
 		return fmt.Sprintf(
-			"Image %q is deprecated and will no longer be available for order as of %s.",
+			"Image %q is deprecated and will no longer be available for order as of %s",
 			image.Name,
 			unavailableAfter.Format(time.DateOnly),
 		), false

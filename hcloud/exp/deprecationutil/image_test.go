@@ -25,7 +25,7 @@ func TestImageMessage(t *testing.T) {
 		o := &hcloud.Image{Name: "debian-13", Deprecated: deprecated}
 
 		message, isUnavailable := ImageMessage(o)
-		assert.Equal(t, fmt.Sprintf(`Image "debian-13" is deprecated and will no longer be available for order as of %s.`, deprecated.AddDate(0, 3, 0).Format(time.DateOnly)), message)
+		assert.Equal(t, fmt.Sprintf(`Image "debian-13" is deprecated and will no longer be available for order as of %s`, deprecated.AddDate(0, 3, 0).Format(time.DateOnly)), message)
 		assert.False(t, isUnavailable)
 	})
 
@@ -35,7 +35,7 @@ func TestImageMessage(t *testing.T) {
 		o := &hcloud.Image{Name: "debian-13", Deprecated: deprecated}
 
 		message, isUnavailable := ImageMessage(o)
-		assert.Equal(t, `Image "debian-13" is unavailable and can no longer be ordered.`, message)
+		assert.Equal(t, `Image "debian-13" is unavailable and can no longer be ordered`, message)
 		assert.True(t, isUnavailable)
 	})
 }

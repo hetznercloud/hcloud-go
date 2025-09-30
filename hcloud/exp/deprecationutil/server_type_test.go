@@ -38,7 +38,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "")
-		assert.Equal(t, fmt.Sprintf(`Server Type "cx22" is deprecated in all locations and will no longer be available for order as of %s.`, future.Format(time.DateOnly)), message)
+		assert.Equal(t, fmt.Sprintf(`Server Type "cx22" is deprecated in all locations and will no longer be available for order as of %s`, future.Format(time.DateOnly)), message)
 		assert.False(t, isUnavailable)
 	})
 
@@ -49,7 +49,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "")
-		assert.Equal(t, `Server Type "cx22" is unavailable in all locations and can no longer be ordered.`, message)
+		assert.Equal(t, `Server Type "cx22" is unavailable in all locations and can no longer be ordered`, message)
 		assert.True(t, isUnavailable)
 	})
 
@@ -86,7 +86,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "fsn1")
-		assert.Equal(t, fmt.Sprintf(`Server Type "cx22" is deprecated in "fsn1" and will no longer be available for order as of %s.`, future.Format(time.DateOnly)), message)
+		assert.Equal(t, fmt.Sprintf(`Server Type "cx22" is deprecated in "fsn1" and will no longer be available for order as of %s`, future.Format(time.DateOnly)), message)
 		assert.False(t, isUnavailable)
 	})
 
@@ -105,7 +105,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		deprecation, isUnavailable := ServerTypeMessage(o, "fsn1")
-		assert.Equal(t, `Server Type "cx22" is unavailable in "fsn1" and can no longer be ordered.`, deprecation)
+		assert.Equal(t, `Server Type "cx22" is unavailable in "fsn1" and can no longer be ordered`, deprecation)
 		assert.True(t, isUnavailable)
 	})
 
@@ -125,7 +125,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "fsn1")
-		assert.Equal(t, fmt.Sprintf(`Server Type "cx22" is deprecated in "fsn1" and will no longer be available for order as of %s.`, future.Format(time.DateOnly)), message)
+		assert.Equal(t, fmt.Sprintf(`Server Type "cx22" is deprecated in "fsn1" and will no longer be available for order as of %s`, future.Format(time.DateOnly)), message)
 		assert.False(t, isUnavailable)
 	})
 
@@ -184,7 +184,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "")
-		assert.Equal(t, `Server Type "cx22" is deprecated in all locations (fsn1,nbg1) and will no longer be available for order.`, message)
+		assert.Equal(t, `Server Type "cx22" is deprecated in all locations (fsn1,nbg1) and will no longer be available for order`, message)
 		assert.False(t, isUnavailable)
 	})
 
@@ -204,7 +204,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "")
-		assert.Equal(t, `Server Type "cx22" is deprecated in all locations (fsn1,nbg1) and can no longer be ordered some locations (nbg1).`, message)
+		assert.Equal(t, `Server Type "cx22" is deprecated in all locations (fsn1,nbg1) and can no longer be ordered some locations (nbg1)`, message)
 		assert.False(t, isUnavailable)
 	})
 
@@ -224,7 +224,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "")
-		assert.Equal(t, `Server Type "cx22" is unavailable in all locations (fsn1,nbg1) and can no longer be ordered.`, message)
+		assert.Equal(t, `Server Type "cx22" is unavailable in all locations (fsn1,nbg1) and can no longer be ordered`, message)
 		assert.True(t, isUnavailable)
 	})
 }
