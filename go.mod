@@ -10,7 +10,7 @@ go 1.23.0
 
 // The toolchain version describes which Go version to use for testing, generating etc.
 // It should always be the newest version.
-toolchain go1.24.6
+toolchain go1.25.1
 
 require (
 	github.com/google/go-cmp v0.7.0
