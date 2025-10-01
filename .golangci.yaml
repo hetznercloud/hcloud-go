@@ -1,48 +1,81 @@
----
+version: "2"
+
+run:
+  timeout: 5m
+
 linters:
-  presets:
-    - bugs
-    - error
-    - import
-    - metalinter
-    - module
-    - unused
-
   enable:
+    - asasalint
+    - asciicheck
+    - bidichk
+    - bodyclose
+    - contextcheck
+    - durationcheck
+    - errchkjson
+    - errorlint
+    - exhaustive
     - forbidigo
+    - gocheckcompilerdirectives
+    - gochecksumtype
+    - gocritic
+    - gomoddirectives
+    - gomodguard
+    - gosec
+    - gosmopolitan
+    - loggercheck
+    - makezero
+    - musttag
+    - nilerr
+    - nilnesserr
+    - noctx
+    - protogetter
+    - reassign
+    - recvcheck
+    - revive
+    - rowserrcheck
+    - spancheck
+    - sqlclosecheck
     - testifylint
+    - unparam
+    - zerologlint
 
-  disable:
-    # preset error
-    - err113 # Very annoying to define static errors everywhere
-    - wrapcheck # Very annoying to wrap errors everywhere
-    # preset import
-    - depguard
+  settings:
+    exhaustive:
+      default-signifies-exhaustive: true
+    staticcheck:
+      checks: ["all", "-QF1008"]
 
-linters-settings:
-  gci:
-    sections:
-      - standard
-      - default
-      - prefix(github.com/hetznercloud)
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - std-error-handling
+    rules:
+      - linters:
+          - errcheck
+          - gosec
+          - noctx
+        path: _test\.go
+      - linters:
+          - testifylint
+        text: require-error
+      - linters:
+          - revive
+        path: _test\.go
+        text: "unused-parameter: parameter '(w|r)' seems to be unused, consider removing or renaming it as _"
 
-  exhaustive:
-    # Switch cases with a default case should be exhaustive.
-    default-signifies-exhaustive: true
+formatters:
+  enable:
+    - gci
+    - goimports
 
-issues:
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - errcheck
-        - gosec
-        - noctx
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/hetznercloud)
 
-    - path: _test\.go
-      linters:
-        - revive
-      text: "unused-parameter: parameter '(w|r)' seems to be unused, consider removing or renaming it as _"
-
-    - linters:
-        - testifylint
-      text: "require-error"
+  exclusions:
+    generated: lax
