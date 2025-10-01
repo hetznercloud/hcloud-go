@@ -608,7 +608,7 @@ func stringFromIPNet(ip net.IPNet) string {
 func timeToTimePtr(t time.Time) *time.Time {
 	// Some hcloud structs don't use pointers for nullable times, so the zero value
 	// should be treated as nil.
-	if t == (time.Time{}) {
+	if t.IsZero() {
 		return nil
 	}
 	return &t

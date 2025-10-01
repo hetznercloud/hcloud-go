@@ -15,7 +15,7 @@ func TestImageMessage(t *testing.T) {
 		o := &hcloud.Image{Name: "debian-13"}
 
 		message, isUnavailable := ImageMessage(o)
-		assert.Equal(t, "", message)
+		assert.Empty(t, message)
 		assert.False(t, isUnavailable)
 	})
 

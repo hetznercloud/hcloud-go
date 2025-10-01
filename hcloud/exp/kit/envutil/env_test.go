@@ -30,7 +30,7 @@ func TestLookupEnvWithFile(t *testing.T) {
 			setup: func(_ *testing.T, _ string) {},
 			want: func(t *testing.T, value string, err error) {
 				assert.NoError(t, err)
-				assert.Equal(t, "", value)
+				assert.Empty(t, value)
 			},
 		},
 		{
@@ -58,7 +58,7 @@ func TestLookupEnvWithFile(t *testing.T) {
 			},
 			want: func(t *testing.T, value string, err error) {
 				assert.NoError(t, err)
-				assert.Equal(t, "", value)
+				assert.Empty(t, value)
 			},
 		},
 		{
@@ -81,7 +81,7 @@ func TestLookupEnvWithFile(t *testing.T) {
 			},
 			want: func(t *testing.T, value string, err error) {
 				assert.NoError(t, err)
-				assert.Equal(t, "", value)
+				assert.Empty(t, value)
 			},
 		},
 		{
@@ -91,7 +91,7 @@ func TestLookupEnvWithFile(t *testing.T) {
 			},
 			want: func(t *testing.T, value string, err error) {
 				assert.Error(t, err, "failed to read CONFIG_FILE: open /tmp/this-file-does-not-exits: no such file or directory")
-				assert.Equal(t, "", value)
+				assert.Empty(t, value)
 			},
 		},
 	}

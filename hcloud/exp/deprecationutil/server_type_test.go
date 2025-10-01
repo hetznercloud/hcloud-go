@@ -27,7 +27,7 @@ func TestServerTypeMessage(t *testing.T) {
 		o := &hcloud.ServerType{Name: "cx22"}
 
 		message, isUnavailable := ServerTypeMessage(o, "")
-		assert.Equal(t, "", message)
+		assert.Empty(t, message)
 		assert.False(t, isUnavailable)
 	})
 
@@ -67,7 +67,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "fsn1")
-		assert.Equal(t, ``, message)
+		assert.Empty(t, message)
 		assert.False(t, isUnavailable)
 	})
 
@@ -145,7 +145,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "hel1")
-		assert.Equal(t, "", message)
+		assert.Empty(t, message)
 		assert.False(t, isUnavailable)
 	})
 
@@ -164,7 +164,7 @@ func TestServerTypeMessage(t *testing.T) {
 		}
 
 		message, isUnavailable := ServerTypeMessage(o, "")
-		assert.Equal(t, "", message)
+		assert.Empty(t, message)
 		assert.False(t, isUnavailable)
 	})
 

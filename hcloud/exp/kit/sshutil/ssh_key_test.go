@@ -15,8 +15,7 @@ func TestGenerateKeyPair(t *testing.T) {
 	priv := string(privBytes)
 	pub := string(pubBytes)
 
-	if !(strings.HasPrefix(priv, "-----BEGIN OPENSSH PRIVATE KEY-----\n") &&
-		strings.HasSuffix(priv, "-----END OPENSSH PRIVATE KEY-----\n")) {
+	if !strings.HasPrefix(priv, "-----BEGIN OPENSSH PRIVATE KEY-----\n") || !strings.HasSuffix(priv, "-----END OPENSSH PRIVATE KEY-----\n") {
 		assert.Fail(t, "private key is invalid", priv)
 	}
 
@@ -35,8 +34,7 @@ func TestGeneratePublicKey(t *testing.T) {
 	pub := string(pubBytes)
 	priv := string(privBytes)
 
-	if !(strings.HasPrefix(priv, "-----BEGIN OPENSSH PRIVATE KEY-----\n") &&
-		strings.HasSuffix(priv, "-----END OPENSSH PRIVATE KEY-----\n")) {
+	if !strings.HasPrefix(priv, "-----BEGIN OPENSSH PRIVATE KEY-----\n") || !strings.HasSuffix(priv, "-----END OPENSSH PRIVATE KEY-----\n") {
 		assert.Fail(t, "private key is invalid", priv)
 	}
 

@@ -83,7 +83,7 @@ func (m *Server) close() {
 
 	m.Server.Close()
 
-	assert.EqualValues(m.t, len(m.requests), m.index, "expected more calls")
+	assert.Equal(m.t, len(m.requests), m.index, "expected more calls")
 }
 
 func (m *Server) handler(w http.ResponseWriter, r *http.Request) {

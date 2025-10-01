@@ -36,7 +36,7 @@ func TestParseHandler(t *testing.T) {
 			},
 			want: func(t *testing.T, v SomeStruct, resp *Response, err error) {
 				assert.EqualError(t, err, "any error")
-				assert.Equal(t, "", v.Data)
+				assert.Empty(t, v.Data)
 				assert.Nil(t, resp)
 			},
 		},

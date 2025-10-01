@@ -126,7 +126,7 @@ func TestClientInvalidToken(t *testing.T) {
 
 	if nil == err {
 		t.Error("Failed to trigger expected error")
-	} else if err.Error() != "Authorization token contains invalid characters" {
+	} else if err.Error() != "authorization token contains invalid characters" {
 		t.Fatalf("Invalid encoded authorization token triggered unexpected error message: %s", err)
 	}
 }

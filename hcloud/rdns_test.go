@@ -149,7 +149,7 @@ func TestChangeDNSPtr(t *testing.T) {
 				if reqBody.IP != tt.IP.String() {
 					t.Errorf("unexpected IP: %v", reqBody.IP)
 				}
-				if !(reqBody.DNSPtr == tt.DNS || *reqBody.DNSPtr == *tt.DNS) {
+				if reqBody.DNSPtr != tt.DNS && *reqBody.DNSPtr != *tt.DNS {
 					t.Errorf("unexpected DNS ptr: %v", reqBody.DNSPtr)
 				}
 				json.NewEncoder(w).Encode(schema.ServerActionChangeDNSPtrResponse{
