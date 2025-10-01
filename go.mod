@@ -1,15 +1,9 @@
 module github.com/hetznercloud/hcloud-go/v2
 
-// This is being kept at a lower value on purpose as raising this would require
-// all dependends to update to the new version.
-// As long as we do not depend on any newer language feature this can be kept at the current value.
-// It should never be higher than the lowest currently supported version of Go.
 // Since golang.org/x dependencies always requires version 1.(N-1), this is effectively
 // the same version we will be using. (See http://go.dev/issue/69095)
-go 1.23.0
+go 1.24.0
 
-// The toolchain version describes which Go version to use for testing, generating etc.
-// It should always be the newest version.
 toolchain go1.25.1
 
 require (
