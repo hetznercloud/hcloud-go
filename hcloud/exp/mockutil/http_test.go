@@ -59,15 +59,15 @@ func TestHandler(t *testing.T) {
 	resp, err = http.Get(server.URL)
 	require.NoError(t, err)
 	assert.Equal(t, 503, resp.StatusCode)
-	assert.Equal(t, "", resp.Header.Get("Content-Type"))
-	assert.Equal(t, "", readBody(t, resp))
+	assert.Empty(t, resp.Header.Get("Content-Type"))
+	assert.Empty(t, readBody(t, resp))
 
 	// Request 4
 	resp, err = http.Get(fmt.Sprintf("%s/random?key=%d", server.URL, rand.Int63()))
 	require.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode)
-	assert.Equal(t, "", resp.Header.Get("Content-Type"))
-	assert.Equal(t, "", readBody(t, resp))
+	assert.Empty(t, resp.Header.Get("Content-Type"))
+	assert.Empty(t, readBody(t, resp))
 
 	// Extra request 5
 	server.Expect([]Request{
@@ -77,8 +77,8 @@ func TestHandler(t *testing.T) {
 	resp, err = http.Get(server.URL)
 	require.NoError(t, err)
 	assert.Equal(t, 200, resp.StatusCode)
-	assert.Equal(t, "", resp.Header.Get("Content-Type"))
-	assert.Equal(t, "", readBody(t, resp))
+	assert.Empty(t, resp.Header.Get("Content-Type"))
+	assert.Empty(t, readBody(t, resp))
 }
 
 func readBody(t *testing.T, resp *http.Response) string {

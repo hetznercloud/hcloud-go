@@ -299,7 +299,7 @@ func NewClient(options ...ClientOption) *Client {
 // is assigned with ctx and has all necessary headers set (auth, user agent, etc.).
 func (c *Client) NewRequest(ctx context.Context, method, path string, body io.Reader) (*http.Request, error) {
 	url := c.endpoint + path
-	req, err := http.NewRequest(method, url, body)
+	req, err := http.NewRequestWithContext(ctx, method, url, body)
 	if err != nil {
 		return nil, err
 	}
@@ -307,7 +307,7 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, body io.Re
 	req.Header.Set("Accept", "application/json")
 
 	if !c.tokenValid {
-		return nil, errors.New("Authorization token contains invalid characters")
+		return nil, errors.New("authorization token contains invalid characters")
 	} else if c.token != "" {
 		req.Header.Set("Authorization", fmt.Sprintf("Bearer %s", c.token))
 	}
@@ -315,7 +315,6 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, body io.Re
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}
-	req = req.WithContext(ctx)
 	return req, nil
 }
 
@@ -356,7 +355,7 @@ type Response struct {
 func (r *Response) populateBody() error {
 	// Read full response body and save it for later use
 	body, err := io.ReadAll(r.Body)
-	r.Body.Close()
+	_ = r.Body.Close()
 	if err != nil {
 		return err
 	}

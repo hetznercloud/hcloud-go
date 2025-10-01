@@ -61,7 +61,7 @@ func TestClient_Base(t *testing.T) {
 		assert.Equal(t, "sanitized", body)
 	}
 	if body, err := env.Client.get("/no-content"); assert.NoError(t, err) {
-		assert.Equal(t, "", body)
+		assert.Empty(t, body)
 	}
 	if body, err := env.Client.get("/not-found"); assert.EqualError(t, err, "response status was 404") {
 		assert.Equal(t, "not found", body)
