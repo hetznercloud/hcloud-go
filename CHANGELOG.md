@@ -1,5 +1,15 @@
 # Changelog
 
+## [v2.26.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.26.0)
+
+### Features
+
+- support for go1.25 and drop go1.23 (#738)
+
+### Bug Fixes
+
+- **exp**: remove dots from deprecation messages (#736)
+
 ## [v2.25.1](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.25.1)
 
 ### Bug Fixes
