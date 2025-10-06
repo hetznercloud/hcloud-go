@@ -56,6 +56,8 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend stringFromLocation
 // goverter:extend serverTypeFromInt64
 // goverter:extend int64FromServerType
+// goverter:extend zoneFromInt64
+// goverter:extend int64FromZone
 // goverter:extend floatingIPFromInt64
 // goverter:extend int64FromFloatingIP
 // goverter:extend mapFromFloatingIPDNSPtrSchema
@@ -360,6 +362,31 @@ type converter interface {
 	DeprecationFromSchema(*schema.DeprecationInfo) *DeprecationInfo
 
 	SchemaFromDeprecation(*DeprecationInfo) *schema.DeprecationInfo
+
+	// Zone
+	ZoneFromSchema(schema.Zone) *Zone
+
+	SchemaFromZone(*Zone) schema.Zone
+	SchemaFromZoneCreateOpts(ZoneCreateOpts) schema.ZoneCreateRequest
+	SchemaFromZoneUpdateOpts(ZoneUpdateOpts) schema.ZoneUpdateRequest
+	SchemaFromZoneImportZonefileOpts(ZoneImportZonefileOpts) schema.ZoneImportZonefileRequest
+	SchemaFromZoneChangeProtectionOpts(ZoneChangeProtectionOpts) schema.ZoneChangeProtectionRequest
+	SchemaFromZoneChangeTTLOpts(ZoneChangeTTLOpts) schema.ZoneChangeTTLRequest
+	SchemaFromZoneChangePrimaryNameserversOpts(ZoneChangePrimaryNameserversOpts) schema.ZoneChangePrimaryNameserversRequest
+
+	// ZoneRRSet
+	ZoneRRSetFromSchema(schema.ZoneRRSet) *ZoneRRSet
+	ZoneRRSetRecordFromSchema(schema.ZoneRRSetRecord) *ZoneRRSetRecord
+
+	SchemaFromZoneRRSet(*ZoneRRSet) schema.ZoneRRSet
+	SchemaFromZoneRRSetCreateOpts(ZoneRRSetCreateOpts) schema.ZoneRRSetCreateRequest
+	SchemaFromZoneRRSetUpdateOpts(ZoneRRSetUpdateOpts) schema.ZoneRRSetUpdateRequest
+	SchemaFromZoneRRSetChangeProtectionOpts(ZoneRRSetChangeProtectionOpts) schema.ZoneRRSetChangeProtectionRequest
+	SchemaFromZoneRRSetChangeTTLOpts(ZoneRRSetChangeTTLOpts) schema.ZoneRRSetChangeTTLRequest
+
+	SchemaFromZoneRRSetSetRecordsOpts(ZoneRRSetSetRecordsOpts) schema.ZoneRRSetSetRecordsRequest
+	SchemaFromZoneRRSetAddRecordsOpts(ZoneRRSetAddRecordsOpts) schema.ZoneRRSetAddRecordsRequest
+	SchemaFromZoneRRSetRemoveRecordsOpts(ZoneRRSetRemoveRecordsOpts) schema.ZoneRRSetRemoveRecordsRequest
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {
@@ -437,6 +464,17 @@ func int64FromVolume(volume *Volume) int64 {
 		return 0
 	}
 	return volume.ID
+}
+
+func zoneFromInt64(id int64) *Zone {
+	return &Zone{ID: id}
+}
+
+func int64FromZone(o *Zone) int64 {
+	if o == nil {
+		return 0
+	}
+	return o.ID
 }
 
 func serverTypeFromInt64(id int64) *ServerType {

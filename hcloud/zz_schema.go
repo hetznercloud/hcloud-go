@@ -1146,6 +1146,159 @@ func (c *converterImpl) SchemaFromVolume(source *Volume) schema.Volume {
 	}
 	return schemaVolume
 }
+func (c *converterImpl) SchemaFromZone(source *Zone) schema.Zone {
+	var schemaZone schema.Zone
+	if source != nil {
+		schemaZone.ID = (*source).ID
+		schemaZone.Name = (*source).Name
+		schemaZone.Created = c.timeTimeToTimeTime((*source).Created)
+		schemaZone.TTL = (*source).TTL
+		schemaZone.Mode = string((*source).Mode)
+		if (*source).PrimaryNameservers != nil {
+			schemaZone.PrimaryNameservers = make([]schema.ZonePrimaryNameserver, len((*source).PrimaryNameservers))
+			for i := 0; i < len((*source).PrimaryNameservers); i++ {
+				schemaZone.PrimaryNameservers[i] = c.hcloudZonePrimaryNameserverToSchemaZonePrimaryNameserver((*source).PrimaryNameservers[i])
+			}
+		}
+		schemaZone.Protection = c.hcloudZoneProtectionToSchemaZoneProtection((*source).Protection)
+		schemaZone.Labels = (*source).Labels
+		schemaZone.AuthoritativeNameservers = c.hcloudZoneAuthoritativeNameserversToSchemaZoneAuthoritativeNameservers((*source).AuthoritativeNameservers)
+		schemaZone.Registrar = string((*source).Registrar)
+		schemaZone.Status = string((*source).Status)
+		schemaZone.RecordCount = (*source).RecordCount
+	}
+	return schemaZone
+}
+func (c *converterImpl) SchemaFromZoneChangePrimaryNameserversOpts(source ZoneChangePrimaryNameserversOpts) schema.ZoneChangePrimaryNameserversRequest {
+	var schemaZoneChangePrimaryNameserversRequest schema.ZoneChangePrimaryNameserversRequest
+	if source.PrimaryNameservers != nil {
+		schemaZoneChangePrimaryNameserversRequest.PrimaryNameservers = make([]schema.ZoneChangePrimaryNameserversRequestPrimaryNameserver, len(source.PrimaryNameservers))
+		for i := 0; i < len(source.PrimaryNameservers); i++ {
+			schemaZoneChangePrimaryNameserversRequest.PrimaryNameservers[i] = c.hcloudZoneChangePrimaryNameserversOptsPrimaryNameserverToSchemaZoneChangePrimaryNameserversRequestPrimaryNameserver(source.PrimaryNameservers[i])
+		}
+	}
+	return schemaZoneChangePrimaryNameserversRequest
+}
+func (c *converterImpl) SchemaFromZoneChangeProtectionOpts(source ZoneChangeProtectionOpts) schema.ZoneChangeProtectionRequest {
+	var schemaZoneChangeProtectionRequest schema.ZoneChangeProtectionRequest
+	schemaZoneChangeProtectionRequest.Delete = source.Delete
+	return schemaZoneChangeProtectionRequest
+}
+func (c *converterImpl) SchemaFromZoneChangeTTLOpts(source ZoneChangeTTLOpts) schema.ZoneChangeTTLRequest {
+	var schemaZoneChangeTTLRequest schema.ZoneChangeTTLRequest
+	schemaZoneChangeTTLRequest.TTL = source.TTL
+	return schemaZoneChangeTTLRequest
+}
+func (c *converterImpl) SchemaFromZoneCreateOpts(source ZoneCreateOpts) schema.ZoneCreateRequest {
+	var schemaZoneCreateRequest schema.ZoneCreateRequest
+	schemaZoneCreateRequest.Name = source.Name
+	schemaZoneCreateRequest.Mode = string(source.Mode)
+	schemaZoneCreateRequest.TTL = source.TTL
+	schemaZoneCreateRequest.Labels = stringMapToStringMapPtr(source.Labels)
+	if source.PrimaryNameservers != nil {
+		schemaZoneCreateRequest.PrimaryNameservers = make([]schema.ZoneCreateRequestPrimaryNameserver, len(source.PrimaryNameservers))
+		for i := 0; i < len(source.PrimaryNameservers); i++ {
+			schemaZoneCreateRequest.PrimaryNameservers[i] = c.hcloudZoneCreateOptsPrimaryNameserverToSchemaZoneCreateRequestPrimaryNameserver(source.PrimaryNameservers[i])
+		}
+	}
+	if source.RRSets != nil {
+		schemaZoneCreateRequest.RRSets = make([]schema.ZoneCreateRequestRRSet, len(source.RRSets))
+		for j := 0; j < len(source.RRSets); j++ {
+			schemaZoneCreateRequest.RRSets[j] = c.hcloudZoneCreateOptsRRSetToSchemaZoneCreateRequestRRSet(source.RRSets[j])
+		}
+	}
+	schemaZoneCreateRequest.Zonefile = source.Zonefile
+	return schemaZoneCreateRequest
+}
+func (c *converterImpl) SchemaFromZoneImportZonefileOpts(source ZoneImportZonefileOpts) schema.ZoneImportZonefileRequest {
+	var schemaZoneImportZonefileRequest schema.ZoneImportZonefileRequest
+	schemaZoneImportZonefileRequest.Zonefile = source.Zonefile
+	return schemaZoneImportZonefileRequest
+}
+func (c *converterImpl) SchemaFromZoneRRSet(source *ZoneRRSet) schema.ZoneRRSet {
+	var schemaZoneRRSet schema.ZoneRRSet
+	if source != nil {
+		schemaZoneRRSet.ID = (*source).ID
+		schemaZoneRRSet.Name = (*source).Name
+		schemaZoneRRSet.Type = string((*source).Type)
+		schemaZoneRRSet.TTL = (*source).TTL
+		schemaZoneRRSet.Labels = (*source).Labels
+		schemaZoneRRSet.Protection = c.hcloudZoneRRSetProtectionToSchemaZoneRRSetProtection((*source).Protection)
+		if (*source).Records != nil {
+			schemaZoneRRSet.Records = make([]schema.ZoneRRSetRecord, len((*source).Records))
+			for i := 0; i < len((*source).Records); i++ {
+				schemaZoneRRSet.Records[i] = c.hcloudZoneRRSetRecordToSchemaZoneRRSetRecord((*source).Records[i])
+			}
+		}
+		schemaZoneRRSet.Zone = int64FromZone((*source).Zone)
+	}
+	return schemaZoneRRSet
+}
+func (c *converterImpl) SchemaFromZoneRRSetAddRecordsOpts(source ZoneRRSetAddRecordsOpts) schema.ZoneRRSetAddRecordsRequest {
+	var schemaZoneRRSetAddRecordsRequest schema.ZoneRRSetAddRecordsRequest
+	if source.Records != nil {
+		schemaZoneRRSetAddRecordsRequest.Records = make([]schema.ZoneRRSetRecord, len(source.Records))
+		for i := 0; i < len(source.Records); i++ {
+			schemaZoneRRSetAddRecordsRequest.Records[i] = c.hcloudZoneRRSetRecordToSchemaZoneRRSetRecord(source.Records[i])
+		}
+	}
+	schemaZoneRRSetAddRecordsRequest.TTL = source.TTL
+	return schemaZoneRRSetAddRecordsRequest
+}
+func (c *converterImpl) SchemaFromZoneRRSetChangeProtectionOpts(source ZoneRRSetChangeProtectionOpts) schema.ZoneRRSetChangeProtectionRequest {
+	var schemaZoneRRSetChangeProtectionRequest schema.ZoneRRSetChangeProtectionRequest
+	schemaZoneRRSetChangeProtectionRequest.Change = source.Change
+	return schemaZoneRRSetChangeProtectionRequest
+}
+func (c *converterImpl) SchemaFromZoneRRSetChangeTTLOpts(source ZoneRRSetChangeTTLOpts) schema.ZoneRRSetChangeTTLRequest {
+	var schemaZoneRRSetChangeTTLRequest schema.ZoneRRSetChangeTTLRequest
+	schemaZoneRRSetChangeTTLRequest.TTL = source.TTL
+	return schemaZoneRRSetChangeTTLRequest
+}
+func (c *converterImpl) SchemaFromZoneRRSetCreateOpts(source ZoneRRSetCreateOpts) schema.ZoneRRSetCreateRequest {
+	var schemaZoneRRSetCreateRequest schema.ZoneRRSetCreateRequest
+	schemaZoneRRSetCreateRequest.Name = source.Name
+	schemaZoneRRSetCreateRequest.Type = string(source.Type)
+	schemaZoneRRSetCreateRequest.TTL = source.TTL
+	schemaZoneRRSetCreateRequest.Labels = stringMapToStringMapPtr(source.Labels)
+	if source.Records != nil {
+		schemaZoneRRSetCreateRequest.Records = make([]schema.ZoneRRSetRecord, len(source.Records))
+		for i := 0; i < len(source.Records); i++ {
+			schemaZoneRRSetCreateRequest.Records[i] = c.hcloudZoneRRSetRecordToSchemaZoneRRSetRecord(source.Records[i])
+		}
+	}
+	return schemaZoneRRSetCreateRequest
+}
+func (c *converterImpl) SchemaFromZoneRRSetRemoveRecordsOpts(source ZoneRRSetRemoveRecordsOpts) schema.ZoneRRSetRemoveRecordsRequest {
+	var schemaZoneRRSetRemoveRecordsRequest schema.ZoneRRSetRemoveRecordsRequest
+	if source.Records != nil {
+		schemaZoneRRSetRemoveRecordsRequest.Records = make([]schema.ZoneRRSetRecord, len(source.Records))
+		for i := 0; i < len(source.Records); i++ {
+			schemaZoneRRSetRemoveRecordsRequest.Records[i] = c.hcloudZoneRRSetRecordToSchemaZoneRRSetRecord(source.Records[i])
+		}
+	}
+	return schemaZoneRRSetRemoveRecordsRequest
+}
+func (c *converterImpl) SchemaFromZoneRRSetSetRecordsOpts(source ZoneRRSetSetRecordsOpts) schema.ZoneRRSetSetRecordsRequest {
+	var schemaZoneRRSetSetRecordsRequest schema.ZoneRRSetSetRecordsRequest
+	if source.Records != nil {
+		schemaZoneRRSetSetRecordsRequest.Records = make([]schema.ZoneRRSetRecord, len(source.Records))
+		for i := 0; i < len(source.Records); i++ {
+			schemaZoneRRSetSetRecordsRequest.Records[i] = c.hcloudZoneRRSetRecordToSchemaZoneRRSetRecord(source.Records[i])
+		}
+	}
+	return schemaZoneRRSetSetRecordsRequest
+}
+func (c *converterImpl) SchemaFromZoneRRSetUpdateOpts(source ZoneRRSetUpdateOpts) schema.ZoneRRSetUpdateRequest {
+	var schemaZoneRRSetUpdateRequest schema.ZoneRRSetUpdateRequest
+	schemaZoneRRSetUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
+	return schemaZoneRRSetUpdateRequest
+}
+func (c *converterImpl) SchemaFromZoneUpdateOpts(source ZoneUpdateOpts) schema.ZoneUpdateRequest {
+	var schemaZoneUpdateRequest schema.ZoneUpdateRequest
+	schemaZoneUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
+	return schemaZoneUpdateRequest
+}
 func (c *converterImpl) ServerFromSchema(source schema.Server) *Server {
 	var hcloudServer Server
 	hcloudServer.ID = source.ID
@@ -1309,6 +1462,48 @@ func (c *converterImpl) VolumeFromSchema(source schema.Volume) *Volume {
 	hcloudVolume.LinuxDevice = source.LinuxDevice
 	hcloudVolume.Created = c.timeTimeToTimeTime(source.Created)
 	return &hcloudVolume
+}
+func (c *converterImpl) ZoneFromSchema(source schema.Zone) *Zone {
+	var hcloudZone Zone
+	hcloudZone.ID = source.ID
+	hcloudZone.Name = source.Name
+	hcloudZone.Created = c.timeTimeToTimeTime(source.Created)
+	hcloudZone.TTL = source.TTL
+	hcloudZone.Mode = ZoneMode(source.Mode)
+	if source.PrimaryNameservers != nil {
+		hcloudZone.PrimaryNameservers = make([]ZonePrimaryNameserver, len(source.PrimaryNameservers))
+		for i := 0; i < len(source.PrimaryNameservers); i++ {
+			hcloudZone.PrimaryNameservers[i] = c.schemaZonePrimaryNameserverToHcloudZonePrimaryNameserver(source.PrimaryNameservers[i])
+		}
+	}
+	hcloudZone.Protection = c.schemaZoneProtectionToHcloudZoneProtection(source.Protection)
+	hcloudZone.Labels = source.Labels
+	hcloudZone.RecordCount = source.RecordCount
+	hcloudZone.AuthoritativeNameservers = c.schemaZoneAuthoritativeNameserversToHcloudZoneAuthoritativeNameservers(source.AuthoritativeNameservers)
+	hcloudZone.Registrar = ZoneRegistrar(source.Registrar)
+	hcloudZone.Status = ZoneStatus(source.Status)
+	return &hcloudZone
+}
+func (c *converterImpl) ZoneRRSetFromSchema(source schema.ZoneRRSet) *ZoneRRSet {
+	var hcloudZoneRRSet ZoneRRSet
+	hcloudZoneRRSet.Zone = zoneFromInt64(source.Zone)
+	hcloudZoneRRSet.ID = source.ID
+	hcloudZoneRRSet.Name = source.Name
+	hcloudZoneRRSet.Type = ZoneRRSetType(source.Type)
+	hcloudZoneRRSet.TTL = source.TTL
+	hcloudZoneRRSet.Labels = source.Labels
+	if source.Records != nil {
+		hcloudZoneRRSet.Records = make([]ZoneRRSetRecord, len(source.Records))
+		for i := 0; i < len(source.Records); i++ {
+			hcloudZoneRRSet.Records[i] = c.schemaZoneRRSetRecordToHcloudZoneRRSetRecord(source.Records[i])
+		}
+	}
+	hcloudZoneRRSet.Protection = c.schemaZoneRRSetProtectionToHcloudZoneRRSetProtection(source.Protection)
+	return &hcloudZoneRRSet
+}
+func (c *converterImpl) ZoneRRSetRecordFromSchema(source schema.ZoneRRSetRecord) *ZoneRRSetRecord {
+	hcloudZoneRRSetRecord := c.schemaZoneRRSetRecordToHcloudZoneRRSetRecord(source)
+	return &hcloudZoneRRSetRecord
 }
 func (c *converterImpl) hcloudCertificateStatusTypeToString(source CertificateStatusType) string {
 	return string(source)
@@ -1501,6 +1696,68 @@ func (c *converterImpl) hcloudVolumeProtectionToSchemaVolumeProtection(source Vo
 	var schemaVolumeProtection schema.VolumeProtection
 	schemaVolumeProtection.Delete = source.Delete
 	return schemaVolumeProtection
+}
+func (c *converterImpl) hcloudZoneAuthoritativeNameserversToSchemaZoneAuthoritativeNameservers(source ZoneAuthoritativeNameservers) schema.ZoneAuthoritativeNameservers {
+	var schemaZoneAuthoritativeNameservers schema.ZoneAuthoritativeNameservers
+	schemaZoneAuthoritativeNameservers.Assigned = source.Assigned
+	schemaZoneAuthoritativeNameservers.Delegated = source.Delegated
+	schemaZoneAuthoritativeNameservers.DelegationLastCheck = c.timeTimeToTimeTime(source.DelegationLastCheck)
+	schemaZoneAuthoritativeNameservers.DelegationStatus = string(source.DelegationStatus)
+	return schemaZoneAuthoritativeNameservers
+}
+func (c *converterImpl) hcloudZoneChangePrimaryNameserversOptsPrimaryNameserverToSchemaZoneChangePrimaryNameserversRequestPrimaryNameserver(source ZoneChangePrimaryNameserversOptsPrimaryNameserver) schema.ZoneChangePrimaryNameserversRequestPrimaryNameserver {
+	var schemaZoneChangePrimaryNameserversRequestPrimaryNameserver schema.ZoneChangePrimaryNameserversRequestPrimaryNameserver
+	schemaZoneChangePrimaryNameserversRequestPrimaryNameserver.Address = source.Address
+	schemaZoneChangePrimaryNameserversRequestPrimaryNameserver.Port = source.Port
+	schemaZoneChangePrimaryNameserversRequestPrimaryNameserver.TSIGAlgorithm = string(source.TSIGAlgorithm)
+	schemaZoneChangePrimaryNameserversRequestPrimaryNameserver.TSIGKey = source.TSIGKey
+	return schemaZoneChangePrimaryNameserversRequestPrimaryNameserver
+}
+func (c *converterImpl) hcloudZoneCreateOptsPrimaryNameserverToSchemaZoneCreateRequestPrimaryNameserver(source ZoneCreateOptsPrimaryNameserver) schema.ZoneCreateRequestPrimaryNameserver {
+	var schemaZoneCreateRequestPrimaryNameserver schema.ZoneCreateRequestPrimaryNameserver
+	schemaZoneCreateRequestPrimaryNameserver.Address = source.Address
+	schemaZoneCreateRequestPrimaryNameserver.Port = source.Port
+	schemaZoneCreateRequestPrimaryNameserver.TSIGAlgorithm = string(source.TSIGAlgorithm)
+	schemaZoneCreateRequestPrimaryNameserver.TSIGKey = source.TSIGKey
+	return schemaZoneCreateRequestPrimaryNameserver
+}
+func (c *converterImpl) hcloudZoneCreateOptsRRSetToSchemaZoneCreateRequestRRSet(source ZoneCreateOptsRRSet) schema.ZoneCreateRequestRRSet {
+	var schemaZoneCreateRequestRRSet schema.ZoneCreateRequestRRSet
+	schemaZoneCreateRequestRRSet.Type = string(source.Type)
+	schemaZoneCreateRequestRRSet.Name = source.Name
+	schemaZoneCreateRequestRRSet.TTL = source.TTL
+	schemaZoneCreateRequestRRSet.Labels = stringMapToStringMapPtr(source.Labels)
+	if source.Records != nil {
+		schemaZoneCreateRequestRRSet.Records = make([]schema.ZoneRRSetRecord, len(source.Records))
+		for i := 0; i < len(source.Records); i++ {
+			schemaZoneCreateRequestRRSet.Records[i] = c.hcloudZoneRRSetRecordToSchemaZoneRRSetRecord(source.Records[i])
+		}
+	}
+	return schemaZoneCreateRequestRRSet
+}
+func (c *converterImpl) hcloudZonePrimaryNameserverToSchemaZonePrimaryNameserver(source ZonePrimaryNameserver) schema.ZonePrimaryNameserver {
+	var schemaZonePrimaryNameserver schema.ZonePrimaryNameserver
+	schemaZonePrimaryNameserver.Address = source.Address
+	schemaZonePrimaryNameserver.Port = source.Port
+	schemaZonePrimaryNameserver.TSIGAlgorithm = string(source.TSIGAlgorithm)
+	schemaZonePrimaryNameserver.TSIGKey = source.TSIGKey
+	return schemaZonePrimaryNameserver
+}
+func (c *converterImpl) hcloudZoneProtectionToSchemaZoneProtection(source ZoneProtection) schema.ZoneProtection {
+	var schemaZoneProtection schema.ZoneProtection
+	schemaZoneProtection.Delete = source.Delete
+	return schemaZoneProtection
+}
+func (c *converterImpl) hcloudZoneRRSetProtectionToSchemaZoneRRSetProtection(source ZoneRRSetProtection) schema.ZoneRRSetProtection {
+	var schemaZoneRRSetProtection schema.ZoneRRSetProtection
+	schemaZoneRRSetProtection.Change = source.Change
+	return schemaZoneRRSetProtection
+}
+func (c *converterImpl) hcloudZoneRRSetRecordToSchemaZoneRRSetRecord(source ZoneRRSetRecord) schema.ZoneRRSetRecord {
+	var schemaZoneRRSetRecord schema.ZoneRRSetRecord
+	schemaZoneRRSetRecord.Value = source.Value
+	schemaZoneRRSetRecord.Comment = source.Comment
+	return schemaZoneRRSetRecord
 }
 func (c *converterImpl) intISOFromSchema(source schema.ISO) ISO {
 	var hcloudISO ISO
@@ -2339,6 +2596,38 @@ func (c *converterImpl) schemaVolumeProtectionToHcloudVolumeProtection(source sc
 	var hcloudVolumeProtection VolumeProtection
 	hcloudVolumeProtection.Delete = source.Delete
 	return hcloudVolumeProtection
+}
+func (c *converterImpl) schemaZoneAuthoritativeNameserversToHcloudZoneAuthoritativeNameservers(source schema.ZoneAuthoritativeNameservers) ZoneAuthoritativeNameservers {
+	var hcloudZoneAuthoritativeNameservers ZoneAuthoritativeNameservers
+	hcloudZoneAuthoritativeNameservers.Assigned = source.Assigned
+	hcloudZoneAuthoritativeNameservers.Delegated = source.Delegated
+	hcloudZoneAuthoritativeNameservers.DelegationLastCheck = c.timeTimeToTimeTime(source.DelegationLastCheck)
+	hcloudZoneAuthoritativeNameservers.DelegationStatus = ZoneDelegationStatus(source.DelegationStatus)
+	return hcloudZoneAuthoritativeNameservers
+}
+func (c *converterImpl) schemaZonePrimaryNameserverToHcloudZonePrimaryNameserver(source schema.ZonePrimaryNameserver) ZonePrimaryNameserver {
+	var hcloudZonePrimaryNameserver ZonePrimaryNameserver
+	hcloudZonePrimaryNameserver.Address = source.Address
+	hcloudZonePrimaryNameserver.Port = source.Port
+	hcloudZonePrimaryNameserver.TSIGAlgorithm = ZoneTSIGAlgorithm(source.TSIGAlgorithm)
+	hcloudZonePrimaryNameserver.TSIGKey = source.TSIGKey
+	return hcloudZonePrimaryNameserver
+}
+func (c *converterImpl) schemaZoneProtectionToHcloudZoneProtection(source schema.ZoneProtection) ZoneProtection {
+	var hcloudZoneProtection ZoneProtection
+	hcloudZoneProtection.Delete = source.Delete
+	return hcloudZoneProtection
+}
+func (c *converterImpl) schemaZoneRRSetProtectionToHcloudZoneRRSetProtection(source schema.ZoneRRSetProtection) ZoneRRSetProtection {
+	var hcloudZoneRRSetProtection ZoneRRSetProtection
+	hcloudZoneRRSetProtection.Change = source.Change
+	return hcloudZoneRRSetProtection
+}
+func (c *converterImpl) schemaZoneRRSetRecordToHcloudZoneRRSetRecord(source schema.ZoneRRSetRecord) ZoneRRSetRecord {
+	var hcloudZoneRRSetRecord ZoneRRSetRecord
+	hcloudZoneRRSetRecord.Value = source.Value
+	hcloudZoneRRSetRecord.Comment = source.Comment
+	return hcloudZoneRRSetRecord
 }
 func (c *converterImpl) serverTypeLocationFromSchema(source schema.ServerTypeLocation) ServerTypeLocation {
 	var hcloudServerTypeLocation ServerTypeLocation
