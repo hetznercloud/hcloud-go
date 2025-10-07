@@ -1,5 +1,43 @@
 # Changelog
 
+## [v2.27.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.27.0)
+
+### DNS API Beta
+
+This release adds support for the new [DNS API](https://docs.hetzner.cloud/reference/cloud#dns).
+
+The DNS API is currently in **beta**, which will likely end on 10 November 2025. After the beta ended, it will no longer be possible to create new zones in the old DNS system. See the [DNS Beta FAQ](https://docs.hetzner.com/networking/dns/faq/beta) for more details.
+
+Future minor releases of this project may include breaking changes for features that are related to the DNS API.
+
+See the [DNS API Beta changelog](https://docs.hetzner.cloud/changelog#2025-10-07-dns-beta) for more details.
+
+**Examples**
+
+```go
+result, _, err := client.Zone.Create(ctx, hcloud.ZoneCreateOpts{
+	Name:   "example.com",
+	Mode:   hcloud.ZoneModePrimary,
+	Labels: map[string]string{"key": "value"},
+	RRSets: []hcloud.ZoneCreateOptsRRSet{
+		{
+			Name: "@",
+			Type: hcloud.ZoneRRSetTypeA,
+			Records: []hcloud.ZoneRRSetRecord{
+				{Value: "201.180.75.2", Comment: "server1"},
+			},
+		},
+	},
+})
+
+err = client.Action.WaitFor(ctx, result.Action)
+zone = result.Zone
+```
+
+### Features
+
+- support the new DNS API (#740)
+
 ## [v2.26.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.26.0)
 
 ### Features
