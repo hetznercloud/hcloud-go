@@ -116,6 +116,7 @@ type Client struct {
 	PlacementGroup   PlacementGroupClient
 	RDNS             RDNSClient
 	PrimaryIP        PrimaryIPClient
+	Zone             ZoneClient
 }
 
 // A ClientOption is used to configure a Client.
@@ -291,6 +292,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.PlacementGroup = PlacementGroupClient{client: client}
 	client.RDNS = RDNSClient{client: client}
 	client.PrimaryIP = PrimaryIPClient{client: client, Action: &ResourceActionClient{client: client, resource: "primary_ips"}}
+	client.Zone = ZoneClient{client: client, Action: &ResourceActionClient{client: client, resource: "zones"}}
 
 	return client
 }
