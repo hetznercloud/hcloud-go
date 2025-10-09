@@ -79,17 +79,25 @@ func (c *StorageBoxClient) GetSnapshot(
 type StorageBoxSnapshotListOpts struct {
 	LabelSelector string
 	Name          string
+	IsAutomatic   *bool
+	Sort          []string
 }
 
 func (o StorageBoxSnapshotListOpts) values() url.Values {
-	values := url.Values{}
+	vals := url.Values{}
 	if o.LabelSelector != "" {
-		values.Set("label_selector", o.LabelSelector)
+		vals.Set("label_selector", o.LabelSelector)
 	}
 	if o.Name != "" {
-		values.Set("name", o.Name)
+		vals.Set("name", o.Name)
 	}
-	return values
+	if o.IsAutomatic != nil {
+		vals.Set("is_automatic", fmt.Sprintf("%t", *o.IsAutomatic))
+	}
+	for _, sort := range o.Sort {
+		vals.Add("sort", sort)
+	}
+	return vals
 }
 
 // ListSnapshots lists all snapshots of a Storage Box with the given options.
