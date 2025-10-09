@@ -1229,6 +1229,11 @@ func (c *converterImpl) SchemaFromStorageBoxSubaccount(source *StorageBoxSubacco
 	}
 	return schemaStorageBoxSubaccount
 }
+func (c *converterImpl) SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(source StorageBoxSubaccountChangeHomeDirectoryOpts) schema.StorageBoxSubaccountChangeHomeDirectoryRequest {
+	var schemaStorageBoxSubaccountChangeHomeDirectoryRequest schema.StorageBoxSubaccountChangeHomeDirectoryRequest
+	schemaStorageBoxSubaccountChangeHomeDirectoryRequest.HomeDirectory = source.HomeDirectory
+	return schemaStorageBoxSubaccountChangeHomeDirectoryRequest
+}
 func (c *converterImpl) SchemaFromStorageBoxSubaccountCreateOpts(source StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest {
 	var schemaStorageBoxSubaccountCreateRequest schema.StorageBoxSubaccountCreateRequest
 	schemaStorageBoxSubaccountCreateRequest.Password = source.Password

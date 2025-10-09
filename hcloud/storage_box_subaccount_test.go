@@ -432,3 +432,40 @@ func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
 	require.NotNil(t, resp)
 	require.NotNil(t, action)
 }
+
+func TestStorageBoxSubbacountChangeHomeDirectory(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/storage_boxes/42/subaccounts/13/actions/change_home_directory",
+			Status: 201,
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+
+				expected := `{
+					"home_directory": "/foobar"
+				}`
+
+				assert.JSONEq(t, expected, string(body))
+			},
+			JSONRaw: `{ "action": { "id": 5 } }`,
+		},
+	})
+
+	subaccount := &StorageBoxSubaccount{
+		ID: 13,
+		StorageBox: &StorageBox{
+			ID: 42,
+		},
+	}
+
+	opts := StorageBoxSubaccountChangeHomeDirectoryOpts{
+		HomeDirectory: Ptr("/foobar"),
+	}
+	action, resp, err := client.StorageBox.ChangeSubaccountHomeDirectory(ctx, subaccount, opts)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.NotNil(t, action)
+}

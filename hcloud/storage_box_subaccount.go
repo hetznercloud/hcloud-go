@@ -267,3 +267,28 @@ func (c *StorageBoxClient) UpdateSubaccountAccessSettings(
 
 	return ActionFromSchema(respBody.Action), resp, err
 }
+
+// StorageBoxSubaccountChangeHomeDirectoryOpts represents the options for changing the home directory of a Storage Box subaccount.
+type StorageBoxSubaccountChangeHomeDirectoryOpts struct {
+	HomeDirectory *string
+}
+
+// UpdateSubaccountAccessSettings changes the home directory of a Storage Box subaccount.
+func (c *StorageBoxClient) ChangeSubaccountHomeDirectory(
+	ctx context.Context,
+	subaccount *StorageBoxSubaccount,
+	opts StorageBoxSubaccountChangeHomeDirectoryOpts,
+) (*Action, *Response, error) {
+	const opPath = "/storage_boxes/%d/subaccounts/%d/actions/change_home_directory"
+	ctx = ctxutil.SetOpPath(ctx, opPath)
+
+	reqPath := fmt.Sprintf(opPath, subaccount.StorageBox.ID, subaccount.ID)
+	reqBody := SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(opts)
+
+	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
+	if err != nil {
+		return nil, resp, err
+	}
+
+	return ActionFromSchema(respBody.Action), resp, err
+}

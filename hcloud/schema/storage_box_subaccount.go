@@ -85,3 +85,7 @@ type StorageBoxSubaccountUpdateAccessSettingsRequest struct {
 	SSHEnabled          *bool `json:"ssh_enabled,omitempty"`
 	WebDAVEnabled       *bool `json:"webdav_enabled,omitempty"`
 }
+
+type StorageBoxSubaccountChangeHomeDirectoryRequest struct {
+	HomeDirectory *string `json:"home_directory,omitempty"`
+}
