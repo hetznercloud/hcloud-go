@@ -41,7 +41,6 @@ type StorageBoxSnapshotCreateResponse struct {
 	Action   Action             `json:"action"`
 }
 
-// TODO: Both are required by the spec? Why?
 // StorageBoxSnapshotUpdateRequest defines the schema of the request to update a Storage Box snapshot.
 type StorageBoxSnapshotUpdateRequest struct {
 	Description *string            `json:"description,omitempty"`
