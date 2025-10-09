@@ -79,10 +79,9 @@ type StorageBoxSubaccountResetPasswordRequest struct {
 }
 
 type StorageBoxSubaccountUpdateAccessSettingsRequest struct {
-	HomeDirectory       *string `json:"home_directory,omitempty"`
-	ReachableExternally *bool   `json:"reachable_externally,omitempty"`
-	Readonly            *bool   `json:"readonly,omitempty"`
-	SambaEnabled        *bool   `json:"samba_enabled,omitempty"`
-	SSHEnabled          *bool   `json:"ssh_enabled,omitempty"`
-	WebDAVEnabled       *bool   `json:"webdav_enabled,omitempty"`
+	ReachableExternally *bool `json:"reachable_externally,omitempty"`
+	Readonly            *bool `json:"readonly,omitempty"`
+	SambaEnabled        *bool `json:"samba_enabled,omitempty"`
+	SSHEnabled          *bool `json:"ssh_enabled,omitempty"`
+	WebDAVEnabled       *bool `json:"webdav_enabled,omitempty"`
 }

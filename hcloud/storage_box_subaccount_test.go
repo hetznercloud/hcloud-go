@@ -400,7 +400,6 @@ func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
 				require.NoError(t, err)
 
 				expected := `{
-					"home_directory": "/foobar",
 					"samba_enabled": false,
 					"ssh_enabled": true,
 					"webdav_enabled": false,
@@ -422,7 +421,6 @@ func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
 	}
 
 	opts := StorageBoxSubaccountAccessSettingsUpdateOpts{
-		HomeDirectory:       Ptr("/foobar"),
 		SambaEnabled:        Ptr(false),
 		SSHEnabled:          Ptr(true),
 		WebDAVEnabled:       Ptr(false),

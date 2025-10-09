@@ -241,7 +241,6 @@ func (c *StorageBoxClient) ResetSubaccountPassword(
 
 // StorageBoxSubaccountAccessSettingsUpdateOpts represents the options for updating access settings of a Storage Box subaccount.
 type StorageBoxSubaccountAccessSettingsUpdateOpts struct {
-	HomeDirectory       *string
 	ReachableExternally *bool
 	Readonly            *bool
 	SambaEnabled        *bool
