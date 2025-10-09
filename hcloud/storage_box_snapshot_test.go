@@ -163,42 +163,65 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 func TestStorageBoxClientListSnapshot(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
-	server.Expect([]mockutil.Request{
-		{
-			Method: "GET", Path: "/storage_boxes/42/snapshots?label_selector=environment%3Dprod",
-			Status: 200,
-			JSONRaw: `{
-				"snapshots": [{
-					"id": 42,
-					"name": "my-resource",
-					"stats": {
-				  		"size": 0,
-				  		"size_filesystem": 0
+	t.Run("AllSnapshotsWithOpts", func(t *testing.T) {
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_boxes/42/snapshots?is_automatic=true&label_selector=environment%3Dprod&name=my-resource&sort=id%3Aasc",
+				Status: 200,
+				JSONRaw: `{
+					"snapshots": [{
+						"id": 42,
+						"name": "my-resource",
+						"is_automatic": true,
+						"labels": {
+							"environment": "prod"
 						},
-					"is_automatic": false,
-					"labels": {
-						"environment": "prod",
-						"example.com/my": "label",
-						"just-a-key": ""
-					},
-					"created": "2016-01-30T23:55:00+00:00",
-					"storage_box": 42
-				}]
-			}`,
-		},
+						"storage_box": 42
+					}]
+				}`,
+			},
+		})
+		storageBox := &StorageBox{ID: 42}
+
+		opts := StorageBoxSnapshotListOpts{
+			LabelSelector: "environment=prod",
+			Name:          "my-resource",
+			Sort:          []string{"id:asc"},
+			IsAutomatic:   Ptr(true),
+		}
+		snapshots, err := client.StorageBox.AllSnapshotsWithOpts(ctx, storageBox, opts)
+		require.NoError(t, err)
+		require.Len(t, snapshots, 1)
+
+		assert.Equal(t, int64(42), snapshots[0].ID)
+		assert.Equal(t, "my-resource", snapshots[0].Name)
 	})
 
-	storageBox := &StorageBox{ID: 42}
+	t.Run("AllSnapshots", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_boxes/42/snapshots?",
+				Status: 200,
+				JSONRaw: `{
+					"snapshots": [{
+						"id": 42,
+						"name": "my-resource",
+						"storage_box": 42
+					}]
+				}`,
+			},
+		})
 
-	opts := StorageBoxSnapshotListOpts{
-		LabelSelector: "environment=prod",
-	}
-	snapshots, err := client.StorageBox.AllSnapshotsWithOpts(ctx, storageBox, opts)
-	require.NoError(t, err)
-	require.Len(t, snapshots, 1)
+		storageBox := &StorageBox{ID: 42}
 
-	assert.Equal(t, int64(42), snapshots[0].ID)
-	assert.Equal(t, "my-resource", snapshots[0].Name)
+		snapshots, err := client.StorageBox.AllSnapshots(ctx, storageBox)
+		require.NoError(t, err)
+		require.Len(t, snapshots, 1)
+
+		assert.Equal(t, int64(42), snapshots[0].ID)
+		assert.Equal(t, "my-resource", snapshots[0].Name)
+	})
 }
 
 func TestStorageBoxClientCreateSnapshot(t *testing.T) {
