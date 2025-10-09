@@ -634,7 +634,7 @@ func TestStorageBoxRollbackSnapshot(t *testing.T) {
 				body, err := io.ReadAll(r.Body)
 				require.NoError(t, err, "failed to read request body")
 
-				assert.JSONEq(t, `{ "snapshot_id": 10 }`, string(body), "unexpected request body")
+				assert.JSONEq(t, `{ "snapshot": 10 }`, string(body), "unexpected request body")
 			},
 			JSONRaw: `{ "action": { "id": 13 } }`,
 		},

@@ -125,7 +125,7 @@ type StorageBoxUpdateAccessSettingsRequest struct {
 }
 
 type StorageBoxRollbackSnapshotRequest struct {
-	SnapshotID int64 `json:"snapshot_id"`
+	Snapshot IDOrName `json:"snapshot"`
 }
 
 type StorageBoxEnableSnapshotPlanRequest struct {

@@ -1186,7 +1186,7 @@ func (c *converterImpl) SchemaFromStorageBoxResetPasswordOpts(source StorageBoxR
 }
 func (c *converterImpl) SchemaFromStorageBoxRollbackSnapshotOpts(source StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest {
 	var schemaStorageBoxRollbackSnapshotRequest schema.StorageBoxRollbackSnapshotRequest
-	schemaStorageBoxRollbackSnapshotRequest.SnapshotID = int64FromStorageBoxSnapshot(source.Snapshot)
+	schemaStorageBoxRollbackSnapshotRequest.Snapshot = c.pHcloudStorageBoxSnapshotToSchemaIDOrName(source.Snapshot)
 	return schemaStorageBoxRollbackSnapshotRequest
 }
 func (c *converterImpl) SchemaFromStorageBoxSnapshot(source *StorageBoxSnapshot) schema.StorageBoxSnapshot {
@@ -2468,6 +2468,14 @@ func (c *converterImpl) pHcloudStorageBoxSnapshotStatsToSchemaStorageBoxSnapshot
 		schemaStorageBoxSnapshotStats.SizeFilesystem = (*source).SizeFilesystem
 	}
 	return schemaStorageBoxSnapshotStats
+}
+func (c *converterImpl) pHcloudStorageBoxSnapshotToSchemaIDOrName(source *StorageBoxSnapshot) schema.IDOrName {
+	var schemaIDOrName schema.IDOrName
+	if source != nil {
+		schemaIDOrName.ID = (*source).ID
+		schemaIDOrName.Name = (*source).Name
+	}
+	return schemaIDOrName
 }
 func (c *converterImpl) pHcloudStorageBoxSubaccountAccessSettingsToSchemaStorageBoxSubaccountAccessSettings(source *StorageBoxSubaccountAccessSettings) schema.StorageBoxSubaccountAccessSettings {
 	var schemaStorageBoxSubaccountAccessSettings schema.StorageBoxSubaccountAccessSettings

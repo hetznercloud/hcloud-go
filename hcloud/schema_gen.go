@@ -62,7 +62,6 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend int64FromFloatingIP
 // goverter:extend storageBoxFromInt64
 // goverter:extend int64FromStorageBox
-// goverter:extend int64FromStorageBoxSnapshot
 // goverter:extend mapFromFloatingIPDNSPtrSchema
 // goverter:extend floatingIPDNSPtrSchemaFromMap
 // goverter:extend mapFromPrimaryIPDNSPtrSchema
@@ -408,7 +407,6 @@ type converter interface {
 	SchemaFromStorageBoxChangeTypeOpts(StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest
 	SchemaFromStorageBoxResetPasswordOpts(StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest
 	SchemaFromStorageBoxUpdateAccessSettingsOpts(StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest
-	// goverter:map Snapshot SnapshotID
 	SchemaFromStorageBoxRollbackSnapshotOpts(StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest
 	// goverter:map DayOfWeek | mapStorageBoxWeekdayPtrToIntPtr
 	SchemaFromStorageBoxEnableSnapshotPlanOpts(StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest
@@ -640,13 +638,6 @@ func int64FromStorageBox(sb *StorageBox) int64 {
 		return 0
 	}
 	return sb.ID
-}
-
-func int64FromStorageBoxSnapshot(sbs *StorageBoxSnapshot) int64 {
-	if sbs == nil {
-		return 0
-	}
-	return sbs.ID
 }
 
 func firewallStatusFromSchemaServerFirewall(fw schema.ServerFirewall) *ServerFirewallStatus {
