@@ -391,59 +391,42 @@ type converter interface {
 	SchemaFromZoneRRSetAddRecordsOpts(ZoneRRSetAddRecordsOpts) schema.ZoneRRSetAddRecordsRequest
 	SchemaFromZoneRRSetRemoveRecordsOpts(ZoneRRSetRemoveRecordsOpts) schema.ZoneRRSetRemoveRecordsRequest
 
+	// StorageBoxType
 	// goverter:map Pricings Prices
 	SchemaFromStorageBoxType(*StorageBoxType) schema.StorageBoxType
-	// StorageBoxType conversions
 	// goverter:map Prices Pricings
 	StorageBoxTypeFromSchema(schema.StorageBoxType) *StorageBoxType
 
-	// StorageBox conversions
+	// StorageBox
 	StorageBoxFromSchema(schema.StorageBox) *StorageBox
-
 	// goverter:map DayOfWeek | mapStorageBoxIntPtrToWeekdayPtr
 	StorageBoxSnapshotPlanFromSchema(schema.StorageBoxSnapshotPlan) StorageBoxSnapshotPlan
-
 	SchemaFromStorageBox(*StorageBox) schema.StorageBox
-
 	SchemaFromStorageBoxCreateOpts(StorageBoxCreateOpts) schema.StorageBoxCreateRequest
-
 	SchemaFromStorageBoxUpdateOpts(StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest
-
-	StorageBoxSnapshotFromSchema(schema.StorageBoxSnapshot) *StorageBoxSnapshot
-
-	SchemaFromStorageBoxSnapshot(*StorageBoxSnapshot) schema.StorageBoxSnapshot
-
-	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
-
-	SchemaFromStorageBoxSnapshotUpdateOpts(StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest
-
 	SchemaFromStorageBoxChangeProtectionOpts(StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest
-
 	SchemaFromStorageBoxChangeTypeOpts(StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest
-
 	SchemaFromStorageBoxResetPasswordOpts(StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest
-
 	SchemaFromStorageBoxUpdateAccessSettingsOpts(StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest
-
 	// goverter:map Snapshot SnapshotID
 	SchemaFromStorageBoxRollbackSnapshotOpts(StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest
-
 	// goverter:map DayOfWeek | mapStorageBoxWeekdayPtrToIntPtr
 	SchemaFromStorageBoxEnableSnapshotPlanOpts(StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest
 
+	// StorageBoxSnapshot
+	StorageBoxSnapshotFromSchema(schema.StorageBoxSnapshot) *StorageBoxSnapshot
+	SchemaFromStorageBoxSnapshot(*StorageBoxSnapshot) schema.StorageBoxSnapshot
+	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
+	SchemaFromStorageBoxSnapshotUpdateOpts(StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest
+
+	// StorageBoxSubaccount
 	StorageBoxSubaccountFromSchema(schema.StorageBoxSubaccount) *StorageBoxSubaccount
-
 	SchemaFromStorageBoxSubaccount(*StorageBoxSubaccount) schema.StorageBoxSubaccount
-
 	SchemaFromStorageBoxSubaccountCreateOpts(StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest
-
 	SchemaFromStorageBoxSubaccountUpdateOpts(StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest
-
 	// goverter:ignoreMissing
 	StorageBoxSubaccountFromCreateResponse(schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount
-
 	SchemaFromStorageBoxSubaccountResetPasswordOpts(StorageBoxSubaccountResetPasswordOpts) schema.StorageBoxSubaccountResetPasswordRequest
-
 	SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(StorageBoxSubaccountAccessSettingsUpdateOpts) schema.StorageBoxSubaccountUpdateAccessSettingsRequest
 }
 
