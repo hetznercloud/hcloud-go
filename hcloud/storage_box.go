@@ -120,12 +120,16 @@ func (c *StorageBoxClient) Get(ctx context.Context, idOrName string) (*StorageBo
 type StorageBoxListOpts struct {
 	ListOpts
 	Name string
+	Sort []string
 }
 
 func (l StorageBoxListOpts) values() url.Values {
 	vals := l.ListOpts.Values()
 	if l.Name != "" {
 		vals.Add("name", l.Name)
+	}
+	for _, sort := range l.Sort {
+		vals.Add("sort", sort)
 	}
 	return vals
 }
