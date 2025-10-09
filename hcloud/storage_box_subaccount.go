@@ -32,6 +32,24 @@ type StorageBoxSubaccountAccessSettings struct {
 	WebDAVEnabled       bool
 }
 
+// GetSubaccount retrieves a Storage Box subaccount by its ID or username.
+func (c *StorageBoxClient) GetSubaccount(
+	ctx context.Context,
+	storageBox *StorageBox,
+	idOrUsername string,
+) (*StorageBoxSubaccount, *Response, error) {
+	return getByIDOrName(
+		ctx,
+		func(ctx context.Context, id int64) (*StorageBoxSubaccount, *Response, error) {
+			return c.GetSubaccountByID(ctx, storageBox, id)
+		},
+		func(ctx context.Context, username string) (*StorageBoxSubaccount, *Response, error) {
+			return c.GetSubaccountByUsername(ctx, storageBox, username)
+		},
+		idOrUsername,
+	)
+}
+
 // GetSubaccountByID retrieves a Storage Box subaccount by its ID.
 func (c *StorageBoxClient) GetSubaccountByID(
 	ctx context.Context,
@@ -54,6 +72,19 @@ func (c *StorageBoxClient) GetSubaccountByID(
 	subaccount := StorageBoxSubaccountFromSchema(respBody.Subaccount)
 
 	return subaccount, resp, nil
+}
+
+// GetSubaccountByUsername retrieves a Storage Box subaccount by its username.
+func (c *StorageBoxClient) GetSubaccountByUsername(
+	ctx context.Context,
+	storageBox *StorageBox,
+	username string,
+) (*StorageBoxSubaccount, *Response, error) {
+	return firstByName(username, func() ([]*StorageBoxSubaccount, *Response, error) {
+		return c.ListSubaccounts(ctx, storageBox, StorageBoxSubaccountListOpts{
+			Username: username,
+		})
+	})
 }
 
 // StorageBoxSubaccountListOpts represents the options for listing Storage Box subaccounts.

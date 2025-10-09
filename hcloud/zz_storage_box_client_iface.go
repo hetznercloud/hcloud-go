@@ -66,8 +66,12 @@ type IStorageBoxClient interface {
 	UpdateSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot, opts StorageBoxSnapshotUpdateOpts) (*StorageBoxSnapshot, *Response, error)
 	// DeleteSnapshot deletes the given snapshot of a Storage Box.
 	DeleteSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot) (*Action, *Response, error)
+	// GetSubaccount retrieves a Storage Box subaccount by its ID or username.
+	GetSubaccount(ctx context.Context, storageBox *StorageBox, idOrUsername string) (*StorageBoxSubaccount, *Response, error)
 	// GetSubaccountByID retrieves a Storage Box subaccount by its ID.
 	GetSubaccountByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSubaccount, *Response, error)
+	// GetSubaccountByUsername retrieves a Storage Box subaccount by its username.
+	GetSubaccountByUsername(ctx context.Context, storageBox *StorageBox, username string) (*StorageBoxSubaccount, *Response, error)
 	// ListSubaccounts lists all subaccounts of a Storage Box.
 	ListSubaccounts(ctx context.Context, storageBox *StorageBox, opts StorageBoxSubaccountListOpts) ([]*StorageBoxSubaccount, *Response, error)
 	// AllSubaccountsWithOpts retrieves all subaccounts of a Storage Box with the given options.

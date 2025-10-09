@@ -89,6 +89,34 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		assert.Nil(t, subaccount)
 		assert.Equal(t, 404, resp.StatusCode)
 	})
+
+	t.Run("GetSubaccount (ByUsername)", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_boxes/42/subaccounts?username=my-user",
+				Status: 200,
+				JSONRaw: `{
+					"subaccounts": [
+						{
+							"id": 42,
+							"username": "my-user",
+							"storage_box": 13
+						}
+					]
+				}`,
+			},
+		})
+
+		storageBox := &StorageBox{ID: 42}
+
+		subaccount, resp, err := client.StorageBox.GetSubaccountByUsername(ctx, storageBox, "my-user")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, subaccount)
+
+		assert.Equal(t, int64(42), subaccount.ID)
+		assert.Equal(t, int64(13), subaccount.StorageBox.ID)
+	})
 }
 
 func TestStorageBoxClientListSubaccounts(t *testing.T) {
