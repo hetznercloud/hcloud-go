@@ -400,7 +400,7 @@ func TestStorageBoxClientUpdate(t *testing.T) {
 
 	storageBox := &StorageBox{ID: 42}
 	opts := StorageBoxUpdateOpts{
-		Name:   "updated-storage-box",
+		Name:   Ptr("updated-storage-box"),
 		Labels: map[string]string{"env": "prod"},
 	}
 

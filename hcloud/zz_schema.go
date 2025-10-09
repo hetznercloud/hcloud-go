@@ -1290,7 +1290,7 @@ func (c *converterImpl) SchemaFromStorageBoxUpdateAccessSettingsOpts(source Stor
 }
 func (c *converterImpl) SchemaFromStorageBoxUpdateOpts(source StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest {
 	var schemaStorageBoxUpdateRequest schema.StorageBoxUpdateRequest
-	schemaStorageBoxUpdateRequest.Name = mapEmptyStringToNil(source.Name)
+	schemaStorageBoxUpdateRequest.Name = source.Name
 	schemaStorageBoxUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	return schemaStorageBoxUpdateRequest
 }
