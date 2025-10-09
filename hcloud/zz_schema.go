@@ -1141,7 +1141,7 @@ func (c *converterImpl) SchemaFromStorageBox(source *StorageBox) schema.StorageB
 		schemaStorageBox.AccessSettings = c.hcloudStorageBoxAccessSettingsToSchemaStorageBoxAccessSettings((*source).AccessSettings)
 		schemaStorageBox.Server = (*source).Server
 		schemaStorageBox.System = (*source).System
-		schemaStorageBox.Stats = c.pHcloudStorageBoxStatsToPSchemaStorageBoxStats((*source).Stats)
+		schemaStorageBox.Stats = c.hcloudStorageBoxStatsToSchemaStorageBoxStats((*source).Stats)
 		schemaStorageBox.Labels = (*source).Labels
 		schemaStorageBox.Protection = c.hcloudStorageBoxProtectionToSchemaStorageBoxProtection((*source).Protection)
 		schemaStorageBox.SnapshotPlan = c.pHcloudStorageBoxSnapshotPlanToPSchemaStorageBoxSnapshotPlan((*source).SnapshotPlan)
@@ -1621,7 +1621,7 @@ func (c *converterImpl) StorageBoxFromSchema(source schema.StorageBox) *StorageB
 	hcloudStorageBox.AccessSettings = c.schemaStorageBoxAccessSettingsToHcloudStorageBoxAccessSettings(source.AccessSettings)
 	hcloudStorageBox.Server = source.Server
 	hcloudStorageBox.System = source.System
-	hcloudStorageBox.Stats = c.pSchemaStorageBoxStatsToPHcloudStorageBoxStats(source.Stats)
+	hcloudStorageBox.Stats = c.schemaStorageBoxStatsToHcloudStorageBoxStats(source.Stats)
 	hcloudStorageBox.Labels = source.Labels
 	hcloudStorageBox.Protection = c.schemaStorageBoxProtectionToHcloudStorageBoxProtection(source.Protection)
 	hcloudStorageBox.SnapshotPlan = c.pSchemaStorageBoxSnapshotPlanToPHcloudStorageBoxSnapshotPlan(source.SnapshotPlan)
@@ -1946,6 +1946,13 @@ func (c *converterImpl) hcloudStorageBoxProtectionToSchemaStorageBoxProtection(s
 	var schemaStorageBoxProtection schema.StorageBoxProtection
 	schemaStorageBoxProtection.Delete = source.Delete
 	return schemaStorageBoxProtection
+}
+func (c *converterImpl) hcloudStorageBoxStatsToSchemaStorageBoxStats(source StorageBoxStats) schema.StorageBoxStats {
+	var schemaStorageBoxStats schema.StorageBoxStats
+	schemaStorageBoxStats.Size = source.Size
+	schemaStorageBoxStats.SizeData = source.SizeData
+	schemaStorageBoxStats.SizeSnapshots = source.SizeSnapshots
+	return schemaStorageBoxStats
 }
 func (c *converterImpl) hcloudStorageBoxTypeLocationPricingToSchemaStorageBoxTypePrice(source StorageBoxTypeLocationPricing) schema.StorageBoxTypePrice {
 	var schemaStorageBoxTypePrice schema.StorageBoxTypePrice
@@ -2448,17 +2455,6 @@ func (c *converterImpl) pHcloudStorageBoxSnapshotStatsToSchemaStorageBoxSnapshot
 	}
 	return schemaStorageBoxSnapshotStats
 }
-func (c *converterImpl) pHcloudStorageBoxStatsToPSchemaStorageBoxStats(source *StorageBoxStats) *schema.StorageBoxStats {
-	var pSchemaStorageBoxStats *schema.StorageBoxStats
-	if source != nil {
-		var schemaStorageBoxStats schema.StorageBoxStats
-		schemaStorageBoxStats.Size = (*source).Size
-		schemaStorageBoxStats.SizeData = (*source).SizeData
-		schemaStorageBoxStats.SizeSnapshots = (*source).SizeSnapshots
-		pSchemaStorageBoxStats = &schemaStorageBoxStats
-	}
-	return pSchemaStorageBoxStats
-}
 func (c *converterImpl) pHcloudStorageBoxSubaccountAccessSettingsToSchemaStorageBoxSubaccountAccessSettings(source *StorageBoxSubaccountAccessSettings) schema.StorageBoxSubaccountAccessSettings {
 	var schemaStorageBoxSubaccountAccessSettings schema.StorageBoxSubaccountAccessSettings
 	if source != nil {
@@ -2672,17 +2668,6 @@ func (c *converterImpl) pSchemaStorageBoxSnapshotPlanToPHcloudStorageBoxSnapshot
 		pHcloudStorageBoxSnapshotPlan = &hcloudStorageBoxSnapshotPlan
 	}
 	return pHcloudStorageBoxSnapshotPlan
-}
-func (c *converterImpl) pSchemaStorageBoxStatsToPHcloudStorageBoxStats(source *schema.StorageBoxStats) *StorageBoxStats {
-	var pHcloudStorageBoxStats *StorageBoxStats
-	if source != nil {
-		var hcloudStorageBoxStats StorageBoxStats
-		hcloudStorageBoxStats.Size = (*source).Size
-		hcloudStorageBoxStats.SizeData = (*source).SizeData
-		hcloudStorageBoxStats.SizeSnapshots = (*source).SizeSnapshots
-		pHcloudStorageBoxStats = &hcloudStorageBoxStats
-	}
-	return pHcloudStorageBoxStats
 }
 func (c *converterImpl) pTimeTimeToTimeTime(source *time.Time) time.Time {
 	var timeTime time.Time
@@ -2981,6 +2966,13 @@ func (c *converterImpl) schemaStorageBoxSnapshotStatsToPHcloudStorageBoxSnapshot
 	hcloudStorageBoxSnapshotStats.Size = source.Size
 	hcloudStorageBoxSnapshotStats.SizeFilesystem = source.SizeFilesystem
 	return &hcloudStorageBoxSnapshotStats
+}
+func (c *converterImpl) schemaStorageBoxStatsToHcloudStorageBoxStats(source schema.StorageBoxStats) StorageBoxStats {
+	var hcloudStorageBoxStats StorageBoxStats
+	hcloudStorageBoxStats.Size = source.Size
+	hcloudStorageBoxStats.SizeData = source.SizeData
+	hcloudStorageBoxStats.SizeSnapshots = source.SizeSnapshots
+	return hcloudStorageBoxStats
 }
 func (c *converterImpl) schemaStorageBoxSubaccountAccessSettingsToPHcloudStorageBoxSubaccountAccessSettings(source schema.StorageBoxSubaccountAccessSettings) *StorageBoxSubaccountAccessSettings {
 	var hcloudStorageBoxSubaccountAccessSettings StorageBoxSubaccountAccessSettings

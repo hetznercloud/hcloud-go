@@ -13,7 +13,7 @@ type StorageBox struct {
 	AccessSettings StorageBoxAccessSettings `json:"access_settings"`
 	Server         *string                  `json:"server"`
 	System         *string                  `json:"system"`
-	Stats          *StorageBoxStats         `json:"stats"`
+	Stats          StorageBoxStats          `json:"stats"`
 	Labels         map[string]string        `json:"labels"`
 	Protection     StorageBoxProtection     `json:"protection"`
 	SnapshotPlan   *StorageBoxSnapshotPlan  `json:"snapshot_plan"`

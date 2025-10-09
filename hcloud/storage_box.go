@@ -21,7 +21,7 @@ type StorageBox struct {
 	AccessSettings StorageBoxAccessSettings
 	Server         *string
 	System         *string
-	Stats          *StorageBoxStats
+	Stats          StorageBoxStats
 	Labels         map[string]string
 	Protection     StorageBoxProtection
 	SnapshotPlan   *StorageBoxSnapshotPlan
