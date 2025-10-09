@@ -59,12 +59,20 @@ func (c *StorageBoxClient) GetSubaccountByID(
 // StorageBoxSubaccountListOpts represents the options for listing Storage Box subaccounts.
 type StorageBoxSubaccountListOpts struct {
 	LabelSelector string
+	Username      string
+	Sort          []string
 }
 
 func (o StorageBoxSubaccountListOpts) values() url.Values {
 	vals := url.Values{}
-	if o.LabelSelector != "" {
+	if o.Username != "" {
+		vals.Add("username", o.Username)
+	}
+	if len(o.LabelSelector) > 0 {
 		vals.Add("label_selector", o.LabelSelector)
+	}
+	for _, sort := range o.Sort {
+		vals.Add("sort", sort)
 	}
 	return vals
 }
