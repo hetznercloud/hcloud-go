@@ -10,7 +10,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
-// StorageBoxSubaccount represents a subaccount of a Storage Box.
+// StorageBoxSubaccount represents a subaccount of a [StorageBox].
 type StorageBoxSubaccount struct {
 	ID             int64
 	Username       string
@@ -23,7 +23,7 @@ type StorageBoxSubaccount struct {
 	StorageBox     *StorageBox
 }
 
-// StorageBoxSubaccountAccessSettings represents the access settings of a Storage Box subaccount.
+// StorageBoxSubaccountAccessSettings represents the access settings of a [StorageBoxSubaccount].
 type StorageBoxSubaccountAccessSettings struct {
 	ReachableExternally bool
 	Readonly            bool
@@ -32,7 +32,7 @@ type StorageBoxSubaccountAccessSettings struct {
 	WebDAVEnabled       bool
 }
 
-// GetSubaccount retrieves a Storage Box subaccount by its ID or username.
+// GetSubaccount retrieves a [StorageBoxSubaccount] by its ID or username.
 func (c *StorageBoxClient) GetSubaccount(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -50,7 +50,7 @@ func (c *StorageBoxClient) GetSubaccount(
 	)
 }
 
-// GetSubaccountByID retrieves a Storage Box subaccount by its ID.
+// GetSubaccountByID retrieves a [StorageBoxSubaccount] by its ID.
 func (c *StorageBoxClient) GetSubaccountByID(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -74,7 +74,7 @@ func (c *StorageBoxClient) GetSubaccountByID(
 	return subaccount, resp, nil
 }
 
-// GetSubaccountByUsername retrieves a Storage Box subaccount by its username.
+// GetSubaccountByUsername retrieves a [StorageBoxSubaccount] by its username.
 func (c *StorageBoxClient) GetSubaccountByUsername(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -87,7 +87,7 @@ func (c *StorageBoxClient) GetSubaccountByUsername(
 	})
 }
 
-// StorageBoxSubaccountListOpts represents the options for listing Storage Box subaccounts.
+// StorageBoxSubaccountListOpts represents the options for listing [StorageBoxSubaccount].
 type StorageBoxSubaccountListOpts struct {
 	LabelSelector string
 	Username      string
@@ -108,7 +108,7 @@ func (o StorageBoxSubaccountListOpts) values() url.Values {
 	return vals
 }
 
-// ListSubaccounts lists all subaccounts of a Storage Box.
+// ListSubaccounts lists all [StorageBoxSubaccount] of a [StorageBox].
 func (c *StorageBoxClient) ListSubaccounts(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -128,7 +128,7 @@ func (c *StorageBoxClient) ListSubaccounts(
 	return allFromSchemaFunc(respBody.Subaccounts, StorageBoxSubaccountFromSchema), resp, nil
 }
 
-// AllSubaccountsWithOpts retrieves all subaccounts of a Storage Box with the given options.
+// AllSubaccountsWithOpts retrieves all [StorageBoxSubaccount] of a [StorageBox] with the given options.
 func (c *StorageBoxClient) AllSubaccountsWithOpts(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -138,7 +138,7 @@ func (c *StorageBoxClient) AllSubaccountsWithOpts(
 	return subaccounts, err
 }
 
-// AllSubaccounts retrieves all subaccounts of a Storage Box.
+// AllSubaccounts retrieves all [StorageBoxSubaccount] of a [StorageBox].
 func (c *StorageBoxClient) AllSubaccounts(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -148,7 +148,7 @@ func (c *StorageBoxClient) AllSubaccounts(
 	return subaccounts, err
 }
 
-// StorageBoxSubaccountCreateOpts represents the options for creating a Storage Box subaccount.
+// StorageBoxSubaccountCreateOpts represents the options for creating a [StorageBoxSubaccount].
 type StorageBoxSubaccountCreateOpts struct {
 	Password       string
 	HomeDirectory  *string
@@ -157,7 +157,7 @@ type StorageBoxSubaccountCreateOpts struct {
 	Labels         map[string]string
 }
 
-// StorageBoxSubaccountAccessSettingsOpts represents the options for access settings of a Storage Box subaccount.
+// StorageBoxSubaccountAccessSettingsOpts represents the options for [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
 type StorageBoxSubaccountCreateOptsAccessSettings struct {
 	ReachableExternally *bool
 	Readonly            *bool
@@ -166,13 +166,13 @@ type StorageBoxSubaccountCreateOptsAccessSettings struct {
 	WebDAVEnabled       *bool
 }
 
-// StorageBoxSubaccountCreateResult represents the result of creating a Storage Box subaccount.
+// StorageBoxSubaccountCreateResult represents the result of creating a [StorageBoxSubaccount].
 type StorageBoxSubaccountCreateResult struct {
 	Subaccount *StorageBoxSubaccount
 	Action     *Action
 }
 
-// CreateSubaccount creates a new subaccount for a Storage Box.
+// CreateSubaccount creates a new [StorageBoxSubaccount] for a [StorageBox].
 func (c *StorageBoxClient) CreateSubaccount(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -197,13 +197,13 @@ func (c *StorageBoxClient) CreateSubaccount(
 	return result, resp, nil
 }
 
-// StorageBoxSubaccountUpdateOpts represents the options for updating a Storage Box subaccount.
+// StorageBoxSubaccountUpdateOpts represents the options for updating a [StorageBoxSubaccount].
 type StorageBoxSubaccountUpdateOpts struct {
 	Description *string
 	Labels      map[string]string
 }
 
-// UpdateSubaccount updates a subaccount of a Storage Box.
+// UpdateSubaccount updates a [StorageBoxSubaccount] of a [StorageBox].
 func (c *StorageBoxClient) UpdateSubaccount(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,
@@ -225,7 +225,7 @@ func (c *StorageBoxClient) UpdateSubaccount(
 	return updatedSubaccount, resp, nil
 }
 
-// DeleteSubaccount deletes a subaccount from a Storage Box.
+// DeleteSubaccount deletes a [StorageBoxSubaccount] from a [StorageBox].
 func (c *StorageBoxClient) DeleteSubaccount(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,
@@ -245,12 +245,12 @@ func (c *StorageBoxClient) DeleteSubaccount(
 	return action, resp, nil
 }
 
-// StorageBoxSubaccountResetPasswordOpts represents the options for resetting a Storage Box subaccount's password.
+// StorageBoxSubaccountResetPasswordOpts represents the options for resetting a [StorageBoxSubaccount]'s password.
 type StorageBoxSubaccountResetPasswordOpts struct {
 	Password string
 }
 
-// ResetSubaccountPassword resets the password of a Storage Box subaccount.
+// ResetSubaccountPassword resets the password of a [StorageBoxSubaccount].
 func (c *StorageBoxClient) ResetSubaccountPassword(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,
@@ -270,7 +270,7 @@ func (c *StorageBoxClient) ResetSubaccountPassword(
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
-// StorageBoxSubaccountAccessSettingsUpdateOpts represents the options for updating access settings of a Storage Box subaccount.
+// StorageBoxSubaccountAccessSettingsUpdateOpts represents the options for updating [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
 type StorageBoxSubaccountAccessSettingsUpdateOpts struct {
 	ReachableExternally *bool
 	Readonly            *bool
@@ -279,7 +279,7 @@ type StorageBoxSubaccountAccessSettingsUpdateOpts struct {
 	WebDAVEnabled       *bool
 }
 
-// UpdateSubaccountAccessSettings updates the access settings of a Storage Box subaccount.
+// UpdateSubaccountAccessSettings updates the [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
 func (c *StorageBoxClient) UpdateSubaccountAccessSettings(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,
@@ -299,12 +299,12 @@ func (c *StorageBoxClient) UpdateSubaccountAccessSettings(
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
-// StorageBoxSubaccountChangeHomeDirectoryOpts represents the options for changing the home directory of a Storage Box subaccount.
+// StorageBoxSubaccountChangeHomeDirectoryOpts represents the options for changing the home directory of a [StorageBoxSubaccount].
 type StorageBoxSubaccountChangeHomeDirectoryOpts struct {
 	HomeDirectory *string
 }
 
-// UpdateSubaccountAccessSettings changes the home directory of a Storage Box subaccount.
+// UpdateSubaccountAccessSettings changes the home directory of a [StorageBoxSubaccount].
 func (c *StorageBoxClient) ChangeSubaccountHomeDirectory(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,

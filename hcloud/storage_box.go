@@ -10,7 +10,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
-// StorageBox represents a storage box in Hetzner.
+// StorageBox represents a Storage Box in Hetzner.
 type StorageBox struct {
 	ID             int64
 	Username       *string
@@ -28,7 +28,7 @@ type StorageBox struct {
 	Created        time.Time
 }
 
-// StorageBoxAccessSettings represents the access settings of a storage box.
+// StorageBoxAccessSettings represents the access settings of a [StorageBox].
 type StorageBoxAccessSettings struct {
 	ReachableExternally bool
 	SambaEnabled        bool
@@ -37,19 +37,19 @@ type StorageBoxAccessSettings struct {
 	ZFSEnabled          bool
 }
 
-// StorageBoxStats represents the disk usage statistics of a storage box.
+// StorageBoxStats represents the disk usage statistics of a [StorageBox].
 type StorageBoxStats struct {
 	Size          uint64
 	SizeData      uint64
 	SizeSnapshots uint64
 }
 
-// StorageBoxProtection represents the protection level of a storage box.
+// StorageBoxProtection represents the protection level of a [StorageBox].
 type StorageBoxProtection struct {
 	Delete bool
 }
 
-// StorageBoxSnapshotPlan represents the snapshot plan of a storage box.
+// StorageBoxSnapshotPlan represents the snapshot plan of a [StorageBox].
 type StorageBoxSnapshotPlan struct {
 	MaxSnapshots int
 	Minute       *int
@@ -65,27 +65,27 @@ type StorageBoxSnapshotPlan struct {
 	DayOfWeek *time.Weekday
 }
 
-// StorageBoxStatus specifies a storage box's status.
+// StorageBoxStatus specifies a [StorageBox]'s status.
 type StorageBoxStatus string
 
 const (
-	// StorageBoxStatusActive is the status when a storage box is active.
+	// StorageBoxStatusActive is the status when a [StorageBox] is active.
 	StorageBoxStatusActive StorageBoxStatus = "active"
 
-	// StorageBoxStatusInitializing is the status when a storage box is initializing.
+	// StorageBoxStatusInitializing is the status when a [StorageBox] is initializing.
 	StorageBoxStatusInitializing StorageBoxStatus = "initializing"
 
-	// StorageBoxStatusLocked is the status when a storage box is locked.
+	// StorageBoxStatusLocked is the status when a [StorageBox] is locked.
 	StorageBoxStatusLocked StorageBoxStatus = "locked"
 )
 
-// StorageBoxClient is a client for the storage box API.
+// StorageBoxClient is a client for the Storage Box API.
 type StorageBoxClient struct {
 	client *Client
 	Action *ResourceActionClient
 }
 
-// GetByID retrieves a storage box by its ID. If the storage box does not exist, nil is returned.
+// GetByID retrieves a [StorageBox] by its ID. If the [StorageBox] does not exist, nil is returned.
 func (c *StorageBoxClient) GetByID(ctx context.Context, id int64) (*StorageBox, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -103,20 +103,20 @@ func (c *StorageBoxClient) GetByID(ctx context.Context, id int64) (*StorageBox, 
 	return StorageBoxFromSchema(respBody.StorageBox), resp, nil
 }
 
-// GetByName retrieves a storage box by its name. If the storage box does not exist, nil is returned.
+// GetByName retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
 func (c *StorageBoxClient) GetByName(ctx context.Context, name string) (*StorageBox, *Response, error) {
 	return firstByName(name, func() ([]*StorageBox, *Response, error) {
 		return c.List(ctx, StorageBoxListOpts{Name: name})
 	})
 }
 
-// Get retrieves a storage box by its ID if the input can be parsed as an integer, otherwise it
-// retrieves a storage box by its name. If the storage box does not exist, nil is returned.
+// Get retrieves a [StorageBox] by its ID if the input can be parsed as an integer, otherwise it
+// retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
 func (c *StorageBoxClient) Get(ctx context.Context, idOrName string) (*StorageBox, *Response, error) {
 	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
 
-// StorageBoxListOpts specifies options for listing storage boxes.
+// StorageBoxListOpts specifies options for listing [StorageBox].
 type StorageBoxListOpts struct {
 	ListOpts
 	Name string
@@ -134,7 +134,7 @@ func (l StorageBoxListOpts) values() url.Values {
 	return vals
 }
 
-// List returns a list of storage boxes for a specific page.
+// List returns a list of [StorageBox] for a specific page.
 //
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
@@ -152,12 +152,12 @@ func (c *StorageBoxClient) List(ctx context.Context, opts StorageBoxListOpts) ([
 	return allFromSchemaFunc(respBody.StorageBoxes, StorageBoxFromSchema), resp, nil
 }
 
-// All returns all storage boxes.
+// All returns all [StorageBox].
 func (c *StorageBoxClient) All(ctx context.Context) ([]*StorageBox, error) {
 	return c.AllWithOpts(ctx, StorageBoxListOpts{ListOpts: ListOpts{PerPage: 50}})
 }
 
-// AllWithOpts returns all storage boxes with the given options.
+// AllWithOpts returns all [StorageBox] with the given options.
 func (c *StorageBoxClient) AllWithOpts(ctx context.Context, opts StorageBoxListOpts) ([]*StorageBox, error) {
 	return iterPages(func(page int) ([]*StorageBox, *Response, error) {
 		opts.Page = page
@@ -165,7 +165,7 @@ func (c *StorageBoxClient) AllWithOpts(ctx context.Context, opts StorageBoxListO
 	})
 }
 
-// StorageBoxCreateOpts specifies parameters for creating a storage box.
+// StorageBoxCreateOpts specifies parameters for creating a [StorageBox].
 type StorageBoxCreateOpts struct {
 	Name           string
 	StorageBoxType *StorageBoxType
@@ -180,7 +180,7 @@ type StorageBoxCreateOpts struct {
 	AccessSettings *StorageBoxCreateOptsAccessSettings
 }
 
-// StorageBoxCreateOptsAccessSettings specifies access settings for creating a storage box.
+// StorageBoxCreateOptsAccessSettings specifies [StorageBoxAccessSettings] for creating a [StorageBox].
 type StorageBoxCreateOptsAccessSettings struct {
 	ReachableExternally *bool
 	SambaEnabled        *bool
@@ -189,13 +189,13 @@ type StorageBoxCreateOptsAccessSettings struct {
 	ZFSEnabled          *bool
 }
 
-// StorageBoxCreateResult is the result of a create storage box operation.
+// StorageBoxCreateResult is the result of a create [StorageBox] operation.
 type StorageBoxCreateResult struct {
 	StorageBox *StorageBox
 	Action     *Action
 }
 
-// Create creates a new storage box with the given options.
+// Create creates a new [StorageBox] with the given options.
 func (c *StorageBoxClient) Create(ctx context.Context, opts StorageBoxCreateOpts) (StorageBoxCreateResult, *Response, error) {
 	const opPath = "/storage_boxes"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -215,13 +215,13 @@ func (c *StorageBoxClient) Create(ctx context.Context, opts StorageBoxCreateOpts
 	return result, resp, nil
 }
 
-// StorageBoxUpdateOpts specifies options for updating a storage box.
+// StorageBoxUpdateOpts specifies options for updating a [StorageBox].
 type StorageBoxUpdateOpts struct {
 	Name   *string
 	Labels map[string]string
 }
 
-// Update updates a storage box with the given options.
+// Update updates a [StorageBox] with the given options.
 func (c *StorageBoxClient) Update(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateOpts) (*StorageBox, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -237,7 +237,7 @@ func (c *StorageBoxClient) Update(ctx context.Context, storageBox *StorageBox, o
 	return StorageBoxFromSchema(respBody.StorageBox), resp, nil
 }
 
-// Delete deletes a storage box.
+// Delete deletes a [StorageBox].
 func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -267,7 +267,7 @@ func (o StorageBoxFoldersOpts) values() url.Values {
 	return vals
 }
 
-// Folders lists folders in a storage box.
+// Folders lists folders in a [StorageBox].
 func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error) {
 	const opPath = "/storage_boxes/%d/folders"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -290,12 +290,12 @@ func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, 
 	return result, resp, nil
 }
 
-// StorageBoxChangeProtectionOpts specifies options for changing the protection level of a storage box.
+// StorageBoxChangeProtectionOpts specifies options for changing the protection level of a [StorageBox].
 type StorageBoxChangeProtectionOpts struct {
 	Delete bool
 }
 
-// ChangeProtection changes the protection level of a storage box.
+// ChangeProtection changes the protection level of a [StorageBox].
 func (c *StorageBoxClient) ChangeProtection(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeProtectionOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/change_protection"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -313,12 +313,12 @@ func (c *StorageBoxClient) ChangeProtection(ctx context.Context, storageBox *Sto
 	return action, resp, nil
 }
 
-// StorageBoxChangeTypeOpts specifies options for changing the type of a storage box.
+// StorageBoxChangeTypeOpts specifies options for changing the type of a [StorageBox].
 type StorageBoxChangeTypeOpts struct {
 	StorageBoxType *StorageBoxType
 }
 
-// ChangeType changes the type of a storage box.
+// ChangeType changes the type of a [StorageBox].
 func (c *StorageBoxClient) ChangeType(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeTypeOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/change_type"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -336,12 +336,12 @@ func (c *StorageBoxClient) ChangeType(ctx context.Context, storageBox *StorageBo
 	return action, resp, nil
 }
 
-// StorageBoxResetPasswordOpts specifies options for resetting the password of a storage box.
+// StorageBoxResetPasswordOpts specifies options for resetting the password of a [StorageBox].
 type StorageBoxResetPasswordOpts struct {
 	Password string
 }
 
-// ResetPassword resets the password of a storage box.
+// ResetPassword resets the password of a [StorageBox].
 func (c *StorageBoxClient) ResetPassword(ctx context.Context, storageBox *StorageBox, opts StorageBoxResetPasswordOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/reset_password"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -359,7 +359,7 @@ func (c *StorageBoxClient) ResetPassword(ctx context.Context, storageBox *Storag
 	return action, resp, nil
 }
 
-// StorageBoxUpdateAccessSettingsOpts specifies options for updating the access settings of a storage box.
+// StorageBoxUpdateAccessSettingsOpts specifies options for updating the [StorageBoxAccessSettings] of a [StorageBox].
 type StorageBoxUpdateAccessSettingsOpts struct {
 	SambaEnabled        *bool
 	SSHEnabled          *bool
@@ -368,7 +368,7 @@ type StorageBoxUpdateAccessSettingsOpts struct {
 	ReachableExternally *bool
 }
 
-// UpdateAccessSettings updates the access settings of a storage box.
+// UpdateAccessSettings updates the [StorageBoxAccessSettings] of a [StorageBox].
 func (c *StorageBoxClient) UpdateAccessSettings(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateAccessSettingsOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/update_access_settings"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -386,12 +386,12 @@ func (c *StorageBoxClient) UpdateAccessSettings(ctx context.Context, storageBox 
 	return action, resp, nil
 }
 
-// StorageBoxRollbackSnapshotOpts specifies options for rolling back a storage box to a snapshot.
+// StorageBoxRollbackSnapshotOpts specifies options for rolling back a [StorageBox] to a [StorageBoxSnapshot].
 type StorageBoxRollbackSnapshotOpts struct {
 	Snapshot *StorageBoxSnapshot
 }
 
-// RollbackSnapshot rolls back a storage box to a snapshot.
+// RollbackSnapshot rolls back a [StorageBox] to a [StorageBoxSnapshot].
 func (c *StorageBoxClient) RollbackSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -411,7 +411,7 @@ func (c *StorageBoxClient) RollbackSnapshot(
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-// StorageBoxEnableSnapshotPlanOpts specifies options for enabling a snapshot plan for a storage box.
+// StorageBoxEnableSnapshotPlanOpts specifies options for enabling a [StorageBoxSnapshotPlan] for a [StorageBox].
 type StorageBoxEnableSnapshotPlanOpts struct {
 	MaxSnapshots int
 	Minute       *int // Null means every minute.
@@ -427,7 +427,7 @@ type StorageBoxEnableSnapshotPlanOpts struct {
 	DayOfWeek *time.Weekday
 }
 
-// EnableSnapshotPlan enables a snapshot plan for a storage box.
+// EnableSnapshotPlan enables a [StorageBoxSnapshotPlan] for a [StorageBox].
 func (c *StorageBoxClient) EnableSnapshotPlan(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -447,7 +447,7 @@ func (c *StorageBoxClient) EnableSnapshotPlan(
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-// DisableSnapshotPlan disables the snapshot plan for a storage box.
+// DisableSnapshotPlan disables the [StorageBoxSnapshotPlan] for a [StorageBox].
 func (c *StorageBoxClient) DisableSnapshotPlan(
 	ctx context.Context,
 	storageBox *StorageBox,
