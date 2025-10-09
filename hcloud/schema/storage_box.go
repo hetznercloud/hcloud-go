@@ -65,13 +65,13 @@ type StorageBoxListResponse struct {
 // StorageBoxCreateRequest defines the schema for the request to
 // create a storage box.
 type StorageBoxCreateRequest struct {
-	Name           string                                `json:"name"`
-	StorageBoxType IDOrName                              `json:"storage_box_type"`
-	Location       string                                `json:"location"`
-	Labels         *map[string]string                    `json:"labels,omitempty"`
-	Password       string                                `json:"password"`
-	SSHKeys        []string                              `json:"ssh_keys,omitempty"`
-	AccessSettings StorageBoxCreateRequestAccessSettings `json:"access_settings,omitempty"`
+	Name           string                                 `json:"name"`
+	StorageBoxType IDOrName                               `json:"storage_box_type"`
+	Location       string                                 `json:"location"`
+	Labels         *map[string]string                     `json:"labels,omitempty"`
+	Password       string                                 `json:"password"`
+	SSHKeys        []string                               `json:"ssh_keys,omitempty"`
+	AccessSettings *StorageBoxCreateRequestAccessSettings `json:"access_settings,omitempty"`
 }
 
 type StorageBoxCreateRequestAccessSettings struct {

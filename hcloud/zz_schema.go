@@ -1167,7 +1167,7 @@ func (c *converterImpl) SchemaFromStorageBoxCreateOpts(source StorageBoxCreateOp
 	schemaStorageBoxCreateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	schemaStorageBoxCreateRequest.Password = source.Password
 	schemaStorageBoxCreateRequest.SSHKeys = source.SSHKeys
-	schemaStorageBoxCreateRequest.AccessSettings = c.pHcloudStorageBoxCreateOptsAccessSettingsToSchemaStorageBoxCreateRequestAccessSettings(source.AccessSettings)
+	schemaStorageBoxCreateRequest.AccessSettings = c.pHcloudStorageBoxCreateOptsAccessSettingsToPSchemaStorageBoxCreateRequestAccessSettings(source.AccessSettings)
 	return schemaStorageBoxCreateRequest
 }
 func (c *converterImpl) SchemaFromStorageBoxEnableSnapshotPlanOpts(source StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest {
@@ -2420,16 +2420,18 @@ func (c *converterImpl) pHcloudServerToPSchemaImageCreatedFrom(source *Server) *
 	}
 	return pSchemaImageCreatedFrom
 }
-func (c *converterImpl) pHcloudStorageBoxCreateOptsAccessSettingsToSchemaStorageBoxCreateRequestAccessSettings(source *StorageBoxCreateOptsAccessSettings) schema.StorageBoxCreateRequestAccessSettings {
-	var schemaStorageBoxCreateRequestAccessSettings schema.StorageBoxCreateRequestAccessSettings
+func (c *converterImpl) pHcloudStorageBoxCreateOptsAccessSettingsToPSchemaStorageBoxCreateRequestAccessSettings(source *StorageBoxCreateOptsAccessSettings) *schema.StorageBoxCreateRequestAccessSettings {
+	var pSchemaStorageBoxCreateRequestAccessSettings *schema.StorageBoxCreateRequestAccessSettings
 	if source != nil {
+		var schemaStorageBoxCreateRequestAccessSettings schema.StorageBoxCreateRequestAccessSettings
 		schemaStorageBoxCreateRequestAccessSettings.ReachableExternally = (*source).ReachableExternally
 		schemaStorageBoxCreateRequestAccessSettings.SambaEnabled = (*source).SambaEnabled
 		schemaStorageBoxCreateRequestAccessSettings.SSHEnabled = (*source).SSHEnabled
 		schemaStorageBoxCreateRequestAccessSettings.WebDAVEnabled = (*source).WebDAVEnabled
 		schemaStorageBoxCreateRequestAccessSettings.ZFSEnabled = (*source).ZFSEnabled
+		pSchemaStorageBoxCreateRequestAccessSettings = &schemaStorageBoxCreateRequestAccessSettings
 	}
-	return schemaStorageBoxCreateRequestAccessSettings
+	return pSchemaStorageBoxCreateRequestAccessSettings
 }
 func (c *converterImpl) pHcloudStorageBoxSnapshotPlanToPSchemaStorageBoxSnapshotPlan(source *StorageBoxSnapshotPlan) *schema.StorageBoxSnapshotPlan {
 	var pSchemaStorageBoxSnapshotPlan *schema.StorageBoxSnapshotPlan
