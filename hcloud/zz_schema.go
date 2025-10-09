@@ -1163,7 +1163,7 @@ func (c *converterImpl) SchemaFromStorageBoxCreateOpts(source StorageBoxCreateOp
 	var schemaStorageBoxCreateRequest schema.StorageBoxCreateRequest
 	schemaStorageBoxCreateRequest.Name = source.Name
 	schemaStorageBoxCreateRequest.StorageBoxType = c.pHcloudStorageBoxTypeToSchemaIDOrName(source.StorageBoxType)
-	schemaStorageBoxCreateRequest.Location = c.pHcloudLocationToString(source.Location)
+	schemaStorageBoxCreateRequest.Location = c.pHcloudLocationToSchemaIDOrName(source.Location)
 	schemaStorageBoxCreateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	schemaStorageBoxCreateRequest.Password = source.Password
 	schemaStorageBoxCreateRequest.SSHKeys = source.SSHKeys
@@ -2358,6 +2358,14 @@ func (c *converterImpl) pHcloudLocationToPString(source *Location) *string {
 		pString = &xstring
 	}
 	return pString
+}
+func (c *converterImpl) pHcloudLocationToSchemaIDOrName(source *Location) schema.IDOrName {
+	var schemaIDOrName schema.IDOrName
+	if source != nil {
+		schemaIDOrName.ID = (*source).ID
+		schemaIDOrName.Name = (*source).Name
+	}
+	return schemaIDOrName
 }
 func (c *converterImpl) pHcloudLocationToString(source *Location) string {
 	var xstring string
