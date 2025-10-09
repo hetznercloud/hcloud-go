@@ -301,7 +301,7 @@ func (c *StorageBoxClient) UpdateSubaccountAccessSettings(
 
 // StorageBoxSubaccountChangeHomeDirectoryOpts represents the options for changing the home directory of a [StorageBoxSubaccount].
 type StorageBoxSubaccountChangeHomeDirectoryOpts struct {
-	HomeDirectory *string
+	HomeDirectory string
 }
 
 // UpdateSubaccountAccessSettings changes the home directory of a [StorageBoxSubaccount].

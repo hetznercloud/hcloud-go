@@ -490,7 +490,7 @@ func TestStorageBoxSubbacountChangeHomeDirectory(t *testing.T) {
 	}
 
 	opts := StorageBoxSubaccountChangeHomeDirectoryOpts{
-		HomeDirectory: Ptr("/foobar"),
+		HomeDirectory: "/foobar",
 	}
 	action, resp, err := client.StorageBox.ChangeSubaccountHomeDirectory(ctx, subaccount, opts)
 	require.NoError(t, err)

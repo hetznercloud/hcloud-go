@@ -96,5 +96,5 @@ type StorageBoxSubaccountUpdateAccessSettingsRequest struct {
 // StorageBoxSubaccountChangeHomeDirectoryRequest defines the schema of the request when changing
 // the home directory of a Storage Box subaccount.
 type StorageBoxSubaccountChangeHomeDirectoryRequest struct {
-	HomeDirectory *string `json:"home_directory,omitempty"`
+	HomeDirectory string `json:"home_directory"`
 }
