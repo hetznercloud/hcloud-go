@@ -1206,6 +1206,7 @@ func (c *converterImpl) SchemaFromStorageBoxSnapshot(source *StorageBoxSnapshot)
 func (c *converterImpl) SchemaFromStorageBoxSnapshotCreateOpts(source StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest {
 	var schemaStorageBoxSnapshotCreateRequest schema.StorageBoxSnapshotCreateRequest
 	schemaStorageBoxSnapshotCreateRequest.Description = source.Description
+	schemaStorageBoxSnapshotCreateRequest.Labels = source.Labels
 	return schemaStorageBoxSnapshotCreateRequest
 }
 func (c *converterImpl) SchemaFromStorageBoxSnapshotUpdateOpts(source StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest {

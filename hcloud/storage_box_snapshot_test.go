@@ -236,7 +236,7 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 
-					assert.JSONEq(t, `{ "description": "Test Snapshot" }`, string(body))
+					assert.JSONEq(t, `{ "description": "Test Snapshot", "labels": { "environment": "prod" } }`, string(body))
 				},
 				JSONRaw: `{
 				"snapshot": { "id": 14, "storage_box": 42 },
@@ -248,7 +248,8 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 		storageBox := &StorageBox{ID: 42}
 
 		opts := StorageBoxSnapshotCreateOpts{
-			Ptr("Test Snapshot"),
+			Description: Ptr("Test Snapshot"),
+			Labels:      map[string]string{"environment": "prod"},
 		}
 		result, _, err := client.StorageBox.CreateSnapshot(ctx, storageBox, opts)
 		require.NoError(t, err)
