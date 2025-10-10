@@ -91,7 +91,7 @@ type StorageBoxCreateResponse struct {
 
 // StorageBoxUpdateRequest defines the schema of the request to update a Storage Box.
 type StorageBoxUpdateRequest struct {
-	Name   *string            `json:"name,omitempty"`
+	Name   string             `json:"name,omitempty"`
 	Labels *map[string]string `json:"labels,omitempty"`
 }
 
