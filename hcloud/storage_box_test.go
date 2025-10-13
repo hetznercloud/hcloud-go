@@ -12,7 +12,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 )
 
-func TestStorageBoxClientGetByID(t *testing.T) {
+func TestStorageBoxClientGet(t *testing.T) {
 	t.Run("GetByID", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
@@ -99,6 +99,25 @@ func TestStorageBoxClientGetByID(t *testing.T) {
 		require.NoError(t, err)
 		assert.Nil(t, storageBox, "expected no storage box")
 	})
+
+	t.Run("GetByName", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_boxes?name=foobar",
+				Status: 200,
+				JSONRaw: `{
+					"storage_boxes": [{ "id": 1, "name": "foobar" }]
+				}`,
+			},
+		})
+
+		storageBox, _, err := client.StorageBox.GetByName(ctx, "foobar")
+		require.NoError(t, err)
+		require.NotNil(t, storageBox, "no storage box")
+		assert.Equal(t, int64(1), storageBox.ID, "unexpected storage box ID")
+	})
 }
 
 func TestStorageBoxClientList(t *testing.T) {
@@ -110,28 +129,8 @@ func TestStorageBoxClientList(t *testing.T) {
 			Status: 200,
 			JSONRaw: `{
 				"storage_boxes": [
-					{
-						"id": 1,
-						"name": "storage-box-1",
-						"status": "active",
-						"storage_box_type": {"id": 1, "name": "bx11"},
-						"location": {"id": 1, "name": "fsn1"},
-						"access_settings": {"reachable_externally": true, "samba_enabled": true, "ssh_enabled": true, "webdav_enabled": false, "zfs_enabled": false},
-						"protection": {"delete": false},
-						"labels": {},
-						"created": "2023-01-01T12:00:00+00:00"
-					},
-					{
-						"id": 2,
-						"name": "storage-box-2",
-						"status": "active",
-						"storage_box_type": {"id": 2, "name": "bx21"},
-						"location": {"id": 2, "name": "nbg1"},
-						"access_settings": {"reachable_externally": true, "samba_enabled": false, "ssh_enabled": true, "webdav_enabled": true, "zfs_enabled": false},
-						"protection": {"delete": true},
-						"labels": {},
-						"created": "2023-01-02T12:00:00+00:00"
-					}
+					{ "id": 1, "name": "storage-box-1" },
+					{ "id": 2, "name": "storage-box-2" }
 				]
 			}`,
 		},
@@ -152,96 +151,36 @@ func TestStorageBoxClientAll(t *testing.T) {
 
 	server.Expect([]mockutil.Request{
 		{
-			Method: "GET", Path: "/storage_boxes?page=1&per_page=50",
+			Method: "GET", Path: "/storage_boxes?page=1&per_page=2",
 			Status: 200,
 			JSONRaw: `{
 				"storage_boxes": [
-					{
-						"id": 1,
-						"name": "storage-box-1",
-						"status": "active",
-						"storage_box_type": {"id": 1, "name": "bx11"},
-						"location": {"id": 1, "name": "fsn1"},
-						"access_settings": {"reachable_externally": true, "samba_enabled": true, "ssh_enabled": true, "webdav_enabled": false, "zfs_enabled": false},
-						"protection": {"delete": false},
-						"labels": {},
-						"created": "2023-01-01T12:00:00+00:00"
-					},
-					{
-						"id": 2,
-						"name": "storage-box-2",
-						"status": "active",
-						"storage_box_type": {"id": 2, "name": "bx21"},
-						"location": {"id": 2, "name": "nbg1"},
-						"access_settings": {"reachable_externally": true, "samba_enabled": false, "ssh_enabled": true, "webdav_enabled": true, "zfs_enabled": false},
-						"protection": {"delete": true},
-						"labels": {},
-						"created": "2023-01-02T12:00:00+00:00"
-					}
+					{ "id": 1, "name": "storage-box-1" },
+					{ "id": 2, "name": "storage-box-2" }
 				],
 				"meta": {"pagination": {"page": 1, "last_page": 2, "per_page": 2, "next_page": 2, "previous_page": null, "total_entries": 3}}
 			}`,
 		},
 		{
-			Method: "GET", Path: "/storage_boxes?page=2&per_page=50",
+			Method: "GET", Path: "/storage_boxes?page=2&per_page=2",
 			Status: 200,
 			JSONRaw: `{
 				"storage_boxes": [
-					{
-						"id": 3,
-						"name": "storage-box-3",
-						"status": "active",
-						"storage_box_type": {"id": 3, "name": "bx31"},
-						"location": {"id": 3, "name": "hel1"},
-						"access_settings": {"reachable_externally": true, "samba_enabled": true, "ssh_enabled": true, "webdav_enabled": false, "zfs_enabled": true},
-						"protection": {"delete": false},
-						"labels": {},
-						"created": "2023-01-03T12:00:00+00:00"
-					}
+					{ "id": 3, "name": "storage-box-3" }
 				],
 				"meta": {"pagination": {"page": 2, "last_page": 2, "per_page": 2, "next_page": null, "previous_page": 1, "total_entries": 3}}
 			}`,
 		},
 	})
 
-	storageBoxes, err := client.StorageBox.All(ctx)
-	require.NoError(t, err, "StorageBox.All failed")
+	storageBoxes, err := client.StorageBox.AllWithOpts(ctx, StorageBoxListOpts{
+		ListOpts: ListOpts{PerPage: 2},
+	})
+	require.NoError(t, err, "fetching all storage boxes failed")
 	assert.Len(t, storageBoxes, 3, "expected 3 storage boxes")
 	assert.Equal(t, int64(1), storageBoxes[0].ID)
 	assert.Equal(t, int64(2), storageBoxes[1].ID)
 	assert.Equal(t, int64(3), storageBoxes[2].ID)
-}
-
-func TestStorageBoxClientGetByName(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
-	server.Expect([]mockutil.Request{
-		{
-			Method: "GET", Path: "/storage_boxes?name=my-storage-box",
-			Status: 200,
-			JSONRaw: `{
-				"storage_boxes": [
-					{
-						"id": 42,
-						"name": "my-storage-box",
-						"status": "active",
-						"storage_box_type": {"id": 1, "name": "bx11"},
-						"location": {"id": 1, "name": "fsn1"},
-						"access_settings": {"reachable_externally": true, "samba_enabled": true, "ssh_enabled": true, "webdav_enabled": false, "zfs_enabled": false},
-						"protection": {"delete": false},
-						"labels": {},
-						"created": "2023-01-01T12:00:00+00:00"
-					}
-				]
-			}`,
-		},
-	})
-
-	storageBox, _, err := client.StorageBox.GetByName(ctx, "my-storage-box")
-	require.NoError(t, err)
-	require.NotNil(t, storageBox, "no storage box")
-	assert.Equal(t, int64(42), storageBox.ID, "unexpected storage box ID")
-	assert.Equal(t, "my-storage-box", storageBox.Name, "unexpected storage box name")
 }
 
 func TestStorageBoxClientCreate(t *testing.T) {
@@ -268,79 +207,8 @@ func TestStorageBoxClientCreate(t *testing.T) {
 			},
 			Status: 201,
 			JSONRaw: `{
-				"action": {
-					"id": 1,
-					"command": "create_storage_box",
-					"status": "running",
-					"progress": 0,
-					"started": "2023-01-01T12:00:00+00:00",
-					"finished": null,
-					"error": null,
-					"resources": [
-						{"id": 42, "type": "storage_box"}
-					]
-				},
-				"storage_box": {
-					"id": 42,
-					"status": "initializing",
-					"name": "my-resource",
-					"storage_box_type": {
-						"id": 1,
-						"name": "bx20",
-						"description": "BX20",
-						"snapshot_limit": 10,
-						"automatic_snapshot_limit": 10,
-						"subaccounts_limit": 100,
-						"size": 1073741824,
-						"prices": [
-							{
-								"location": "fsn1",
-								"price_hourly": {
-									"gross": "0.0061",
-									"net": "0.0051"
-								},
-								"price_monthly": {
-									"gross": "3.8080",
-									"net": "3.2000"
-								},
-								"setup_fee": {
-									"gross": "0.0000",
-									"net": "0.0000"
-								}
-							}
-						]
-					},
-					"location": {
-						"id": 1,
-						"country": "DE",
-						"city": "Falkenstein",
-						"name": "fsn1",
-						"network_zone": "eu-central",
-						"latitude": 50.476119,
-						"longitude": 12.370071,
-						"description": "Falkenstein DC Park 1"
-					},
-					"access_settings": {
-						"reachable_externally": false,
-						"samba_enabled": false,
-						"ssh_enabled": false,
-						"webdav_enabled": false,
-						"zfs_enabled": false
-					},
-					"server": null,
-					"system": null,
-					"stats": null,
-					"labels": {
-						"environment": "prod",
-						"example.com/my": "label",
-						"just-a-key": ""
-					},
-					"protection": {
-						"delete": false
-					},
-					"snapshot_plan": null,
-					"created": "2016-01-30T23:50:00Z"
-				  }
+				"action": { "id": 1 },
+				"storage_box": { "id": 42, "name": "my-resource" }
 			}`,
 		},
 	})
@@ -364,7 +232,6 @@ func TestStorageBoxClientCreate(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, result.Action, "no action returned")
 	assert.Equal(t, int64(1), result.Action.ID, "unexpected action ID")
-	assert.Equal(t, "create_storage_box", result.Action.Command, "unexpected action command")
 }
 
 func TestStorageBoxClientUpdate(t *testing.T) {
@@ -383,17 +250,7 @@ func TestStorageBoxClientUpdate(t *testing.T) {
 			},
 			Status: 200,
 			JSONRaw: `{
-				"storage_box": {
-					"id": 42,
-					"name": "updated-storage-box",
-					"status": "active",
-					"storage_box_type": {"id": 1, "name": "bx11"},
-					"location": {"id": 1, "name": "fsn1"},
-					"access_settings": {"reachable_externally": true, "samba_enabled": true, "ssh_enabled": true, "webdav_enabled": false, "zfs_enabled": false},
-					"protection": {"delete": false},
-					"labels": {"env": "prod"},
-					"created": "2023-01-01T12:00:00+00:00"
-				}
+				"storage_box": { "id": 42, "name": "updated-storage-box" }
 			}`,
 		},
 	})
@@ -419,18 +276,7 @@ func TestStorageBoxClientDelete(t *testing.T) {
 			Method: "DELETE", Path: "/storage_boxes/42",
 			Status: 200,
 			JSONRaw: `{
-				"action": {
-					"id": 2,
-					"command": "delete_storage_box",
-					"status": "running",
-					"progress": 0,
-					"started": "2023-01-01T12:00:00+00:00",
-					"finished": null,
-					"error": null,
-					"resources": [
-						{"id": 42, "type": "storage_box"}
-					]
-				}
+				"action": { "id": 1 }
 			}`,
 		},
 	})
@@ -440,8 +286,7 @@ func TestStorageBoxClientDelete(t *testing.T) {
 	action, _, err := client.StorageBox.Delete(ctx, storageBox)
 	require.NoError(t, err)
 	require.NotNil(t, action, "no action returned")
-	assert.Equal(t, int64(2), action.ID, "unexpected action ID")
-	assert.Equal(t, "delete_storage_box", action.Command, "unexpected action command")
+	assert.Equal(t, int64(1), action.ID, "unexpected action ID")
 }
 
 func TestStorageBoxClientFolders(t *testing.T) {
@@ -492,6 +337,7 @@ func TestStorageBoxClientFolders(t *testing.T) {
 		require.NotNil(t, result.Folders, "no result returned")
 
 		assert.Len(t, result.Folders, 2, "unexpected number of folders")
+		assert.Equal(t, "subfoo", result.Folders[0], "unexpected first folder")
 	})
 }
 

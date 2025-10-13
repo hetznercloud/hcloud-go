@@ -13,9 +13,9 @@ import (
 )
 
 func TestStorageBoxClientGetSnapshot(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("GetSnapshot (ByID)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/snapshots/13",
@@ -65,22 +65,7 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 				Method: "GET", Path: "/storage_boxes/42/snapshots?name=my-resource",
 				Status: 200,
 				JSONRaw: `{
-				"snapshots": [{
-					"id": 42,
-					"name": "my-resource",
-					"stats": {
-				  		"size": 0,
-				  		"size_filesystem": 0
-						},
-					"is_automatic": false,
-					"labels": {
-						"environment": "prod",
-						"example.com/my": "label",
-						"just-a-key": ""
-					},
-					"created": "2016-01-30T23:55:00+00:00",
-					"storage_box": 42
-				}]
+				"snapshots": [{ "id": 42, "name": "my-resource" }]
 			}`,
 			},
 		})
@@ -103,22 +88,7 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 				Method: "GET", Path: "/storage_boxes/42/snapshots?name=my-resource",
 				Status: 200,
 				JSONRaw: `{
-				"snapshots": [{
-					"id": 42,
-					"name": "my-resource",
-					"stats": {
-				  		"size": 0,
-				  		"size_filesystem": 0
-						},
-					"is_automatic": false,
-					"labels": {
-						"environment": "prod",
-						"example.com/my": "label",
-						"just-a-key": ""
-					},
-					"created": "2016-01-30T23:55:00+00:00",
-					"storage_box": 42
-				}]
+				"snapshots": [{ "id": 42, "name": "my-resource" }]
 			}`,
 			},
 		})
@@ -161,9 +131,8 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 }
 
 func TestStorageBoxClientListSnapshot(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("AllSnapshotsWithOpts", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
 			{
@@ -176,8 +145,7 @@ func TestStorageBoxClientListSnapshot(t *testing.T) {
 						"is_automatic": true,
 						"labels": {
 							"environment": "prod"
-						},
-						"storage_box": 42
+						}
 					}]
 				}`,
 			},
@@ -199,16 +167,14 @@ func TestStorageBoxClientListSnapshot(t *testing.T) {
 	})
 
 	t.Run("AllSnapshots", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/snapshots?",
 				Status: 200,
 				JSONRaw: `{
-					"snapshots": [{
-						"id": 42,
-						"name": "my-resource",
-						"storage_box": 42
-					}]
+					"snapshots": [{ "id": 42, "name": "my-resource" }]
 				}`,
 			},
 		})
@@ -225,9 +191,9 @@ func TestStorageBoxClientListSnapshot(t *testing.T) {
 }
 
 func TestStorageBoxClientCreateSnapshot(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("CreateSnapshot (With Description)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "POST", Path: "/storage_boxes/42/snapshots",
@@ -239,7 +205,7 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 					assert.JSONEq(t, `{ "description": "Test Snapshot", "labels": { "environment": "prod" } }`, string(body))
 				},
 				JSONRaw: `{
-				"snapshot": { "id": 14, "storage_box": 42 },
+				"snapshot": { "id": 14, "name": "my-resource" },
 				"action": { "id": 13 }
 			}`,
 			},
@@ -258,6 +224,8 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 	})
 
 	t.Run("CreateSnapshot (Without Description)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "POST", Path: "/storage_boxes/42/snapshots",
@@ -302,17 +270,9 @@ func TestStorageBoxClientUpdateSnapshot(t *testing.T) {
 				"snapshot": {
 					"id": 42,
 					"name": "my-resource",
-					"description": "This describes my resource",
-					"stats": {
-				  		"size": 0,
-				  		"size_filesystem": 0
-						},
-					"is_automatic": false,
 					"labels": {
 						"environment": "prod"
-					},
-					"created": "2016-01-30T23:55:00+00:00",
-					"storage_box": 42
+					}
 				}
 			}`,
 		},
