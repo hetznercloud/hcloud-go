@@ -183,8 +183,8 @@ func (s *Server) GetDNSPtrForIP(ip net.IP) (string, error) {
 	return "", DNSNotFoundError{ip}
 }
 
-// PrivateNetFor returns the server's network assignation information in the given
-// Network, and nil if no assignation was found.
+// PrivateNetFor returns the server's network attachment information in the given
+// Network, and nil if no attachment was found.
 func (s *Server) PrivateNetFor(network *Network) *ServerPrivateNet {
 	index := slices.IndexFunc(s.PrivateNet, func(o ServerPrivateNet) bool {
 		return o.Network != nil && o.Network.ID == network.ID

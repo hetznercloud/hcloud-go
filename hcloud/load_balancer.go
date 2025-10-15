@@ -229,8 +229,8 @@ func (lb *LoadBalancer) GetDNSPtrForIP(ip net.IP) (string, error) {
 	return "", DNSNotFoundError{ip}
 }
 
-// PrivateNetFor returns the load balancer's network assignation information in the given
-// Network, and nil if no assignation was found.
+// PrivateNetFor returns the load balancer's network attachment information in the given
+// Network, and nil if no attachment was found.
 func (lb *LoadBalancer) PrivateNetFor(network *Network) *LoadBalancerPrivateNet {
 	index := slices.IndexFunc(lb.PrivateNet, func(o LoadBalancerPrivateNet) bool {
 		return o.Network != nil && o.Network.ID == network.ID
