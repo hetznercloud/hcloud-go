@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
@@ -2458,4 +2459,20 @@ func TestServerRemoveFromPlacementGroup(t *testing.T) {
 	if action.ID != actionID {
 		t.Errorf("unexpected action ID: %v", action.ID)
 	}
+}
+
+func TestServerPrivateNetForNetwork(t *testing.T) {
+	server := &Server{PrivateNet: []ServerPrivateNet{
+		{Network: &Network{ID: 1}, MACAddress: "foo"},
+		{Network: &Network{ID: 2}, MACAddress: "bar"},
+	}}
+
+	t.Run("found", func(t *testing.T) {
+		got := server.PrivateNetFor(&Network{ID: 1})
+		require.Equal(t, "foo", got.MACAddress)
+	})
+	t.Run("not found", func(t *testing.T) {
+		got := server.PrivateNetFor(&Network{ID: 99})
+		require.Nil(t, got)
+	})
 }

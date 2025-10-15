@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
@@ -1292,4 +1293,20 @@ func loadBalancerMetricsOptsFromURL(t *testing.T, u *url.URL) LoadBalancerGetMet
 	}
 
 	return opts
+}
+
+func TestLoadBalancerPrivateNetForNetwork(t *testing.T) {
+	loadBalancer := &LoadBalancer{PrivateNet: []LoadBalancerPrivateNet{
+		{Network: &Network{ID: 1}, IP: net.ParseIP("127.0.0.1")},
+		{Network: &Network{ID: 2}, IP: net.ParseIP("127.0.0.2")},
+	}}
+
+	t.Run("found", func(t *testing.T) {
+		got := loadBalancer.PrivateNetFor(&Network{ID: 1})
+		require.Equal(t, "127.0.0.1", got.IP.String())
+	})
+	t.Run("not found", func(t *testing.T) {
+		got := loadBalancer.PrivateNetFor(&Network{ID: 99})
+		require.Nil(t, got)
+	})
 }
