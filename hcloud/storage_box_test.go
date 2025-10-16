@@ -526,8 +526,8 @@ func TestStorageBoxEnableSnapshotPlan(t *testing.T) {
 
 	opts := StorageBoxEnableSnapshotPlanOpts{
 		MaxSnapshots: 10,
-		Minute:       Ptr(5),
-		Hour:         Ptr(6),
+		Minute:       5,
+		Hour:         6,
 		DayOfWeek:    Ptr(time.Sunday),
 	}
 	action, _, err := client.StorageBox.EnableSnapshotPlan(ctx, storageBox, opts)

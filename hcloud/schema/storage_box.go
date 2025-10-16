@@ -139,8 +139,8 @@ type StorageBoxRollbackSnapshotRequest struct {
 // StorageBoxEnableSnapshotPlanRequest defines the schema of the request to enable a snapshot plan for a Storage Box.
 type StorageBoxEnableSnapshotPlanRequest struct {
 	MaxSnapshots int  `json:"max_snapshots"`
-	Minute       *int `json:"minute"`
-	Hour         *int `json:"hour"`
+	Minute       int  `json:"minute"`
+	Hour         int  `json:"hour"`
 	DayOfWeek    *int `json:"day_of_week"`
 	DayOfMonth   *int `json:"day_of_month"`
 }

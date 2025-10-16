@@ -414,8 +414,8 @@ func (c *StorageBoxClient) RollbackSnapshot(
 // StorageBoxEnableSnapshotPlanOpts specifies options for enabling a [StorageBoxSnapshotPlan] for a [StorageBox].
 type StorageBoxEnableSnapshotPlanOpts struct {
 	MaxSnapshots int
-	Minute       *int // Null means every minute.
-	Hour         *int // Null means every hour.
+	Minute       int
+	Hour         int
 	DayOfMonth   *int // Null means every day.
 
 	// DayOfWeek represents the day of the week for scheduling.
