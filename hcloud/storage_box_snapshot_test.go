@@ -13,9 +13,9 @@ import (
 )
 
 func TestStorageBoxClientGetSnapshot(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("GetSnapshot (ByID)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/snapshots/13",
@@ -65,22 +65,7 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 				Method: "GET", Path: "/storage_boxes/42/snapshots?name=my-resource",
 				Status: 200,
 				JSONRaw: `{
-				"snapshots": [{
-					"id": 42,
-					"name": "my-resource",
-					"stats": {
-				  		"size": 0,
-				  		"size_filesystem": 0
-						},
-					"is_automatic": false,
-					"labels": {
-						"environment": "prod",
-						"example.com/my": "label",
-						"just-a-key": ""
-					},
-					"created": "2016-01-30T23:55:00+00:00",
-					"storage_box": 42
-				}]
+				"snapshots": [{ "id": 42 }]
 			}`,
 			},
 		})
@@ -92,7 +77,6 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 		require.NotNil(t, storageBox)
 
 		assert.Equal(t, int64(42), storageBoxSnapshot.ID)
-		assert.Equal(t, "my-resource", storageBoxSnapshot.Name)
 	})
 
 	t.Run("GetSnapshot (ByIDOrName)", func(t *testing.T) {
@@ -103,22 +87,7 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 				Method: "GET", Path: "/storage_boxes/42/snapshots?name=my-resource",
 				Status: 200,
 				JSONRaw: `{
-				"snapshots": [{
-					"id": 42,
-					"name": "my-resource",
-					"stats": {
-				  		"size": 0,
-				  		"size_filesystem": 0
-						},
-					"is_automatic": false,
-					"labels": {
-						"environment": "prod",
-						"example.com/my": "label",
-						"just-a-key": ""
-					},
-					"created": "2016-01-30T23:55:00+00:00",
-					"storage_box": 42
-				}]
+				"snapshots": [{ "id": 42 }]
 			}`,
 			},
 		})
@@ -130,7 +99,6 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 		require.NotNil(t, storageBox)
 
 		assert.Equal(t, int64(42), storageBoxSnapshot.ID)
-		assert.Equal(t, "my-resource", storageBoxSnapshot.Name)
 	})
 
 	t.Run("GetSnapshot (NotFound)", func(t *testing.T) {
@@ -161,24 +129,15 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 }
 
 func TestStorageBoxClientListSnapshot(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("AllSnapshotsWithOpts", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/snapshots?is_automatic=true&label_selector=environment%3Dprod&name=my-resource&sort=id%3Aasc",
 				Status: 200,
 				JSONRaw: `{
-					"snapshots": [{
-						"id": 42,
-						"name": "my-resource",
-						"is_automatic": true,
-						"labels": {
-							"environment": "prod"
-						},
-						"storage_box": 42
-					}]
+					"snapshots": [{ "id": 42 }]
 				}`,
 			},
 		})
@@ -195,20 +154,17 @@ func TestStorageBoxClientListSnapshot(t *testing.T) {
 		require.Len(t, snapshots, 1)
 
 		assert.Equal(t, int64(42), snapshots[0].ID)
-		assert.Equal(t, "my-resource", snapshots[0].Name)
 	})
 
 	t.Run("AllSnapshots", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/snapshots?",
 				Status: 200,
 				JSONRaw: `{
-					"snapshots": [{
-						"id": 42,
-						"name": "my-resource",
-						"storage_box": 42
-					}]
+					"snapshots": [{ "id": 42 }]
 				}`,
 			},
 		})
@@ -220,14 +176,13 @@ func TestStorageBoxClientListSnapshot(t *testing.T) {
 		require.Len(t, snapshots, 1)
 
 		assert.Equal(t, int64(42), snapshots[0].ID)
-		assert.Equal(t, "my-resource", snapshots[0].Name)
 	})
 }
 
 func TestStorageBoxClientCreateSnapshot(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("CreateSnapshot (With Description)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "POST", Path: "/storage_boxes/42/snapshots",
@@ -239,7 +194,7 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 					assert.JSONEq(t, `{ "description": "Test Snapshot", "labels": { "environment": "prod" } }`, string(body))
 				},
 				JSONRaw: `{
-				"snapshot": { "id": 14, "storage_box": 42 },
+				"snapshot": { "id": 14 },
 				"action": { "id": 13 }
 			}`,
 			},
@@ -255,9 +210,14 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, result.Action)
 		require.NotNil(t, result.Snapshot)
+
+		assert.Equal(t, int64(13), result.Action.ID)
+		assert.Equal(t, int64(14), result.Snapshot.ID)
 	})
 
 	t.Run("CreateSnapshot (Without Description)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "POST", Path: "/storage_boxes/42/snapshots",
@@ -269,7 +229,7 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 					assert.JSONEq(t, `{}`, string(body))
 				},
 				JSONRaw: `{
-				"snapshot": { "id": 14, "storage_box": 42 },
+				"snapshot": { "id": 14 },
 				"action": { "id": 13 }
 			}`,
 			},
@@ -282,6 +242,9 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 		require.NoError(t, err)
 		require.NotNil(t, result.Action)
 		require.NotNil(t, result.Snapshot)
+
+		assert.Equal(t, int64(13), result.Action.ID)
+		assert.Equal(t, int64(14), result.Snapshot.ID)
 	})
 }
 
@@ -301,18 +264,9 @@ func TestStorageBoxClientUpdateSnapshot(t *testing.T) {
 			JSONRaw: `{
 				"snapshot": {
 					"id": 42,
-					"name": "my-resource",
-					"description": "This describes my resource",
-					"stats": {
-				  		"size": 0,
-				  		"size_filesystem": 0
-						},
-					"is_automatic": false,
 					"labels": {
 						"environment": "prod"
-					},
-					"created": "2016-01-30T23:55:00+00:00",
-					"storage_box": 42
+					}
 				}
 			}`,
 		},
@@ -334,6 +288,7 @@ func TestStorageBoxClientUpdateSnapshot(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, storageBoxSnapshot)
 
+	assert.Equal(t, int64(42), storageBoxSnapshot.ID)
 	assert.Equal(t, "prod", storageBoxSnapshot.Labels["environment"])
 }
 

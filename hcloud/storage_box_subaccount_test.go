@@ -13,9 +13,9 @@ import (
 )
 
 func TestStorageBoxClientGetSubaccount(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("GetSubaccount (ByID)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/subaccounts/13",
@@ -67,6 +67,8 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 	})
 
 	t.Run("GetSubaccount (not found)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/subaccounts/13",
@@ -91,18 +93,14 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 	})
 
 	t.Run("GetSubaccount (ByUsername)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/subaccounts?username=my-user",
 				Status: 200,
 				JSONRaw: `{
-					"subaccounts": [
-						{
-							"id": 13,
-							"username": "my-user",
-							"storage_box": 42
-						}
-					]
+					"subaccounts": [{ "id": 13 }]
 				}`,
 			},
 		})
@@ -115,33 +113,24 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		require.NotNil(t, subaccount)
 
 		assert.Equal(t, int64(13), subaccount.ID)
-		assert.Equal(t, int64(42), subaccount.StorageBox.ID)
 	})
 
 	t.Run("GetSubbacount (IDOrName)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/subaccounts/13",
 				Status: 200,
 				JSONRaw: `{
-					"subaccount": {
-						"id": 13,
-						"username": "foobar",
-						"storage_box": 42
-					}
+					"subaccount": { "id": 13 }
 				}`,
 			},
 			{
 				Method: "GET", Path: "/storage_boxes/42/subaccounts?username=my-user",
 				Status: 200,
 				JSONRaw: `{
-					"subaccounts": [
-						{
-							"id": 14,
-							"username": "my-user",
-							"storage_box": 42
-						}
-					]
+					"subaccounts": [{ "id": 14 }]
 				}`,
 			},
 		})
@@ -154,7 +143,6 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		require.NotNil(t, subaccount)
 
 		assert.Equal(t, int64(13), subaccount.ID)
-		assert.Equal(t, int64(42), subaccount.StorageBox.ID)
 
 		subaccount, resp, err = client.StorageBox.GetSubaccount(ctx, storageBox, "my-user")
 		require.NoError(t, err)
@@ -162,7 +150,6 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		require.NotNil(t, subaccount)
 
 		assert.Equal(t, int64(14), subaccount.ID)
-		assert.Equal(t, int64(42), subaccount.StorageBox.ID)
 
 	})
 }
@@ -170,106 +157,63 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 func TestStorageBoxClientListSubaccounts(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
-	t.Run("ListSubaccounts", func(t *testing.T) {
-		server.Expect([]mockutil.Request{
-			{
-				Method: "GET", Path: "/storage_boxes/42/subaccounts?label_selector=environment%3Dprod&sort=id%3Aasc",
-				Status: 200,
-				JSONRaw: `{
+	server.Expect([]mockutil.Request{
+		{
+			Method: "GET", Path: "/storage_boxes/42/subaccounts?label_selector=environment%3Dprod&sort=id%3Aasc",
+			Status: 200,
+			JSONRaw: `{
 					"subaccounts": [
-						{
-							"id": 42,
-							"username": "my-user",
-							"home_directory": "/home/my-user",
-							"server": "my-server",
-							"access_settings": {
-								"reachable_externally": true,
-								"readonly": false,
-								"samba_enabled": true,
-								"ssh_enabled": false,
-								"webdav_enabled": true
-							},
-							"description": "This describes my subaccount",
-							"labels": {
-								"environment": "prod",
-								"example.com/my": "label",
-								"just-a-key": ""
-							},
-							"created": "2025-08-21T00:00:00Z",
-							"storage_box": 42
-						}
+						{ "id": 42 },
+						{ "id": 43 }
 					]
 				}`,
-			},
-		})
-
-		storageBox := &StorageBox{ID: 42}
-
-		opts := StorageBoxSubaccountListOpts{
-			LabelSelector: "environment=prod",
-			Sort:          []string{"id:asc"},
-		}
-		subaccounts, _, err := client.StorageBox.ListSubaccounts(ctx, storageBox, opts)
-		require.NoError(t, err)
-		require.Len(t, subaccounts, 1)
-
-		subaccount := subaccounts[0]
-		assert.Equal(t, int64(42), subaccount.ID)
-		assert.Equal(t, "my-user", subaccount.Username)
+		},
 	})
 
-	t.Run("ListSubaccounts (AllSubaccountsWithOpts)", func(t *testing.T) {
-		server.Expect([]mockutil.Request{
-			{
-				Method: "GET", Path: "/storage_boxes/42/subaccounts?label_selector=environment%3Dprod",
-				Status: 200,
-				JSONRaw: `{
-					"subaccounts": [
-						{
-							"id": 42,
-							"username": "my-user",
-							"home_directory": "/home/my-user",
-							"server": "my-server",
-							"access_settings": {
-								"reachable_externally": true,
-								"readonly": false,
-								"samba_enabled": true,
-								"ssh_enabled": false,
-								"webdav_enabled": true
-							},
-							"description": "This describes my subaccount",
-							"labels": {
-								"environment": "prod",
-								"example.com/my": "label",
-								"just-a-key": ""
-							},
-							"created": "2025-08-21T00:00:00Z",
-							"storage_box": 42
-						}
-					]
-				}`,
-			},
-		})
+	storageBox := &StorageBox{ID: 42}
 
-		storageBox := &StorageBox{ID: 42}
+	opts := StorageBoxSubaccountListOpts{
+		LabelSelector: "environment=prod",
+		Sort:          []string{"id:asc"},
+	}
+	subaccounts, _, err := client.StorageBox.ListSubaccounts(ctx, storageBox, opts)
+	require.NoError(t, err)
+	require.Len(t, subaccounts, 2)
 
-		opts := StorageBoxSubaccountListOpts{
-			LabelSelector: "environment=prod",
-		}
-		subaccounts, err := client.StorageBox.AllSubaccountsWithOpts(ctx, storageBox, opts)
-		require.NoError(t, err)
-		require.Len(t, subaccounts, 1)
+	assert.Equal(t, int64(42), subaccounts[0].ID)
+	assert.Equal(t, int64(43), subaccounts[1].ID)
+}
 
-		subaccount := subaccounts[0]
-		assert.Equal(t, int64(42), subaccount.ID)
-		assert.Equal(t, "my-user", subaccount.Username)
+func TestStorageBoxClientAllSubaccountsWithOpts(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "GET", Path: "/storage_boxes/42/subaccounts?label_selector=environment%3Dprod",
+			Status: 200,
+			JSONRaw: `{
+				"subaccounts": [{ "id": 42 }]
+			}`,
+		},
 	})
+
+	storageBox := &StorageBox{ID: 42}
+
+	opts := StorageBoxSubaccountListOpts{
+		LabelSelector: "environment=prod",
+	}
+	subaccounts, err := client.StorageBox.AllSubaccountsWithOpts(ctx, storageBox, opts)
+	require.NoError(t, err)
+	require.Len(t, subaccounts, 1)
+
+	subaccount := subaccounts[0]
+	assert.Equal(t, int64(42), subaccount.ID)
 }
 
 func TestStorageBoxClientCreateSubaccount(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("CreateSubaccount (full)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "POST", Path: "/storage_boxes/42/subaccounts",
@@ -296,10 +240,7 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 					assert.JSONEq(t, expectedBody, string(body))
 				},
 				JSONRaw: `{
-					"subaccount": {
-						"id": 42,
-						"storage_box": 42
-					},
+					"subaccount": { "id": 42 },
 					"action": { "id": 12345 }
 				}`,
 			},
@@ -330,14 +271,13 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 		require.NotNil(t, subaccount)
 
 		assert.Equal(t, int64(42), subaccount.ID)
-		assert.Equal(t, int64(42), subaccount.StorageBox.ID)
 	})
 }
 
 func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("UpdateSubaccount (full)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "PUT", Path: "/storage_boxes/42/subaccounts/13",
@@ -357,27 +297,7 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 					assert.JSONEq(t, expectedBody, string(body))
 				},
 				JSONRaw: `{
-					"subaccount": {
-						"id": 13,
-						"username": "my-user",
-						"home_directory": "/home/my-user",
-						"server": "my-server",
-						"access_settings": {
-							"reachable_externally": true,
-							"readonly": false,
-							"samba_enabled": true,
-							"ssh_enabled": false,
-							"webdav_enabled": true
-						},
-						"description": "Updated description",
-						"labels": {
-							"environment": "prod",
-							"example.com/my": "label",
-							"just-a-key": ""
-						},
-						"created": "2025-08-21T00:00:00Z",
-						"storage_box": 42
-					}
+					"subaccount": { "id": 13 }
 				}`,
 			},
 		})
@@ -398,38 +318,36 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 			},
 		}
 
-		result, _, err := client.StorageBox.UpdateSubaccount(ctx, subaccount, opts)
-
+		subaccount, _, err := client.StorageBox.UpdateSubaccount(ctx, subaccount, opts)
 		require.NoError(t, err)
+		require.NotNil(t, subaccount)
 
-		assert.Equal(t, int64(13), result.ID)
+		assert.Equal(t, int64(13), subaccount.ID)
 	})
 }
 
 func TestStorageBoxClientDeleteSubaccount(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
-	t.Run("DeleteSubaccount", func(t *testing.T) {
-		server.Expect([]mockutil.Request{
-			{
-				Method: "DELETE", Path: "/storage_boxes/42/subaccounts/13",
-				Status:  201,
-				JSONRaw: `{ "action": { "id": 5 } }`,
-			},
-		})
-
-		subaccount := &StorageBoxSubaccount{
-			ID: 13,
-			StorageBox: &StorageBox{
-				ID: 42,
-			},
-		}
-
-		action, resp, err := client.StorageBox.DeleteSubaccount(ctx, subaccount)
-		require.NoError(t, err)
-		require.NotNil(t, resp)
-		require.NotNil(t, action)
+	server.Expect([]mockutil.Request{
+		{
+			Method: "DELETE", Path: "/storage_boxes/42/subaccounts/13",
+			Status:  201,
+			JSONRaw: `{ "action": { "id": 5 } }`,
+		},
 	})
+
+	subaccount := &StorageBoxSubaccount{
+		ID: 13,
+		StorageBox: &StorageBox{
+			ID: 42,
+		},
+	}
+
+	action, resp, err := client.StorageBox.DeleteSubaccount(ctx, subaccount)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.NotNil(t, action)
 }
 
 func TestStorageBoxClientResetSubaccountPassword(t *testing.T) {
