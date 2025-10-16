@@ -100,7 +100,7 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 				Method: "GET", Path: "/storage_boxes/42/subaccounts?username=my-user",
 				Status: 200,
 				JSONRaw: `{
-					"subaccounts": [{ "id": 13, "username": "my-user" }]
+					"subaccounts": [{ "id": 13 }]
 				}`,
 			},
 		})
@@ -123,24 +123,14 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 				Method: "GET", Path: "/storage_boxes/42/subaccounts/13",
 				Status: 200,
 				JSONRaw: `{
-					"subaccount": {
-						"id": 13,
-						"username": "foobar",
-						"storage_box": 42
-					}
+					"subaccount": { "id": 13 }
 				}`,
 			},
 			{
 				Method: "GET", Path: "/storage_boxes/42/subaccounts?username=my-user",
 				Status: 200,
 				JSONRaw: `{
-					"subaccounts": [
-						{
-							"id": 14,
-							"username": "my-user",
-							"storage_box": 42
-						}
-					]
+					"subaccounts": [{ "id": 14 }]
 				}`,
 			},
 		})
@@ -153,7 +143,6 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		require.NotNil(t, subaccount)
 
 		assert.Equal(t, int64(13), subaccount.ID)
-		assert.Equal(t, int64(42), subaccount.StorageBox.ID)
 
 		subaccount, resp, err = client.StorageBox.GetSubaccount(ctx, storageBox, "my-user")
 		require.NoError(t, err)
@@ -161,7 +150,6 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		require.NotNil(t, subaccount)
 
 		assert.Equal(t, int64(14), subaccount.ID)
-		assert.Equal(t, int64(42), subaccount.StorageBox.ID)
 
 	})
 }
@@ -175,8 +163,8 @@ func TestStorageBoxClientListSubaccounts(t *testing.T) {
 			Status: 200,
 			JSONRaw: `{
 					"subaccounts": [
-						{ "id": 42, "username": "my-user" },
-						{ "id": 43, "username": "my-user-2" }
+						{ "id": 42 },
+						{ "id": 43 }
 					]
 				}`,
 		},
@@ -192,9 +180,8 @@ func TestStorageBoxClientListSubaccounts(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, subaccounts, 2)
 
-	subaccount := subaccounts[0]
-	assert.Equal(t, int64(42), subaccount.ID)
-	assert.Equal(t, "my-user", subaccount.Username)
+	assert.Equal(t, int64(42), subaccounts[0].ID)
+	assert.Equal(t, int64(43), subaccounts[1].ID)
 }
 
 func TestStorageBoxClientAllSubaccountsWithOpts(t *testing.T) {
@@ -205,9 +192,7 @@ func TestStorageBoxClientAllSubaccountsWithOpts(t *testing.T) {
 			Method: "GET", Path: "/storage_boxes/42/subaccounts?label_selector=environment%3Dprod",
 			Status: 200,
 			JSONRaw: `{
-				"subaccounts": [
-					{ "id": 42, "username": "my-user" }
-				]
+				"subaccounts": [{ "id": 42 }]
 			}`,
 		},
 	})
@@ -223,7 +208,6 @@ func TestStorageBoxClientAllSubaccountsWithOpts(t *testing.T) {
 
 	subaccount := subaccounts[0]
 	assert.Equal(t, int64(42), subaccount.ID)
-	assert.Equal(t, "my-user", subaccount.Username)
 }
 
 func TestStorageBoxClientCreateSubaccount(t *testing.T) {
@@ -256,10 +240,7 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 					assert.JSONEq(t, expectedBody, string(body))
 				},
 				JSONRaw: `{
-					"subaccount": {
-						"id": 42,
-						"storage_box": 42
-					},
+					"subaccount": { "id": 42 },
 					"action": { "id": 12345 }
 				}`,
 			},
@@ -290,7 +271,6 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 		require.NotNil(t, subaccount)
 
 		assert.Equal(t, int64(42), subaccount.ID)
-		assert.Equal(t, int64(42), subaccount.StorageBox.ID)
 	})
 }
 
@@ -317,27 +297,7 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 					assert.JSONEq(t, expectedBody, string(body))
 				},
 				JSONRaw: `{
-					"subaccount": {
-						"id": 13,
-						"username": "my-user",
-						"home_directory": "/home/my-user",
-						"server": "my-server",
-						"access_settings": {
-							"reachable_externally": true,
-							"readonly": false,
-							"samba_enabled": true,
-							"ssh_enabled": false,
-							"webdav_enabled": true
-						},
-						"description": "Updated description",
-						"labels": {
-							"environment": "prod",
-							"example.com/my": "label",
-							"just-a-key": ""
-						},
-						"created": "2025-08-21T00:00:00Z",
-						"storage_box": 42
-					}
+					"subaccount": { "id": 13 }
 				}`,
 			},
 		})
@@ -358,11 +318,11 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 			},
 		}
 
-		result, _, err := client.StorageBox.UpdateSubaccount(ctx, subaccount, opts)
-
+		subaccount, _, err := client.StorageBox.UpdateSubaccount(ctx, subaccount, opts)
 		require.NoError(t, err)
+		require.NotNil(t, subaccount)
 
-		assert.Equal(t, int64(13), result.ID)
+		assert.Equal(t, int64(13), subaccount.ID)
 	})
 }
 

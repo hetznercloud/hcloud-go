@@ -108,7 +108,7 @@ func TestStorageBoxClientGet(t *testing.T) {
 				Method: "GET", Path: "/storage_boxes?name=foobar",
 				Status: 200,
 				JSONRaw: `{
-					"storage_boxes": [{ "id": 1, "name": "foobar" }]
+					"storage_boxes": [{ "id": 1 }]
 				}`,
 			},
 		})
@@ -129,8 +129,8 @@ func TestStorageBoxClientList(t *testing.T) {
 			Status: 200,
 			JSONRaw: `{
 				"storage_boxes": [
-					{ "id": 1, "name": "storage-box-1" },
-					{ "id": 2, "name": "storage-box-2" }
+					{ "id": 1 },
+					{ "id": 2 }
 				]
 			}`,
 		},
@@ -142,8 +142,8 @@ func TestStorageBoxClientList(t *testing.T) {
 	storageBoxes, _, err := client.StorageBox.List(ctx, opts)
 	require.NoError(t, err)
 	assert.Len(t, storageBoxes, 2, "expected 2 storage boxes")
-	assert.Equal(t, "storage-box-1", storageBoxes[0].Name)
-	assert.Equal(t, "storage-box-2", storageBoxes[1].Name)
+	assert.Equal(t, int64(1), storageBoxes[0].ID)
+	assert.Equal(t, int64(2), storageBoxes[1].ID)
 }
 
 func TestStorageBoxClientAll(t *testing.T) {
@@ -155,8 +155,8 @@ func TestStorageBoxClientAll(t *testing.T) {
 			Status: 200,
 			JSONRaw: `{
 				"storage_boxes": [
-					{ "id": 1, "name": "storage-box-1" },
-					{ "id": 2, "name": "storage-box-2" }
+					{ "id": 1 },
+					{ "id": 2 }
 				],
 				"meta": {"pagination": {"page": 1, "last_page": 2, "per_page": 2, "next_page": 2, "previous_page": null, "total_entries": 3}}
 			}`,
@@ -166,7 +166,7 @@ func TestStorageBoxClientAll(t *testing.T) {
 			Status: 200,
 			JSONRaw: `{
 				"storage_boxes": [
-					{ "id": 3, "name": "storage-box-3" }
+					{ "id": 3 }
 				],
 				"meta": {"pagination": {"page": 2, "last_page": 2, "per_page": 2, "next_page": null, "previous_page": 1, "total_entries": 3}}
 			}`,
@@ -208,7 +208,7 @@ func TestStorageBoxClientCreate(t *testing.T) {
 			Status: 201,
 			JSONRaw: `{
 				"action": { "id": 1 },
-				"storage_box": { "id": 42, "name": "my-resource" }
+				"storage_box": { "id": 42 }
 			}`,
 		},
 	})
@@ -231,7 +231,10 @@ func TestStorageBoxClientCreate(t *testing.T) {
 	result, _, err := client.StorageBox.Create(ctx, opts)
 	require.NoError(t, err)
 	require.NotNil(t, result.Action, "no action returned")
+	require.NotNil(t, result.StorageBox, "no storage box returned")
+
 	assert.Equal(t, int64(1), result.Action.ID, "unexpected action ID")
+	assert.Equal(t, int64(42), result.StorageBox.ID, "unexpected storage box ID")
 }
 
 func TestStorageBoxClientUpdate(t *testing.T) {
@@ -250,7 +253,7 @@ func TestStorageBoxClientUpdate(t *testing.T) {
 			},
 			Status: 200,
 			JSONRaw: `{
-				"storage_box": { "id": 42, "name": "updated-storage-box" }
+				"storage_box": { "id": 42 }
 			}`,
 		},
 	})
@@ -265,7 +268,6 @@ func TestStorageBoxClientUpdate(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, updatedStorageBox, "no storage box returned")
 	assert.Equal(t, int64(42), updatedStorageBox.ID, "unexpected storage box ID")
-	assert.Equal(t, "updated-storage-box", updatedStorageBox.Name, "unexpected storage box name")
 }
 
 func TestStorageBoxClientDelete(t *testing.T) {
@@ -298,8 +300,8 @@ func TestStorageBoxClientFolders(t *testing.T) {
 				Method: "GET", Path: "/storage_boxes/42/folders",
 				Status: 200,
 				JSONRaw: `{
-				"folders": ["foo", "bar"]
-			}`,
+					"folders": ["foo", "bar"]
+				}`,
 			},
 		})
 
