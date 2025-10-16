@@ -1,5 +1,16 @@
 # Changelog
 
+## [v2.28.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.28.0)
+
+### Features
+
+- retrieve a server or load balancer network attachment (#750)
+
+### Bug Fixes
+
+- deprecate `firewall_already_removed` error code (#748)
+- invalid property in network add_subnet request body (#751)
+
 ## [v2.27.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.27.0)
 
 ### DNS API Beta
