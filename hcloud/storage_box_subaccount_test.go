@@ -249,8 +249,9 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 		storageBox := &StorageBox{ID: 42}
 
 		opts := StorageBoxSubaccountCreateOpts{
-			HomeDirectory: Ptr("/home/my-user"),
+			HomeDirectory: "/home/my-user",
 			Password:      "my-password",
+			Description:   "This describes my subaccount",
 			AccessSettings: &StorageBoxSubaccountCreateOptsAccessSettings{
 				ReachableExternally: Ptr(true),
 				Readonly:            Ptr(false),
@@ -258,7 +259,6 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 				SSHEnabled:          Ptr(false),
 				WebDAVEnabled:       Ptr(true),
 			},
-			Description: "This describes my subaccount",
 			Labels: map[string]string{
 				"environment": "prod",
 			},
@@ -344,10 +344,11 @@ func TestStorageBoxClientDeleteSubaccount(t *testing.T) {
 		},
 	}
 
-	action, resp, err := client.StorageBox.DeleteSubaccount(ctx, subaccount)
+	result, resp, err := client.StorageBox.DeleteSubaccount(ctx, subaccount)
 	require.NoError(t, err)
 	require.NotNil(t, resp)
-	require.NotNil(t, action)
+	require.NotNil(t, result.Action)
+	require.Equal(t, int64(5), result.Action.ID)
 }
 
 func TestStorageBoxClientResetSubaccountPassword(t *testing.T) {
@@ -415,7 +416,7 @@ func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
 		},
 	}
 
-	opts := StorageBoxSubaccountAccessSettingsUpdateOpts{
+	opts := StorageBoxSubaccountUpdateAccessSettingsOpts{
 		SambaEnabled:        Ptr(false),
 		SSHEnabled:          Ptr(true),
 		WebDAVEnabled:       Ptr(false),

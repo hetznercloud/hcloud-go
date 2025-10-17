@@ -208,13 +208,17 @@ func TestStorageBoxClientCreate(t *testing.T) {
 			Status: 201,
 			JSONRaw: `{
 				"action": { "id": 1 },
-				"storage_box": { "id": 42 }
+				"storage_box": {
+					"id": 42,
+					"status": "initializing",
+					"username": null,
+					"server": null,
+					"system": null
+				}
 			}`,
 		},
 	})
 
-	reachableExternally := true
-	sshEnabled := false
 	opts := StorageBoxCreateOpts{
 		Name:           "my-new-storage-box",
 		StorageBoxType: &StorageBoxType{ID: 1},
@@ -223,8 +227,8 @@ func TestStorageBoxClientCreate(t *testing.T) {
 		Labels:         map[string]string{"env": "test"},
 		SSHKeys:        []string{"ssh-rsa AAAAB3NzaC1yc2E..."},
 		AccessSettings: &StorageBoxCreateOptsAccessSettings{
-			ReachableExternally: &reachableExternally,
-			SSHEnabled:          &sshEnabled,
+			ReachableExternally: Ptr(true),
+			SSHEnabled:          Ptr(false),
 		},
 	}
 
@@ -285,16 +289,16 @@ func TestStorageBoxClientDelete(t *testing.T) {
 
 	storageBox := &StorageBox{ID: 42}
 
-	action, _, err := client.StorageBox.Delete(ctx, storageBox)
+	result, _, err := client.StorageBox.Delete(ctx, storageBox)
 	require.NoError(t, err)
-	require.NotNil(t, action, "no action returned")
-	assert.Equal(t, int64(1), action.ID, "unexpected action ID")
+	require.NotNil(t, result.Action, "no action returned")
+	assert.Equal(t, int64(1), result.Action.ID, "unexpected action ID")
 }
 
 func TestStorageBoxClientFolders(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("folders", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/folders?",
@@ -317,13 +321,15 @@ func TestStorageBoxClientFolders(t *testing.T) {
 	})
 
 	t.Run("sub folders", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/folders?path=%2Ffoo",
 				Status: 200,
 				JSONRaw: `{
-				"folders": ["subfoo", "subbar"]
-			}`,
+					"folders": ["subfoo", "subbar"]
+				}`,
 			},
 		})
 
@@ -444,10 +450,7 @@ func TestStorageBoxUpdateAccessSettings(t *testing.T) {
 
 					expected := `{
 						"samba_enabled": true,
-						"ssh_enabled": false,
-						"webdav_enabled": null,
-						"zfs_enabled": null,
-						"reachable_externally": null
+						"ssh_enabled": false
 					}`
 
 					assert.JSONEq(t, expected, string(body), "unexpected request body")

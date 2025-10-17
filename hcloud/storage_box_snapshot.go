@@ -15,7 +15,7 @@ type StorageBoxSnapshot struct {
 	ID          int64
 	Name        string
 	Description string
-	Stats       *StorageBoxSnapshotStats
+	Stats       StorageBoxSnapshotStats
 	IsAutomatic bool
 	Labels      map[string]string
 	Created     time.Time
@@ -204,17 +204,28 @@ func (c *StorageBoxClient) UpdateSnapshot(
 	return StorageBoxSnapshotFromSchema(respBody.Snapshot), resp, nil
 }
 
+// StorageBoxSnapshotDeleteResult represents the result of deleting a [StorageBoxSnapshot].
+type StorageBoxSnapshotDeleteResult struct {
+	Action *Action
+}
+
 // DeleteSnapshot deletes the given [StorageBoxSnapshot] of a [StorageBox].
 func (c *StorageBoxClient) DeleteSnapshot(
 	ctx context.Context,
 	snapshot *StorageBoxSnapshot,
-) (*Action, *Response, error) {
+) (StorageBoxSnapshotDeleteResult, *Response, error) {
 	const opPath = "/storage_boxes/%d/snapshots/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, snapshot.StorageBox.ID, snapshot.ID)
+	result := StorageBoxSnapshotDeleteResult{}
 
 	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
+	if err != nil {
+		return result, resp, err
+	}
 
-	return ActionFromSchema(respBody.Action), resp, err
+	result.Action = ActionFromSchema(respBody.Action)
+
+	return result, resp, err
 }

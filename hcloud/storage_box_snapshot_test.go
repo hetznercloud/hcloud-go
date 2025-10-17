@@ -310,7 +310,8 @@ func TestStorageBoxClientDeleteSnapshot(t *testing.T) {
 		},
 	}
 
-	action, _, err := client.StorageBox.DeleteSnapshot(ctx, storageBoxSnapshot)
+	result, _, err := client.StorageBox.DeleteSnapshot(ctx, storageBoxSnapshot)
 	require.NoError(t, err)
-	require.NotNil(t, action)
+	require.NotNil(t, result.Action)
+	require.Equal(t, int64(5), result.Action.ID)
 }

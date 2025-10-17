@@ -97,7 +97,7 @@ func (o StorageBoxSubaccountListOpts) values() url.Values {
 	if o.Username != "" {
 		vals.Add("username", o.Username)
 	}
-	if len(o.LabelSelector) > 0 {
+	if o.LabelSelector != "" {
 		vals.Add("label_selector", o.LabelSelector)
 	}
 	for _, sort := range o.Sort {
@@ -147,10 +147,10 @@ func (c *StorageBoxClient) AllSubaccounts(
 
 // StorageBoxSubaccountCreateOpts represents the options for creating a [StorageBoxSubaccount].
 type StorageBoxSubaccountCreateOpts struct {
+	HomeDirectory  string
 	Password       string
-	HomeDirectory  *string
-	AccessSettings *StorageBoxSubaccountCreateOptsAccessSettings
 	Description    string
+	AccessSettings *StorageBoxSubaccountCreateOptsAccessSettings
 	Labels         map[string]string
 }
 
@@ -220,22 +220,30 @@ func (c *StorageBoxClient) UpdateSubaccount(
 	return StorageBoxSubaccountFromSchema(respBody.Subaccount), resp, nil
 }
 
+// StorageBoxSubaccountDeleteResult represents the result of deleting a [StorageBoxSubaccount].
+type StorageBoxSubaccountDeleteResult struct {
+	Action *Action
+}
+
 // DeleteSubaccount deletes a [StorageBoxSubaccount] from a [StorageBox].
 func (c *StorageBoxClient) DeleteSubaccount(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,
-) (*Action, *Response, error) {
+) (StorageBoxSubaccountDeleteResult, *Response, error) {
 	const opPath = "/storage_boxes/%d/subaccounts/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, subaccount.StorageBox.ID, subaccount.ID)
+	result := StorageBoxSubaccountDeleteResult{}
 
 	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
 	if err != nil {
-		return nil, resp, err
+		return result, resp, err
 	}
 
-	return ActionFromSchema(respBody.Action), resp, nil
+	result.Action = ActionFromSchema(respBody.Action)
+
+	return result, resp, nil
 }
 
 // StorageBoxSubaccountResetPasswordOpts represents the options for resetting a [StorageBoxSubaccount]'s password.
@@ -263,8 +271,8 @@ func (c *StorageBoxClient) ResetSubaccountPassword(
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
-// StorageBoxSubaccountAccessSettingsUpdateOpts represents the options for updating [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
-type StorageBoxSubaccountAccessSettingsUpdateOpts struct {
+// StorageBoxSubaccountUpdateAccessSettingsOpts represents the options for updating [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
+type StorageBoxSubaccountUpdateAccessSettingsOpts struct {
 	ReachableExternally *bool
 	Readonly            *bool
 	SambaEnabled        *bool
@@ -276,7 +284,7 @@ type StorageBoxSubaccountAccessSettingsUpdateOpts struct {
 func (c *StorageBoxClient) UpdateSubaccountAccessSettings(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,
-	opts StorageBoxSubaccountAccessSettingsUpdateOpts,
+	opts StorageBoxSubaccountUpdateAccessSettingsOpts,
 ) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/subaccounts/%d/actions/update_access_settings"
 	ctx = ctxutil.SetOpPath(ctx, opPath)

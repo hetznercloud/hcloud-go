@@ -29,7 +29,7 @@ type IStorageBoxClient interface {
 	// Update updates a [StorageBox] with the given options.
 	Update(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateOpts) (*StorageBox, *Response, error)
 	// Delete deletes a [StorageBox].
-	Delete(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error)
+	Delete(ctx context.Context, storageBox *StorageBox) (StorageBoxDeleteResult, *Response, error)
 	// Folders lists folders in a [StorageBox].
 	Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error)
 	// ChangeProtection changes the protection level of a [StorageBox].
@@ -65,7 +65,7 @@ type IStorageBoxClient interface {
 	// UpdateSnapshot updates the given [StorageBoxSnapshot] of a [StorageBox] with the provided options.
 	UpdateSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot, opts StorageBoxSnapshotUpdateOpts) (*StorageBoxSnapshot, *Response, error)
 	// DeleteSnapshot deletes the given [StorageBoxSnapshot] of a [StorageBox].
-	DeleteSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot) (*Action, *Response, error)
+	DeleteSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot) (StorageBoxSnapshotDeleteResult, *Response, error)
 	// GetSubaccount retrieves a [StorageBoxSubaccount] by its ID or username.
 	GetSubaccount(ctx context.Context, storageBox *StorageBox, idOrUsername string) (*StorageBoxSubaccount, *Response, error)
 	// GetSubaccountByID retrieves a [StorageBoxSubaccount] by its ID.
@@ -83,11 +83,11 @@ type IStorageBoxClient interface {
 	// UpdateSubaccount updates a [StorageBoxSubaccount] of a [StorageBox].
 	UpdateSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountUpdateOpts) (*StorageBoxSubaccount, *Response, error)
 	// DeleteSubaccount deletes a [StorageBoxSubaccount] from a [StorageBox].
-	DeleteSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount) (*Action, *Response, error)
+	DeleteSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount) (StorageBoxSubaccountDeleteResult, *Response, error)
 	// ResetSubaccountPassword resets the password of a [StorageBoxSubaccount].
 	ResetSubaccountPassword(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountResetPasswordOpts) (*Action, *Response, error)
 	// UpdateSubaccountAccessSettings updates the [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
-	UpdateSubaccountAccessSettings(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountAccessSettingsUpdateOpts) (*Action, *Response, error)
+	UpdateSubaccountAccessSettings(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountUpdateAccessSettingsOpts) (*Action, *Response, error)
 	// UpdateSubaccountAccessSettings changes the home directory of a [StorageBoxSubaccount].
 	ChangeSubaccountHomeDirectory(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountChangeHomeDirectoryOpts) (*Action, *Response, error)
 }

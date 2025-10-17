@@ -5,7 +5,7 @@ import "time"
 // StorageBox defines the schema of a Storage Box.
 type StorageBox struct {
 	ID             int64                    `json:"id"`
-	Username       string                   `json:"username"`
+	Username       *string                  `json:"username"`
 	Status         string                   `json:"status"`
 	Name           string                   `json:"name"`
 	StorageBoxType StorageBoxType           `json:"storage_box_type"`
@@ -44,10 +44,10 @@ type StorageBoxProtection struct {
 // StorageBoxSnapshotPlan defines the schema of a Storage Box's snapshot plan.
 type StorageBoxSnapshotPlan struct {
 	MaxSnapshots int  `json:"max_snapshots"`
-	Minute       *int `json:"minute,omitempty"`
-	Hour         *int `json:"hour,omitempty"`
-	DayOfWeek    *int `json:"day_of_week,omitempty"`
-	DayOfMonth   *int `json:"day_of_month,omitempty"`
+	Minute       int  `json:"minute"`
+	Hour         int  `json:"hour"`
+	DayOfWeek    *int `json:"day_of_week"`
+	DayOfMonth   *int `json:"day_of_month"`
 }
 
 // StorageBoxGetResponse defines the schema of the response when
@@ -124,11 +124,11 @@ type StorageBoxResetPasswordRequest struct {
 // StorageBoxUpdateAccessSettingsRequest defines the schema of the request when updating
 // a Storage Box's access settings.
 type StorageBoxUpdateAccessSettingsRequest struct {
-	ReachableExternally *bool `json:"reachable_externally"`
-	SambaEnabled        *bool `json:"samba_enabled"`
-	SSHEnabled          *bool `json:"ssh_enabled"`
-	WebDAVEnabled       *bool `json:"webdav_enabled"`
-	ZFSEnabled          *bool `json:"zfs_enabled"`
+	ReachableExternally *bool `json:"reachable_externally,omitempty"`
+	SambaEnabled        *bool `json:"samba_enabled,omitempty"`
+	SSHEnabled          *bool `json:"ssh_enabled,omitempty"`
+	WebDAVEnabled       *bool `json:"webdav_enabled,omitempty"`
+	ZFSEnabled          *bool `json:"zfs_enabled,omitempty"`
 }
 
 // StorageBoxRollbackSnapshotRequest defines the schema of the request to roll back a Storage Box to a snapshot.
@@ -141,6 +141,6 @@ type StorageBoxEnableSnapshotPlanRequest struct {
 	MaxSnapshots int  `json:"max_snapshots"`
 	Minute       int  `json:"minute"`
 	Hour         int  `json:"hour"`
-	DayOfWeek    *int `json:"day_of_week"`
-	DayOfMonth   *int `json:"day_of_month"`
+	DayOfWeek    *int `json:"day_of_week"`  // No omitempty because nil have a meaning and is the default in the API.
+	DayOfMonth   *int `json:"day_of_month"` // No omitempty because nil have a meaning and is the default in the API.
 }

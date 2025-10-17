@@ -19,8 +19,8 @@ type StorageBox struct {
 	StorageBoxType *StorageBoxType
 	Location       *Location
 	AccessSettings StorageBoxAccessSettings
-	Server         *string
-	System         *string
+	Server         string
+	System         string
 	Stats          StorageBoxStats
 	Labels         map[string]string
 	Protection     StorageBoxProtection
@@ -52,17 +52,16 @@ type StorageBoxProtection struct {
 // StorageBoxSnapshotPlan represents the snapshot plan of a [StorageBox].
 type StorageBoxSnapshotPlan struct {
 	MaxSnapshots int
-	Minute       *int
-	Hour         *int
-	DayOfMonth   *int
-
+	Minute       int
+	Hour         int
 	// DayOfWeek represents the day of the week for scheduling.
 	// A nil value means the schedule applies to every day.
 	//
 	// The Hetzner API uses 1–7 to represent Monday–Sunday,
 	// while Go’s time.Weekday uses 0–6 for Sunday–Saturday.
 	// This field maps the API’s values to Go’s time.Weekday.
-	DayOfWeek *time.Weekday
+	DayOfWeek  *time.Weekday
+	DayOfMonth *int
 }
 
 // StorageBoxStatus specifies a [StorageBox]'s status.
@@ -237,18 +236,28 @@ func (c *StorageBoxClient) Update(ctx context.Context, storageBox *StorageBox, o
 	return StorageBoxFromSchema(respBody.StorageBox), resp, nil
 }
 
+// StorageBoxDeleteResult is the result of a delete [StorageBox] operation.
+type StorageBoxDeleteResult struct {
+	Action *Action
+}
+
 // Delete deletes a [StorageBox].
-func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error) {
+func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (StorageBoxDeleteResult, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, storageBox.ID)
 
+	result := StorageBoxDeleteResult{}
+
 	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
 	if err != nil {
-		return nil, resp, err
+		return result, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, nil
+
+	result.Action = ActionFromSchema(respBody.Action)
+
+	return result, resp, nil
 }
 
 type StorageBoxFoldersResult struct {
@@ -404,7 +413,6 @@ type StorageBoxEnableSnapshotPlanOpts struct {
 	MaxSnapshots int
 	Minute       int
 	Hour         int
-	DayOfMonth   *int // Null means every day.
 
 	// DayOfWeek represents the day of the week for scheduling.
 	// A nil value means the schedule applies to every day.
@@ -412,7 +420,8 @@ type StorageBoxEnableSnapshotPlanOpts struct {
 	// The Hetzner API uses 1–7 to represent Monday–Sunday,
 	// while Go’s time.Weekday uses 0–6 for Sunday–Saturday.
 	// This field maps the API’s values to Go’s time.Weekday.
-	DayOfWeek *time.Weekday
+	DayOfWeek  *time.Weekday
+	DayOfMonth *int // Null means every day.
 }
 
 // EnableSnapshotPlan enables a [StorageBoxSnapshotPlan] for a [StorageBox].
