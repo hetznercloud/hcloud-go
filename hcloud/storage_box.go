@@ -52,8 +52,8 @@ type StorageBoxProtection struct {
 // StorageBoxSnapshotPlan represents the snapshot plan of a [StorageBox].
 type StorageBoxSnapshotPlan struct {
 	MaxSnapshots int
-	Minute       *int
-	Hour         *int
+	Minute       int
+	Hour         int
 	DayOfMonth   *int
 
 	// DayOfWeek represents the day of the week for scheduling.

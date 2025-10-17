@@ -44,8 +44,8 @@ type StorageBoxProtection struct {
 // StorageBoxSnapshotPlan defines the schema of a Storage Box's snapshot plan.
 type StorageBoxSnapshotPlan struct {
 	MaxSnapshots int  `json:"max_snapshots"`
-	Minute       *int `json:"minute,omitempty"`
-	Hour         *int `json:"hour,omitempty"`
+	Minute       int  `json:"minute"`
+	Hour         int  `json:"hour"`
 	DayOfWeek    *int `json:"day_of_week,omitempty"`
 	DayOfMonth   *int `json:"day_of_month,omitempty"`
 }
