@@ -1243,7 +1243,7 @@ func (c *converterImpl) SchemaFromStorageBoxSubaccountCreateOpts(source StorageB
 	schemaStorageBoxSubaccountCreateRequest.HomeDirectory = source.HomeDirectory
 	schemaStorageBoxSubaccountCreateRequest.Password = source.Password
 	schemaStorageBoxSubaccountCreateRequest.Description = source.Description
-	schemaStorageBoxSubaccountCreateRequest.AccessSettings = c.pHcloudStorageBoxSubaccountCreateOptsAccessSettingsToPSchemaStorageBoxSubaccountAccessSettings(source.AccessSettings)
+	schemaStorageBoxSubaccountCreateRequest.AccessSettings = c.pHcloudStorageBoxSubaccountCreateOptsAccessSettingsToPSchemaStorageBoxSubaccountCreateRequestAccessSettings(source.AccessSettings)
 	schemaStorageBoxSubaccountCreateRequest.Labels = source.Labels
 	return schemaStorageBoxSubaccountCreateRequest
 }
@@ -2496,28 +2496,18 @@ func (c *converterImpl) pHcloudStorageBoxSubaccountAccessSettingsToSchemaStorage
 	}
 	return schemaStorageBoxSubaccountAccessSettings
 }
-func (c *converterImpl) pHcloudStorageBoxSubaccountCreateOptsAccessSettingsToPSchemaStorageBoxSubaccountAccessSettings(source *StorageBoxSubaccountCreateOptsAccessSettings) *schema.StorageBoxSubaccountAccessSettings {
-	var pSchemaStorageBoxSubaccountAccessSettings *schema.StorageBoxSubaccountAccessSettings
+func (c *converterImpl) pHcloudStorageBoxSubaccountCreateOptsAccessSettingsToPSchemaStorageBoxSubaccountCreateRequestAccessSettings(source *StorageBoxSubaccountCreateOptsAccessSettings) *schema.StorageBoxSubaccountCreateRequestAccessSettings {
+	var pSchemaStorageBoxSubaccountCreateRequestAccessSettings *schema.StorageBoxSubaccountCreateRequestAccessSettings
 	if source != nil {
-		var schemaStorageBoxSubaccountAccessSettings schema.StorageBoxSubaccountAccessSettings
-		if (*source).ReachableExternally != nil {
-			schemaStorageBoxSubaccountAccessSettings.ReachableExternally = *(*source).ReachableExternally
-		}
-		if (*source).Readonly != nil {
-			schemaStorageBoxSubaccountAccessSettings.Readonly = *(*source).Readonly
-		}
-		if (*source).SambaEnabled != nil {
-			schemaStorageBoxSubaccountAccessSettings.SambaEnabled = *(*source).SambaEnabled
-		}
-		if (*source).SSHEnabled != nil {
-			schemaStorageBoxSubaccountAccessSettings.SSHEnabled = *(*source).SSHEnabled
-		}
-		if (*source).WebDAVEnabled != nil {
-			schemaStorageBoxSubaccountAccessSettings.WebDAVEnabled = *(*source).WebDAVEnabled
-		}
-		pSchemaStorageBoxSubaccountAccessSettings = &schemaStorageBoxSubaccountAccessSettings
+		var schemaStorageBoxSubaccountCreateRequestAccessSettings schema.StorageBoxSubaccountCreateRequestAccessSettings
+		schemaStorageBoxSubaccountCreateRequestAccessSettings.ReachableExternally = (*source).ReachableExternally
+		schemaStorageBoxSubaccountCreateRequestAccessSettings.Readonly = (*source).Readonly
+		schemaStorageBoxSubaccountCreateRequestAccessSettings.SambaEnabled = (*source).SambaEnabled
+		schemaStorageBoxSubaccountCreateRequestAccessSettings.SSHEnabled = (*source).SSHEnabled
+		schemaStorageBoxSubaccountCreateRequestAccessSettings.WebDAVEnabled = (*source).WebDAVEnabled
+		pSchemaStorageBoxSubaccountCreateRequestAccessSettings = &schemaStorageBoxSubaccountCreateRequestAccessSettings
 	}
-	return pSchemaStorageBoxSubaccountAccessSettings
+	return pSchemaStorageBoxSubaccountCreateRequestAccessSettings
 }
 func (c *converterImpl) pHcloudStorageBoxTypeToSchemaIDOrName(source *StorageBoxType) schema.IDOrName {
 	var schemaIDOrName schema.IDOrName
