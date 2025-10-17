@@ -444,10 +444,7 @@ func TestStorageBoxUpdateAccessSettings(t *testing.T) {
 
 					expected := `{
 						"samba_enabled": true,
-						"ssh_enabled": false,
-						"webdav_enabled": null,
-						"zfs_enabled": null,
-						"reachable_externally": null
+						"ssh_enabled": false
 					}`
 
 					assert.JSONEq(t, expected, string(body), "unexpected request body")

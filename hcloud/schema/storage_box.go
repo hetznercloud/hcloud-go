@@ -124,11 +124,11 @@ type StorageBoxResetPasswordRequest struct {
 // StorageBoxUpdateAccessSettingsRequest defines the schema of the request when updating
 // a Storage Box's access settings.
 type StorageBoxUpdateAccessSettingsRequest struct {
-	ReachableExternally *bool `json:"reachable_externally"`
-	SambaEnabled        *bool `json:"samba_enabled"`
-	SSHEnabled          *bool `json:"ssh_enabled"`
-	WebDAVEnabled       *bool `json:"webdav_enabled"`
-	ZFSEnabled          *bool `json:"zfs_enabled"`
+	ReachableExternally *bool `json:"reachable_externally,omitempty"`
+	SambaEnabled        *bool `json:"samba_enabled,omitempty"`
+	SSHEnabled          *bool `json:"ssh_enabled,omitempty"`
+	WebDAVEnabled       *bool `json:"webdav_enabled,omitempty"`
+	ZFSEnabled          *bool `json:"zfs_enabled,omitempty"`
 }
 
 // StorageBoxRollbackSnapshotRequest defines the schema of the request to roll back a Storage Box to a snapshot.
