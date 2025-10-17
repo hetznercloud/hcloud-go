@@ -14,7 +14,7 @@ import (
 type StorageBoxSnapshot struct {
 	ID          int64
 	Name        string
-	Description *string
+	Description string
 	Stats       *StorageBoxSnapshotStats
 	IsAutomatic bool
 	Labels      map[string]string

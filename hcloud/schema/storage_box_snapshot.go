@@ -6,7 +6,7 @@ import "time"
 type StorageBoxSnapshot struct {
 	ID          int64                   `json:"id"`
 	Name        string                  `json:"name"`
-	Description *string                 `json:"description"`
+	Description string                  `json:"description"`
 	Stats       StorageBoxSnapshotStats `json:"stats"`
 	IsAutomatic bool                    `json:"is_automatic"`
 	Labels      map[string]string       `json:"labels"`

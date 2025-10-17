@@ -51,7 +51,7 @@ func TestStorageBoxClientGetSnapshot(t *testing.T) {
 
 		assert.Equal(t, int64(42), storageBoxSnapshot.ID)
 		assert.Equal(t, "my-resource", storageBoxSnapshot.Name)
-		assert.Equal(t, "This describes my resource", *storageBoxSnapshot.Description)
+		assert.Equal(t, "This describes my resource", storageBoxSnapshot.Description)
 		assert.Equal(t, uint64(0), storageBoxSnapshot.Stats.Size)
 		assert.Equal(t, time.Date(2025, 8, 21, 00, 00, 0, 0, time.UTC), storageBoxSnapshot.Created)
 		assert.Equal(t, "prod", storageBoxSnapshot.Labels["environment"])
