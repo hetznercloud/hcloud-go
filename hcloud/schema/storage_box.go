@@ -141,6 +141,6 @@ type StorageBoxEnableSnapshotPlanRequest struct {
 	MaxSnapshots int  `json:"max_snapshots"`
 	Minute       int  `json:"minute"`
 	Hour         int  `json:"hour"`
-	DayOfWeek    *int `json:"day_of_week"`
-	DayOfMonth   *int `json:"day_of_month"`
+	DayOfWeek    *int `json:"day_of_week"`  // No omitempty because nil have a meaning and is the default in the API.
+	DayOfMonth   *int `json:"day_of_month"` // No omitempty because nil have a meaning and is the default in the API.
 }
