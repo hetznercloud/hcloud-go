@@ -1659,8 +1659,8 @@ func (c *converterImpl) StorageBoxSnapshotPlanFromSchema(source schema.StorageBo
 	hcloudStorageBoxSnapshotPlan.MaxSnapshots = source.MaxSnapshots
 	hcloudStorageBoxSnapshotPlan.Minute = source.Minute
 	hcloudStorageBoxSnapshotPlan.Hour = source.Hour
-	hcloudStorageBoxSnapshotPlan.DayOfMonth = source.DayOfMonth
 	hcloudStorageBoxSnapshotPlan.DayOfWeek = mapStorageBoxIntPtrToWeekdayPtr(source.DayOfWeek)
+	hcloudStorageBoxSnapshotPlan.DayOfMonth = source.DayOfMonth
 	return hcloudStorageBoxSnapshotPlan
 }
 func (c *converterImpl) StorageBoxSubaccountFromCreateResponse(source schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount {
