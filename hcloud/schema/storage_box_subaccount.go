@@ -43,7 +43,8 @@ type StorageBoxSubaccountCreateRequest struct {
 	Labels         map[string]string                   `json:"labels,omitempty"`
 }
 
-// StorageBoxSubaccountCreateRequestAccessSettings defines the schema of the access settings in the request when creating a Storage Box subaccount.
+// StorageBoxSubaccountCreateRequestAccessSettings defines the schema of the access settings in the
+// request when creating a Storage Box subaccount.
 type StorageBoxSubaccountCreateRequestAccessSettings struct {
 	ReachableExternally *bool `json:"reachable_externally,omitempty"`
 	Readonly            *bool `json:"readonly,omitempty"`
@@ -58,6 +59,8 @@ type StorageBoxSubaccountCreateResponse struct {
 	Action     Action                                       `json:"action"`
 }
 
+// StorageBoxSubaccountCreateResponseSubaccount defines the schema of the subaccount in the response
+// when creating a Storage Box subaccount.
 type StorageBoxSubaccountCreateResponseSubaccount struct {
 	ID         int64 `json:"id"`
 	StorageBox int64 `json:"storage_box"`
@@ -74,15 +77,24 @@ type StorageBoxSubaccountUpdateResponse struct {
 	Subaccount StorageBoxSubaccount `json:"subaccount"`
 }
 
+// StorageBoxSubaccountResetPasswordRequest defines the schema of the request when resetting a
+// Storage Box subaccount's password.
 type StorageBoxSubaccountResetPasswordRequest struct {
 	Password string `json:"password"`
 }
 
+// StorageBoxSubaccountUpdateAccessSettingsRequest defines the schema of the request when updating
+// Storage Box subaccount's access settings.
 type StorageBoxSubaccountUpdateAccessSettingsRequest struct {
-	HomeDirectory       *string `json:"home_directory,omitempty"`
-	ReachableExternally *bool   `json:"reachable_externally,omitempty"`
-	Readonly            *bool   `json:"readonly,omitempty"`
-	SambaEnabled        *bool   `json:"samba_enabled,omitempty"`
-	SSHEnabled          *bool   `json:"ssh_enabled,omitempty"`
-	WebDAVEnabled       *bool   `json:"webdav_enabled,omitempty"`
+	ReachableExternally *bool `json:"reachable_externally,omitempty"`
+	Readonly            *bool `json:"readonly,omitempty"`
+	SambaEnabled        *bool `json:"samba_enabled,omitempty"`
+	SSHEnabled          *bool `json:"ssh_enabled,omitempty"`
+	WebDAVEnabled       *bool `json:"webdav_enabled,omitempty"`
+}
+
+// StorageBoxSubaccountChangeHomeDirectoryRequest defines the schema of the request when changing
+// the home directory of a Storage Box subaccount.
+type StorageBoxSubaccountChangeHomeDirectoryRequest struct {
+	HomeDirectory string `json:"home_directory"`
 }

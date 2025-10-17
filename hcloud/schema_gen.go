@@ -62,7 +62,6 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend int64FromFloatingIP
 // goverter:extend storageBoxFromInt64
 // goverter:extend int64FromStorageBox
-// goverter:extend int64FromStorageBoxSnapshot
 // goverter:extend mapFromFloatingIPDNSPtrSchema
 // goverter:extend floatingIPDNSPtrSchemaFromMap
 // goverter:extend mapFromPrimaryIPDNSPtrSchema
@@ -391,61 +390,43 @@ type converter interface {
 	SchemaFromZoneRRSetAddRecordsOpts(ZoneRRSetAddRecordsOpts) schema.ZoneRRSetAddRecordsRequest
 	SchemaFromZoneRRSetRemoveRecordsOpts(ZoneRRSetRemoveRecordsOpts) schema.ZoneRRSetRemoveRecordsRequest
 
+	// StorageBoxType
 	// goverter:map Pricings Prices
 	SchemaFromStorageBoxType(*StorageBoxType) schema.StorageBoxType
-	// StorageBoxType conversions
 	// goverter:map Prices Pricings
 	StorageBoxTypeFromSchema(schema.StorageBoxType) *StorageBoxType
 
-	// StorageBox conversions
+	// StorageBox
 	StorageBoxFromSchema(schema.StorageBox) *StorageBox
-
 	// goverter:map DayOfWeek | mapStorageBoxIntPtrToWeekdayPtr
 	StorageBoxSnapshotPlanFromSchema(schema.StorageBoxSnapshotPlan) StorageBoxSnapshotPlan
-
 	SchemaFromStorageBox(*StorageBox) schema.StorageBox
-
 	SchemaFromStorageBoxCreateOpts(StorageBoxCreateOpts) schema.StorageBoxCreateRequest
-
-	// goverter:map Name | mapEmptyStringToNil
 	SchemaFromStorageBoxUpdateOpts(StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest
-
-	StorageBoxSnapshotFromSchema(schema.StorageBoxSnapshot) *StorageBoxSnapshot
-
-	SchemaFromStorageBoxSnapshot(*StorageBoxSnapshot) schema.StorageBoxSnapshot
-
-	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
-
-	SchemaFromStorageBoxSnapshotUpdateOpts(StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest
-
 	SchemaFromStorageBoxChangeProtectionOpts(StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest
-
 	SchemaFromStorageBoxChangeTypeOpts(StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest
-
 	SchemaFromStorageBoxResetPasswordOpts(StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest
-
 	SchemaFromStorageBoxUpdateAccessSettingsOpts(StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest
-
-	// goverter:map Snapshot SnapshotID
 	SchemaFromStorageBoxRollbackSnapshotOpts(StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest
-
 	// goverter:map DayOfWeek | mapStorageBoxWeekdayPtrToIntPtr
 	SchemaFromStorageBoxEnableSnapshotPlanOpts(StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest
 
+	// StorageBoxSnapshot
+	StorageBoxSnapshotFromSchema(schema.StorageBoxSnapshot) *StorageBoxSnapshot
+	SchemaFromStorageBoxSnapshot(*StorageBoxSnapshot) schema.StorageBoxSnapshot
+	SchemaFromStorageBoxSnapshotCreateOpts(StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest
+	SchemaFromStorageBoxSnapshotUpdateOpts(StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest
+
+	// StorageBoxSubaccount
 	StorageBoxSubaccountFromSchema(schema.StorageBoxSubaccount) *StorageBoxSubaccount
-
 	SchemaFromStorageBoxSubaccount(*StorageBoxSubaccount) schema.StorageBoxSubaccount
-
 	SchemaFromStorageBoxSubaccountCreateOpts(StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest
-
 	SchemaFromStorageBoxSubaccountUpdateOpts(StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest
-
 	// goverter:ignoreMissing
 	StorageBoxSubaccountFromCreateResponse(schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount
-
 	SchemaFromStorageBoxSubaccountResetPasswordOpts(StorageBoxSubaccountResetPasswordOpts) schema.StorageBoxSubaccountResetPasswordRequest
-
 	SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(StorageBoxSubaccountAccessSettingsUpdateOpts) schema.StorageBoxSubaccountUpdateAccessSettingsRequest
+	SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(StorageBoxSubaccountChangeHomeDirectoryOpts) schema.StorageBoxSubaccountChangeHomeDirectoryRequest
 }
 
 func schemaActionErrorFromAction(a Action) *schema.ActionError {
@@ -657,13 +638,6 @@ func int64FromStorageBox(sb *StorageBox) int64 {
 		return 0
 	}
 	return sb.ID
-}
-
-func int64FromStorageBoxSnapshot(sbs *StorageBoxSnapshot) int64 {
-	if sbs == nil {
-		return 0
-	}
-	return sbs.ID
 }
 
 func firewallStatusFromSchemaServerFirewall(fw schema.ServerFirewall) *ServerFirewallStatus {

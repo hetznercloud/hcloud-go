@@ -8,80 +8,86 @@ import (
 
 // IStorageBoxClient ...
 type IStorageBoxClient interface {
-	// GetByID retrieves a storage box by its ID. If the storage box does not exist, nil is returned.
+	// GetByID retrieves a [StorageBox] by its ID. If the [StorageBox] does not exist, nil is returned.
 	GetByID(ctx context.Context, id int64) (*StorageBox, *Response, error)
-	// GetByName retrieves a storage box by its name. If the storage box does not exist, nil is returned.
+	// GetByName retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
 	GetByName(ctx context.Context, name string) (*StorageBox, *Response, error)
-	// Get retrieves a storage box by its ID if the input can be parsed as an integer, otherwise it
-	// retrieves a storage box by its name. If the storage box does not exist, nil is returned.
+	// Get retrieves a [StorageBox] by its ID if the input can be parsed as an integer, otherwise it
+	// retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
 	Get(ctx context.Context, idOrName string) (*StorageBox, *Response, error)
-	// List returns a list of storage boxes for a specific page.
+	// List returns a list of [StorageBox] for a specific page.
 	//
 	// Please note that filters specified in opts are not taken into account
 	// when their value corresponds to their zero value or when they are empty.
 	List(ctx context.Context, opts StorageBoxListOpts) ([]*StorageBox, *Response, error)
-	// All returns all storage boxes.
+	// All returns all [StorageBox].
 	All(ctx context.Context) ([]*StorageBox, error)
-	// AllWithOpts returns all storage boxes with the given options.
+	// AllWithOpts returns all [StorageBox] with the given options.
 	AllWithOpts(ctx context.Context, opts StorageBoxListOpts) ([]*StorageBox, error)
-	// Create creates a new storage box with the given options.
+	// Create creates a new [StorageBox] with the given options.
 	Create(ctx context.Context, opts StorageBoxCreateOpts) (StorageBoxCreateResult, *Response, error)
-	// Update updates a storage box with the given options.
+	// Update updates a [StorageBox] with the given options.
 	Update(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateOpts) (*StorageBox, *Response, error)
-	// Delete deletes a storage box.
+	// Delete deletes a [StorageBox].
 	Delete(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error)
-	// Folders lists folders in a storage box.
+	// Folders lists folders in a [StorageBox].
 	Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error)
-	// ChangeProtection changes the protection level of a storage box.
+	// ChangeProtection changes the protection level of a [StorageBox].
 	ChangeProtection(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeProtectionOpts) (*Action, *Response, error)
-	// ChangeType changes the type of a storage box.
+	// ChangeType changes the type of a [StorageBox].
 	ChangeType(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeTypeOpts) (*Action, *Response, error)
-	// ResetPassword resets the password of a storage box.
+	// ResetPassword resets the password of a [StorageBox].
 	ResetPassword(ctx context.Context, storageBox *StorageBox, opts StorageBoxResetPasswordOpts) (*Action, *Response, error)
-	// UpdateAccessSettings updates the access settings of a storage box.
+	// UpdateAccessSettings updates the [StorageBoxAccessSettings] of a [StorageBox].
 	UpdateAccessSettings(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateAccessSettingsOpts) (*Action, *Response, error)
-	// RollbackSnapshot rolls back a storage box to a snapshot.
+	// RollbackSnapshot rolls back a [StorageBox] to a [StorageBoxSnapshot].
 	RollbackSnapshot(ctx context.Context, storageBox *StorageBox, opts StorageBoxRollbackSnapshotOpts) (*Action, *Response, error)
-	// EnableSnapshotPlan enables a snapshot plan for a storage box.
+	// EnableSnapshotPlan enables a [StorageBoxSnapshotPlan] for a [StorageBox].
 	EnableSnapshotPlan(ctx context.Context, storageBox *StorageBox, opts StorageBoxEnableSnapshotPlanOpts) (*Action, *Response, error)
-	// DisableSnapshotPlan disables the snapshot plan for a storage box.
+	// DisableSnapshotPlan disables the [StorageBoxSnapshotPlan] for a [StorageBox].
 	DisableSnapshotPlan(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error)
-	// GetSnapshotByID gets a Storage Box Snapshot by its ID.
+	// GetSnapshotByID gets a [StorageBoxSnapshot] by its ID.
 	GetSnapshotByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSnapshot, *Response, error)
-	// GetSnapshotByName gets a Storage Box snapshot by its name.
+	// GetSnapshotByName gets a [StorageBoxSnapshot] by its name.
 	GetSnapshotByName(ctx context.Context, storageBox *StorageBox, name string) (*StorageBoxSnapshot, *Response, error)
-	// GetSnapshot gets a Storage Box snapshot by its ID or name.
+	// GetSnapshot gets a [StorageBoxSnapshot] by its ID or name.
 	GetSnapshot(ctx context.Context, storageBox *StorageBox, idOrName string) (*StorageBoxSnapshot, *Response, error)
-	// ListSnapshots lists all snapshots of a Storage Box with the given options.
+	// ListSnapshots lists all [StorageBoxSnapshot] of a [StorageBox] with the given options.
 	//
-	// Pagination is not supported, so this will return all snapshots at once.
+	// Pagination is not supported, so this will return all [StorageBoxSnapshot] at once.
 	ListSnapshots(ctx context.Context, storageBox *StorageBox, opts StorageBoxSnapshotListOpts) ([]*StorageBoxSnapshot, *Response, error)
-	// AllSnapshotsWithOpts lists all snapshots of a Storage Box with the given options.
+	// AllSnapshotsWithOpts lists all [StorageBoxSnapshot] of a [StorageBox] with the given options.
 	AllSnapshotsWithOpts(ctx context.Context, storageBox *StorageBox, opts StorageBoxSnapshotListOpts) ([]*StorageBoxSnapshot, error)
-	// AllSnapshots lists all snapshots of a Storage Box without any options.
+	// AllSnapshots lists all [StorageBoxSnapshot] of a [StorageBox] without any options.
 	AllSnapshots(ctx context.Context, storageBox *StorageBox) ([]*StorageBoxSnapshot, error)
-	// CreateSnapshot creates a new snapshot for the given Storage Box with the provided options.
+	// CreateSnapshot creates a new [StorageBoxSnapshot] for the given [StorageBox] with the provided options.
 	CreateSnapshot(ctx context.Context, storageBox *StorageBox, opts StorageBoxSnapshotCreateOpts) (StorageBoxSnapshotCreateResult, *Response, error)
-	// UpdateSnapshot updates the given snapshot of a Storage Box with the provided options.
+	// UpdateSnapshot updates the given [StorageBoxSnapshot] of a [StorageBox] with the provided options.
 	UpdateSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot, opts StorageBoxSnapshotUpdateOpts) (*StorageBoxSnapshot, *Response, error)
-	// DeleteSnapshot deletes the given snapshot of a Storage Box.
+	// DeleteSnapshot deletes the given [StorageBoxSnapshot] of a [StorageBox].
 	DeleteSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot) (*Action, *Response, error)
-	// GetSubaccountByID retrieves a Storage Box subaccount by its ID.
+	// GetSubaccount retrieves a [StorageBoxSubaccount] by its ID or username.
+	GetSubaccount(ctx context.Context, storageBox *StorageBox, idOrUsername string) (*StorageBoxSubaccount, *Response, error)
+	// GetSubaccountByID retrieves a [StorageBoxSubaccount] by its ID.
 	GetSubaccountByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSubaccount, *Response, error)
-	// ListSubaccounts lists all subaccounts of a Storage Box.
+	// GetSubaccountByUsername retrieves a [StorageBoxSubaccount] by its username.
+	GetSubaccountByUsername(ctx context.Context, storageBox *StorageBox, username string) (*StorageBoxSubaccount, *Response, error)
+	// ListSubaccounts lists all [StorageBoxSubaccount] of a [StorageBox].
 	ListSubaccounts(ctx context.Context, storageBox *StorageBox, opts StorageBoxSubaccountListOpts) ([]*StorageBoxSubaccount, *Response, error)
-	// AllSubaccountsWithOpts retrieves all subaccounts of a Storage Box with the given options.
+	// AllSubaccountsWithOpts retrieves all [StorageBoxSubaccount] of a [StorageBox] with the given options.
 	AllSubaccountsWithOpts(ctx context.Context, storageBox *StorageBox, opts StorageBoxSubaccountListOpts) ([]*StorageBoxSubaccount, error)
-	// AllSubaccounts retrieves all subaccounts of a Storage Box.
+	// AllSubaccounts retrieves all [StorageBoxSubaccount] of a [StorageBox].
 	AllSubaccounts(ctx context.Context, storageBox *StorageBox) ([]*StorageBoxSubaccount, error)
-	// CreateSubaccount creates a new subaccount for a Storage Box.
+	// CreateSubaccount creates a new [StorageBoxSubaccount] for a [StorageBox].
 	CreateSubaccount(ctx context.Context, storageBox *StorageBox, opts StorageBoxSubaccountCreateOpts) (StorageBoxSubaccountCreateResult, *Response, error)
-	// UpdateSubaccount updates a subaccount of a Storage Box.
+	// UpdateSubaccount updates a [StorageBoxSubaccount] of a [StorageBox].
 	UpdateSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountUpdateOpts) (*StorageBoxSubaccount, *Response, error)
-	// DeleteSubaccount deletes a subaccount from a Storage Box.
+	// DeleteSubaccount deletes a [StorageBoxSubaccount] from a [StorageBox].
 	DeleteSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount) (*Action, *Response, error)
-	// ResetSubaccountPassword resets the password of a Storage Box subaccount.
+	// ResetSubaccountPassword resets the password of a [StorageBoxSubaccount].
 	ResetSubaccountPassword(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountResetPasswordOpts) (*Action, *Response, error)
-	// UpdateSubaccountAccessSettings updates the access settings of a Storage Box subaccount.
+	// UpdateSubaccountAccessSettings updates the [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
 	UpdateSubaccountAccessSettings(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountAccessSettingsUpdateOpts) (*Action, *Response, error)
+	// UpdateSubaccountAccessSettings changes the home directory of a [StorageBoxSubaccount].
+	ChangeSubaccountHomeDirectory(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountChangeHomeDirectoryOpts) (*Action, *Response, error)
 }
