@@ -208,7 +208,13 @@ func TestStorageBoxClientCreate(t *testing.T) {
 			Status: 201,
 			JSONRaw: `{
 				"action": { "id": 1 },
-				"storage_box": { "id": 42 }
+				"storage_box": {
+					"id": 42,
+					"status": "initializing",
+					"username": null,
+					"server": null,
+					"system": null
+				}
 			}`,
 		},
 	})
