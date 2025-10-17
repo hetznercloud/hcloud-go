@@ -249,8 +249,9 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 		storageBox := &StorageBox{ID: 42}
 
 		opts := StorageBoxSubaccountCreateOpts{
-			HomeDirectory: Ptr("/home/my-user"),
+			HomeDirectory: "/home/my-user",
 			Password:      "my-password",
+			Description:   "This describes my subaccount",
 			AccessSettings: &StorageBoxSubaccountCreateOptsAccessSettings{
 				ReachableExternally: Ptr(true),
 				Readonly:            Ptr(false),
@@ -258,7 +259,6 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 				SSHEnabled:          Ptr(false),
 				WebDAVEnabled:       Ptr(true),
 			},
-			Description: "This describes my subaccount",
 			Labels: map[string]string{
 				"environment": "prod",
 			},

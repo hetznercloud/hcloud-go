@@ -147,10 +147,10 @@ func (c *StorageBoxClient) AllSubaccounts(
 
 // StorageBoxSubaccountCreateOpts represents the options for creating a [StorageBoxSubaccount].
 type StorageBoxSubaccountCreateOpts struct {
+	HomeDirectory  string
 	Password       string
-	HomeDirectory  *string
-	AccessSettings *StorageBoxSubaccountCreateOptsAccessSettings
 	Description    string
+	AccessSettings *StorageBoxSubaccountCreateOptsAccessSettings
 	Labels         map[string]string
 }
 

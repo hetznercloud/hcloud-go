@@ -36,10 +36,10 @@ type StorageBoxSubaccountListResponse struct {
 
 // StorageBoxSubaccountCreateRequest defines the schema of the request when creating a Storage Box subaccount.
 type StorageBoxSubaccountCreateRequest struct {
+	HomeDirectory  string                              `json:"home_directory"`
 	Password       string                              `json:"password"`
-	HomeDirectory  *string                             `json:"home_directory"`
-	AccessSettings *StorageBoxSubaccountAccessSettings `json:"access_settings,omitempty"`
 	Description    string                              `json:"description,omitempty"`
+	AccessSettings *StorageBoxSubaccountAccessSettings `json:"access_settings,omitempty"`
 	Labels         map[string]string                   `json:"labels,omitempty"`
 }
 
