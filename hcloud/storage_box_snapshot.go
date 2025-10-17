@@ -15,7 +15,7 @@ type StorageBoxSnapshot struct {
 	ID          int64
 	Name        string
 	Description string
-	Stats       *StorageBoxSnapshotStats
+	Stats       StorageBoxSnapshotStats
 	IsAutomatic bool
 	Labels      map[string]string
 	Created     time.Time
