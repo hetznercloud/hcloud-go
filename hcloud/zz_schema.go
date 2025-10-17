@@ -1133,16 +1133,17 @@ func (c *converterImpl) SchemaFromStorageBox(source *StorageBox) schema.StorageB
 	var schemaStorageBox schema.StorageBox
 	if source != nil {
 		schemaStorageBox.ID = (*source).ID
-		schemaStorageBox.Username = (*source).Username
+		pString := (*source).Username
+		schemaStorageBox.Username = &pString
 		schemaStorageBox.Status = string((*source).Status)
 		schemaStorageBox.Name = (*source).Name
 		schemaStorageBox.StorageBoxType = c.SchemaFromStorageBoxType((*source).StorageBoxType)
 		schemaStorageBox.Location = c.SchemaFromLocation((*source).Location)
 		schemaStorageBox.AccessSettings = c.hcloudStorageBoxAccessSettingsToSchemaStorageBoxAccessSettings((*source).AccessSettings)
-		pString := (*source).Server
-		schemaStorageBox.Server = &pString
-		pString2 := (*source).System
-		schemaStorageBox.System = &pString2
+		pString2 := (*source).Server
+		schemaStorageBox.Server = &pString2
+		pString3 := (*source).System
+		schemaStorageBox.System = &pString3
 		schemaStorageBox.Stats = c.hcloudStorageBoxStatsToSchemaStorageBoxStats((*source).Stats)
 		schemaStorageBox.Labels = (*source).Labels
 		schemaStorageBox.Protection = c.hcloudStorageBoxProtectionToSchemaStorageBoxProtection((*source).Protection)
@@ -1620,7 +1621,9 @@ func (c *converterImpl) ServerTypeFromSchema(source schema.ServerType) *ServerTy
 func (c *converterImpl) StorageBoxFromSchema(source schema.StorageBox) *StorageBox {
 	var hcloudStorageBox StorageBox
 	hcloudStorageBox.ID = source.ID
-	hcloudStorageBox.Username = source.Username
+	if source.Username != nil {
+		hcloudStorageBox.Username = *source.Username
+	}
 	hcloudStorageBox.Status = StorageBoxStatus(source.Status)
 	hcloudStorageBox.Name = source.Name
 	hcloudStorageBox.StorageBoxType = c.StorageBoxTypeFromSchema(source.StorageBoxType)

@@ -5,7 +5,7 @@ import "time"
 // StorageBox defines the schema of a Storage Box.
 type StorageBox struct {
 	ID             int64                    `json:"id"`
-	Username       string                   `json:"username"`
+	Username       *string                  `json:"username"`
 	Status         string                   `json:"status"`
 	Name           string                   `json:"name"`
 	StorageBoxType StorageBoxType           `json:"storage_box_type"`
