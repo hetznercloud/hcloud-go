@@ -97,7 +97,7 @@ func (o StorageBoxSubaccountListOpts) values() url.Values {
 	if o.Username != "" {
 		vals.Add("username", o.Username)
 	}
-	if len(o.LabelSelector) > 0 {
+	if o.LabelSelector != "" {
 		vals.Add("label_selector", o.LabelSelector)
 	}
 	for _, sort := range o.Sort {
