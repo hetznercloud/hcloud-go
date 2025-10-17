@@ -69,9 +69,7 @@ func (c *StorageBoxClient) GetSubaccountByID(
 		return nil, resp, err
 	}
 
-	subaccount := StorageBoxSubaccountFromSchema(respBody.Subaccount)
-
-	return subaccount, resp, nil
+	return StorageBoxSubaccountFromSchema(respBody.Subaccount), resp, nil
 }
 
 // GetSubaccountByUsername retrieves a [StorageBoxSubaccount] by its username.
@@ -220,9 +218,7 @@ func (c *StorageBoxClient) UpdateSubaccount(
 		return nil, resp, err
 	}
 
-	updatedSubaccount := StorageBoxSubaccountFromSchema(respBody.Subaccount)
-
-	return updatedSubaccount, resp, nil
+	return StorageBoxSubaccountFromSchema(respBody.Subaccount), resp, nil
 }
 
 // DeleteSubaccount deletes a [StorageBoxSubaccount] from a [StorageBox].
@@ -240,9 +236,7 @@ func (c *StorageBoxClient) DeleteSubaccount(
 		return nil, resp, err
 	}
 
-	action := ActionFromSchema(respBody.Action)
-
-	return action, resp, nil
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // StorageBoxSubaccountResetPasswordOpts represents the options for resetting a [StorageBoxSubaccount]'s password.

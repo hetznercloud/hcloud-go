@@ -308,9 +308,7 @@ func (c *StorageBoxClient) ChangeProtection(ctx context.Context, storageBox *Sto
 		return nil, resp, err
 	}
 
-	action := ActionFromSchema(respBody.Action)
-
-	return action, resp, nil
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // StorageBoxChangeTypeOpts specifies options for changing the type of a [StorageBox].
@@ -331,9 +329,7 @@ func (c *StorageBoxClient) ChangeType(ctx context.Context, storageBox *StorageBo
 		return nil, resp, err
 	}
 
-	action := ActionFromSchema(respBody.Action)
-
-	return action, resp, nil
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // StorageBoxResetPasswordOpts specifies options for resetting the password of a [StorageBox].
@@ -354,9 +350,7 @@ func (c *StorageBoxClient) ResetPassword(ctx context.Context, storageBox *Storag
 		return nil, resp, err
 	}
 
-	action := ActionFromSchema(respBody.Action)
-
-	return action, resp, nil
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // StorageBoxUpdateAccessSettingsOpts specifies options for updating the [StorageBoxAccessSettings] of a [StorageBox].
@@ -381,9 +375,7 @@ func (c *StorageBoxClient) UpdateAccessSettings(ctx context.Context, storageBox 
 		return nil, resp, err
 	}
 
-	action := ActionFromSchema(respBody.Action)
-
-	return action, resp, nil
+	return ActionFromSchema(respBody.Action), resp, nil
 }
 
 // StorageBoxRollbackSnapshotOpts specifies options for rolling back a [StorageBox] to a [StorageBoxSnapshot].

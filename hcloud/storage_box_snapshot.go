@@ -201,9 +201,7 @@ func (c *StorageBoxClient) UpdateSnapshot(
 		return nil, resp, err
 	}
 
-	updatedSnapshot := StorageBoxSnapshotFromSchema(respBody.Snapshot)
-
-	return updatedSnapshot, resp, nil
+	return StorageBoxSnapshotFromSchema(respBody.Snapshot), resp, nil
 }
 
 // DeleteSnapshot deletes the given [StorageBoxSnapshot] of a [StorageBox].
@@ -218,7 +216,5 @@ func (c *StorageBoxClient) DeleteSnapshot(
 
 	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
 
-	action := ActionFromSchema(respBody.Action)
-
-	return action, resp, err
+	return ActionFromSchema(respBody.Action), resp, err
 }
