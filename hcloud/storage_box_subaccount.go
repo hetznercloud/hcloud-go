@@ -112,11 +112,10 @@ func (c *StorageBoxClient) ListSubaccounts(
 	storageBox *StorageBox,
 	opts StorageBoxSubaccountListOpts,
 ) ([]*StorageBoxSubaccount, *Response, error) {
-	const opPath = "/storage_boxes/%d/subaccounts"
+	const opPath = "/storage_boxes/%d/subaccounts?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, storageBox.ID)
-	reqPath = fmt.Sprintf("%s?%s", reqPath, opts.values().Encode())
+	reqPath := fmt.Sprintf(opPath, storageBox.ID, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.StorageBoxSubaccountListResponse](ctx, c.client, reqPath)
 	if err != nil {
