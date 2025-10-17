@@ -46,8 +46,8 @@ type StorageBoxSnapshotPlan struct {
 	MaxSnapshots int  `json:"max_snapshots"`
 	Minute       int  `json:"minute"`
 	Hour         int  `json:"hour"`
-	DayOfWeek    *int `json:"day_of_week,omitempty"`
-	DayOfMonth   *int `json:"day_of_month,omitempty"`
+	DayOfWeek    *int `json:"day_of_week"`
+	DayOfMonth   *int `json:"day_of_month"`
 }
 
 // StorageBoxGetResponse defines the schema of the response when
