@@ -269,14 +269,10 @@ func (o StorageBoxFoldersOpts) values() url.Values {
 
 // Folders lists folders in a [StorageBox].
 func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error) {
-	const opPath = "/storage_boxes/%d/folders"
+	const opPath = "/storage_boxes/%d/folders?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, storageBox.ID)
-
-	if len(opts.values()) > 0 {
-		reqPath += "?" + opts.values().Encode()
-	}
+	reqPath := fmt.Sprintf(opPath, storageBox.ID, opts.values().Encode())
 
 	result := StorageBoxFoldersResult{}
 

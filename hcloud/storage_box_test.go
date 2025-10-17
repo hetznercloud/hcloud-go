@@ -297,7 +297,7 @@ func TestStorageBoxClientFolders(t *testing.T) {
 	t.Run("folders", func(t *testing.T) {
 		server.Expect([]mockutil.Request{
 			{
-				Method: "GET", Path: "/storage_boxes/42/folders",
+				Method: "GET", Path: "/storage_boxes/42/folders?",
 				Status: 200,
 				JSONRaw: `{
 					"folders": ["foo", "bar"]
@@ -321,11 +321,6 @@ func TestStorageBoxClientFolders(t *testing.T) {
 			{
 				Method: "GET", Path: "/storage_boxes/42/folders?path=%2Ffoo",
 				Status: 200,
-				Want: func(t *testing.T, r *http.Request) {
-					vals := r.URL.Query()
-					path := vals.Get("path")
-					assert.Equal(t, "/foo", path, "unexpected path query parameter")
-				},
 				JSONRaw: `{
 				"folders": ["subfoo", "subbar"]
 			}`,
