@@ -80,7 +80,7 @@ func TestStorageBoxClientGet(t *testing.T) {
 		assert.Equal(t, int64(42), storageBox.ID, "unexpected storage box ID")
 		assert.Equal(t, "my-storage-box", storageBox.Name, "unexpected storage box name")
 		assert.Equal(t, StorageBoxStatusActive, storageBox.Status, "unexpected storage box status")
-		assert.Equal(t, "u123456", *storageBox.Username, "unexpected storage box username")
+		assert.Equal(t, "u123456", storageBox.Username, "unexpected storage box username")
 		assert.Equal(t, uint64(1073741824), storageBox.Stats.Size, "unexpected storage box size")
 	})
 

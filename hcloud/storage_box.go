@@ -13,7 +13,7 @@ import (
 // StorageBox represents a Storage Box in Hetzner.
 type StorageBox struct {
 	ID             int64
-	Username       *string
+	Username       string
 	Status         StorageBoxStatus
 	Name           string
 	StorageBoxType *StorageBoxType
