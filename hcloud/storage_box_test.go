@@ -296,9 +296,9 @@ func TestStorageBoxClientDelete(t *testing.T) {
 }
 
 func TestStorageBoxClientFolders(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
 	t.Run("folders", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/folders?",
@@ -321,6 +321,8 @@ func TestStorageBoxClientFolders(t *testing.T) {
 	})
 
 	t.Run("sub folders", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
 		server.Expect([]mockutil.Request{
 			{
 				Method: "GET", Path: "/storage_boxes/42/folders?path=%2Ffoo",
