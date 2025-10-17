@@ -83,7 +83,7 @@ type IStorageBoxClient interface {
 	// UpdateSubaccount updates a [StorageBoxSubaccount] of a [StorageBox].
 	UpdateSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountUpdateOpts) (*StorageBoxSubaccount, *Response, error)
 	// DeleteSubaccount deletes a [StorageBoxSubaccount] from a [StorageBox].
-	DeleteSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount) (*Action, *Response, error)
+	DeleteSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount) (StorageBoxSubaccountDeleteResult, *Response, error)
 	// ResetSubaccountPassword resets the password of a [StorageBoxSubaccount].
 	ResetSubaccountPassword(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountResetPasswordOpts) (*Action, *Response, error)
 	// UpdateSubaccountAccessSettings updates the [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].

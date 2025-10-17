@@ -220,22 +220,30 @@ func (c *StorageBoxClient) UpdateSubaccount(
 	return StorageBoxSubaccountFromSchema(respBody.Subaccount), resp, nil
 }
 
+// StorageBoxSubaccountDeleteResult represents the result of deleting a [StorageBoxSubaccount].
+type StorageBoxSubaccountDeleteResult struct {
+	Action *Action
+}
+
 // DeleteSubaccount deletes a [StorageBoxSubaccount] from a [StorageBox].
 func (c *StorageBoxClient) DeleteSubaccount(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,
-) (*Action, *Response, error) {
+) (StorageBoxSubaccountDeleteResult, *Response, error) {
 	const opPath = "/storage_boxes/%d/subaccounts/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, subaccount.StorageBox.ID, subaccount.ID)
+	result := StorageBoxSubaccountDeleteResult{}
 
 	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
 	if err != nil {
-		return nil, resp, err
+		return result, resp, err
 	}
 
-	return ActionFromSchema(respBody.Action), resp, nil
+	result.Action = ActionFromSchema(respBody.Action)
+
+	return result, resp, nil
 }
 
 // StorageBoxSubaccountResetPasswordOpts represents the options for resetting a [StorageBoxSubaccount]'s password.

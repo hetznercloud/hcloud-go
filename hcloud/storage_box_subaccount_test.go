@@ -344,10 +344,11 @@ func TestStorageBoxClientDeleteSubaccount(t *testing.T) {
 		},
 	}
 
-	action, resp, err := client.StorageBox.DeleteSubaccount(ctx, subaccount)
+	result, resp, err := client.StorageBox.DeleteSubaccount(ctx, subaccount)
 	require.NoError(t, err)
 	require.NotNil(t, resp)
-	require.NotNil(t, action)
+	require.NotNil(t, result.Action)
+	require.Equal(t, int64(5), result.Action.ID)
 }
 
 func TestStorageBoxClientResetSubaccountPassword(t *testing.T) {
