@@ -213,8 +213,6 @@ func TestStorageBoxClientCreate(t *testing.T) {
 		},
 	})
 
-	reachableExternally := true
-	sshEnabled := false
 	opts := StorageBoxCreateOpts{
 		Name:           "my-new-storage-box",
 		StorageBoxType: &StorageBoxType{ID: 1},
@@ -223,8 +221,8 @@ func TestStorageBoxClientCreate(t *testing.T) {
 		Labels:         map[string]string{"env": "test"},
 		SSHKeys:        []string{"ssh-rsa AAAAB3NzaC1yc2E..."},
 		AccessSettings: &StorageBoxCreateOptsAccessSettings{
-			ReachableExternally: &reachableExternally,
-			SSHEnabled:          &sshEnabled,
+			ReachableExternally: Ptr(true),
+			SSHEnabled:          Ptr(false),
 		},
 	}
 
