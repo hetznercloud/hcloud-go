@@ -203,7 +203,7 @@ func TestStorageBoxClientCreateSnapshot(t *testing.T) {
 		storageBox := &StorageBox{ID: 42}
 
 		opts := StorageBoxSnapshotCreateOpts{
-			Description: Ptr("Test Snapshot"),
+			Description: "Test Snapshot",
 			Labels:      map[string]string{"environment": "prod"},
 		}
 		result, _, err := client.StorageBox.CreateSnapshot(ctx, storageBox, opts)

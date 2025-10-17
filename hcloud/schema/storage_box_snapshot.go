@@ -32,7 +32,7 @@ type StorageBoxSnapshotListResponse struct {
 
 // StorageBoxSnapshotCreateRequest defines the schema of the request to create a Storage Box snapshot.
 type StorageBoxSnapshotCreateRequest struct {
-	Description *string           `json:"description,omitempty"`
+	Description string            `json:"description,omitempty"`
 	Labels      map[string]string `json:"labels,omitempty"`
 }
 

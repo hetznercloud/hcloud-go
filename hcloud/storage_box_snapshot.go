@@ -143,7 +143,7 @@ func (c *StorageBoxClient) AllSnapshots(
 
 // StorageBoxSnapshotCreateOpts specifies options for creating a [StorageBoxSnapshot].
 type StorageBoxSnapshotCreateOpts struct {
-	Description *string
+	Description string
 	Labels      map[string]string
 }
 

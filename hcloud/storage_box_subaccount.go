@@ -151,7 +151,7 @@ type StorageBoxSubaccountCreateOpts struct {
 	Password       string
 	HomeDirectory  *string
 	AccessSettings *StorageBoxSubaccountCreateOptsAccessSettings
-	Description    *string
+	Description    string
 	Labels         map[string]string
 }
 

@@ -258,7 +258,7 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 				SSHEnabled:          Ptr(false),
 				WebDAVEnabled:       Ptr(true),
 			},
-			Description: Ptr("This describes my subaccount"),
+			Description: "This describes my subaccount",
 			Labels: map[string]string{
 				"environment": "prod",
 			},
