@@ -271,8 +271,8 @@ func (c *StorageBoxClient) ResetSubaccountPassword(
 	return ActionFromSchema(respBody.Action), resp, err
 }
 
-// StorageBoxSubaccountAccessSettingsUpdateOpts represents the options for updating [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
-type StorageBoxSubaccountAccessSettingsUpdateOpts struct {
+// StorageBoxSubaccountUpdateAccessSettingsOpts represents the options for updating [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
+type StorageBoxSubaccountUpdateAccessSettingsOpts struct {
 	ReachableExternally *bool
 	Readonly            *bool
 	SambaEnabled        *bool
@@ -284,7 +284,7 @@ type StorageBoxSubaccountAccessSettingsUpdateOpts struct {
 func (c *StorageBoxClient) UpdateSubaccountAccessSettings(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,
-	opts StorageBoxSubaccountAccessSettingsUpdateOpts,
+	opts StorageBoxSubaccountUpdateAccessSettingsOpts,
 ) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/subaccounts/%d/actions/update_access_settings"
 	ctx = ctxutil.SetOpPath(ctx, opPath)

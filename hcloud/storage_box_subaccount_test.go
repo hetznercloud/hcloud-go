@@ -416,7 +416,7 @@ func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
 		},
 	}
 
-	opts := StorageBoxSubaccountAccessSettingsUpdateOpts{
+	opts := StorageBoxSubaccountUpdateAccessSettingsOpts{
 		SambaEnabled:        Ptr(false),
 		SSHEnabled:          Ptr(true),
 		WebDAVEnabled:       Ptr(false),

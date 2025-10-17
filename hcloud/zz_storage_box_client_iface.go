@@ -87,7 +87,7 @@ type IStorageBoxClient interface {
 	// ResetSubaccountPassword resets the password of a [StorageBoxSubaccount].
 	ResetSubaccountPassword(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountResetPasswordOpts) (*Action, *Response, error)
 	// UpdateSubaccountAccessSettings updates the [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
-	UpdateSubaccountAccessSettings(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountAccessSettingsUpdateOpts) (*Action, *Response, error)
+	UpdateSubaccountAccessSettings(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountUpdateAccessSettingsOpts) (*Action, *Response, error)
 	// UpdateSubaccountAccessSettings changes the home directory of a [StorageBoxSubaccount].
 	ChangeSubaccountHomeDirectory(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountChangeHomeDirectoryOpts) (*Action, *Response, error)
 }
