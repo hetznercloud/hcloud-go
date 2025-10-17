@@ -328,8 +328,8 @@ func TestStorageBoxClientFolders(t *testing.T) {
 				Method: "GET", Path: "/storage_boxes/42/folders?path=%2Ffoo",
 				Status: 200,
 				JSONRaw: `{
-				"folders": ["subfoo", "subbar"]
-			}`,
+					"folders": ["subfoo", "subbar"]
+				}`,
 			},
 		})
 
