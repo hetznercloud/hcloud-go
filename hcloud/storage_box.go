@@ -237,18 +237,28 @@ func (c *StorageBoxClient) Update(ctx context.Context, storageBox *StorageBox, o
 	return StorageBoxFromSchema(respBody.StorageBox), resp, nil
 }
 
+// StorageBoxDeleteResult is the result of a delete [StorageBox] operation.
+type StorageBoxDeleteResult struct {
+	Action *Action
+}
+
 // Delete deletes a [StorageBox].
-func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error) {
+func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (StorageBoxDeleteResult, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, storageBox.ID)
 
+	result := StorageBoxDeleteResult{}
+
 	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
 	if err != nil {
-		return nil, resp, err
+		return result, resp, err
 	}
-	return ActionFromSchema(respBody.Action), resp, nil
+
+	result.Action = ActionFromSchema(respBody.Action)
+
+	return result, resp, nil
 }
 
 type StorageBoxFoldersResult struct {

@@ -285,10 +285,10 @@ func TestStorageBoxClientDelete(t *testing.T) {
 
 	storageBox := &StorageBox{ID: 42}
 
-	action, _, err := client.StorageBox.Delete(ctx, storageBox)
+	result, _, err := client.StorageBox.Delete(ctx, storageBox)
 	require.NoError(t, err)
-	require.NotNil(t, action, "no action returned")
-	assert.Equal(t, int64(1), action.ID, "unexpected action ID")
+	require.NotNil(t, result.Action, "no action returned")
+	assert.Equal(t, int64(1), result.Action.ID, "unexpected action ID")
 }
 
 func TestStorageBoxClientFolders(t *testing.T) {

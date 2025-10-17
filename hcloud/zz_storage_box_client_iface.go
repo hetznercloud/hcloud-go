@@ -29,7 +29,7 @@ type IStorageBoxClient interface {
 	// Update updates a [StorageBox] with the given options.
 	Update(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateOpts) (*StorageBox, *Response, error)
 	// Delete deletes a [StorageBox].
-	Delete(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error)
+	Delete(ctx context.Context, storageBox *StorageBox) (StorageBoxDeleteResult, *Response, error)
 	// Folders lists folders in a [StorageBox].
 	Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error)
 	// ChangeProtection changes the protection level of a [StorageBox].
