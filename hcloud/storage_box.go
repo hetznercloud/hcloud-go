@@ -288,7 +288,7 @@ func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, 
 
 // StorageBoxChangeProtectionOpts specifies options for changing the protection level of a [StorageBox].
 type StorageBoxChangeProtectionOpts struct {
-	Delete bool
+	Delete *bool
 }
 
 // ChangeProtection changes the protection level of a [StorageBox].

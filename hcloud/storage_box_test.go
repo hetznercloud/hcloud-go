@@ -357,7 +357,7 @@ func TestStorageBoxClientChangeProtection(t *testing.T) {
 
 	storageBox := &StorageBox{ID: 42}
 
-	opts := StorageBoxChangeProtectionOpts{Delete: true}
+	opts := StorageBoxChangeProtectionOpts{Delete: Ptr(true)}
 	action, _, err := client.StorageBox.ChangeProtection(ctx, storageBox, opts)
 	require.NoError(t, err, "ChangeProtection failed")
 	require.NotNil(t, action, "no action returned")

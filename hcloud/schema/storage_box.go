@@ -108,7 +108,7 @@ type StorageBoxFoldersResponse struct {
 // StorageBoxChangeProtectionRequest defines the schema of the request to change the
 // resource protection of a Storage Box.
 type StorageBoxChangeProtectionRequest struct {
-	Delete bool `json:"delete"`
+	Delete *bool `json:"delete,omitempty"`
 }
 
 // StorageBoxChangeTypeRequest defines the schema of the request to change the type of a Storage Box.
