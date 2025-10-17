@@ -1139,8 +1139,10 @@ func (c *converterImpl) SchemaFromStorageBox(source *StorageBox) schema.StorageB
 		schemaStorageBox.StorageBoxType = c.SchemaFromStorageBoxType((*source).StorageBoxType)
 		schemaStorageBox.Location = c.SchemaFromLocation((*source).Location)
 		schemaStorageBox.AccessSettings = c.hcloudStorageBoxAccessSettingsToSchemaStorageBoxAccessSettings((*source).AccessSettings)
-		schemaStorageBox.Server = (*source).Server
-		schemaStorageBox.System = (*source).System
+		pString := (*source).Server
+		schemaStorageBox.Server = &pString
+		pString2 := (*source).System
+		schemaStorageBox.System = &pString2
 		schemaStorageBox.Stats = c.hcloudStorageBoxStatsToSchemaStorageBoxStats((*source).Stats)
 		schemaStorageBox.Labels = (*source).Labels
 		schemaStorageBox.Protection = c.hcloudStorageBoxProtectionToSchemaStorageBoxProtection((*source).Protection)
@@ -1624,8 +1626,12 @@ func (c *converterImpl) StorageBoxFromSchema(source schema.StorageBox) *StorageB
 	hcloudStorageBox.StorageBoxType = c.StorageBoxTypeFromSchema(source.StorageBoxType)
 	hcloudStorageBox.Location = c.LocationFromSchema(source.Location)
 	hcloudStorageBox.AccessSettings = c.schemaStorageBoxAccessSettingsToHcloudStorageBoxAccessSettings(source.AccessSettings)
-	hcloudStorageBox.Server = source.Server
-	hcloudStorageBox.System = source.System
+	if source.Server != nil {
+		hcloudStorageBox.Server = *source.Server
+	}
+	if source.System != nil {
+		hcloudStorageBox.System = *source.System
+	}
 	hcloudStorageBox.Stats = c.schemaStorageBoxStatsToHcloudStorageBoxStats(source.Stats)
 	hcloudStorageBox.Labels = source.Labels
 	hcloudStorageBox.Protection = c.schemaStorageBoxProtectionToHcloudStorageBoxProtection(source.Protection)

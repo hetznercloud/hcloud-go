@@ -19,8 +19,8 @@ type StorageBox struct {
 	StorageBoxType *StorageBoxType
 	Location       *Location
 	AccessSettings StorageBoxAccessSettings
-	Server         *string
-	System         *string
+	Server         string
+	System         string
 	Stats          StorageBoxStats
 	Labels         map[string]string
 	Protection     StorageBoxProtection
