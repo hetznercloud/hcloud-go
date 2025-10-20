@@ -14,12 +14,13 @@ type IStorageBoxClient interface {
 	GetByID(ctx context.Context, id int64) (*StorageBox, *Response, error)
 	// GetByName retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-get-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-storage-boxes
 	GetByName(ctx context.Context, name string) (*StorageBox, *Response, error)
-	// Get retrieves a [StorageBox] by its ID if the input can be parsed as an integer, otherwise it
-	// retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
+	// Get retrieves a [StorageBox] either by its ID or by its name, depending on whether
+	// the input can be parsed as an integer. If no matching [StorageBox] is found, it returns nil.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-get-a-storage-box
+	// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#storage-boxes-get-a-storage-box
+	// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-storage-boxes
 	Get(ctx context.Context, idOrName string) (*StorageBox, *Response, error)
 	// List returns a list of [StorageBox] for a specific page.
 	//
@@ -90,11 +91,13 @@ type IStorageBoxClient interface {
 	GetSnapshotByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSnapshot, *Response, error)
 	// GetSnapshotByName gets a [StorageBoxSnapshot] by its name.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-get-a-snapshot
+	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-list-snapshots-for-a-storage-box
 	GetSnapshotByName(ctx context.Context, storageBox *StorageBox, name string) (*StorageBoxSnapshot, *Response, error)
-	// GetSnapshot gets a [StorageBoxSnapshot] by its ID or name.
+	// GetSnapshot retrieves a [StorageBoxSnapshot] either by its ID or by its name, depending on whether
+	// the input can be parsed as an integer. If no matching [StorageBoxSnapshot] is found, it returns nil.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-get-a-snapshot
+	// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#snapshots-get-a-snapshot
+	// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#snapshots-list-snapshots-for-a-storage-box
 	GetSnapshot(ctx context.Context, storageBox *StorageBox, idOrName string) (*StorageBoxSnapshot, *Response, error)
 	// ListSnapshots lists all [StorageBoxSnapshot] of a [StorageBox] with the given options.
 	//
@@ -122,9 +125,11 @@ type IStorageBoxClient interface {
 	//
 	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-delete-a-snapshot
 	DeleteSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot) (StorageBoxSnapshotDeleteResult, *Response, error)
-	// GetSubaccount retrieves a [StorageBoxSubaccount] by its ID or username.
+	// GetSubaccount retrieves a [StorageBoxSubaccount] either by its ID or by its username, depending on whether
+	// the input can be parsed as an integer. If no matching [StorageBoxSubaccount] is found, it returns nil.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-get-a-subaccount
+	// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#subaccounts-get-a-subaccount
+	// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#subaccounts-list-subaccounts-for-a-storage-box
 	GetSubaccount(ctx context.Context, storageBox *StorageBox, idOrUsername string) (*StorageBoxSubaccount, *Response, error)
 	// GetSubaccountByID retrieves a [StorageBoxSubaccount] by its ID.
 	//
@@ -132,7 +137,7 @@ type IStorageBoxClient interface {
 	GetSubaccountByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSubaccount, *Response, error)
 	// GetSubaccountByUsername retrieves a [StorageBoxSubaccount] by its username.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-get-a-subaccount
+	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-list-subaccounts-for-a-storage-box
 	GetSubaccountByUsername(ctx context.Context, storageBox *StorageBox, username string) (*StorageBoxSubaccount, *Response, error)
 	// ListSubaccounts lists all [StorageBoxSubaccount] of a [StorageBox].
 	//

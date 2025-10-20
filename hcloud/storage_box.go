@@ -108,17 +108,18 @@ func (c *StorageBoxClient) GetByID(ctx context.Context, id int64) (*StorageBox, 
 
 // GetByName retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-get-a-storage-box
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-storage-boxes
 func (c *StorageBoxClient) GetByName(ctx context.Context, name string) (*StorageBox, *Response, error) {
 	return firstByName(name, func() ([]*StorageBox, *Response, error) {
 		return c.List(ctx, StorageBoxListOpts{Name: name})
 	})
 }
 
-// Get retrieves a [StorageBox] by its ID if the input can be parsed as an integer, otherwise it
-// retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
+// Get retrieves a [StorageBox] either by its ID or by its name, depending on whether
+// the input can be parsed as an integer. If no matching [StorageBox] is found, it returns nil.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-get-a-storage-box
+// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#storage-boxes-get-a-storage-box
+// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-storage-boxes
 func (c *StorageBoxClient) Get(ctx context.Context, idOrName string) (*StorageBox, *Response, error) {
 	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }

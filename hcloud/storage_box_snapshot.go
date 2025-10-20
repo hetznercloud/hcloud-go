@@ -52,7 +52,7 @@ func (c *StorageBoxClient) GetSnapshotByID(ctx context.Context, storageBox *Stor
 
 // GetSnapshotByName gets a [StorageBoxSnapshot] by its name.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#snapshots-get-a-snapshot
+// See https://docs.hetzner.cloud/reference/hetzner#snapshots-list-snapshots-for-a-storage-box
 func (c *StorageBoxClient) GetSnapshotByName(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -63,9 +63,11 @@ func (c *StorageBoxClient) GetSnapshotByName(
 	})
 }
 
-// GetSnapshot gets a [StorageBoxSnapshot] by its ID or name.
+// GetSnapshot retrieves a [StorageBoxSnapshot] either by its ID or by its name, depending on whether
+// the input can be parsed as an integer. If no matching [StorageBoxSnapshot] is found, it returns nil.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#snapshots-get-a-snapshot
+// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#snapshots-get-a-snapshot
+// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#snapshots-list-snapshots-for-a-storage-box
 func (c *StorageBoxClient) GetSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,

@@ -34,9 +34,11 @@ type StorageBoxSubaccountAccessSettings struct {
 	WebDAVEnabled       bool
 }
 
-// GetSubaccount retrieves a [StorageBoxSubaccount] by its ID or username.
+// GetSubaccount retrieves a [StorageBoxSubaccount] either by its ID or by its username, depending on whether
+// the input can be parsed as an integer. If no matching [StorageBoxSubaccount] is found, it returns nil.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-get-a-subaccount
+// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#subaccounts-get-a-subaccount
+// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#subaccounts-list-subaccounts-for-a-storage-box
 func (c *StorageBoxClient) GetSubaccount(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -80,7 +82,7 @@ func (c *StorageBoxClient) GetSubaccountByID(
 
 // GetSubaccountByUsername retrieves a [StorageBoxSubaccount] by its username.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-get-a-subaccount
+// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-list-subaccounts-for-a-storage-box
 func (c *StorageBoxClient) GetSubaccountByUsername(
 	ctx context.Context,
 	storageBox *StorageBox,
