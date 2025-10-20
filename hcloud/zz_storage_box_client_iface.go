@@ -59,11 +59,11 @@ type IStorageBoxClient interface {
 	Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error)
 	// ChangeProtection changes the protection level of a [StorageBox].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-storage-box-protection
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-protection
 	ChangeProtection(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeProtectionOpts) (*Action, *Response, error)
 	// ChangeType changes the type of a [StorageBox].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-the-type-of-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-type
 	ChangeType(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeTypeOpts) (*Action, *Response, error)
 	// ResetPassword resets the password of a [StorageBox].
 	//
@@ -165,11 +165,11 @@ type IStorageBoxClient interface {
 	DeleteSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount) (StorageBoxSubaccountDeleteResult, *Response, error)
 	// ResetSubaccountPassword resets the password of a [StorageBoxSubaccount].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccount-actions-reset-password
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccount-actions-reset-password
 	ResetSubaccountPassword(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountResetPasswordOpts) (*Action, *Response, error)
 	// UpdateSubaccountAccessSettings updates the [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccount-actions-update-access-settings
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccount-actions-update-access-settings
 	UpdateSubaccountAccessSettings(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountUpdateAccessSettingsOpts) (*Action, *Response, error)
 	// UpdateSubaccountAccessSettings changes the home directory of a [StorageBoxSubaccount].
 	//

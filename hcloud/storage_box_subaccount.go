@@ -275,7 +275,7 @@ type StorageBoxSubaccountResetPasswordOpts struct {
 
 // ResetSubaccountPassword resets the password of a [StorageBoxSubaccount].
 //
-// See https://docs.hetzner.cloud/reference/hetzner#subaccount-actions-reset-password
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccount-actions-reset-password
 func (c *StorageBoxClient) ResetSubaccountPassword(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,
@@ -306,7 +306,7 @@ type StorageBoxSubaccountUpdateAccessSettingsOpts struct {
 
 // UpdateSubaccountAccessSettings updates the [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
 //
-// See https://docs.hetzner.cloud/reference/hetzner#subaccount-actions-update-access-settings
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccount-actions-update-access-settings
 func (c *StorageBoxClient) UpdateSubaccountAccessSettings(
 	ctx context.Context,
 	subaccount *StorageBoxSubaccount,

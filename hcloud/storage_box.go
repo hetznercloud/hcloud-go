@@ -340,7 +340,7 @@ type StorageBoxChangeProtectionOpts struct {
 
 // ChangeProtection changes the protection level of a [StorageBox].
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-storage-box-protection
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-protection
 func (c *StorageBoxClient) ChangeProtection(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeProtectionOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/change_protection"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -363,7 +363,7 @@ type StorageBoxChangeTypeOpts struct {
 
 // ChangeType changes the type of a [StorageBox].
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-the-type-of-a-storage-box
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-type
 func (c *StorageBoxClient) ChangeType(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeTypeOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/change_type"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
