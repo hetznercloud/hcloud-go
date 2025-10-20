@@ -87,81 +87,81 @@ type IStorageBoxClient interface {
 	DisableSnapshotPlan(ctx context.Context, storageBox *StorageBox) (*Action, *Response, error)
 	// GetSnapshotByID gets a [StorageBoxSnapshot] by its ID.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-get-a-snapshot
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-get-a-snapshot
 	GetSnapshotByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSnapshot, *Response, error)
 	// GetSnapshotByName gets a [StorageBoxSnapshot] by its name.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-list-snapshots-for-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
 	GetSnapshotByName(ctx context.Context, storageBox *StorageBox, name string) (*StorageBoxSnapshot, *Response, error)
 	// GetSnapshot retrieves a [StorageBoxSnapshot] either by its ID or by its name, depending on whether
 	// the input can be parsed as an integer. If no matching [StorageBoxSnapshot] is found, it returns nil.
 	//
-	// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#snapshots-get-a-snapshot
-	// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#snapshots-list-snapshots-for-a-storage-box
+	// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-get-a-snapshot
+	// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
 	GetSnapshot(ctx context.Context, storageBox *StorageBox, idOrName string) (*StorageBoxSnapshot, *Response, error)
 	// ListSnapshots lists all [StorageBoxSnapshot] of a [StorageBox] with the given options.
 	//
 	// Pagination is not supported, so this will return all [StorageBoxSnapshot] at once.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-list-snapshots-for-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
 	ListSnapshots(ctx context.Context, storageBox *StorageBox, opts StorageBoxSnapshotListOpts) ([]*StorageBoxSnapshot, *Response, error)
 	// AllSnapshotsWithOpts lists all [StorageBoxSnapshot] of a [StorageBox] with the given options.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-list-snapshots-for-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
 	AllSnapshotsWithOpts(ctx context.Context, storageBox *StorageBox, opts StorageBoxSnapshotListOpts) ([]*StorageBoxSnapshot, error)
 	// AllSnapshots lists all [StorageBoxSnapshot] of a [StorageBox] without any options.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-list-snapshots-for-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
 	AllSnapshots(ctx context.Context, storageBox *StorageBox) ([]*StorageBoxSnapshot, error)
 	// CreateSnapshot creates a new [StorageBoxSnapshot] for the given [StorageBox] with the provided options.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-create-a-snapshot
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-create-a-snapshot
 	CreateSnapshot(ctx context.Context, storageBox *StorageBox, opts StorageBoxSnapshotCreateOpts) (StorageBoxSnapshotCreateResult, *Response, error)
 	// UpdateSnapshot updates the given [StorageBoxSnapshot] of a [StorageBox] with the provided options.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-update-a-snapshot
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-update-a-snapshot
 	UpdateSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot, opts StorageBoxSnapshotUpdateOpts) (*StorageBoxSnapshot, *Response, error)
 	// DeleteSnapshot deletes the given [StorageBoxSnapshot] of a [StorageBox].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#snapshots-delete-a-snapshot
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-delete-a-snapshot
 	DeleteSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot) (StorageBoxSnapshotDeleteResult, *Response, error)
 	// GetSubaccount retrieves a [StorageBoxSubaccount] either by its ID or by its username, depending on whether
 	// the input can be parsed as an integer. If no matching [StorageBoxSubaccount] is found, it returns nil.
 	//
-	// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#subaccounts-get-a-subaccount
-	// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#subaccounts-list-subaccounts-for-a-storage-box
+	// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-get-a-subaccount
+	// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts-for-a-storage-box
 	GetSubaccount(ctx context.Context, storageBox *StorageBox, idOrUsername string) (*StorageBoxSubaccount, *Response, error)
 	// GetSubaccountByID retrieves a [StorageBoxSubaccount] by its ID.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-get-a-subaccount
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-get-a-subaccount
 	GetSubaccountByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSubaccount, *Response, error)
 	// GetSubaccountByUsername retrieves a [StorageBoxSubaccount] by its username.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-list-subaccounts-for-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts-for-a-storage-box
 	GetSubaccountByUsername(ctx context.Context, storageBox *StorageBox, username string) (*StorageBoxSubaccount, *Response, error)
 	// ListSubaccounts lists all [StorageBoxSubaccount] of a [StorageBox].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-list-subaccounts-for-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts-for-a-storage-box
 	ListSubaccounts(ctx context.Context, storageBox *StorageBox, opts StorageBoxSubaccountListOpts) ([]*StorageBoxSubaccount, *Response, error)
 	// AllSubaccountsWithOpts retrieves all [StorageBoxSubaccount] of a [StorageBox] with the given options.
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-list-subaccounts-for-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts-for-a-storage-box
 	AllSubaccountsWithOpts(ctx context.Context, storageBox *StorageBox, opts StorageBoxSubaccountListOpts) ([]*StorageBoxSubaccount, error)
 	// AllSubaccounts retrieves all [StorageBoxSubaccount] of a [StorageBox].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-list-subaccounts-for-a-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts-for-a-storage-box
 	AllSubaccounts(ctx context.Context, storageBox *StorageBox) ([]*StorageBoxSubaccount, error)
 	// CreateSubaccount creates a new [StorageBoxSubaccount] for a [StorageBox].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-create-subaccount
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-create-subaccount
 	CreateSubaccount(ctx context.Context, storageBox *StorageBox, opts StorageBoxSubaccountCreateOpts) (StorageBoxSubaccountCreateResult, *Response, error)
 	// UpdateSubaccount updates a [StorageBoxSubaccount] of a [StorageBox].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-update-subaccount
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-update-subaccount
 	UpdateSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount, opts StorageBoxSubaccountUpdateOpts) (*StorageBoxSubaccount, *Response, error)
 	// DeleteSubaccount deletes a [StorageBoxSubaccount] from a [StorageBox].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#subaccounts-delete-subaccount
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-delete-subaccount
 	DeleteSubaccount(ctx context.Context, subaccount *StorageBoxSubaccount) (StorageBoxSubaccountDeleteResult, *Response, error)
 	// ResetSubaccountPassword resets the password of a [StorageBoxSubaccount].
 	//
