@@ -277,7 +277,7 @@ type StorageBoxDeleteResult struct {
 
 // Delete deletes a [StorageBox].
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-delete-storage-box
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-delete-a-storage-box
 func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (StorageBoxDeleteResult, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)

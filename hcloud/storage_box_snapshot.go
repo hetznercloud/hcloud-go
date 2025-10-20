@@ -52,7 +52,7 @@ func (c *StorageBoxClient) GetSnapshotByID(ctx context.Context, storageBox *Stor
 
 // GetSnapshotByName gets a [StorageBoxSnapshot] by its name.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
 func (c *StorageBoxClient) GetSnapshotByName(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -67,7 +67,7 @@ func (c *StorageBoxClient) GetSnapshotByName(
 // the input can be parsed as an integer. If no matching [StorageBoxSnapshot] is found, it returns nil.
 //
 // When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-get-a-snapshot
-// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
+// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
 func (c *StorageBoxClient) GetSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -114,7 +114,7 @@ func (o StorageBoxSnapshotListOpts) values() url.Values {
 //
 // Pagination is not supported, so this will return all [StorageBoxSnapshot] at once.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
 func (c *StorageBoxClient) ListSnapshots(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -135,7 +135,7 @@ func (c *StorageBoxClient) ListSnapshots(
 
 // AllSnapshotsWithOpts lists all [StorageBoxSnapshot] of a [StorageBox] with the given options.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
 func (c *StorageBoxClient) AllSnapshotsWithOpts(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -147,7 +147,7 @@ func (c *StorageBoxClient) AllSnapshotsWithOpts(
 
 // AllSnapshots lists all [StorageBoxSnapshot] of a [StorageBox] without any options.
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots-for-a-storage-box
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
 func (c *StorageBoxClient) AllSnapshots(
 	ctx context.Context,
 	storageBox *StorageBox,
