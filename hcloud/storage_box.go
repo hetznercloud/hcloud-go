@@ -11,6 +11,8 @@ import (
 )
 
 // StorageBox represents a Storage Box in Hetzner.
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes
 type StorageBox struct {
 	ID             int64
 	Username       string
@@ -85,6 +87,8 @@ type StorageBoxClient struct {
 }
 
 // GetByID retrieves a [StorageBox] by its ID. If the [StorageBox] does not exist, nil is returned.
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-get-a-storage-box
 func (c *StorageBoxClient) GetByID(ctx context.Context, id int64) (*StorageBox, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -103,6 +107,8 @@ func (c *StorageBoxClient) GetByID(ctx context.Context, id int64) (*StorageBox, 
 }
 
 // GetByName retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-get-a-storage-box
 func (c *StorageBoxClient) GetByName(ctx context.Context, name string) (*StorageBox, *Response, error) {
 	return firstByName(name, func() ([]*StorageBox, *Response, error) {
 		return c.List(ctx, StorageBoxListOpts{Name: name})
@@ -111,6 +117,8 @@ func (c *StorageBoxClient) GetByName(ctx context.Context, name string) (*Storage
 
 // Get retrieves a [StorageBox] by its ID if the input can be parsed as an integer, otherwise it
 // retrieves a [StorageBox] by its name. If the [StorageBox] does not exist, nil is returned.
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-get-a-storage-box
 func (c *StorageBoxClient) Get(ctx context.Context, idOrName string) (*StorageBox, *Response, error) {
 	return getByIDOrName(ctx, c.GetByID, c.GetByName, idOrName)
 }
@@ -137,6 +145,8 @@ func (l StorageBoxListOpts) values() url.Values {
 //
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-storage-boxes
 func (c *StorageBoxClient) List(ctx context.Context, opts StorageBoxListOpts) ([]*StorageBox, *Response, error) {
 	const opPath = "/storage_boxes?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -152,11 +162,15 @@ func (c *StorageBoxClient) List(ctx context.Context, opts StorageBoxListOpts) ([
 }
 
 // All returns all [StorageBox].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-storage-boxes
 func (c *StorageBoxClient) All(ctx context.Context) ([]*StorageBox, error) {
 	return c.AllWithOpts(ctx, StorageBoxListOpts{ListOpts: ListOpts{PerPage: 50}})
 }
 
 // AllWithOpts returns all [StorageBox] with the given options.
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-storage-boxes
 func (c *StorageBoxClient) AllWithOpts(ctx context.Context, opts StorageBoxListOpts) ([]*StorageBox, error) {
 	return iterPages(func(page int) ([]*StorageBox, *Response, error) {
 		opts.Page = page
@@ -206,6 +220,8 @@ type StorageBoxCreateResult struct {
 // To provide SSH keys, populate the PublicKey field for each [SSHKey]
 // in the SSHKeys slice of [StorageBoxCreateOpts]. Only the PublicKey field
 // is sent to the API. They are not addressable by ID or name.
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-create-a-storage-box
 func (c *StorageBoxClient) Create(ctx context.Context, opts StorageBoxCreateOpts) (StorageBoxCreateResult, *Response, error) {
 	const opPath = "/storage_boxes"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -236,6 +252,8 @@ type StorageBoxUpdateOpts struct {
 }
 
 // Update updates a [StorageBox] with the given options.
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-update-a-storage-box
 func (c *StorageBoxClient) Update(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateOpts) (*StorageBox, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -257,6 +275,8 @@ type StorageBoxDeleteResult struct {
 }
 
 // Delete deletes a [StorageBox].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-delete-storage-box
 func (c *StorageBoxClient) Delete(ctx context.Context, storageBox *StorageBox) (StorageBoxDeleteResult, *Response, error) {
 	const opPath = "/storage_boxes/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -292,6 +312,8 @@ func (o StorageBoxFoldersOpts) values() url.Values {
 }
 
 // Folders lists folders in a [StorageBox].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-content-of-storage-box
 func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error) {
 	const opPath = "/storage_boxes/%d/folders?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -316,6 +338,8 @@ type StorageBoxChangeProtectionOpts struct {
 }
 
 // ChangeProtection changes the protection level of a [StorageBox].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-storage-box-protection
 func (c *StorageBoxClient) ChangeProtection(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeProtectionOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/change_protection"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -337,6 +361,8 @@ type StorageBoxChangeTypeOpts struct {
 }
 
 // ChangeType changes the type of a [StorageBox].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-change-the-type-of-a-storage-box
 func (c *StorageBoxClient) ChangeType(ctx context.Context, storageBox *StorageBox, opts StorageBoxChangeTypeOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/change_type"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -358,6 +384,8 @@ type StorageBoxResetPasswordOpts struct {
 }
 
 // ResetPassword resets the password of a [StorageBox].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-reset-password
 func (c *StorageBoxClient) ResetPassword(ctx context.Context, storageBox *StorageBox, opts StorageBoxResetPasswordOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/reset_password"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -383,6 +411,8 @@ type StorageBoxUpdateAccessSettingsOpts struct {
 }
 
 // UpdateAccessSettings updates the [StorageBoxAccessSettings] of a [StorageBox].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-update-access-settings
 func (c *StorageBoxClient) UpdateAccessSettings(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateAccessSettingsOpts) (*Action, *Response, error) {
 	const opPath = "/storage_boxes/%d/actions/update_access_settings"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
@@ -404,6 +434,8 @@ type StorageBoxRollbackSnapshotOpts struct {
 }
 
 // RollbackSnapshot rolls back a [StorageBox] to a [StorageBoxSnapshot].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-rollback-snapshot
 func (c *StorageBoxClient) RollbackSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -440,6 +472,8 @@ type StorageBoxEnableSnapshotPlanOpts struct {
 }
 
 // EnableSnapshotPlan enables a [StorageBoxSnapshotPlan] for a [StorageBox].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-enable-snapshot-plan
 func (c *StorageBoxClient) EnableSnapshotPlan(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -460,6 +494,8 @@ func (c *StorageBoxClient) EnableSnapshotPlan(
 }
 
 // DisableSnapshotPlan disables the [StorageBoxSnapshotPlan] for a [StorageBox].
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-actions-disable-snapshot-plan
 func (c *StorageBoxClient) DisableSnapshotPlan(
 	ctx context.Context,
 	storageBox *StorageBox,
