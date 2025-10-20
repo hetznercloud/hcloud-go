@@ -185,7 +185,7 @@ func (o StorageBoxCreateOpts) Validate() error {
 			continue
 		}
 		if key.PublicKey == "" {
-			errs = append(errs, missingField(key, "PublicKey"))
+			errs = append(errs, invalidFieldValue(key, "PublicKey", key.PublicKey))
 		}
 	}
 	if len(errs) > 0 {
