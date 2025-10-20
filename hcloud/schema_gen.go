@@ -401,7 +401,7 @@ type converter interface {
 	// goverter:map DayOfWeek | mapStorageBoxIntPtrToWeekdayPtr
 	StorageBoxSnapshotPlanFromSchema(schema.StorageBoxSnapshotPlan) StorageBoxSnapshotPlan
 	SchemaFromStorageBox(*StorageBox) schema.StorageBox
-	// goverter:map SSHKeys | mapSSHKeyPtrSliceToPublicKeyString
+	// goverter:map SSHKeys | mapSSHKeyPtrSliceToPublicKeySlice
 	SchemaFromStorageBoxCreateOpts(StorageBoxCreateOpts) schema.StorageBoxCreateRequest
 	SchemaFromStorageBoxUpdateOpts(StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest
 	SchemaFromStorageBoxChangeProtectionOpts(StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest
@@ -1088,7 +1088,7 @@ func locationFromServerTypeLocationSchema(serverTypeLocation schema.ServerTypeLo
 	}
 }
 
-func mapSSHKeyPtrSliceToPublicKeyString(s []*SSHKey) []string {
+func mapSSHKeyPtrSliceToPublicKeySlice(s []*SSHKey) []string {
 	publicKeys := make([]string, 0, len(s))
 	for _, key := range s {
 		if key == nil {
