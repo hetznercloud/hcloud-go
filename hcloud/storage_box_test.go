@@ -184,15 +184,29 @@ func TestStorageBoxClientAll(t *testing.T) {
 }
 
 func TestStorageBoxClientCreate(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
+	t.Run("Create (invalid opts)", func(t *testing.T) {
+		opts := StorageBoxCreateOpts{
+			SSHKeys: []*SSHKey{{ID: 1}},
+		}
 
-	server.Expect([]mockutil.Request{
-		{
-			Method: "POST", Path: "/storage_boxes",
-			Want: func(t *testing.T, r *http.Request) {
-				bodyBytes, err := io.ReadAll(r.Body)
-				require.NoError(t, err)
-				assert.JSONEq(t, `{
+		err := opts.Validate()
+		require.Error(t, err)
+
+		var argError ArgumentError
+		assert.ErrorAs(t, err, &argError, "error is not ArgumentError")
+		assert.Equal(t, "invalid value '' for field [PublicKey] in [*hcloud.SSHKey]", string(argError))
+	})
+
+	t.Run("Create (mock)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/storage_boxes",
+				Want: func(t *testing.T, r *http.Request) {
+					bodyBytes, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, `{
 					"name": "my-new-storage-box",
 					"storage_box_type": 1,
 					"location": "fsn1",
@@ -204,9 +218,9 @@ func TestStorageBoxClientCreate(t *testing.T) {
 						"ssh_enabled": false
 					}
 				}`, string(bodyBytes))
-			},
-			Status: 201,
-			JSONRaw: `{
+				},
+				Status: 201,
+				JSONRaw: `{
 				"action": { "id": 1 },
 				"storage_box": {
 					"id": 42,
@@ -216,29 +230,30 @@ func TestStorageBoxClientCreate(t *testing.T) {
 					"system": null
 				}
 			}`,
-		},
+			},
+		})
+
+		opts := StorageBoxCreateOpts{
+			Name:           "my-new-storage-box",
+			StorageBoxType: &StorageBoxType{ID: 1},
+			Location:       &Location{Name: "fsn1"},
+			Password:       "secretpassword123",
+			Labels:         map[string]string{"env": "test"},
+			SSHKeys:        []*SSHKey{{PublicKey: "ssh-rsa AAAAB3NzaC1yc2E..."}},
+			AccessSettings: &StorageBoxCreateOptsAccessSettings{
+				ReachableExternally: Ptr(true),
+				SSHEnabled:          Ptr(false),
+			},
+		}
+
+		result, _, err := client.StorageBox.Create(ctx, opts)
+		require.NoError(t, err)
+		require.NotNil(t, result.Action, "no action returned")
+		require.NotNil(t, result.StorageBox, "no storage box returned")
+
+		assert.Equal(t, int64(1), result.Action.ID, "unexpected action ID")
+		assert.Equal(t, int64(42), result.StorageBox.ID, "unexpected storage box ID")
 	})
-
-	opts := StorageBoxCreateOpts{
-		Name:           "my-new-storage-box",
-		StorageBoxType: &StorageBoxType{ID: 1},
-		Location:       &Location{Name: "fsn1"},
-		Password:       "secretpassword123",
-		Labels:         map[string]string{"env": "test"},
-		SSHKeys:        []*SSHKey{{PublicKey: "ssh-rsa AAAAB3NzaC1yc2E..."}},
-		AccessSettings: &StorageBoxCreateOptsAccessSettings{
-			ReachableExternally: Ptr(true),
-			SSHEnabled:          Ptr(false),
-		},
-	}
-
-	result, _, err := client.StorageBox.Create(ctx, opts)
-	require.NoError(t, err)
-	require.NotNil(t, result.Action, "no action returned")
-	require.NotNil(t, result.StorageBox, "no storage box returned")
-
-	assert.Equal(t, int64(1), result.Action.ID, "unexpected action ID")
-	assert.Equal(t, int64(42), result.StorageBox.ID, "unexpected storage box ID")
 }
 
 func TestStorageBoxClientUpdate(t *testing.T) {
