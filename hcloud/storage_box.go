@@ -171,12 +171,19 @@ type StorageBoxCreateOpts struct {
 	Location       *Location
 	Labels         map[string]string
 	Password       string
-	// TODO: API only accepts literal public keys
-	// - should we accept our structs here and read the public key?
-	// - What to do when only the ID is set and not the public key?
-	// - Should we tell users that this is not required and they can just create an object with the public key field set?
-	SSHKeys        []string
+	// Only the value of SSHKey.PublicKey is provided to the API.
+	// Ensure this is set, otherwise a missing field error will be returned.
+	SSHKeys        []*SSHKey
 	AccessSettings *StorageBoxCreateOptsAccessSettings
+}
+
+func (o StorageBoxCreateOpts) Validate() error {
+	for _, key := range o.SSHKeys {
+		if key != nil && key.PublicKey == "" {
+			return missingField(key, "PublicKey")
+		}
+	}
+	return nil
 }
 
 // StorageBoxCreateOptsAccessSettings specifies [StorageBoxAccessSettings] for creating a [StorageBox].
@@ -195,13 +202,21 @@ type StorageBoxCreateResult struct {
 }
 
 // Create creates a new [StorageBox] with the given options.
+//
+// To provide SSH keys, populate the PublicKey field for each [SSHKey]
+// in the SSHKeys slice of [StorageBoxCreateOpts]. Only the PublicKey field
+// is sent to the API. They are not addressable by ID or name.
 func (c *StorageBoxClient) Create(ctx context.Context, opts StorageBoxCreateOpts) (StorageBoxCreateResult, *Response, error) {
 	const opPath = "/storage_boxes"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqBody := SchemaFromStorageBoxCreateOpts(opts)
-
 	result := StorageBoxCreateResult{}
+
+	if err := opts.Validate(); err != nil {
+		return result, nil, err
+	}
+
+	reqBody := SchemaFromStorageBoxCreateOpts(opts)
 
 	respBody, resp, err := postRequest[schema.StorageBoxCreateResponse](ctx, c.client, opPath, reqBody)
 	if err != nil {

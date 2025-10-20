@@ -25,6 +25,10 @@ type IStorageBoxClient interface {
 	// AllWithOpts returns all [StorageBox] with the given options.
 	AllWithOpts(ctx context.Context, opts StorageBoxListOpts) ([]*StorageBox, error)
 	// Create creates a new [StorageBox] with the given options.
+	//
+	// To provide SSH keys, populate the PublicKey field for each [SSHKey]
+	// in the SSHKeys slice of [StorageBoxCreateOpts]. Only the PublicKey field
+	// is sent to the API. They are not addressable by ID or name.
 	Create(ctx context.Context, opts StorageBoxCreateOpts) (StorageBoxCreateResult, *Response, error)
 	// Update updates a [StorageBox] with the given options.
 	Update(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateOpts) (*StorageBox, *Response, error)
