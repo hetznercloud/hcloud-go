@@ -225,7 +225,7 @@ func TestStorageBoxClientCreate(t *testing.T) {
 		Location:       &Location{Name: "fsn1"},
 		Password:       "secretpassword123",
 		Labels:         map[string]string{"env": "test"},
-		SSHKeys:        []string{"ssh-rsa AAAAB3NzaC1yc2E..."},
+		SSHKeys:        []*SSHKey{{PublicKey: "ssh-rsa AAAAB3NzaC1yc2E..."}},
 		AccessSettings: &StorageBoxCreateOptsAccessSettings{
 			ReachableExternally: Ptr(true),
 			SSHEnabled:          Ptr(false),

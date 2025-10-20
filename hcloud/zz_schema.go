@@ -1169,7 +1169,7 @@ func (c *converterImpl) SchemaFromStorageBoxCreateOpts(source StorageBoxCreateOp
 	schemaStorageBoxCreateRequest.Location = c.pHcloudLocationToSchemaIDOrName(source.Location)
 	schemaStorageBoxCreateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	schemaStorageBoxCreateRequest.Password = source.Password
-	schemaStorageBoxCreateRequest.SSHKeys = source.SSHKeys
+	schemaStorageBoxCreateRequest.SSHKeys = mapSSHKeyPtrSliceToPublicKeyString(source.SSHKeys)
 	schemaStorageBoxCreateRequest.AccessSettings = c.pHcloudStorageBoxCreateOptsAccessSettingsToPSchemaStorageBoxCreateRequestAccessSettings(source.AccessSettings)
 	return schemaStorageBoxCreateRequest
 }
