@@ -194,7 +194,7 @@ func TestStorageBoxClientCreate(t *testing.T) {
 
 		var argError ArgumentError
 		assert.ErrorAs(t, err, &argError, "error is not ArgumentError")
-		assert.Equal(t, "invalid value '' for field [PublicKey] in [*hcloud.SSHKey]", string(argError))
+		assert.Equal(t, "missing field [PublicKey] in [*hcloud.SSHKey]", string(argError))
 	})
 
 	t.Run("Create (mock)", func(t *testing.T) {
