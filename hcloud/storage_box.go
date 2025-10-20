@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/url"
 	"time"
@@ -179,17 +178,10 @@ type StorageBoxCreateOpts struct {
 }
 
 func (o StorageBoxCreateOpts) Validate() error {
-	errs := make([]error, 0, len(o.SSHKeys))
 	for _, key := range o.SSHKeys {
-		if key == nil {
-			continue
+		if key != nil && key.PublicKey == "" {
+			return missingField(key, "PublicKey")
 		}
-		if key.PublicKey == "" {
-			errs = append(errs, missingField(key, "PublicKey"))
-		}
-	}
-	if len(errs) > 0 {
-		return errors.Join(errs...)
 	}
 	return nil
 }
