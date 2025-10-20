@@ -314,7 +314,7 @@ func (o StorageBoxFoldersOpts) values() url.Values {
 
 // Folders lists folders in a [StorageBox].
 //
-// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-content-of-storage-box
+// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-folders-of-a-storage-box
 func (c *StorageBoxClient) Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error) {
 	const opPath = "/storage_boxes/%d/folders?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)

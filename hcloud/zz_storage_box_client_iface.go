@@ -55,7 +55,7 @@ type IStorageBoxClient interface {
 	Delete(ctx context.Context, storageBox *StorageBox) (StorageBoxDeleteResult, *Response, error)
 	// Folders lists folders in a [StorageBox].
 	//
-	// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-content-of-storage-box
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-list-folders-of-a-storage-box
 	Folders(ctx context.Context, storageBox *StorageBox, opts StorageBoxFoldersOpts) (StorageBoxFoldersResult, *Response, error)
 	// ChangeProtection changes the protection level of a [StorageBox].
 	//
