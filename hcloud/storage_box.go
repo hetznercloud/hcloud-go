@@ -214,8 +214,6 @@ type StorageBoxCreateResult struct {
 // To provide SSH keys, populate the PublicKey field for each [SSHKey]
 // in the SSHKeys slice of [StorageBoxCreateOpts]. Only the PublicKey field
 // is sent to the API. They are not addressable by ID or name.
-//
-// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-create-a-storage-box
 func (c *StorageBoxClient) Create(ctx context.Context, opts StorageBoxCreateOpts) (StorageBoxCreateResult, *Response, error) {
 	const opPath = "/storage_boxes"
 	ctx = ctxutil.SetOpPath(ctx, opPath)

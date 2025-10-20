@@ -29,8 +29,6 @@ type IStorageBoxClient interface {
 	// To provide SSH keys, populate the PublicKey field for each [SSHKey]
 	// in the SSHKeys slice of [StorageBoxCreateOpts]. Only the PublicKey field
 	// is sent to the API. They are not addressable by ID or name.
-	//
-	// See https://docs.hetzner.cloud/reference/hetzner#storage-boxes-create-a-storage-box
 	Create(ctx context.Context, opts StorageBoxCreateOpts) (StorageBoxCreateResult, *Response, error)
 	// Update updates a [StorageBox] with the given options.
 	Update(ctx context.Context, storageBox *StorageBox, opts StorageBoxUpdateOpts) (*StorageBox, *Response, error)
