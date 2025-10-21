@@ -1,5 +1,44 @@
 # Changelog
 
+## [v2.28.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.28.0)
+
+### Storage Box API Experimental
+
+This release adds support for the [Storage Box API](https://docs.hetzner.cloud/reference/hetzner#storage-boxes).
+
+The Storage Box integration will be introduced as an **experimental** feature. This experimental phase is expected to last until **21 November 2025**. During this period, upcoming minor releases of the project may include breaking changes to features related to the Storage Box API.
+
+This release includes all changes from the recent [Storage Box API changelog](https://docs.hetzner.cloud/changelog#2025-10-21-storage-box-api-update) entry.
+
+#### Examples
+
+```go
+result, _, err := client.StorageBox.Create(ctx, hcloud.StorageBoxCreateOpts{
+	Name:           "my-storage-box",
+	StorageBoxType: &hcloud.StorageBoxType{Name: "bx11"},
+	Location:       &hcloud.Location{Name: "fsn1"},
+	Password:       "my-secure-password",
+	SSHKeys: []*hcloud.SSHKey{{ PublicKey: "ssh-rsa AAAAB3NzaC1yc2E..." }},
+	Labels:         map[string]string{"key": "value"},
+	AccessSettings: &hcloud.StorageBoxCreateOptsAccessSettings{
+		ReachableExternally: hcloud.Ptr(true),
+		SSHEnabled:          hcloud.Ptr(true),
+	},
+})
+
+err = client.Action.WaitFor(ctx, result.Action)
+```
+
+### Features
+
+- retrieve a server or load balancer network attachment (#750)
+- add support for Storage Boxes (#684)
+
+### Bug Fixes
+
+- deprecate `firewall_already_removed` error code (#748)
+- invalid property in network add_subnet request body (#751)
+
 ## [v2.27.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.27.0)
 
 ### DNS API Beta
