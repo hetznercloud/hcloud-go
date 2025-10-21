@@ -462,3 +462,103 @@ func serverMetricsFromSchema(s *schema.ServerGetMetricsResponse) (*ServerMetrics
 func loadBalancerMetricsFromSchema(s *schema.LoadBalancerGetMetricsResponse) (*LoadBalancerMetrics, error) {
 	return c.LoadBalancerMetricsFromSchema(s)
 }
+
+// StorageBoxTypeFromSchema converts a schema.StorageBoxType to a StorageBoxType.
+func StorageBoxTypeFromSchema(s schema.StorageBoxType) *StorageBoxType {
+	return c.StorageBoxTypeFromSchema(s)
+}
+
+// SchemaFromStorageBoxType converts a StorageBoxType to a schema.StorageBoxType.
+func SchemaFromStorageBoxType(s *StorageBoxType) schema.StorageBoxType {
+	return c.SchemaFromStorageBoxType(s)
+}
+
+// StorageBoxFromSchema converts a schema.StorageBox to a StorageBox.
+func StorageBoxFromSchema(s schema.StorageBox) *StorageBox {
+	return c.StorageBoxFromSchema(s)
+}
+
+// SchemaFromStorageBox converts a StorageBox to a schema.StorageBox.
+func SchemaFromStorageBox(s *StorageBox) schema.StorageBox {
+	return c.SchemaFromStorageBox(s)
+}
+
+func SchemaFromStorageBoxCreateOpts(opts StorageBoxCreateOpts) schema.StorageBoxCreateRequest {
+	return c.SchemaFromStorageBoxCreateOpts(opts)
+}
+
+func SchemaFromStorageBoxUpdateOpts(opts StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest {
+	return c.SchemaFromStorageBoxUpdateOpts(opts)
+}
+
+func StorageBoxSnapshotFromSchema(s schema.StorageBoxSnapshot) *StorageBoxSnapshot {
+	return c.StorageBoxSnapshotFromSchema(s)
+}
+
+func SchemaFromStorageBoxSnapshot(s *StorageBoxSnapshot) schema.StorageBoxSnapshot {
+	return c.SchemaFromStorageBoxSnapshot(s)
+}
+
+func SchemaFromStorageBoxSnapshotCreateOpts(opts StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest {
+	return c.SchemaFromStorageBoxSnapshotCreateOpts(opts)
+}
+
+func SchemaFromStorageBoxSnapshotUpdateOpts(opts StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest {
+	return c.SchemaFromStorageBoxSnapshotUpdateOpts(opts)
+}
+
+func SchemaFromStorageBoxChangeProtectionOpts(opts StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest {
+	return c.SchemaFromStorageBoxChangeProtectionOpts(opts)
+}
+
+func SchemaFromStorageBoxChangeTypeOpts(opts StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest {
+	return c.SchemaFromStorageBoxChangeTypeOpts(opts)
+}
+
+func SchemaFromStorageBoxResetPasswordOpts(opts StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest {
+	return c.SchemaFromStorageBoxResetPasswordOpts(opts)
+}
+
+func SchemaFromStorageBoxUpdateAccessSettingsOpts(opts StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest {
+	return c.SchemaFromStorageBoxUpdateAccessSettingsOpts(opts)
+}
+
+func SchemaFromStorageBoxRollbackSnapshotOpts(opts StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest {
+	return c.SchemaFromStorageBoxRollbackSnapshotOpts(opts)
+}
+
+func SchemaFromStorageBoxEnableSnapshotPlan(opts StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest {
+	return c.SchemaFromStorageBoxEnableSnapshotPlanOpts(opts)
+}
+
+func StorageBoxSubaccountFromSchema(s schema.StorageBoxSubaccount) *StorageBoxSubaccount {
+	return c.StorageBoxSubaccountFromSchema(s)
+}
+
+func SchemaFromStorageBoxSubaccount(s *StorageBoxSubaccount) schema.StorageBoxSubaccount {
+	return c.SchemaFromStorageBoxSubaccount(s)
+}
+
+func SchemaFromStorageBoxSubaccountCreateOpts(opts StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest {
+	return c.SchemaFromStorageBoxSubaccountCreateOpts(opts)
+}
+
+func SchemaFromStorageBoxSubaccountUpdateOpts(opts StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest {
+	return c.SchemaFromStorageBoxSubaccountUpdateOpts(opts)
+}
+
+func StorageBoxSubaccountFromCreateResponse(s schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount {
+	return c.StorageBoxSubaccountFromCreateResponse(s)
+}
+
+func SchemaFromStorageBoxSubaccountResetPasswordOpts(opts StorageBoxSubaccountResetPasswordOpts) schema.StorageBoxSubaccountResetPasswordRequest {
+	return c.SchemaFromStorageBoxSubaccountResetPasswordOpts(opts)
+}
+
+func SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(opts StorageBoxSubaccountUpdateAccessSettingsOpts) schema.StorageBoxSubaccountUpdateAccessSettingsRequest {
+	return c.SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(opts)
+}
+
+func SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(opts StorageBoxSubaccountChangeHomeDirectoryOpts) schema.StorageBoxSubaccountChangeHomeDirectoryRequest {
+	return c.SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(opts)
+}
