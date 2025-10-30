@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.29.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.29.0)
+
+### Features
+
+- **exp**: add TXT record helpers (#757)
+
 ## [v2.28.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.28.0)
 
 ### Storage Box API Experimental
