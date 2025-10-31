@@ -716,7 +716,7 @@ func TestErrorSchema(t *testing.T) {
 		"deprecated_api_endpoint": `{
 			"code": "deprecated_api_endpoint",
 			"message": "API functionality was removed",
-			"details": {"announcement":"https://docs.hetzner.cloud/changelog#2023-07-20-foo-endpoint-is-deprecated"}
+			"details": {"announcement":"https://docs.hetzner.cloud/changelog"}
 		}`,
 	}
 

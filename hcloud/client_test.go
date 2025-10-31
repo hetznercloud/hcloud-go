@@ -78,7 +78,7 @@ func newTestEnvWithServer(server *httptest.Server, mux *http.ServeMux) testEnv {
 }
 
 func TestClientEndpointTrailingSlashesRemoved(t *testing.T) {
-	client := NewClient(WithEndpoint("http://api/v1.0/////"))
+	client := NewClient(WithEndpoint("https://api.hetzner.cloud/v1.0/////"))
 	if strings.HasSuffix(client.endpoint, "/") {
 		t.Fatalf("endpoint has trailing slashes: %q", client.endpoint)
 	}

@@ -59,7 +59,7 @@ func TestDeprecatedAPIEndpointError(t *testing.T) {
 			"code": "deprecated_api_endpoint",
 			"message": "API functionality was removed",
 			"details": {
-				"announcement": "https://docs.hetzner.cloud/changelog#2023-07-20-foo-endpoint-is-deprecated"
+				"announcement": "https://docs.hetzner.cloud/changelog"
 			}
 		}`)
 
@@ -76,7 +76,7 @@ func TestDeprecatedAPIEndpointError(t *testing.T) {
 		if !ok {
 			t.Fatalf("unexpected Details type (should be ErrorDetailsDeprecatedAPIEndpoint): %v", e.Details)
 		}
-		if d.Announcement != "https://docs.hetzner.cloud/changelog#2023-07-20-foo-endpoint-is-deprecated" {
+		if d.Announcement != "https://docs.hetzner.cloud/changelog" {
 			t.Fatalf("unexpected Details.Announcement: %v", d.Announcement)
 		}
 	})
