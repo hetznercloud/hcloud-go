@@ -76,8 +76,10 @@ func TestWaitFor(t *testing.T) {
 
 					ctx, cancelFunc := context.WithCancel(context.Background())
 					cancelFunc()
+					<-ctx.Done()
 					err := env.Client.Action.WaitFor(ctx, actions...)
-					assert.Error(t, err)
+					assert.EqualError(t, err, "context canceled: remaining running actions: [1509772237]")
+					assert.ErrorIs(t, err, context.Canceled)
 				},
 			},
 			{

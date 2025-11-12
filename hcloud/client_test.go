@@ -61,11 +61,11 @@ func newTestEnvWithServer(server *httptest.Server, mux *http.ServeMux) testEnv {
 		WithEndpoint(server.URL),
 		WithToken("token"),
 		WithRetryOpts(RetryOpts{
-			BackoffFunc: ConstantBackoff(0),
+			BackoffFunc: ConstantBackoff(time.Millisecond),
 			MaxRetries:  5,
 		}),
 		WithPollOpts(PollOpts{
-			BackoffFunc: ConstantBackoff(0),
+			BackoffFunc: ConstantBackoff(time.Millisecond),
 		}),
 		// This makes sure that our instrumentation does not cause any panics/errors
 		WithInstrumentation(prometheus.DefaultRegisterer),
