@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.31.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.31.0)
+
+### Features
+
+- add running actions ids to done context error (#765)
+
 ## [v2.30.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.30.0)
 
 ### DNS API is now generally available
