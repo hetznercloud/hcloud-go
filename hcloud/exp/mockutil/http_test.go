@@ -39,6 +39,11 @@ func TestHandler(t *testing.T) {
 			},
 			Status: 200,
 		},
+		{
+			Method: "GET", Path: "/",
+			Status:  200,
+			TextRaw: "hello",
+		},
 	})
 
 	// Request 1
@@ -69,7 +74,14 @@ func TestHandler(t *testing.T) {
 	assert.Empty(t, resp.Header.Get("Content-Type"))
 	assert.Empty(t, readBody(t, resp))
 
-	// Extra request 5
+	// Request 5
+	resp, err = http.Get(server.URL)
+	require.NoError(t, err)
+	assert.Equal(t, 200, resp.StatusCode)
+	assert.Equal(t, "text/plain", resp.Header.Get("Content-Type"))
+	assert.Equal(t, "hello", readBody(t, resp))
+
+	// Extra request 6
 	server.Expect([]Request{
 		{Method: "GET", Path: "/", Status: 200},
 	})
