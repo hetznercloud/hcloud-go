@@ -543,6 +543,48 @@ func TestZoneAddRRSetRecords(t *testing.T) {
 	require.Equal(t, int64(14), result.ID)
 }
 
+func TestZoneUpdateRRSetRecords(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/zones/example.com/rrsets/www/A/actions/update_records",
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+				require.JSONEq(t, `{
+					"records": [
+						{ "value": "34.68.10.234", "comment": "new comment 1" },
+						{ "value": "34.68.10.235", "comment": "new comment 2" },
+						{ "value": "52.12.45.3", "comment": "" }
+					]
+				}`, string(body))
+			},
+			Status: 200,
+			JSONRaw: `{
+				"action": { "id": 14 }
+			}`,
+		},
+	})
+
+	result, resp, err := client.Zone.UpdateRRSetRecords(ctx,
+		&ZoneRRSet{
+			Zone: &Zone{Name: "example.com"},
+			ID:   "www/A",
+		},
+		ZoneRRSetUpdateRecordsOpts{
+			Records: []ZoneRRSetRecord{
+				{Value: "34.68.10.234", Comment: "new comment 1"},
+				{Value: "34.68.10.235", Comment: "new comment 2"},
+				{Value: "52.12.45.3"}, // Removes comment
+			},
+		},
+	)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	require.Equal(t, int64(14), result.ID)
+}
+
 func TestZoneRemoveRRSetRecords(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 

@@ -1467,6 +1467,16 @@ func (c *converterImpl) SchemaFromZoneRRSetUpdateOpts(source ZoneRRSetUpdateOpts
 	schemaZoneRRSetUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	return schemaZoneRRSetUpdateRequest
 }
+func (c *converterImpl) SchemaFromZoneRRSetUpdateRecordsOpts(source ZoneRRSetUpdateRecordsOpts) schema.ZoneRRSetUpdateRecordsRequest {
+	var schemaZoneRRSetUpdateRecordsRequest schema.ZoneRRSetUpdateRecordsRequest
+	if source.Records != nil {
+		schemaZoneRRSetUpdateRecordsRequest.Records = make([]schema.ZoneRRSetUpdateRecordsRequestRecord, len(source.Records))
+		for i := 0; i < len(source.Records); i++ {
+			schemaZoneRRSetUpdateRecordsRequest.Records[i] = c.hcloudZoneRRSetRecordToSchemaZoneRRSetUpdateRecordsRequestRecord(source.Records[i])
+		}
+	}
+	return schemaZoneRRSetUpdateRecordsRequest
+}
 func (c *converterImpl) SchemaFromZoneUpdateOpts(source ZoneUpdateOpts) schema.ZoneUpdateRequest {
 	var schemaZoneUpdateRequest schema.ZoneUpdateRequest
 	schemaZoneUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
@@ -2048,6 +2058,12 @@ func (c *converterImpl) hcloudZoneRRSetRecordToSchemaZoneRRSetRecord(source Zone
 	schemaZoneRRSetRecord.Value = source.Value
 	schemaZoneRRSetRecord.Comment = source.Comment
 	return schemaZoneRRSetRecord
+}
+func (c *converterImpl) hcloudZoneRRSetRecordToSchemaZoneRRSetUpdateRecordsRequestRecord(source ZoneRRSetRecord) schema.ZoneRRSetUpdateRecordsRequestRecord {
+	var schemaZoneRRSetUpdateRecordsRequestRecord schema.ZoneRRSetUpdateRecordsRequestRecord
+	schemaZoneRRSetUpdateRecordsRequestRecord.Value = source.Value
+	schemaZoneRRSetUpdateRecordsRequestRecord.Comment = source.Comment
+	return schemaZoneRRSetUpdateRecordsRequestRecord
 }
 func (c *converterImpl) intISOFromSchema(source schema.ISO) ISO {
 	var hcloudISO ISO
