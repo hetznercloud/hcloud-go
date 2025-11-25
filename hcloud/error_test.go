@@ -141,6 +141,45 @@ func TestIsError(t *testing.T) {
 	}
 }
 
+func TestStabilizeError(t *testing.T) {
+	tests := []struct {
+		name     string
+		response *Response
+	}{
+		{
+			name:     "error without correlation ID",
+			response: nil,
+		},
+		{
+			name: "error with correlation ID",
+			response: &Response{
+				Response: &http.Response{
+					StatusCode: http.StatusNotFound,
+					Header: func() http.Header {
+						headers := http.Header{}
+						// [http.Header] requires normalized header names, easiest to do by using the Set method
+						headers.Set("X-Correlation-ID", "d5064a1f0bb9de4b")
+						return headers
+					}(),
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := Error{
+				Code:     ErrorCodeNotFound,
+				Message:  "server not found",
+				response: tt.response,
+			}
+
+			err := StabilizeError(e)
+
+			assert.Equal(t, "server not found (not_found)", fmt.Sprintf("%v", err))
+		})
+	}
+}
+
 func TestArgumentError(t *testing.T) {
 	type Something struct{ Name string }
 	something := Something{Name: "hello"}
