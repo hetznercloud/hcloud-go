@@ -154,7 +154,7 @@ func TestStabilizeError(t *testing.T) {
 			name: "error with correlation ID",
 			response: &Response{
 				Response: &http.Response{
-					StatusCode: http.StatusInternalServerError,
+					StatusCode: http.StatusNotFound,
 					Header: func() http.Header {
 						headers := http.Header{}
 						// [http.Header] requires normalized header names, easiest to do by using the Set method
