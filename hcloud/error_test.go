@@ -141,23 +141,17 @@ func TestIsError(t *testing.T) {
 	}
 }
 
-func TestStableError(t *testing.T) {
-
-	t.Run("error without correlation ID", func(t *testing.T) {
-		e := Error{
-			Code:    ErrorCodeNotFound,
-			Message: "server not found",
-		}
-
-		err := StabilizeError(e)
-
-		assert.Equal(t, "server not found (not_found)", fmt.Sprintf("%v", err))
-	})
-
-	t.Run("error with correlation ID", func(t *testing.T) {
-		e := Error{
-			Code:    ErrorCodeNotFound,
-			Message: "server not found",
+func TestStabilizeError(t *testing.T) {
+	tests := []struct {
+		name     string
+		response *Response
+	}{
+		{
+			name:     "error without correlation ID",
+			response: nil,
+		},
+		{
+			name: "error with correlation ID",
 			response: &Response{
 				Response: &http.Response{
 					StatusCode: http.StatusInternalServerError,
@@ -169,12 +163,21 @@ func TestStableError(t *testing.T) {
 					}(),
 				},
 			},
-		}
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := Error{
+				Code:     ErrorCodeNotFound,
+				Message:  "server not found",
+				response: tt.response,
+			}
 
-		err := StabilizeError(e)
+			err := StabilizeError(e)
 
-		assert.Equal(t, "server not found (not_found)", fmt.Sprintf("%v", err))
-	})
+			assert.Equal(t, "server not found (not_found)", fmt.Sprintf("%v", err))
+		})
+	}
 }
 
 func TestArgumentError(t *testing.T) {
