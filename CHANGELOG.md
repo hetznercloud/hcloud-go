@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.32.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.32.0)
+
+### Features
+
+- error helper to remove correlation ID (#775)
+
 ## [v2.31.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.31.0)
 
 ### Features
