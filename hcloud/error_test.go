@@ -142,25 +142,39 @@ func TestIsError(t *testing.T) {
 }
 
 func TestStableError(t *testing.T) {
-	e := Error{
-		Code:    ErrorCodeNotFound,
-		Message: "server not found",
-		response: &Response{
-			Response: &http.Response{
-				StatusCode: http.StatusInternalServerError,
-				Header: func() http.Header {
-					headers := http.Header{}
-					// [http.Header] requires normalized header names, easiest to do by using the Set method
-					headers.Set("X-Correlation-ID", "d5064a1f0bb9de4b")
-					return headers
-				}(),
+
+	t.Run("error without correlation ID", func(t *testing.T) {
+		e := Error{
+			Code:    ErrorCodeNotFound,
+			Message: "server not found",
+		}
+
+		err := StabilizeError(e)
+
+		assert.Equal(t, "server not found (not_found)", fmt.Sprintf("%v", err))
+	})
+
+	t.Run("error with correlation ID", func(t *testing.T) {
+		e := Error{
+			Code:    ErrorCodeNotFound,
+			Message: "server not found",
+			response: &Response{
+				Response: &http.Response{
+					StatusCode: http.StatusInternalServerError,
+					Header: func() http.Header {
+						headers := http.Header{}
+						// [http.Header] requires normalized header names, easiest to do by using the Set method
+						headers.Set("X-Correlation-ID", "d5064a1f0bb9de4b")
+						return headers
+					}(),
+				},
 			},
-		},
-	}
+		}
 
-	err := StableError(e)
+		err := StabilizeError(e)
 
-	assert.Equal(t, "server not found (not_found)", fmt.Sprintf("%v", err))
+		assert.Equal(t, "server not found (not_found)", fmt.Sprintf("%v", err))
+	})
 }
 
 func TestArgumentError(t *testing.T) {

@@ -157,8 +157,8 @@ func IsError(err error, code ...ErrorCode) bool {
 	return ok && slices.Index(code, apiErr.Code) > -1
 }
 
-// StableError returns an error without any correlation ID.
-func StableError(err error) error {
+// StabilizeError returns an error without any correlation ID.
+func StabilizeError(err error) error {
 	var e Error
 	if errors.As(err, &e) {
 		e.response = nil
