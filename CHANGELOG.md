@@ -1,5 +1,12 @@
 # Changelog
 
+## [v2.33.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.33.0)
+
+### Features
+
+- add update rrset records action to zone client (#773)
+- Storage Box support no longer experimental (#783)
+
 ## [v2.32.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.32.0)
 
 ### Features
