@@ -33,6 +33,8 @@ type StorageBoxSnapshotStats struct {
 // GetSnapshotByID gets a [StorageBoxSnapshot] by its ID.
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-get-a-snapshot
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) GetSnapshotByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSnapshot, *Response, error) {
 	const optPath = "/storage_boxes/%d/snapshots/%d"
 	ctx = ctxutil.SetOpPath(ctx, optPath)
@@ -53,6 +55,8 @@ func (c *StorageBoxClient) GetSnapshotByID(ctx context.Context, storageBox *Stor
 // GetSnapshotByName gets a [StorageBoxSnapshot] by its name.
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) GetSnapshotByName(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -68,6 +72,8 @@ func (c *StorageBoxClient) GetSnapshotByName(
 //
 // When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-get-a-snapshot
 // When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) GetSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -115,6 +121,8 @@ func (o StorageBoxSnapshotListOpts) values() url.Values {
 // Pagination is not supported, so this will return all [StorageBoxSnapshot] at once.
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) ListSnapshots(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -136,6 +144,8 @@ func (c *StorageBoxClient) ListSnapshots(
 // AllSnapshotsWithOpts lists all [StorageBoxSnapshot] of a [StorageBox] with the given options.
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) AllSnapshotsWithOpts(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -148,6 +158,8 @@ func (c *StorageBoxClient) AllSnapshotsWithOpts(
 // AllSnapshots lists all [StorageBoxSnapshot] of a [StorageBox] without any options.
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-list-snapshots
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) AllSnapshots(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -172,6 +184,8 @@ type StorageBoxSnapshotCreateResult struct {
 // CreateSnapshot creates a new [StorageBoxSnapshot] for the given [StorageBox] with the provided options.
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-create-a-snapshot
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) CreateSnapshot(
 	ctx context.Context,
 	storageBox *StorageBox,
@@ -205,6 +219,8 @@ type StorageBoxSnapshotUpdateOpts struct {
 // UpdateSnapshot updates the given [StorageBoxSnapshot] of a [StorageBox] with the provided options.
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-update-a-snapshot
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) UpdateSnapshot(
 	ctx context.Context,
 	snapshot *StorageBoxSnapshot,
@@ -232,6 +248,8 @@ type StorageBoxSnapshotDeleteResult struct {
 // DeleteSnapshot deletes the given [StorageBoxSnapshot] of a [StorageBox].
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-snapshots-delete-a-snapshot
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) DeleteSnapshot(
 	ctx context.Context,
 	snapshot *StorageBoxSnapshot,
