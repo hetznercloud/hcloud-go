@@ -15,6 +15,7 @@ import (
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts
 type StorageBoxSubaccount struct {
 	ID             int64
+	Name           string
 	Username       string
 	HomeDirectory  string
 	Server         string
@@ -34,7 +35,7 @@ type StorageBoxSubaccountAccessSettings struct {
 	WebDAVEnabled       bool
 }
 
-// GetSubaccount retrieves a [StorageBoxSubaccount] either by its ID or by its username, depending on whether
+// GetSubaccount retrieves a [StorageBoxSubaccount] either by its ID or by its name, depending on whether
 // the input can be parsed as an integer. If no matching [StorageBoxSubaccount] is found, it returns nil.
 //
 // When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-get-a-subaccount
@@ -44,17 +45,17 @@ type StorageBoxSubaccountAccessSettings struct {
 func (c *StorageBoxClient) GetSubaccount(
 	ctx context.Context,
 	storageBox *StorageBox,
-	idOrUsername string,
+	idOrName string,
 ) (*StorageBoxSubaccount, *Response, error) {
 	return getByIDOrName(
 		ctx,
 		func(ctx context.Context, id int64) (*StorageBoxSubaccount, *Response, error) {
 			return c.GetSubaccountByID(ctx, storageBox, id)
 		},
-		func(ctx context.Context, username string) (*StorageBoxSubaccount, *Response, error) {
-			return c.GetSubaccountByUsername(ctx, storageBox, username)
+		func(ctx context.Context, name string) (*StorageBoxSubaccount, *Response, error) {
+			return c.GetSubaccountByName(ctx, storageBox, name)
 		},
-		idOrUsername,
+		idOrName,
 	)
 }
 
@@ -84,6 +85,23 @@ func (c *StorageBoxClient) GetSubaccountByID(
 	return StorageBoxSubaccountFromSchema(respBody.Subaccount), resp, nil
 }
 
+// GetSubaccountByName retrieves a [StorageBoxSubaccount] by its name.
+//
+// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts
+//
+// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
+func (c *StorageBoxClient) GetSubaccountByName(
+	ctx context.Context,
+	storageBox *StorageBox,
+	name string,
+) (*StorageBoxSubaccount, *Response, error) {
+	return firstByName(name, func() ([]*StorageBoxSubaccount, *Response, error) {
+		return c.ListSubaccounts(ctx, storageBox, StorageBoxSubaccountListOpts{
+			Name: name,
+		})
+	})
+}
+
 // GetSubaccountByUsername retrieves a [StorageBoxSubaccount] by its username.
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts
@@ -104,12 +122,16 @@ func (c *StorageBoxClient) GetSubaccountByUsername(
 // StorageBoxSubaccountListOpts represents the options for listing [StorageBoxSubaccount].
 type StorageBoxSubaccountListOpts struct {
 	LabelSelector string
+	Name          string
 	Username      string
 	Sort          []string
 }
 
 func (o StorageBoxSubaccountListOpts) values() url.Values {
 	vals := url.Values{}
+	if o.Name != "" {
+		vals.Add("name", o.Name)
+	}
 	if o.Username != "" {
 		vals.Add("username", o.Username)
 	}
@@ -175,6 +197,7 @@ func (c *StorageBoxClient) AllSubaccounts(
 
 // StorageBoxSubaccountCreateOpts represents the options for creating a [StorageBoxSubaccount].
 type StorageBoxSubaccountCreateOpts struct {
+	Name           string
 	HomeDirectory  string
 	Password       string
 	Description    string
@@ -228,6 +251,7 @@ func (c *StorageBoxClient) CreateSubaccount(
 
 // StorageBoxSubaccountUpdateOpts represents the options for updating a [StorageBoxSubaccount].
 type StorageBoxSubaccountUpdateOpts struct {
+	Name        string
 	Description *string
 	Labels      map[string]string
 }

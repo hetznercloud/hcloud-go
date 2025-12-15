@@ -13,7 +13,7 @@ import (
 )
 
 func TestStorageBoxClientGetSubaccount(t *testing.T) {
-	t.Run("GetSubaccount (ByID)", func(t *testing.T) {
+	t.Run("GetSubaccountByID", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
@@ -23,9 +23,10 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 				JSONRaw: `{
 					"subaccount": {
 						"id": 13,
-						"username": "my-user",
-						"home_directory": "/home/my-user",
-						"server": "my-server",
+						"name": "subaccount1",
+						"home_directory": "/home/subaccount1",
+						"username": "u516715-sub1",
+						"server": "u516715.your-storagebox.de",
 						"access_settings": {
 							"reachable_externally": true,
 							"readonly": false,
@@ -53,9 +54,10 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		require.NotNil(t, subaccount)
 
 		assert.Equal(t, int64(13), subaccount.ID)
-		assert.Equal(t, "my-user", subaccount.Username)
-		assert.Equal(t, "/home/my-user", subaccount.HomeDirectory)
-		assert.Equal(t, "my-server", subaccount.Server)
+		assert.Equal(t, "subaccount1", subaccount.Name)
+		assert.Equal(t, "/home/subaccount1", subaccount.HomeDirectory)
+		assert.Equal(t, "u516715-sub1", subaccount.Username)
+		assert.Equal(t, "u516715.your-storagebox.de", subaccount.Server)
 		assert.True(t, subaccount.AccessSettings.ReachableExternally)
 		assert.False(t, subaccount.AccessSettings.Readonly)
 		assert.True(t, subaccount.AccessSettings.SambaEnabled)
@@ -66,7 +68,7 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		assert.Equal(t, "prod", subaccount.Labels["environment"])
 	})
 
-	t.Run("GetSubaccount (not found)", func(t *testing.T) {
+	t.Run("GetSubaccountByID (not found)", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
@@ -92,12 +94,12 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		assert.Equal(t, 404, resp.StatusCode)
 	})
 
-	t.Run("GetSubaccount (ByUsername)", func(t *testing.T) {
+	t.Run("GetSubaccountByName", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
 			{
-				Method: "GET", Path: "/storage_boxes/42/subaccounts?username=my-user",
+				Method: "GET", Path: "/storage_boxes/42/subaccounts?name=subaccount1",
 				Status: 200,
 				JSONRaw: `{
 					"subaccounts": [{ "id": 13 }]
@@ -107,7 +109,7 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 
 		storageBox := &StorageBox{ID: 42}
 
-		subaccount, resp, err := client.StorageBox.GetSubaccountByUsername(ctx, storageBox, "my-user")
+		subaccount, resp, err := client.StorageBox.GetSubaccountByName(ctx, storageBox, "subaccount1")
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.NotNil(t, subaccount)
@@ -115,7 +117,30 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 		assert.Equal(t, int64(13), subaccount.ID)
 	})
 
-	t.Run("GetSubbacount (IDOrName)", func(t *testing.T) {
+	t.Run("GetSubaccountByUsername", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/storage_boxes/42/subaccounts?username=u516715-sub1",
+				Status: 200,
+				JSONRaw: `{
+					"subaccounts": [{ "id": 13 }]
+				}`,
+			},
+		})
+
+		storageBox := &StorageBox{ID: 42}
+
+		subaccount, resp, err := client.StorageBox.GetSubaccountByUsername(ctx, storageBox, "u516715-sub1")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, subaccount)
+
+		assert.Equal(t, int64(13), subaccount.ID)
+	})
+
+	t.Run("GetSubaccount", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
 		server.Expect([]mockutil.Request{
@@ -127,7 +152,7 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 				}`,
 			},
 			{
-				Method: "GET", Path: "/storage_boxes/42/subaccounts?username=my-user",
+				Method: "GET", Path: "/storage_boxes/42/subaccounts?name=subaccount1",
 				Status: 200,
 				JSONRaw: `{
 					"subaccounts": [{ "id": 14 }]
@@ -144,7 +169,7 @@ func TestStorageBoxClientGetSubaccount(t *testing.T) {
 
 		assert.Equal(t, int64(13), subaccount.ID)
 
-		subaccount, resp, err = client.StorageBox.GetSubaccount(ctx, storageBox, "my-user")
+		subaccount, resp, err = client.StorageBox.GetSubaccount(ctx, storageBox, "subaccount1")
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.NotNil(t, subaccount)
@@ -223,7 +248,8 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 					require.NoError(t, err)
 
 					expectedBody := `{
-						"home_directory": "/home/my-user",
+						"name": "subaccount1",
+						"home_directory": "/home/subaccount1",
 						"password": "my-password",
 						"access_settings": {
 							"reachable_externally": true,
@@ -249,7 +275,8 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 		storageBox := &StorageBox{ID: 42}
 
 		opts := StorageBoxSubaccountCreateOpts{
-			HomeDirectory: "/home/my-user",
+			Name:          "subaccount1",
+			HomeDirectory: "/home/subaccount1",
 			Password:      "my-password",
 			Description:   "This describes my subaccount",
 			AccessSettings: &StorageBoxSubaccountCreateOptsAccessSettings{
@@ -262,6 +289,46 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 			Labels: map[string]string{
 				"environment": "prod",
 			},
+		}
+		result, _, err := client.StorageBox.CreateSubaccount(ctx, storageBox, opts)
+		require.NoError(t, err)
+		require.NotNil(t, result)
+
+		subaccount := result.Subaccount
+		require.NotNil(t, subaccount)
+
+		assert.Equal(t, int64(42), subaccount.ID)
+	})
+
+	t.Run("CreateSubaccount (minimal)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/storage_boxes/42/subaccounts",
+				Status: 201,
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+
+					expectedBody := `{
+						"home_directory": "/home/subaccount1",
+						"password": "my-password"
+					}`
+					assert.JSONEq(t, expectedBody, string(body))
+				},
+				JSONRaw: `{
+					"subaccount": { "id": 42 },
+					"action": { "id": 12345 }
+				}`,
+			},
+		})
+
+		storageBox := &StorageBox{ID: 42}
+
+		opts := StorageBoxSubaccountCreateOpts{
+			HomeDirectory: "/home/subaccount1",
+			Password:      "my-password",
 		}
 		result, _, err := client.StorageBox.CreateSubaccount(ctx, storageBox, opts)
 		require.NoError(t, err)
@@ -287,6 +354,7 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 					require.NoError(t, err)
 
 					expectedBody := `{
+					 	"name": "subaccount1",
 						"labels": {
 							"environment": "prod",
 							"example.com/my": "label",
@@ -310,6 +378,7 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 		}
 
 		opts := StorageBoxSubaccountUpdateOpts{
+			Name:        "subaccount1",
 			Description: Ptr("Updated description"),
 			Labels: map[string]string{
 				"environment":    "prod",
@@ -317,6 +386,42 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 				"just-a-key":     "",
 			},
 		}
+
+		subaccount, _, err := client.StorageBox.UpdateSubaccount(ctx, subaccount, opts)
+		require.NoError(t, err)
+		require.NotNil(t, subaccount)
+
+		assert.Equal(t, int64(13), subaccount.ID)
+	})
+
+	t.Run("UpdateSubaccount (minimal)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "PUT", Path: "/storage_boxes/42/subaccounts/13",
+				Status: 200,
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+
+					expectedBody := `{}`
+					assert.JSONEq(t, expectedBody, string(body))
+				},
+				JSONRaw: `{
+					"subaccount": { "id": 13 }
+				}`,
+			},
+		})
+
+		subaccount := &StorageBoxSubaccount{
+			ID: 13,
+			StorageBox: &StorageBox{
+				ID: 42,
+			},
+		}
+
+		opts := StorageBoxSubaccountUpdateOpts{}
 
 		subaccount, _, err := client.StorageBox.UpdateSubaccount(ctx, subaccount, opts)
 		require.NoError(t, err)
@@ -384,7 +489,7 @@ func TestStorageBoxClientResetSubaccountPassword(t *testing.T) {
 	require.NotNil(t, action)
 }
 
-func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
+func TestStorageBoxSubaccountUpdateAccessSettings(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
 	server.Expect([]mockutil.Request{
@@ -429,7 +534,7 @@ func TestStorageBoxSubbacountUpdateAccessSettings(t *testing.T) {
 	require.NotNil(t, action)
 }
 
-func TestStorageBoxSubbacountChangeHomeDirectory(t *testing.T) {
+func TestStorageBoxSubaccountChangeHomeDirectory(t *testing.T) {
 	ctx, server, client := makeTestUtils(t)
 
 	server.Expect([]mockutil.Request{
