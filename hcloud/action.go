@@ -206,11 +206,11 @@ func (c *ResourceActionClient) All(ctx context.Context, opts ActionListOpts) ([]
 //
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
-func (c *ResourceActionClient) ListFor(ctx context.Context, id any, opts ActionListOpts) ([]*Action, *Response, error) {
+func (c *ResourceActionClient) ListFor(ctx context.Context, resourceID any, opts ActionListOpts) ([]*Action, *Response, error) {
 	opPath := c.getBaseURL() + "/%v/actions?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, id, opts.values().Encode())
+	reqPath := fmt.Sprintf(opPath, resourceID, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.ActionListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -221,9 +221,9 @@ func (c *ResourceActionClient) ListFor(ctx context.Context, id any, opts ActionL
 }
 
 // AllFor returns all actions for the given Resource.
-func (c *ResourceActionClient) AllFor(ctx context.Context, id any, opts ActionListOpts) ([]*Action, error) {
+func (c *ResourceActionClient) AllFor(ctx context.Context, resourceID any, opts ActionListOpts) ([]*Action, error) {
 	return iterPages(func(page int) ([]*Action, *Response, error) {
 		opts.Page = page
-		return c.ListFor(ctx, id, opts)
+		return c.ListFor(ctx, resourceID, opts)
 	})
 }
