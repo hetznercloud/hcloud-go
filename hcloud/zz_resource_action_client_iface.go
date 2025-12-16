@@ -21,7 +21,7 @@ type IResourceActionClient interface {
 	//
 	// Please note that filters specified in opts are not taken into account
 	// when their value corresponds to their zero value or when they are empty.
-	ListFor(ctx context.Context, id any, opts ActionListOpts) ([]*Action, *Response, error)
+	ListFor(ctx context.Context, resourceID any, opts ActionListOpts) ([]*Action, *Response, error)
 	// AllFor returns all actions for the given Resource.
-	AllFor(ctx context.Context, id any, opts ActionListOpts) ([]*Action, error)
+	AllFor(ctx context.Context, resourceID any, opts ActionListOpts) ([]*Action, error)
 }
