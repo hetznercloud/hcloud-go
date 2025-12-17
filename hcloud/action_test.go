@@ -3,6 +3,7 @@ package hcloud
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -480,4 +481,28 @@ func TestResourceActionClientAllFor(t *testing.T) {
 		require.Equal(t, int64(1509772237), result[0].ID)
 		require.Equal(t, int64(1509772238), result[1].ID)
 	})
+}
+
+func ExampleResourceActionClient_ListFor() {
+	ctx := context.Background()
+	client := NewClient()
+
+	{
+		// List actions for the server 5425271.
+		result, _, _ := client.Server.Action.ListFor(ctx, 5425271, ActionListOpts{})
+		// Error handling skipped
+
+		for _, action := range result {
+			fmt.Println(action.ID, action.Command, action.Status)
+		}
+	}
+	{
+		// List actions for the zone "example.org".
+		result, _, _ := client.Zone.Action.ListFor(ctx, "example.org", ActionListOpts{})
+		// Error handling skipped
+
+		for _, action := range result {
+			fmt.Println(action.ID, action.Command, action.Status)
+		}
+	}
 }
