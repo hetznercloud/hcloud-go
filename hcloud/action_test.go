@@ -384,6 +384,28 @@ func TestResourceActionClientListFor(t *testing.T) {
 		require.Len(t, result, 1)
 		require.Equal(t, int64(1509772237), result[0].ID)
 	})
+
+	t.Run("string resource id", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/zones/example.org/actions?",
+				Status: 200,
+				JSONRaw: `{
+					"actions": [
+						{ "id": 1509772237 }
+					]
+				}`,
+			},
+		})
+
+		result, resp, err := client.Zone.Action.ListFor(ctx, "example.org", ActionListOpts{})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.Len(t, result, 1)
+		require.Equal(t, int64(1509772237), result[0].ID)
+	})
 }
 
 func TestResourceActionClientAllFor(t *testing.T) {
