@@ -2,6 +2,7 @@ package hcloud
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -12,47 +13,263 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 func TestServerClientGetByID(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+	ctx, server, client := makeTestUtils(t)
 
-	env.Mux.HandleFunc("/servers/1", func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(schema.ServerGetResponse{
-			Server: schema.Server{
-				ID: 1,
-			},
-		})
+	server.Expect([]mockutil.Request{
+		{
+			Method: "GET", Path: "/servers/115493226",
+			Status: 200,
+			JSONRaw: `
+{
+  "server": {
+    "id": 115493226,
+    "name": "test1",
+    "status": "running",
+    "server_type": {
+      "id": 104,
+      "name": "cx22",
+      "architecture": "x86",
+      "cores": 2,
+      "cpu_type": "shared",
+      "category": "cost_optimized",
+      "deprecated": true,
+      "deprecation": {
+        "announced": "2025-10-16T06:00:00Z",
+        "unavailable_after": "2025-12-31T23:59:59Z"
+      },
+      "description": "CX22",
+      "disk": 40,
+      "memory": 4,
+      "prices": [
+        {
+          "location": "fsn1",
+          "price_hourly": {
+            "gross": "0.0052000000000000",
+            "net": "0.0052000000"
+          },
+          "price_monthly": {
+            "gross": "3.2900000000000000",
+            "net": "3.2900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "hel1",
+          "price_hourly": {
+            "gross": "0.0052000000000000",
+            "net": "0.0052000000"
+          },
+          "price_monthly": {
+            "gross": "3.2900000000000000",
+            "net": "3.2900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        },
+        {
+          "location": "nbg1",
+          "price_hourly": {
+            "gross": "0.0052000000000000",
+            "net": "0.0052000000"
+          },
+          "price_monthly": {
+            "gross": "3.2900000000000000",
+            "net": "3.2900000000"
+          },
+          "included_traffic": 21990232555520,
+          "price_per_tb_traffic": {
+            "gross": "1.0000000000000000",
+            "net": "1.0000000000"
+          }
+        }
+      ],
+      "storage_type": "local",
+      "locations": [
+        {
+          "id": 1,
+          "name": "fsn1",
+          "deprecation": {
+            "announced": "2025-10-16T06:00:00Z",
+            "unavailable_after": "2025-12-31T23:59:59Z"
+          }
+        },
+        {
+          "id": 2,
+          "name": "nbg1",
+          "deprecation": {
+            "announced": "2025-10-16T06:00:00Z",
+            "unavailable_after": "2025-12-31T23:59:59Z"
+          }
+        },
+        {
+          "id": 3,
+          "name": "hel1",
+          "deprecation": {
+            "announced": "2025-10-16T06:00:00Z",
+            "unavailable_after": "2025-12-31T23:59:59Z"
+          }
+        }
+      ]
+    },
+    "datacenter": {
+      "id": 3,
+      "description": "Helsinki 1 virtual DC 2",
+      "location": {
+        "id": 3,
+        "name": "hel1",
+        "description": "Helsinki DC Park 1",
+        "city": "Helsinki",
+        "country": "FI",
+        "latitude": 60.169855,
+        "longitude": 24.938379,
+        "network_zone": "eu-central"
+      },
+      "name": "hel1-dc2",
+      "server_types": {
+        "available": [
+          22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 45, 93, 94, 95, 96, 97, 98,
+          99, 100, 101, 102, 104, 105, 108, 109, 110, 111, 112, 113, 114, 115,
+          116, 117
+        ],
+        "available_for_migration": [
+          22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 45, 93, 94, 95, 96, 97, 98,
+          99, 100, 101, 102, 104, 105, 108, 109, 110, 111, 112, 113, 114, 115,
+          116, 117
+        ],
+        "supported": [
+          1, 3, 5, 7, 9, 11, 12, 13, 14, 15, 22, 23, 24, 25, 26, 27, 28, 29, 30,
+          31, 33, 34, 35, 36, 37, 38, 45, 93, 94, 95, 96, 97, 98, 99, 100, 101,
+          104, 105, 106, 107, 109, 110, 111, 112, 113, 114, 115, 116, 117
+        ]
+      }
+    },
+    "location": {
+      "id": 3,
+      "name": "hel1",
+      "description": "Helsinki DC Park 1",
+      "city": "Helsinki",
+      "country": "FI",
+      "latitude": 60.169855,
+      "longitude": 24.938379,
+      "network_zone": "eu-central"
+    },
+    "image": {
+      "id": 310554929,
+      "type": "system",
+      "name": "debian-13",
+      "architecture": "x86",
+      "bound_to": null,
+      "created_from": null,
+      "deprecated": null,
+      "description": "Debian 13",
+      "disk_size": 5,
+      "image_size": null,
+      "labels": {},
+      "os_flavor": "debian",
+      "os_version": "13",
+      "protection": {
+        "delete": false
+      },
+      "rapid_deploy": true,
+      "status": "available",
+      "created": "2025-08-18T06:15:25Z",
+      "deleted": null
+    },
+    "iso": null,
+    "primary_disk_size": 40,
+    "labels": {},
+    "protection": {
+      "delete": false,
+      "rebuild": false
+    },
+    "backup_window": null,
+    "rescue_enabled": false,
+    "locked": false,
+    "placement_group": null,
+    "public_net": {
+      "firewalls": [],
+      "floating_ips": [],
+      "ipv4": {
+        "id": 110630586,
+        "ip": "46.62.147.153",
+        "blocked": false,
+        "dns_ptr": "static.153.147.62.46.clients.your-server.de"
+      },
+      "ipv6": {
+        "id": 110630587,
+        "ip": "2a01:4f9:c012:fa81::/64",
+        "blocked": false,
+        "dns_ptr": []
+      }
+    },
+    "private_net": [],
+    "load_balancers": [],
+    "volumes": [],
+    "included_traffic": 21990232555520,
+    "ingoing_traffic": 109470000,
+    "outgoing_traffic": 57545000,
+    "created": "2025-12-15T15:22:19Z"
+  }
+}
+`,
+		},
 	})
-	ctx := context.Background()
 
-	server, _, err := env.Client.Server.GetByID(ctx, 1)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if server == nil {
-		t.Fatal("no server")
-	}
-	if server.ID != 1 {
-		t.Errorf("unexpected server ID: %v", server.ID)
-	}
-
-	t.Run("called via Get", func(t *testing.T) {
-		server, _, err := env.Client.Server.Get(ctx, "1")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if server == nil {
-			t.Fatal("no server")
-		}
-		if server.ID != 1 {
-			t.Errorf("unexpected server ID: %v", server.ID)
-		}
-	})
+	result, _, err := client.Server.GetByID(ctx, 115493226)
+	require.NoError(t, err)
+	require.NotNil(t, result)
+	assert.Equal(t, int64(115493226), result.ID)
+	assert.Equal(t, "test1", result.Name)
+	assert.Equal(t, ServerStatusRunning, result.Status)
+	assert.Equal(t, int64(104), result.ServerType.ID)
+	assert.Equal(t, "cx22", result.ServerType.Name)
+	assert.Equal(t, int64(3), result.Datacenter.ID)
+	assert.Equal(t, "hel1-dc2", result.Datacenter.Name)
+	assert.Equal(t, int64(3), result.Location.ID)
+	assert.Equal(t, "hel1", result.Location.Name)
+	assert.Equal(t, int64(310554929), result.Image.ID)
+	assert.Equal(t, "debian-13", result.Image.Name)
+	assert.Nil(t, result.ISO)
+	assert.Equal(t, 40, result.PrimaryDiskSize)
+	assert.Equal(t, map[string]string{}, result.Labels)
+	assert.False(t, result.Protection.Delete)
+	assert.False(t, result.Protection.Rebuild)
+	assert.Empty(t, result.BackupWindow)
+	assert.False(t, result.RescueEnabled)
+	assert.False(t, result.Locked)
+	assert.Nil(t, result.PlacementGroup)
+	assert.Equal(t, []*ServerFirewallStatus{}, result.PublicNet.Firewalls)
+	assert.Equal(t, []*FloatingIP{}, result.PublicNet.FloatingIPs)
+	assert.Equal(t, int64(110630586), result.PublicNet.IPv4.ID)
+	assert.Equal(t, "46.62.147.153", result.PublicNet.IPv4.IP.String())
+	assert.False(t, result.PublicNet.IPv4.Blocked)
+	assert.Equal(t, "static.153.147.62.46.clients.your-server.de", result.PublicNet.IPv4.DNSPtr)
+	assert.Equal(t, int64(110630587), result.PublicNet.IPv6.ID)
+	assert.Equal(t, "2a01:4f9:c012:fa81::", result.PublicNet.IPv6.IP.String())
+	assert.False(t, result.PublicNet.IPv6.Blocked)
+	assert.Equal(t, map[string]string{}, result.PublicNet.IPv6.DNSPtr)
+	assert.Equal(t, []ServerPrivateNet{}, result.PrivateNet)
+	assert.Equal(t, []*LoadBalancer{}, result.LoadBalancers)
+	assert.Equal(t, []*Volume{}, result.Volumes)
+	assert.Equal(t, uint64(21990232555520), result.IncludedTraffic)
+	assert.Equal(t, uint64(109470000), result.IngoingTraffic)
+	assert.Equal(t, uint64(57545000), result.OutgoingTraffic)
+	assert.Equal(t, "2025-12-15T15:22:19Z", result.Created.Format(time.RFC3339))
 }
 
 func TestServerClientGetByIDNotFound(t *testing.T) {
@@ -663,8 +880,8 @@ func TestServersCreateWithDatacenterID(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if reqBody.Datacenter != "1" {
-			t.Errorf("unexpected datacenter: %v", reqBody.Datacenter)
+		if reqBody.Datacenter != "1" { // nolint:staticcheck // Deprecated
+			t.Errorf("unexpected datacenter: %v", reqBody.Datacenter) // nolint:staticcheck // Deprecated
 		}
 		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
 			Server: schema.Server{
@@ -697,8 +914,8 @@ func TestServersCreateWithDatacenterName(t *testing.T) {
 		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
 			t.Fatal(err)
 		}
-		if reqBody.Datacenter != "dc1" {
-			t.Errorf("unexpected datacenter: %v", reqBody.Datacenter)
+		if reqBody.Datacenter != "dc1" { // nolint:staticcheck // Deprecated
+			t.Errorf("unexpected datacenter: %v", reqBody.Datacenter) // nolint:staticcheck // Deprecated
 		}
 		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
 			Server: schema.Server{

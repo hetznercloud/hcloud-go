@@ -305,7 +305,7 @@ func TestPrimaryIPClient(t *testing.T) {
 				Name:         "my-primary-ip",
 				Type:         "ipv4",
 				AssigneeType: "server",
-				Datacenter:   "fsn-dc14",
+				Location:     "fsn1",
 				Labels:       Ptr(map[string]string{"key": "value"}),
 			}
 			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
@@ -327,7 +327,7 @@ func TestPrimaryIPClient(t *testing.T) {
 			Type:         PrimaryIPTypeIPv4,
 			AssigneeType: "server",
 			Labels:       map[string]string{"key": "value"},
-			Datacenter:   "fsn-dc14",
+			Location:     "fsn1",
 		}
 
 		result, resp, err := env.Client.PrimaryIP.Create(ctx, opts)

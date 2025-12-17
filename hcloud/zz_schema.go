@@ -442,6 +442,7 @@ func (c *converterImpl) PrimaryIPFromSchema(source schema.PrimaryIP) *PrimaryIP 
 	hcloudPrimaryIP.AutoDelete = source.AutoDelete
 	hcloudPrimaryIP.Blocked = source.Blocked
 	hcloudPrimaryIP.Created = c.timeTimeToTimeTime(source.Created)
+	hcloudPrimaryIP.Location = c.LocationFromSchema(source.Location)
 	hcloudPrimaryIP.Datacenter = c.DatacenterFromSchema(source.Datacenter)
 	return &hcloudPrimaryIP
 }
@@ -956,6 +957,7 @@ func (c *converterImpl) SchemaFromPrimaryIP(source *PrimaryIP) schema.PrimaryIP 
 		schemaPrimaryIP.AutoDelete = (*source).AutoDelete
 		schemaPrimaryIP.Blocked = (*source).Blocked
 		schemaPrimaryIP.Created = c.timeTimeToTimeTime((*source).Created)
+		schemaPrimaryIP.Location = c.SchemaFromLocation((*source).Location)
 		schemaPrimaryIP.Datacenter = c.SchemaFromDatacenter((*source).Datacenter)
 	}
 	return schemaPrimaryIP
@@ -986,6 +988,7 @@ func (c *converterImpl) SchemaFromPrimaryIPCreateOpts(source PrimaryIPCreateOpts
 	schemaPrimaryIPCreateRequest.AssigneeID = source.AssigneeID
 	schemaPrimaryIPCreateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	schemaPrimaryIPCreateRequest.AutoDelete = source.AutoDelete
+	schemaPrimaryIPCreateRequest.Location = source.Location
 	schemaPrimaryIPCreateRequest.Datacenter = source.Datacenter
 	return schemaPrimaryIPCreateRequest
 }
@@ -1030,7 +1033,7 @@ func (c *converterImpl) SchemaFromServer(source *Server) schema.Server {
 		schemaServer.RescueEnabled = (*source).RescueEnabled
 		schemaServer.ISO = c.pHcloudISOToPSchemaISO((*source).ISO)
 		schemaServer.Locked = (*source).Locked
-		schemaServer.Datacenter = c.SchemaFromDatacenter((*source).Datacenter)
+		schemaServer.Location = c.SchemaFromLocation((*source).Location)
 		schemaServer.Image = c.pHcloudImageToPSchemaImage((*source).Image)
 		schemaServer.Protection = c.hcloudServerProtectionToSchemaServerProtection((*source).Protection)
 		schemaServer.Labels = (*source).Labels
@@ -1048,6 +1051,7 @@ func (c *converterImpl) SchemaFromServer(source *Server) schema.Server {
 				schemaServer.LoadBalancers[k] = c.pHcloudLoadBalancerToInt64((*source).LoadBalancers[k])
 			}
 		}
+		schemaServer.Datacenter = c.SchemaFromDatacenter((*source).Datacenter)
 	}
 	return schemaServer
 }
@@ -1496,7 +1500,7 @@ func (c *converterImpl) ServerFromSchema(source schema.Server) *Server {
 		}
 	}
 	hcloudServer.ServerType = c.ServerTypeFromSchema(source.ServerType)
-	hcloudServer.Datacenter = c.DatacenterFromSchema(source.Datacenter)
+	hcloudServer.Location = c.LocationFromSchema(source.Location)
 	hcloudServer.IncludedTraffic = source.IncludedTraffic
 	if source.OutgoingTraffic != nil {
 		hcloudServer.OutgoingTraffic = *source.OutgoingTraffic
@@ -1528,6 +1532,7 @@ func (c *converterImpl) ServerFromSchema(source schema.Server) *Server {
 			hcloudServer.LoadBalancers[k] = &hcloudLoadBalancer
 		}
 	}
+	hcloudServer.Datacenter = c.DatacenterFromSchema(source.Datacenter)
 	return &hcloudServer
 }
 func (c *converterImpl) ServerMetricsFromSchema(source *schema.ServerGetMetricsResponse) (*ServerMetrics, error) {
