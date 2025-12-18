@@ -21,7 +21,7 @@ type PrimaryIP struct {
 	// Deprecated: [PrimaryIP.Datacenter] is deprecated and will be removed after 1 July 2026.
 	// Use [PrimaryIP.Location] instead.
 	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
-	Datacenter Datacenter `json:"datacenter"`
+	Datacenter *Datacenter `json:"datacenter"`
 }
 
 // PrimaryIPProtection represents the protection level of a Primary IP.

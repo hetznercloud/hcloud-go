@@ -30,7 +30,7 @@ type Server struct {
 	// Deprecated: [Server.Datacenter] is deprecated and will be removed after 1 July 2026.
 	// Use [Server.Location] instead.
 	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
-	Datacenter Datacenter `json:"datacenter"`
+	Datacenter *Datacenter `json:"datacenter"`
 }
 
 // ServerProtection defines the schema of a server's resource protection.
