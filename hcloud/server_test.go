@@ -2,7 +2,6 @@ package hcloud
 
 import (
 	"context"
-	_ "embed"
 	"encoding/json"
 	"fmt"
 	"net"
