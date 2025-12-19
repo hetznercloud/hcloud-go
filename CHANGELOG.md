@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.33.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.33.0)
+
+### Features
+
+- add update rrset records action to zone client (#773)
+- deprecate datacenter in `primary ips` and `servers` (#793)
+- default to max per page value in `AllWithOpts` (#794)
+
 ## [v2.32.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.32.0)
 
 ### Features
