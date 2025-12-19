@@ -163,6 +163,9 @@ func (c *ZoneClient) ListRRSets(ctx context.Context, zone *Zone, opts ZoneRRSetL
 //
 // See https://docs.hetzner.cloud/reference/cloud#zone-rrsets-list-rrsets
 func (c *ZoneClient) AllRRSetsWithOpts(ctx context.Context, zone *Zone, opts ZoneRRSetListOpts) ([]*ZoneRRSet, error) {
+	if opts.ListOpts.PerPage == 0 {
+		opts.ListOpts.PerPage = 50
+	}
 	return iterPages(func(page int) ([]*ZoneRRSet, *Response, error) {
 		opts.Page = page
 		return c.ListRRSets(ctx, zone, opts)
@@ -173,7 +176,7 @@ func (c *ZoneClient) AllRRSetsWithOpts(ctx context.Context, zone *Zone, opts Zon
 //
 // See https://docs.hetzner.cloud/reference/cloud#zone-rrsets-list-rrsets
 func (c *ZoneClient) AllRRSets(ctx context.Context, zone *Zone) ([]*ZoneRRSet, error) {
-	return c.AllRRSetsWithOpts(ctx, zone, ZoneRRSetListOpts{ListOpts: ListOpts{PerPage: 50}})
+	return c.AllRRSetsWithOpts(ctx, zone, ZoneRRSetListOpts{})
 }
 
 // ZoneRRSetCreateOpts defines options for creating a [ZoneRRSet].

@@ -279,11 +279,14 @@ func (c *ServerClient) List(ctx context.Context, opts ServerListOpts) ([]*Server
 
 // All returns all servers.
 func (c *ServerClient) All(ctx context.Context) ([]*Server, error) {
-	return c.AllWithOpts(ctx, ServerListOpts{ListOpts: ListOpts{PerPage: 50}})
+	return c.AllWithOpts(ctx, ServerListOpts{})
 }
 
 // AllWithOpts returns all servers for the given options.
 func (c *ServerClient) AllWithOpts(ctx context.Context, opts ServerListOpts) ([]*Server, error) {
+	if opts.ListOpts.PerPage == 0 {
+		opts.ListOpts.PerPage = 50
+	}
 	return iterPages(func(page int) ([]*Server, *Response, error) {
 		opts.Page = page
 		return c.List(ctx, opts)

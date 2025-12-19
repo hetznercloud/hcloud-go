@@ -159,7 +159,7 @@ func TestZoneAllRRSetsWithOpts(t *testing.T) {
 
 	server.Expect([]mockutil.Request{
 		{
-			Method: "GET", Path: "/zones/example.com/rrsets?page=1&sort=name&type=A",
+			Method: "GET", Path: "/zones/example.com/rrsets?page=1&per_page=50&sort=name&type=A",
 			Status: 200,
 			JSONRaw: `{
 				"rrsets": [
@@ -170,7 +170,7 @@ func TestZoneAllRRSetsWithOpts(t *testing.T) {
 			}`,
 		},
 		{
-			Method: "GET", Path: "/zones/example.com/rrsets?page=2&sort=name&type=A",
+			Method: "GET", Path: "/zones/example.com/rrsets?page=2&per_page=50&sort=name&type=A",
 			Status: 200,
 			JSONRaw: `{
 				"rrsets": [

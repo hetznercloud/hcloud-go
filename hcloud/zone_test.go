@@ -184,7 +184,7 @@ func TestZoneAllWithOpts(t *testing.T) {
 
 	server.Expect([]mockutil.Request{
 		{
-			Method: "GET", Path: "/zones?mode=primary&page=1&sort=name",
+			Method: "GET", Path: "/zones?mode=primary&page=1&per_page=50&sort=name",
 			Status: 200,
 			JSONRaw: `{
 				"zones": [
@@ -195,7 +195,7 @@ func TestZoneAllWithOpts(t *testing.T) {
 			}`,
 		},
 		{
-			Method: "GET", Path: "/zones?mode=primary&page=2&sort=name",
+			Method: "GET", Path: "/zones?mode=primary&page=2&per_page=50&sort=name",
 			Status: 200,
 			JSONRaw: `{
 				"zones": [
