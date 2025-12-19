@@ -19,6 +19,21 @@ Backports are done by [tibdex/backport](https://github.com/tibdex/backport). App
   - Leverage Go empty values where possible, e.g. if a value is required, so an empty value has no other meaning.
   - Sometimes the API treats an empty value as `nil`, for example an empty string in name updates. There no pointer should be used.
 
+```go
+type ExampleUpdateOpts struct {
+    // Name is optional but cannot be empty.
+    // It doesn't need to be a pointer, we can represent empty values with "".
+    Name string `json:"name,omitempty"`
+    // Description is optional and can be empty.
+    // We need a pointer to distinguish between an empty value and no value.
+    Description *string `json:"description,omitempty"`
+    // Foo is required, it should not be a pointer and should not be omitted.
+    Foo int `json:"foo"`
+    // Bar is required but nullable. It should be a pointer.
+    Bar *int `json:"bar,omitempty"`
+}
+```
+
 ### The `schema` package
 
 - We use the `schema` package to map JSON schemas from the API to Go structs as closely as possible.
@@ -42,6 +57,22 @@ Backports are done by [tibdex/backport](https://github.com/tibdex/backport). App
 
 - We only do basic validation on the client side. Business logic is validated on the API side.
 - [error.go](hcloud/error.go) contains helpers for validation. Validation should be implemented as a `Validate()` function on the `Opts` struct.
+
+```go
+// Validate checks if options are valid.
+func (o ExampleOpts) Validate() error {
+    if o.Foo == "" {
+        return missingField(o, "Foo")
+    }
+    if o.Bar == nil && o.Baz == nil {
+        return missingOneOfFields(o, "Bar", "Baz")
+    }
+    if o.Qux <= 0 {
+        return invalidFieldValue(o, "Qux", o.Qux)
+    }
+    return nil
+}
+```
 
 ### Subresources
 
