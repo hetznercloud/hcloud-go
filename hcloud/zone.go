@@ -108,6 +108,11 @@ func (o *Zone) idOrName() (string, error) {
 	}
 }
 
+func (o *Zone) pathID() string {
+	id, _ := o.idOrName()
+	return id
+}
+
 // ZoneClient is a client for the Zone (DNS) API.
 //
 // See https://docs.hetzner.cloud/reference/cloud#zones and

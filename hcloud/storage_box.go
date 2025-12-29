@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -28,6 +29,10 @@ type StorageBox struct {
 	Protection     StorageBoxProtection
 	SnapshotPlan   *StorageBoxSnapshotPlan
 	Created        time.Time
+}
+
+func (s *StorageBox) pathID() string {
+	return strconv.FormatInt(s.ID, 10)
 }
 
 // StorageBoxAccessSettings represents the access settings of a [StorageBox].

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -32,6 +33,10 @@ type PrimaryIP struct {
 	// Use [PrimaryIP.Location] instead.
 	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
 	Datacenter *Datacenter
+}
+
+func (p *PrimaryIP) pathID() string {
+	return strconv.FormatInt(p.ID, 10)
 }
 
 // PrimaryIPProtection represents the protection level of a Primary IP.

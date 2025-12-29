@@ -44,6 +44,10 @@ type Server struct {
 	Datacenter *Datacenter
 }
 
+func (s *Server) pathID() string {
+	return strconv.FormatInt(s.ID, 10)
+}
+
 // ServerProtection represents the protection level of a server.
 type ServerProtection struct {
 	Delete, Rebuild bool

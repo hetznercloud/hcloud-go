@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -54,6 +55,10 @@ type Network struct {
 
 	// ExposeRoutesToVSwitch indicates if the routes from this network should be exposed to the vSwitch connection.
 	ExposeRoutesToVSwitch bool
+}
+
+func (n *Network) pathID() string {
+	return strconv.FormatInt(n.ID, 10)
 }
 
 // NetworkSubnet represents a subnet of a network in the Hetzner Cloud.

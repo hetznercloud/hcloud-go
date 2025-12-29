@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -26,6 +27,10 @@ type FloatingIP struct {
 	Protection   FloatingIPProtection
 	Labels       map[string]string
 	Name         string
+}
+
+func (f *FloatingIP) pathID() string {
+	return strconv.FormatInt(f.ID, 10)
 }
 
 // DNSPtrForIP returns the reverse DNS pointer of the IP address.

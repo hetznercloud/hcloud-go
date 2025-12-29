@@ -35,6 +35,10 @@ type Image struct {
 	Deleted    time.Time
 }
 
+func (image *Image) pathID() string {
+	return strconv.FormatInt(image.ID, 10)
+}
+
 // IsDeprecated returns whether the image is deprecated.
 func (o *Image) IsDeprecated() bool {
 	return !o.Deprecated.IsZero()

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -79,6 +80,10 @@ type Certificate struct {
 	Fingerprint    string
 	Status         *CertificateStatus
 	UsedBy         []CertificateUsedByRef
+}
+
+func (c *Certificate) pathID() string {
+	return strconv.FormatInt(c.ID, 10)
 }
 
 // CertificateCreateResult is the result of creating a certificate.
