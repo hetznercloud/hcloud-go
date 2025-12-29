@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -19,6 +20,10 @@ type Firewall struct {
 	Created   time.Time
 	Rules     []FirewallRule
 	AppliedTo []FirewallResource
+}
+
+func (f *Firewall) pathID() string {
+	return strconv.FormatInt(f.ID, 10)
 }
 
 // FirewallRule represents a Firewall's rules.

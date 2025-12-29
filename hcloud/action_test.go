@@ -350,7 +350,7 @@ func TestResourceActionClientListFor(t *testing.T) {
 			},
 		})
 
-		result, resp, err := client.PrimaryIP.Action.ListFor(ctx, 13, ActionListOpts{})
+		result, resp, err := client.PrimaryIP.Action.ListFor(ctx, &PrimaryIP{ID: 13}, ActionListOpts{})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.Len(t, result, 1)
@@ -372,7 +372,7 @@ func TestResourceActionClientListFor(t *testing.T) {
 			},
 		})
 
-		result, resp, err := client.PrimaryIP.Action.ListFor(ctx, 13, ActionListOpts{
+		result, resp, err := client.PrimaryIP.Action.ListFor(ctx, &PrimaryIP{ID: 13}, ActionListOpts{
 			Status: []ActionStatus{ActionStatusRunning},
 			Sort:   []string{"asc:id"},
 			ListOpts: ListOpts{
@@ -401,7 +401,7 @@ func TestResourceActionClientListFor(t *testing.T) {
 			},
 		})
 
-		result, resp, err := client.Zone.Action.ListFor(ctx, "example.org", ActionListOpts{})
+		result, resp, err := client.Zone.Action.ListFor(ctx, &Zone{Name: "example.org"}, ActionListOpts{})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
 		require.Len(t, result, 1)
@@ -436,7 +436,7 @@ func TestResourceActionClientAllFor(t *testing.T) {
 			},
 		})
 
-		result, err := client.PrimaryIP.Action.AllFor(ctx, 13, ActionListOpts{})
+		result, err := client.PrimaryIP.Action.AllFor(ctx, &PrimaryIP{ID: 13}, ActionListOpts{})
 		require.NoError(t, err)
 		require.Len(t, result, 2)
 		require.Equal(t, int64(1509772237), result[0].ID)
@@ -469,7 +469,7 @@ func TestResourceActionClientAllFor(t *testing.T) {
 			},
 		})
 
-		result, err := client.PrimaryIP.Action.AllFor(ctx, 13, ActionListOpts{
+		result, err := client.PrimaryIP.Action.AllFor(ctx, &PrimaryIP{ID: 13}, ActionListOpts{
 			Status: []ActionStatus{ActionStatusRunning},
 			Sort:   []string{"asc:id"},
 			ListOpts: ListOpts{
@@ -488,8 +488,10 @@ func ExampleResourceActionClient_ListFor() {
 	client := NewClient()
 
 	{
+		server := &Server{ID: 5425271}
+
 		// List actions for the server 5425271.
-		result, _, _ := client.Server.Action.ListFor(ctx, 5425271, ActionListOpts{})
+		result, _, _ := client.Server.Action.ListFor(ctx, server, ActionListOpts{})
 		// Error handling skipped
 
 		for _, action := range result {
@@ -497,8 +499,10 @@ func ExampleResourceActionClient_ListFor() {
 		}
 	}
 	{
+		zone := &Zone{Name: "example.org"}
+
 		// List actions for the zone "example.org".
-		result, _, _ := client.Zone.Action.ListFor(ctx, "example.org", ActionListOpts{})
+		result, _, _ := client.Zone.Action.ListFor(ctx, zone, ActionListOpts{})
 		// Error handling skipped
 
 		for _, action := range result {

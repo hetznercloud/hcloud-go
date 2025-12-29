@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -23,6 +24,10 @@ type Volume struct {
 	Labels      map[string]string
 	LinuxDevice string
 	Created     time.Time
+}
+
+func (v *Volume) pathID() string {
+	return strconv.FormatInt(v.ID, 10)
 }
 
 const (
