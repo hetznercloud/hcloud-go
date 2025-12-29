@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -206,11 +207,16 @@ func (c *ResourceActionClient) All(ctx context.Context, opts ActionListOpts) ([]
 //
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
-func (c *ResourceActionClient) ListFor(ctx context.Context, resource SupportsActions, opts ActionListOpts) ([]*Action, *Response, error) {
+func (c *ResourceActionClient) ListFor(ctx context.Context, resource any, opts ActionListOpts) ([]*Action, *Response, error) {
 	opPath := c.getBaseURL() + "/%s/actions?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, resource.pathID(), opts.values().Encode())
+	id, err := resourcePathID(resource)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	reqPath := fmt.Sprintf(opPath, id, opts.values().Encode())
 
 	respBody, resp, err := getRequest[schema.ActionListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -221,9 +227,38 @@ func (c *ResourceActionClient) ListFor(ctx context.Context, resource SupportsAct
 }
 
 // AllFor returns all actions for the given Resource.
-func (c *ResourceActionClient) AllFor(ctx context.Context, resource SupportsActions, opts ActionListOpts) ([]*Action, error) {
+func (c *ResourceActionClient) AllFor(ctx context.Context, resource any, opts ActionListOpts) ([]*Action, error) {
 	return iterPages(func(page int) ([]*Action, *Response, error) {
 		opts.Page = page
 		return c.ListFor(ctx, resource, opts)
 	})
+}
+
+func resourcePathID(o any) (string, error) {
+	switch v := o.(type) {
+	case *Server:
+		return strconv.FormatInt(v.ID, 10), nil
+	case *Certificate:
+		return strconv.FormatInt(v.ID, 10), nil
+	case *Firewall:
+		return strconv.FormatInt(v.ID, 10), nil
+	case *FloatingIP:
+		return strconv.FormatInt(v.ID, 10), nil
+	case *Image:
+		return strconv.FormatInt(v.ID, 10), nil
+	case *LoadBalancer:
+		return strconv.FormatInt(v.ID, 10), nil
+	case *Network:
+		return strconv.FormatInt(v.ID, 10), nil
+	case *PrimaryIP:
+		return strconv.FormatInt(v.ID, 10), nil
+	case *Volume:
+		return strconv.FormatInt(v.ID, 10), nil
+	case *Zone:
+		return v.idOrName()
+	case *StorageBox:
+		return strconv.FormatInt(v.ID, 10), nil
+	default:
+		return "", invalidArgument("resource", o, invalidValue(o))
+	}
 }
