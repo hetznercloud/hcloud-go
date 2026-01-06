@@ -131,6 +131,11 @@ func TestRetryPolicy(t *testing.T) {
 			want: false,
 		},
 		{
+			name: "server returns timeout error",
+			resp: fakeResponse(t, 504, `{"error":{"code":"timeout"}}`, true),
+			want: true,
+		},
+		{
 			name: "api returns rate_limit_exceeded error",
 			resp: fakeResponse(t, 429, `{"error":{"code":"rate_limit_exceeded"}}`, true),
 			want: true,
