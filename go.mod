@@ -8,7 +8,7 @@ toolchain go1.25.5
 
 require (
 	github.com/google/go-cmp v0.7.0
-	github.com/jmattheis/goverter v1.9.2
+	github.com/jmattheis/goverter v1.9.3
 	github.com/prometheus/client_golang v1.23.2
 	github.com/stretchr/testify v1.11.1
 	github.com/vburenin/ifacemaker v1.3.0
