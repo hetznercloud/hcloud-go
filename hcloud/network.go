@@ -84,7 +84,7 @@ type NetworkProtection struct {
 // NetworkClient is a client for the network API.
 type NetworkClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*Network]
 }
 
 // GetByID retrieves a network by its ID. If the network does not exist, nil is returned.

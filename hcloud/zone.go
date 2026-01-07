@@ -119,7 +119,7 @@ func (o *Zone) pathID() string {
 // https://docs.hetzner.cloud/reference/cloud#zone-rrsets.
 type ZoneClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*Zone]
 }
 
 // GetByID returns a single [Zone].

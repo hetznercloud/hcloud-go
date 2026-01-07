@@ -207,7 +207,7 @@ func (o *Server) PrivateNetFor(network *Network) *ServerPrivateNet {
 // ServerClient is a client for the servers API.
 type ServerClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*Server]
 }
 
 // GetByID retrieves a server by its ID. If the server does not exist, nil is returned.

@@ -81,7 +81,7 @@ const (
 // ImageClient is a client for the image API.
 type ImageClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*Image]
 }
 
 // GetByID retrieves an image by its ID. If the image does not exist, nil is returned.

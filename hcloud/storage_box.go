@@ -92,7 +92,7 @@ const (
 // Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 type StorageBoxClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*StorageBox]
 }
 
 // GetByID retrieves a [StorageBox] by its ID. If the [StorageBox] does not exist, nil is returned.

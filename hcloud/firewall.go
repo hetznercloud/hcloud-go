@@ -96,7 +96,7 @@ type FirewallResourceLabelSelector struct {
 // FirewallClient is a client for the Firewalls API.
 type FirewallClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*Firewall]
 }
 
 // GetByID retrieves a Firewall by its ID. If the Firewall does not exist, nil is returned.

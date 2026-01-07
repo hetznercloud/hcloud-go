@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -85,9 +84,15 @@ func (a *Action) Error() error {
 	return nil
 }
 
+type nilResource struct{}
+
+func (nilResource) pathID() string {
+	return ""
+}
+
 // ActionClient is a client for the actions API.
 type ActionClient struct {
-	action *ResourceActionClient
+	action *ResourceActionClient[nilResource]
 }
 
 // GetByID retrieves an action by its ID. If the action does not exist, nil is returned.
@@ -144,12 +149,12 @@ func (c *ActionClient) AllWithOpts(ctx context.Context, opts ActionListOpts) ([]
 }
 
 // ResourceActionClient is a client for the actions API exposed by the resource.
-type ResourceActionClient struct {
+type ResourceActionClient[R actionSupporter] struct {
 	resource string
 	client   *Client
 }
 
-func (c *ResourceActionClient) getBaseURL() string {
+func (c *ResourceActionClient[R]) getBaseURL() string {
 	if c.resource == "" {
 		return ""
 	}
@@ -158,7 +163,7 @@ func (c *ResourceActionClient) getBaseURL() string {
 }
 
 // GetByID retrieves an action by its ID. If the action does not exist, nil is returned.
-func (c *ResourceActionClient) GetByID(ctx context.Context, id int64) (*Action, *Response, error) {
+func (c *ResourceActionClient[R]) GetByID(ctx context.Context, id int64) (*Action, *Response, error) {
 	opPath := c.getBaseURL() + "/actions/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
@@ -178,7 +183,7 @@ func (c *ResourceActionClient) GetByID(ctx context.Context, id int64) (*Action, 
 //
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
-func (c *ResourceActionClient) List(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
+func (c *ResourceActionClient[R]) List(ctx context.Context, opts ActionListOpts) ([]*Action, *Response, error) {
 	opPath := c.getBaseURL() + "/actions?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
@@ -193,7 +198,7 @@ func (c *ResourceActionClient) List(ctx context.Context, opts ActionListOpts) ([
 }
 
 // All returns all actions for the given options.
-func (c *ResourceActionClient) All(ctx context.Context, opts ActionListOpts) ([]*Action, error) {
+func (c *ResourceActionClient[R]) All(ctx context.Context, opts ActionListOpts) ([]*Action, error) {
 	if opts.ListOpts.PerPage == 0 {
 		opts.ListOpts.PerPage = 50
 	}
@@ -203,18 +208,19 @@ func (c *ResourceActionClient) All(ctx context.Context, opts ActionListOpts) ([]
 	})
 }
 
+type actionSupporter interface {
+	pathID() string
+}
+
 // ListFor returns a paginated list of actions for the given Resource.
 //
 // Please note that filters specified in opts are not taken into account
 // when their value corresponds to their zero value or when they are empty.
-func (c *ResourceActionClient) ListFor(ctx context.Context, resource any, opts ActionListOpts) ([]*Action, *Response, error) {
+func (c *ResourceActionClient[R]) ListFor(ctx context.Context, resource R, opts ActionListOpts) ([]*Action, *Response, error) {
 	opPath := c.getBaseURL() + "/%s/actions?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	id, err := resourcePathID(resource)
-	if err != nil {
-		return nil, nil, err
-	}
+	id := resource.pathID()
 
 	reqPath := fmt.Sprintf(opPath, id, opts.values().Encode())
 
@@ -227,38 +233,9 @@ func (c *ResourceActionClient) ListFor(ctx context.Context, resource any, opts A
 }
 
 // AllFor returns all actions for the given Resource.
-func (c *ResourceActionClient) AllFor(ctx context.Context, resource any, opts ActionListOpts) ([]*Action, error) {
+func (c *ResourceActionClient[R]) AllFor(ctx context.Context, resource R, opts ActionListOpts) ([]*Action, error) {
 	return iterPages(func(page int) ([]*Action, *Response, error) {
 		opts.Page = page
 		return c.ListFor(ctx, resource, opts)
 	})
-}
-
-func resourcePathID(o any) (string, error) {
-	switch v := o.(type) {
-	case *Server:
-		return strconv.FormatInt(v.ID, 10), nil
-	case *Certificate:
-		return strconv.FormatInt(v.ID, 10), nil
-	case *Firewall:
-		return strconv.FormatInt(v.ID, 10), nil
-	case *FloatingIP:
-		return strconv.FormatInt(v.ID, 10), nil
-	case *Image:
-		return strconv.FormatInt(v.ID, 10), nil
-	case *LoadBalancer:
-		return strconv.FormatInt(v.ID, 10), nil
-	case *Network:
-		return strconv.FormatInt(v.ID, 10), nil
-	case *PrimaryIP:
-		return strconv.FormatInt(v.ID, 10), nil
-	case *Volume:
-		return strconv.FormatInt(v.ID, 10), nil
-	case *Zone:
-		return v.idOrName()
-	case *StorageBox:
-		return strconv.FormatInt(v.ID, 10), nil
-	default:
-		return "", invalidArgument("resource", o, invalidValue(o))
-	}
 }

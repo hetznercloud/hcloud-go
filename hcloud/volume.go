@@ -43,7 +43,7 @@ type VolumeProtection struct {
 // VolumeClient is a client for the volume API.
 type VolumeClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*Volume]
 }
 
 // VolumeStatus specifies a volume's status.

@@ -7,7 +7,7 @@ import (
 )
 
 // IResourceActionClient ...
-type IResourceActionClient interface {
+type IResourceActionClient[R actionSupporter] interface {
 	// GetByID retrieves an action by its ID. If the action does not exist, nil is returned.
 	GetByID(ctx context.Context, id int64) (*Action, *Response, error)
 	// List returns a paginated list of actions.
@@ -21,7 +21,7 @@ type IResourceActionClient interface {
 	//
 	// Please note that filters specified in opts are not taken into account
 	// when their value corresponds to their zero value or when they are empty.
-	ListFor(ctx context.Context, resource any, opts ActionListOpts) ([]*Action, *Response, error)
+	ListFor(ctx context.Context, resource R, opts ActionListOpts) ([]*Action, *Response, error)
 	// AllFor returns all actions for the given Resource.
-	AllFor(ctx context.Context, resource any, opts ActionListOpts) ([]*Action, error)
+	AllFor(ctx context.Context, resource R, opts ActionListOpts) ([]*Action, error)
 }

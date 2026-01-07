@@ -248,7 +248,7 @@ func (o *LoadBalancer) PrivateNetFor(network *Network) *LoadBalancerPrivateNet {
 // LoadBalancerClient is a client for the Load Balancers API.
 type LoadBalancerClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*LoadBalancer]
 }
 
 // GetByID retrieves a Load Balancer by its ID. If the Load Balancer does not exist, nil is returned.

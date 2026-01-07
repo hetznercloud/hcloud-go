@@ -159,7 +159,7 @@ type PrimaryIPChangeProtectionResult = schema.PrimaryIPActionChangeProtectionRes
 // PrimaryIPClient is a client for the Primary IP API.
 type PrimaryIPClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*PrimaryIP]
 }
 
 // GetByID retrieves a Primary IP by its ID. If the Primary IP does not exist, nil is returned.

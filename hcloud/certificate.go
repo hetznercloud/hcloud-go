@@ -95,7 +95,7 @@ type CertificateCreateResult struct {
 // CertificateClient is a client for the Certificates API.
 type CertificateClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*Certificate]
 }
 
 // GetByID retrieves a Certificate by its ID. If the Certificate does not exist, nil is returned.
