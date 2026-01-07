@@ -36,13 +36,13 @@ type Image struct {
 }
 
 // IsDeprecated returns whether the image is deprecated.
-func (image *Image) IsDeprecated() bool {
-	return !image.Deprecated.IsZero()
+func (o *Image) IsDeprecated() bool {
+	return !o.Deprecated.IsZero()
 }
 
 // IsDeleted returns whether the image is deleted.
-func (image *Image) IsDeleted() bool {
-	return !image.Deleted.IsZero()
+func (o *Image) IsDeleted() bool {
+	return !o.Deleted.IsZero()
 }
 
 // ImageProtection represents the protection level of an image.
