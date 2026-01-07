@@ -291,7 +291,7 @@ func NewClient(options ...ClientOption) *Client {
 	client.handler = assembleHandlerChain(client)
 
 	// Cloud API
-	client.Action = ActionClient{action: &ResourceActionClient[nilResource]{client: client}}
+	client.Action = ActionClient{action: &ResourceActionClient[noopResource]{client: client}}
 	client.Datacenter = DatacenterClient{client: client}
 	client.FloatingIP = FloatingIPClient{client: client, Action: &ResourceActionClient[*FloatingIP]{client: client, resource: "floating_ips"}}
 	client.Image = ImageClient{client: client, Action: &ResourceActionClient[*Image]{client: client, resource: "images"}}

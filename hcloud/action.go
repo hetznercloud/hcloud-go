@@ -84,15 +84,9 @@ func (a *Action) Error() error {
 	return nil
 }
 
-type nilResource struct{}
-
-func (nilResource) pathID() (string, error) {
-	return "", nil
-}
-
 // ActionClient is a client for the actions API.
 type ActionClient struct {
-	action *ResourceActionClient[nilResource]
+	action *ResourceActionClient[noopResource]
 }
 
 // GetByID retrieves an action by its ID. If the action does not exist, nil is returned.
@@ -211,6 +205,12 @@ func (c *ResourceActionClient[R]) All(ctx context.Context, opts ActionListOpts) 
 type actionSupporter interface {
 	pathID() (string, error)
 }
+
+// noopResource is used by the [ActionClient] to satisfy its underlying
+// [ResourceActionClient] generic type.
+type noopResource struct{}
+
+func (noopResource) pathID() (string, error) { return "", nil }
 
 // ListFor returns a paginated list of actions for the given Resource.
 //
