@@ -32,6 +32,13 @@ type LoadBalancer struct {
 	IngoingTraffic   uint64
 }
 
+func (o *LoadBalancer) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
+	}
+	return strconv.FormatInt(o.ID, 10), nil
+}
+
 // LoadBalancerPublicNet represents a Load Balancer's public network.
 type LoadBalancerPublicNet struct {
 	Enabled bool
@@ -244,7 +251,7 @@ func (o *LoadBalancer) PrivateNetFor(network *Network) *LoadBalancerPrivateNet {
 // LoadBalancerClient is a client for the Load Balancers API.
 type LoadBalancerClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*LoadBalancer]
 }
 
 // GetByID retrieves a Load Balancer by its ID. If the Load Balancer does not exist, nil is returned.

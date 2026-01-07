@@ -3,12 +3,15 @@ package hcloud
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -328,5 +331,191 @@ func TestResourceActionClientAll(t *testing.T) {
 	}
 	if actions[0].ID != 1 || actions[1].ID != 2 || actions[2].ID != 3 {
 		t.Errorf("unexpected actions")
+	}
+}
+
+func TestResourceActionClientListFor(t *testing.T) {
+	t.Run("minimal", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/primary_ips/13/actions?",
+				Status: 200,
+				JSONRaw: `{
+					"actions": [
+						{ "id": 1509772237 }
+					]
+				}`,
+			},
+		})
+
+		result, resp, err := client.PrimaryIP.Action.ListFor(ctx, &PrimaryIP{ID: 13}, ActionListOpts{})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.Len(t, result, 1)
+		require.Equal(t, int64(1509772237), result[0].ID)
+	})
+
+	t.Run("full", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/primary_ips/13/actions?page=2&per_page=50&sort=asc%3Aid&status=running",
+				Status: 200,
+				JSONRaw: `{
+					"actions": [
+						{ "id": 1509772237 }
+					]
+				}`,
+			},
+		})
+
+		result, resp, err := client.PrimaryIP.Action.ListFor(ctx, &PrimaryIP{ID: 13}, ActionListOpts{
+			Status: []ActionStatus{ActionStatusRunning},
+			Sort:   []string{"asc:id"},
+			ListOpts: ListOpts{
+				Page:    2,
+				PerPage: 50,
+			},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.Len(t, result, 1)
+		require.Equal(t, int64(1509772237), result[0].ID)
+	})
+
+	t.Run("string resource id", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/zones/example.org/actions?",
+				Status: 200,
+				JSONRaw: `{
+					"actions": [
+						{ "id": 1509772237 }
+					]
+				}`,
+			},
+		})
+
+		result, resp, err := client.Zone.Action.ListFor(ctx, &Zone{Name: "example.org"}, ActionListOpts{})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.Len(t, result, 1)
+		require.Equal(t, int64(1509772237), result[0].ID)
+	})
+
+	t.Run("invalid argument", func(t *testing.T) {
+		ctx, _, client := makeTestUtils(t)
+
+		result, resp, err := client.PrimaryIP.Action.ListFor(ctx, &PrimaryIP{ID: 0}, ActionListOpts{})
+		require.EqualError(t, err, "invalid argument 'resource' [*hcloud.PrimaryIP]: missing field [ID] in [*hcloud.PrimaryIP]")
+		require.Nil(t, result)
+		require.Nil(t, resp)
+	})
+}
+
+func TestResourceActionClientAllFor(t *testing.T) {
+	t.Run("minimal", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/primary_ips/13/actions?page=1",
+				Status: 200,
+				JSONRaw: `{
+					"actions": [
+						{ "id": 1509772237 }
+					],
+					"meta": { "pagination": { "page": 1, "next_page": 2 }}
+				}`,
+			},
+			{
+				Method: "GET", Path: "/primary_ips/13/actions?page=2",
+				Status: 200,
+				JSONRaw: `{
+					"actions": [
+						{ "id": 1509772238 }
+					],
+					"meta": { "pagination": { "page": 2 }}
+				}`,
+			},
+		})
+
+		result, err := client.PrimaryIP.Action.AllFor(ctx, &PrimaryIP{ID: 13}, ActionListOpts{})
+		require.NoError(t, err)
+		require.Len(t, result, 2)
+		require.Equal(t, int64(1509772237), result[0].ID)
+		require.Equal(t, int64(1509772238), result[1].ID)
+	})
+
+	t.Run("full", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/primary_ips/13/actions?page=1&per_page=50&sort=asc%3Aid&status=running",
+				Status: 200,
+				JSONRaw: `{
+					"actions": [
+						{ "id": 1509772237 }
+					],
+					"meta": { "pagination": { "page": 1, "next_page": 2 }}
+				}`,
+			},
+			{
+				Method: "GET", Path: "/primary_ips/13/actions?page=2&per_page=50&sort=asc%3Aid&status=running",
+				Status: 200,
+				JSONRaw: `{
+					"actions": [
+						{ "id": 1509772238 }
+					],
+					"meta": { "pagination": { "page": 2 }}
+				}`,
+			},
+		})
+
+		result, err := client.PrimaryIP.Action.AllFor(ctx, &PrimaryIP{ID: 13}, ActionListOpts{
+			Status: []ActionStatus{ActionStatusRunning},
+			Sort:   []string{"asc:id"},
+			ListOpts: ListOpts{
+				PerPage: 50,
+			},
+		})
+		require.NoError(t, err)
+		require.Len(t, result, 2)
+		require.Equal(t, int64(1509772237), result[0].ID)
+		require.Equal(t, int64(1509772238), result[1].ID)
+	})
+}
+
+func ExampleResourceActionClient_ListFor() {
+	ctx := context.Background()
+	client := NewClient()
+
+	{
+		server := &Server{ID: 5425271}
+
+		// List actions for the server 5425271.
+		result, _, _ := client.Server.Action.ListFor(ctx, server, ActionListOpts{})
+		// Error handling skipped
+
+		for _, action := range result {
+			fmt.Println(action.ID, action.Command, action.Status)
+		}
+	}
+	{
+		zone := &Zone{Name: "example.org"}
+
+		// List actions for the zone "example.org".
+		result, _, _ := client.Zone.Action.ListFor(ctx, zone, ActionListOpts{})
+		// Error handling skipped
+
+		for _, action := range result {
+			fmt.Println(action.ID, action.Command, action.Status)
+		}
 	}
 }

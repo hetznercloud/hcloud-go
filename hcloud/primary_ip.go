@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -32,6 +33,13 @@ type PrimaryIP struct {
 	// Use [PrimaryIP.Location] instead.
 	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
 	Datacenter *Datacenter
+}
+
+func (o *PrimaryIP) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
+	}
+	return strconv.FormatInt(o.ID, 10), nil
 }
 
 // PrimaryIPProtection represents the protection level of a Primary IP.
@@ -154,7 +162,7 @@ type PrimaryIPChangeProtectionResult = schema.PrimaryIPActionChangeProtectionRes
 // PrimaryIPClient is a client for the Primary IP API.
 type PrimaryIPClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*PrimaryIP]
 }
 
 // GetByID retrieves a Primary IP by its ID. If the Primary IP does not exist, nil is returned.

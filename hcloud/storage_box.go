@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -28,6 +29,13 @@ type StorageBox struct {
 	Protection     StorageBoxProtection
 	SnapshotPlan   *StorageBoxSnapshotPlan
 	Created        time.Time
+}
+
+func (o *StorageBox) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
+	}
+	return strconv.FormatInt(o.ID, 10), nil
 }
 
 // StorageBoxAccessSettings represents the access settings of a [StorageBox].
@@ -87,7 +95,7 @@ const (
 // Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 type StorageBoxClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*StorageBox]
 }
 
 // GetByID retrieves a [StorageBox] by its ID. If the [StorageBox] does not exist, nil is returned.

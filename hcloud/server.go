@@ -44,6 +44,13 @@ type Server struct {
 	Datacenter *Datacenter
 }
 
+func (o *Server) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
+	}
+	return strconv.FormatInt(o.ID, 10), nil
+}
+
 // ServerProtection represents the protection level of a server.
 type ServerProtection struct {
 	Delete, Rebuild bool
@@ -203,7 +210,7 @@ func (o *Server) PrivateNetFor(network *Network) *ServerPrivateNet {
 // ServerClient is a client for the servers API.
 type ServerClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*Server]
 }
 
 // GetByID retrieves a server by its ID. If the server does not exist, nil is returned.

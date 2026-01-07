@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
@@ -26,6 +27,13 @@ type FloatingIP struct {
 	Protection   FloatingIPProtection
 	Labels       map[string]string
 	Name         string
+}
+
+func (o *FloatingIP) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
+	}
+	return strconv.FormatInt(o.ID, 10), nil
 }
 
 // DNSPtrForIP returns the reverse DNS pointer of the IP address.
@@ -84,7 +92,7 @@ func (o *FloatingIP) GetDNSPtrForIP(ip net.IP) (string, error) {
 // FloatingIPClient is a client for the Floating IP API.
 type FloatingIPClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*FloatingIP]
 }
 
 // GetByID retrieves a Floating IP by its ID. If the Floating IP does not exist,

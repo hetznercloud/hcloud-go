@@ -35,6 +35,13 @@ type Image struct {
 	Deleted    time.Time
 }
 
+func (o *Image) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
+	}
+	return strconv.FormatInt(o.ID, 10), nil
+}
+
 // IsDeprecated returns whether the image is deprecated.
 func (o *Image) IsDeprecated() bool {
 	return !o.Deprecated.IsZero()
@@ -77,7 +84,7 @@ const (
 // ImageClient is a client for the image API.
 type ImageClient struct {
 	client *Client
-	Action *ResourceActionClient
+	Action *ResourceActionClient[*Image]
 }
 
 // GetByID retrieves an image by its ID. If the image does not exist, nil is returned.
