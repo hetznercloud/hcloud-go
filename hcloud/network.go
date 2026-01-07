@@ -57,11 +57,11 @@ type Network struct {
 	ExposeRoutesToVSwitch bool
 }
 
-func (n *Network) pathID() (string, error) {
-	if n.ID == 0 {
-		return "", missingField(n, "ID")
+func (o *Network) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
 	}
-	return strconv.FormatInt(n.ID, 10), nil
+	return strconv.FormatInt(o.ID, 10), nil
 }
 
 // NetworkSubnet represents a subnet of a network in the Hetzner Cloud.

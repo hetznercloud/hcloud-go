@@ -35,11 +35,11 @@ type Image struct {
 	Deleted    time.Time
 }
 
-func (image *Image) pathID() (string, error) {
-	if image.ID == 0 {
-		return "", missingField(image, "ID")
+func (o *Image) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
 	}
-	return strconv.FormatInt(image.ID, 10), nil
+	return strconv.FormatInt(o.ID, 10), nil
 }
 
 // IsDeprecated returns whether the image is deprecated.

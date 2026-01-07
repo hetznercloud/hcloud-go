@@ -26,11 +26,11 @@ type Volume struct {
 	Created     time.Time
 }
 
-func (v *Volume) pathID() (string, error) {
-	if v.ID == 0 {
-		return "", missingField(v, "ID")
+func (o *Volume) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
 	}
-	return strconv.FormatInt(v.ID, 10), nil
+	return strconv.FormatInt(o.ID, 10), nil
 }
 
 const (

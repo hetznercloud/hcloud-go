@@ -29,11 +29,11 @@ type FloatingIP struct {
 	Name         string
 }
 
-func (f *FloatingIP) pathID() (string, error) {
-	if f.ID == 0 {
-		return "", missingField(f, "ID")
+func (o *FloatingIP) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
 	}
-	return strconv.FormatInt(f.ID, 10), nil
+	return strconv.FormatInt(o.ID, 10), nil
 }
 
 // DNSPtrForIP returns the reverse DNS pointer of the IP address.

@@ -82,11 +82,11 @@ type Certificate struct {
 	UsedBy         []CertificateUsedByRef
 }
 
-func (c *Certificate) pathID() (string, error) {
-	if c.ID == 0 {
-		return "", missingField(c, "ID")
+func (o *Certificate) pathID() (string, error) {
+	if o.ID == 0 {
+		return "", missingField(o, "ID")
 	}
-	return strconv.FormatInt(c.ID, 10), nil
+	return strconv.FormatInt(o.ID, 10), nil
 }
 
 // CertificateCreateResult is the result of creating a certificate.
