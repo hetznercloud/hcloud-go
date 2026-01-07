@@ -44,8 +44,11 @@ type Server struct {
 	Datacenter *Datacenter
 }
 
-func (s *Server) pathID() string {
-	return strconv.FormatInt(s.ID, 10)
+func (s *Server) pathID() (string, error) {
+	if s.ID == 0 {
+		return "", missingField(s, "ID")
+	}
+	return strconv.FormatInt(s.ID, 10), nil
 }
 
 // ServerProtection represents the protection level of a server.

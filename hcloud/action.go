@@ -86,8 +86,8 @@ func (a *Action) Error() error {
 
 type nilResource struct{}
 
-func (nilResource) pathID() string {
-	return ""
+func (nilResource) pathID() (string, error) {
+	return "", nil
 }
 
 // ActionClient is a client for the actions API.
@@ -209,7 +209,7 @@ func (c *ResourceActionClient[R]) All(ctx context.Context, opts ActionListOpts) 
 }
 
 type actionSupporter interface {
-	pathID() string
+	pathID() (string, error)
 }
 
 // ListFor returns a paginated list of actions for the given Resource.
@@ -220,7 +220,10 @@ func (c *ResourceActionClient[R]) ListFor(ctx context.Context, resource R, opts 
 	opPath := c.getBaseURL() + "/%s/actions?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	id := resource.pathID()
+	id, err := resource.pathID()
+	if err != nil {
+		return nil, nil, invalidArgument("resource", resource, err)
+	}
 
 	reqPath := fmt.Sprintf(opPath, id, opts.values().Encode())
 

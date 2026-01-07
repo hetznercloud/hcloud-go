@@ -22,8 +22,11 @@ type Firewall struct {
 	AppliedTo []FirewallResource
 }
 
-func (f *Firewall) pathID() string {
-	return strconv.FormatInt(f.ID, 10)
+func (f *Firewall) pathID() (string, error) {
+	if f.ID == 0 {
+		return "", missingField(f, "ID")
+	}
+	return strconv.FormatInt(f.ID, 10), nil
 }
 
 // FirewallRule represents a Firewall's rules.

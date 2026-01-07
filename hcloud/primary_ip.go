@@ -35,8 +35,11 @@ type PrimaryIP struct {
 	Datacenter *Datacenter
 }
 
-func (p *PrimaryIP) pathID() string {
-	return strconv.FormatInt(p.ID, 10)
+func (p *PrimaryIP) pathID() (string, error) {
+	if p.ID == 0 {
+		return "", missingField(p, "ID")
+	}
+	return strconv.FormatInt(p.ID, 10), nil
 }
 
 // PrimaryIPProtection represents the protection level of a Primary IP.

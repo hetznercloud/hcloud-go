@@ -31,8 +31,11 @@ type StorageBox struct {
 	Created        time.Time
 }
 
-func (s *StorageBox) pathID() string {
-	return strconv.FormatInt(s.ID, 10)
+func (s *StorageBox) pathID() (string, error) {
+	if s.ID == 0 {
+		return "", missingField(s, "ID")
+	}
+	return strconv.FormatInt(s.ID, 10), nil
 }
 
 // StorageBoxAccessSettings represents the access settings of a [StorageBox].

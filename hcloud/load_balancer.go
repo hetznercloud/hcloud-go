@@ -32,8 +32,11 @@ type LoadBalancer struct {
 	IngoingTraffic   uint64
 }
 
-func (lb *LoadBalancer) pathID() string {
-	return strconv.FormatInt(lb.ID, 10)
+func (lb *LoadBalancer) pathID() (string, error) {
+	if lb.ID == 0 {
+		return "", missingField(lb, "ID")
+	}
+	return strconv.FormatInt(lb.ID, 10), nil
 }
 
 // LoadBalancerPublicNet represents a Load Balancer's public network.

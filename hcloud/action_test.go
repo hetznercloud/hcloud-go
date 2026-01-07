@@ -407,6 +407,15 @@ func TestResourceActionClientListFor(t *testing.T) {
 		require.Len(t, result, 1)
 		require.Equal(t, int64(1509772237), result[0].ID)
 	})
+
+	t.Run("invalid argument", func(t *testing.T) {
+		ctx, _, client := makeTestUtils(t)
+
+		result, resp, err := client.PrimaryIP.Action.ListFor(ctx, &PrimaryIP{ID: 0}, ActionListOpts{})
+		require.EqualError(t, err, "invalid argument 'resource' [*hcloud.PrimaryIP]: missing field [ID] in [*hcloud.PrimaryIP]")
+		require.Nil(t, result)
+		require.Nil(t, resp)
+	})
 }
 
 func TestResourceActionClientAllFor(t *testing.T) {
