@@ -24,6 +24,7 @@ When the API returned an HTTP error, with the status code:
 When the API returned an application error, with the code:
   - [ErrorCodeConflict]
   - [ErrorCodeRateLimitExceeded]
+  - [ErrorCodeTimeout]
 
 Changes to the retry policy might occur between releases, and will not be considered
 breaking changes.
