@@ -1,5 +1,20 @@
 # Changelog
 
+## [v2.34.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.34.0)
+
+### `ResourceActionClient` now has a generic type parameter
+
+The [`ResourceActionClient`](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud#ResourceActionClient) struct now has a generic type parameter. The type parameter is used to describe the API resource of the Actions client.
+
+The [`IResourceActionClient`](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud#IResourceActionClient) interface that is generated from the [`ResourceActionClient`](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud#ResourceActionClient) struct, is also affected by this change.
+
+This API was never intended to be used directly and we did not find any usage of it in public code. So while potentially breaking, the benefits of this change out weighted the risks of doing it.
+
+### Features
+
+- retry request on API `timeout` error (#797)
+- list actions for a given resource (#791)
+
 ## [v2.33.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.33.0)
 
 ### Features
