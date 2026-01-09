@@ -20,7 +20,7 @@ Backports are done by [tibdex/backport](https://github.com/tibdex/backport). App
   - Sometimes the API treats an empty value as `nil`, for example an empty string in name updates. There no pointer should be used.
 
 ```go
-type ExampleUpdateOpts struct {
+type ExampleUpdateRequest struct {
     // Name is optional but cannot be empty.
     // It doesn't need to be a pointer, we can represent empty values with "".
     Name string `json:"name,omitempty"`
