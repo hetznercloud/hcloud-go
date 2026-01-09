@@ -17,12 +17,36 @@ import (
 
 func TestActionError(t *testing.T) {
 	assert.Equal(t,
-		"action failed (failed)",
-		ActionError{Code: "failed", Message: "action failed"}.Error(),
+		"Action failed (code, 12345)",
+		(&Action{
+			ID:           12345,
+			Status:       ActionStatusError,
+			ErrorCode:    "code",
+			ErrorMessage: "Action failed",
+		}).Error().Error(),
 	)
 	assert.Equal(t,
-		"action failed (failed, 12345)",
-		ActionError{Code: "failed", Message: "action failed", action: &Action{ID: 12345}}.Error(),
+		"Unknown error (code, 12345)",
+		(&Action{
+			ID:        12345,
+			Status:    ActionStatusError,
+			ErrorCode: "code",
+		}).Error().Error(),
+	)
+	assert.Equal(t,
+		"Action failed (<unknown>, 12345)",
+		(&Action{
+			ID:           12345,
+			Status:       ActionStatusError,
+			ErrorMessage: "Action failed",
+		}).Error().Error(),
+	)
+	assert.Equal(t,
+		"Unknown error (<unknown>, 12345)",
+		(&Action{
+			ID:     12345,
+			Status: ActionStatusError,
+		}).Error().Error(),
 	)
 }
 
