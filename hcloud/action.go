@@ -65,19 +65,26 @@ func (e ActionError) Action() *Action {
 }
 
 func (e ActionError) Error() string {
-	action := e.Action()
-	if action != nil {
+	if e.action != nil {
 		// For easier debugging, the error string contains the Action ID.
-		return fmt.Sprintf("%s (%s, %d)", e.Message, e.Code, action.ID)
+		return fmt.Sprintf("%s (%s, %d)", e.Message, e.Code, e.action.ID)
 	}
 	return fmt.Sprintf("%s (%s)", e.Message, e.Code)
 }
 
 func (a *Action) Error() error {
-	if a.ErrorCode != "" && a.ErrorMessage != "" {
+	if a.Status == ActionStatusError || a.ErrorCode != "" {
+		code := a.ErrorCode
+		if code == "" {
+			code = "<unknown>"
+		}
+		message := a.ErrorMessage
+		if message == "" {
+			message = "Unknown error"
+		}
 		return ActionError{
-			Code:    a.ErrorCode,
-			Message: a.ErrorMessage,
+			Code:    code,
+			Message: message,
 			action:  a,
 		}
 	}
