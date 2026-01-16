@@ -32,4 +32,4 @@ breaking changes.
 package hcloud
 
 // Version is the library's version following Semantic Versioning.
-const Version = "2.34.0" // x-releaser-pleaser-version
+const Version = "2.35.0" // x-releaser-pleaser-version
