@@ -177,20 +177,26 @@ type IStorageBoxClient interface {
 	//
 	// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 	DeleteSnapshot(ctx context.Context, snapshot *StorageBoxSnapshot) (StorageBoxSnapshotDeleteResult, *Response, error)
-	// GetSubaccount retrieves a [StorageBoxSubaccount] either by its ID or by its username, depending on whether
+	// GetSubaccount retrieves a [StorageBoxSubaccount] either by its ID or by its name, depending on whether
 	// the input can be parsed as an integer. If no matching [StorageBoxSubaccount] is found, it returns nil.
 	//
 	// When fetching by ID, see https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-get-a-subaccount
 	// When fetching by name, see https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts
 	//
 	// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
-	GetSubaccount(ctx context.Context, storageBox *StorageBox, idOrUsername string) (*StorageBoxSubaccount, *Response, error)
+	GetSubaccount(ctx context.Context, storageBox *StorageBox, idOrName string) (*StorageBoxSubaccount, *Response, error)
 	// GetSubaccountByID retrieves a [StorageBoxSubaccount] by its ID.
 	//
 	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-get-a-subaccount
 	//
 	// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 	GetSubaccountByID(ctx context.Context, storageBox *StorageBox, id int64) (*StorageBoxSubaccount, *Response, error)
+	// GetSubaccountByName retrieves a [StorageBoxSubaccount] by its name.
+	//
+	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts
+	//
+	// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
+	GetSubaccountByName(ctx context.Context, storageBox *StorageBox, name string) (*StorageBoxSubaccount, *Response, error)
 	// GetSubaccountByUsername retrieves a [StorageBoxSubaccount] by its username.
 	//
 	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts

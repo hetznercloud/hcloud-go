@@ -1226,6 +1226,7 @@ func (c *converterImpl) SchemaFromStorageBoxSubaccount(source *StorageBoxSubacco
 	var schemaStorageBoxSubaccount schema.StorageBoxSubaccount
 	if source != nil {
 		schemaStorageBoxSubaccount.ID = (*source).ID
+		schemaStorageBoxSubaccount.Name = (*source).Name
 		schemaStorageBoxSubaccount.Username = (*source).Username
 		schemaStorageBoxSubaccount.HomeDirectory = (*source).HomeDirectory
 		schemaStorageBoxSubaccount.Server = (*source).Server
@@ -1244,6 +1245,7 @@ func (c *converterImpl) SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(so
 }
 func (c *converterImpl) SchemaFromStorageBoxSubaccountCreateOpts(source StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest {
 	var schemaStorageBoxSubaccountCreateRequest schema.StorageBoxSubaccountCreateRequest
+	schemaStorageBoxSubaccountCreateRequest.Name = source.Name
 	schemaStorageBoxSubaccountCreateRequest.HomeDirectory = source.HomeDirectory
 	schemaStorageBoxSubaccountCreateRequest.Password = source.Password
 	schemaStorageBoxSubaccountCreateRequest.Description = source.Description
@@ -1267,6 +1269,7 @@ func (c *converterImpl) SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(s
 }
 func (c *converterImpl) SchemaFromStorageBoxSubaccountUpdateOpts(source StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest {
 	var schemaStorageBoxSubaccountUpdateRequest schema.StorageBoxSubaccountUpdateRequest
+	schemaStorageBoxSubaccountUpdateRequest.Name = source.Name
 	schemaStorageBoxSubaccountUpdateRequest.Description = source.Description
 	schemaStorageBoxSubaccountUpdateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	return schemaStorageBoxSubaccountUpdateRequest
@@ -1687,6 +1690,7 @@ func (c *converterImpl) StorageBoxSubaccountFromCreateResponse(source schema.Sto
 func (c *converterImpl) StorageBoxSubaccountFromSchema(source schema.StorageBoxSubaccount) *StorageBoxSubaccount {
 	var hcloudStorageBoxSubaccount StorageBoxSubaccount
 	hcloudStorageBoxSubaccount.ID = source.ID
+	hcloudStorageBoxSubaccount.Name = source.Name
 	hcloudStorageBoxSubaccount.Username = source.Username
 	hcloudStorageBoxSubaccount.HomeDirectory = source.HomeDirectory
 	hcloudStorageBoxSubaccount.Server = source.Server
