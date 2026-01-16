@@ -1,5 +1,23 @@
 # Changelog
 
+## [v2.35.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.35.0)
+
+### [`StorageBoxClient.GetSubaccount`](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud#StorageBoxClient.GetSubaccount) no longer gets a subaccount by `username`
+
+[`StorageBoxClient.GetSubaccount`](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud#StorageBoxClient.GetSubaccount) no longer tries to get a subaccount by `username`, instead it tries to get it by `name`.
+
+To get a subaccount by `username` please use [`StorageBoxClient.GetSubaccountByUsername`](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud#StorageBoxClient.GetSubaccountByUsername).
+
+See the [changelog](https://docs.hetzner.cloud/changelog#2026-01-15-storage-box-subaccount-name) for more details.
+
+### Features
+
+- add name to Storage Box Subaccount (#806)
+
+### Bug Fixes
+
+- do not ignore action error when the error message is empty (#801)
+
 ## [v2.34.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.34.0)
 
 ### `ResourceActionClient` now has a generic type parameter
