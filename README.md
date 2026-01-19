@@ -28,25 +28,47 @@ go get github.com/hetznercloud/hcloud-go/v2/hcloud
 package main
 
 import (
-    "context"
-    "fmt"
-    "log"
+	"context"
+	"fmt"
+	"log"
 
-    "github.com/hetznercloud/hcloud-go/v2/hcloud"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/actionutil"
 )
 
 func main() {
-    client := hcloud.NewClient(hcloud.WithToken("token"))
+	ctx := context.Background()
 
-    server, _, err := client.Server.GetByID(context.Background(), 1)
-    if err != nil {
-        log.Fatalf("error retrieving server: %s\n", err)
-    }
-    if server != nil {
-        fmt.Printf("server 1 is called %q\n", server.Name)
-    } else {
-        fmt.Println("server 1 not found")
-    }
+	client := hcloud.NewClient(
+		hcloud.WithToken("token"),
+		hcloud.WithApplication("my-tool", "v1.0.0"),
+	)
+
+	result, _, err := client.Server.Create(ctx, hcloud.ServerCreateOpts{
+		Name:       "Foo",
+		Image:      &hcloud.Image{Name: "ubuntu-24.0"},
+		ServerType: &hcloud.ServerType{Name: "cpx22"},
+		Location:   &hcloud.Location{Name: "hel1"},
+	})
+	if err != nil {
+		log.Fatalf("error creating server: %s\n", err)
+	}
+
+	// Always await any returned actions, to make sure the async process is completed before you use the result:
+	err = client.Action.WaitFor(ctx, actionutil.AppendNext(result.Action, result.NextActions)...)
+	if err != nil {
+		log.Fatalf("error creating server: %s\n", err)
+	}
+
+	server, _, err := client.Server.GetByID(ctx, result.Server.ID)
+	if err != nil {
+		log.Fatalf("error retrieving server: %s\n", err)
+	}
+	if server != nil {
+		fmt.Printf("server is called %q\n", server.Name) // prints 'server is called "Foo"'
+	} else {
+		fmt.Println("server not found")
+	}
 }
 ```
 
