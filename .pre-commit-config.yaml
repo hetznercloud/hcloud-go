@@ -27,7 +27,7 @@ repos:
       - id: prettier
         name: prettier
         language: node
-        additional_dependencies: [prettier@3.8.0]
+        additional_dependencies: [prettier@3.8.1]
         entry: prettier --write --ignore-unknown
         types: [text]
         require_serial: false
