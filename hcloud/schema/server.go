@@ -267,7 +267,7 @@ type ServerActionDisableRescueResponse struct {
 // rebuild a server.
 type ServerActionRebuildRequest struct {
 	Image    IDOrName `json:"image"`
-	UserData *string  `json:"user_data"`
+	UserData *string  `json:"user_data,omitempty"`
 }
 
 // ServerActionRebuildResponse defines the schema of the response when
