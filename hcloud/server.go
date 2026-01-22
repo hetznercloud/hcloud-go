@@ -727,7 +727,8 @@ func (c *ServerClient) DisableRescue(ctx context.Context, server *Server) (*Acti
 
 // ServerRebuildOpts specifies options for rebuilding a server.
 type ServerRebuildOpts struct {
-	Image *Image
+	Image    *Image
+	UserData *string
 }
 
 // ServerRebuildResult is the result of a create server call.
@@ -754,7 +755,7 @@ func (c *ServerClient) RebuildWithResult(ctx context.Context, server *Server, op
 
 	reqPath := fmt.Sprintf(opPath, server.ID)
 
-	reqBody := schema.ServerActionRebuildRequest{}
+	reqBody := schema.ServerActionRebuildRequest{UserData: opts.UserData}
 	if opts.Image.ID != 0 || opts.Image.Name != "" {
 		reqBody.Image = schema.IDOrName{ID: opts.Image.ID, Name: opts.Image.Name}
 	}
