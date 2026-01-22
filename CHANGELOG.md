@@ -1,5 +1,16 @@
 # Changelog
 
+## [v2.36.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.36.0)
+
+### Storage Boxes support is now generally available
+
+The experimental phase for Storage Boxes is over, and Storage Boxes support is now generally available.
+
+### Features
+
+- Storage Box support no longer experimental (#811)
+- **server**: allow specifying user-data for rebuild (#813)
+
 ## [v2.35.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.35.0)
 
 ### [`StorageBoxClient.GetSubaccount`](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud#StorageBoxClient.GetSubaccount) no longer gets a subaccount by `username`
