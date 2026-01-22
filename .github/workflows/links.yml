@@ -31,6 +31,8 @@ jobs:
             --include-fragments
             --exclude 'api.hetzner.cloud'
             --exclude 'api.hetzner.com'
+            --exclude 'https://docs.hetzner.cloud/reference/cloud#'
+            --exclude 'https://docs.hetzner.cloud/reference/hetzner#'
             --exclude 'codecov.io'
             --exclude '169.254.169.254'
             '**/*.md'
