@@ -1,6 +1,6 @@
 # hcloud: A Go library for the Hetzner Cloud API
 
-[![GitHub Actions status](https://github.com/hetznercloud/hcloud-go/workflows/Continuous%20Integration/badge.svg)](https://github.com/hetznercloud/hcloud-go/actions)
+[![CI](https://github.com/hetznercloud/hcloud-go/actions/workflows/ci.yml/badge.svg)](https://github.com/hetznercloud/hcloud-go/actions/workflows/ci.yml)
 [![Codecov](https://codecov.io/github/hetznercloud/hcloud-go/graph/badge.svg?token=4IAbGIwNYp)](https://codecov.io/github/hetznercloud/hcloud-go/tree/main)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hetznercloud/hcloud-go/v2/hcloud.svg)](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud)
 
