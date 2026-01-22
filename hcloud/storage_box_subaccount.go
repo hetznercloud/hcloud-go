@@ -84,8 +84,6 @@ func (c *StorageBoxClient) GetSubaccountByID(
 // GetSubaccountByName retrieves a [StorageBoxSubaccount] by its name.
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts
-//
-// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 func (c *StorageBoxClient) GetSubaccountByName(
 	ctx context.Context,
 	storageBox *StorageBox,

@@ -138,8 +138,6 @@ type IStorageBoxClient interface {
 	// GetSubaccountByName retrieves a [StorageBoxSubaccount] by its name.
 	//
 	// See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccounts-list-subaccounts
-	//
-	// Experimental: [StorageBoxClient] is experimental, breaking changes may occur within minor releases.
 	GetSubaccountByName(ctx context.Context, storageBox *StorageBox, name string) (*StorageBoxSubaccount, *Response, error)
 	// GetSubaccountByUsername retrieves a [StorageBoxSubaccount] by its username.
 	//
