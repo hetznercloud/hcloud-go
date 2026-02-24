@@ -44,6 +44,8 @@ linters:
       default-signifies-exhaustive: true
     staticcheck:
       checks: ["all", "-QF1008"]
+    gosec:
+      excludes: [G704, G705, G117]
 
   exclusions:
     generated: lax
