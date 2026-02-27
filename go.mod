@@ -2,7 +2,7 @@ module github.com/hetznercloud/hcloud-go/v2
 
 // Since golang.org/x dependencies always requires version 1.(N-1), this is effectively
 // the same version we will be using. (See http://go.dev/issue/69095)
-go 1.24.0
+go 1.25.0
 
 toolchain go1.25.7
 
@@ -13,7 +13,7 @@ require (
 	github.com/stretchr/testify v1.11.1
 	github.com/vburenin/ifacemaker v1.3.1-0.20251209121141-a6d9756091ba
 	golang.org/x/crypto v0.48.0
-	golang.org/x/net v0.50.0
+	golang.org/x/net v0.51.0
 )
 
 require (
