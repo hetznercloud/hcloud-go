@@ -29,7 +29,7 @@ func TestLogValue(t *testing.T) {
 				Code:    `unauthorized`,
 				Message: `unauthorized request`,
 			},
-			want: `err.msg="unauthorized request (unauthorized)"`,
+			want: `err.msg="unauthorized request" err.code=unauthorized`,
 		},
 		{
 			desc: "api error with invalid input single message",
@@ -42,7 +42,7 @@ func TestLogValue(t *testing.T) {
 					},
 				},
 			},
-			want: `err.msg="invalid input for \"labels\" (invalid_input)" err.details="[{labels [value is too long]}]"`,
+			want: `err.msg="invalid input for \"labels\"" err.code=invalid_input err.details="[{labels [value is too long]}]"`,
 		},
 		{
 			desc: "api error with invalid input many message",
@@ -56,7 +56,7 @@ func TestLogValue(t *testing.T) {
 					},
 				},
 			},
-			want: `err.msg="invalid input for \"name\", \"labels\" (invalid_input)" err.details="[{name [value is too long]} {labels [value is too long]}]"`,
+			want: `err.msg="invalid input for \"name\", \"labels\"" err.code=invalid_input err.details="[{name [value is too long]} {labels [value is too long]}]"`,
 		},
 	}
 	for _, testCase := range testCases {

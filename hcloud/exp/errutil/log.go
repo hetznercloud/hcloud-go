@@ -16,7 +16,18 @@ func LogValue(err error) slog.Value {
 	}
 
 	attrs := []slog.Attr{
-		slog.String("msg", herr.Error()),
+		slog.String("msg", herr.Message),
+		slog.String("code", string(herr.Code)),
+	}
+
+	// Rework once moved from the exp package namespace to the hcloud package, because
+	// some hcloud private APIs are not available from here.
+	if resp := herr.Response(); resp != nil {
+		if value := resp.Header.Get("X-Correlation-Id"); value != "" {
+			attrs = append(attrs,
+				slog.String("correlation-id", value),
+			)
+		}
 	}
 
 	if herr.Details != nil {
