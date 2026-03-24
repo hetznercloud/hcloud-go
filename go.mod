@@ -2,9 +2,9 @@ module github.com/hetznercloud/hcloud-go/v2
 
 // Since golang.org/x dependencies always requires version 1.(N-1), this is effectively
 // the same version we will be using. (See http://go.dev/issue/69095)
-go 1.24.0
+go 1.25.0
 
-toolchain go1.25.8
+toolchain go1.26.1
 
 require (
 	github.com/google/go-cmp v0.7.0
