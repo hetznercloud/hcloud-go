@@ -11,7 +11,7 @@ require (
 	github.com/jmattheis/goverter v1.9.4
 	github.com/prometheus/client_golang v1.23.2
 	github.com/stretchr/testify v1.11.1
-	github.com/vburenin/ifacemaker v1.3.1-0.20251209121141-a6d9756091ba
+	github.com/vburenin/ifacemaker v1.3.1-0.20260311040944-7e11f0e9a962
 	golang.org/x/crypto v0.49.0
 	golang.org/x/net v0.52.0
 )
