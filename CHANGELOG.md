@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.37.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.37.0)
+
+### Features
+
+- **exp**: transform hcloud.Error to slog.Value using errutil.LogValue (#826)
+- drop support for go1.24 (#829)
+- add support for go1.26 (#829)
+
 ## [v2.36.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.36.0)
 
 ### Storage Boxes support is now generally available
