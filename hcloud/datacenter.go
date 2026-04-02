@@ -16,6 +16,9 @@ type Datacenter struct {
 	Name        string
 	Description string
 	Location    *Location
+
+	// Deprecated: [Datacenter.ServerTypes] is deprecated and will be removed after 2026-10-01.
+	// Use [ServerType.Locations] instead
 	ServerTypes DatacenterServerTypes
 }
 
