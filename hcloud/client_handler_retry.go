@@ -2,6 +2,7 @@ package hcloud
 
 import (
 	"errors"
+	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -42,7 +43,7 @@ func (h *retryHandler) Do(req *http.Request, v any) (resp *Response, err error) 
 			if retries < h.maxRetries && retryPolicy(resp, err) {
 				select {
 				case <-ctx.Done():
-					return resp, err
+					return resp, fmt.Errorf("hcloud: retry backoff aborted: %w", err)
 				case <-time.After(h.backoffFunc(retries)):
 					retries++
 					continue
