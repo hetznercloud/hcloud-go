@@ -17,12 +17,14 @@ type Datacenter struct {
 	Description string
 	Location    *Location
 
-	// Deprecated: [Datacenter.ServerTypes] is deprecated and will be removed after 2026-10-01.
-	// Use [ServerType.Locations] instead
+	// Deprecated: [Datacenter.ServerTypes] is deprecated and will not be returned after 2026-10-01.
+	// Use [ServerType.Locations] instead.
 	ServerTypes DatacenterServerTypes
 }
 
 // DatacenterServerTypes represents the server types available and supported in a datacenter.
+// Deprecated: [DatacenterServerTypes] is deprecated and will not be returned after 2026-10-01.
+// Use [ServerType.Locations] instead.
 type DatacenterServerTypes struct {
 	Supported             []*ServerType
 	AvailableForMigration []*ServerType
