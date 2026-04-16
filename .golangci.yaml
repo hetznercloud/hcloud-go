@@ -66,6 +66,9 @@ linters:
           - revive
         path: _test\.go
         text: "unused-parameter: parameter '(w|r)' seems to be unused, consider removing or renaming it as _"
+      - linters:
+          - staticcheck
+        text: schema\.DatacenterServerTypes is deprecated
 
 formatters:
   enable:

@@ -13,6 +13,7 @@ type Datacenter struct {
 }
 
 // DatacenterServerTypes defines the schema of the server types available in a datacenter.
+//
 // Deprecated: [DatacenterServerTypes] is deprecated and will not be returned after 2026-10-01.
 // Use [ServerType.Locations] instead.
 type DatacenterServerTypes struct {
