@@ -259,6 +259,14 @@ func WithInstrumentation(registry prometheus.Registerer) ClientOption {
 	}
 }
 
+func WithProxy(proxyUrl *url.URL) func(client *Client) {
+	return func(client *Client) {
+		client.httpClient.Transport = &http.Transport{
+			Proxy: http.ProxyURL(proxyUrl),
+		}
+	}
+}
+
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
