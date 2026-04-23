@@ -1,5 +1,17 @@
 # Changelog
 
+## [v2.38.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.38.0)
+
+### Available and recommended Server Types have been moved
+
+`Datacenter.ServerTypes` has been deprecated in favor of the new `ServerType.Locations[].Available` and `ServerType.Locations[].Recommended` fields.
+
+See the [changelog](https://docs.hetzner.cloud/changelog#2026-04-01-datacenter-deprecations) for more details.
+
+### Features
+
+- **datacenter, server_type**: move available and recommended to server_type (#835)
+
 ## [v2.37.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.37.0)
 
 ### Features
