@@ -1129,7 +1129,7 @@ func mapStorageBoxIntPtrToWeekdayPtr(i *int) *time.Weekday {
 }
 
 // hcloud.DatacenterServerTypes is not nullable but *schema.DatacenterServerTypes is.
-// We add a check here to assume zero value == nil
+// We treat the zero value as nil.
 func schemaPtrFromDatacenterServerTypes(dst DatacenterServerTypes) *schema.DatacenterServerTypes {
 	if dst.Available == nil && dst.AvailableForMigration == nil && dst.Supported == nil {
 		return nil
