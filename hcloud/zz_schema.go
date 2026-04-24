@@ -1909,6 +1909,7 @@ func (c *converterImpl) hcloudLoadBalancerServiceHTTPToPSchemaLoadBalancerServic
 	}
 	schemaLoadBalancerServiceHTTP.RedirectHTTP = source.RedirectHTTP
 	schemaLoadBalancerServiceHTTP.StickySessions = source.StickySessions
+	schemaLoadBalancerServiceHTTP.TimeoutIdle = intSecondsFromDuration(source.TimeoutIdle)
 	return &schemaLoadBalancerServiceHTTP
 }
 func (c *converterImpl) hcloudNetworkProtectionToSchemaNetworkProtection(source NetworkProtection) schema.NetworkProtection {
@@ -2189,6 +2190,10 @@ func (c *converterImpl) pHcloudLoadBalancerAddServiceOptsHTTPToPSchemaLoadBalanc
 		schemaLoadBalancerActionAddServiceRequestHTTP.Certificates = int64SlicePtrFromCertificatePtrSlice((*source).Certificates)
 		schemaLoadBalancerActionAddServiceRequestHTTP.RedirectHTTP = (*source).RedirectHTTP
 		schemaLoadBalancerActionAddServiceRequestHTTP.StickySessions = (*source).StickySessions
+		if (*source).TimeoutIdle != nil {
+			xint2 := intSecondsFromDuration(*(*source).TimeoutIdle)
+			schemaLoadBalancerActionAddServiceRequestHTTP.TimeoutIdle = &xint2
+		}
 		pSchemaLoadBalancerActionAddServiceRequestHTTP = &schemaLoadBalancerActionAddServiceRequestHTTP
 	}
 	return pSchemaLoadBalancerActionAddServiceRequestHTTP
@@ -2247,6 +2252,10 @@ func (c *converterImpl) pHcloudLoadBalancerCreateOptsServiceHTTPToPSchemaLoadBal
 		schemaLoadBalancerCreateRequestServiceHTTP.Certificates = int64SlicePtrFromCertificatePtrSlice((*source).Certificates)
 		schemaLoadBalancerCreateRequestServiceHTTP.RedirectHTTP = (*source).RedirectHTTP
 		schemaLoadBalancerCreateRequestServiceHTTP.StickySessions = (*source).StickySessions
+		if (*source).TimeoutIdle != nil {
+			xint2 := intSecondsFromDuration(*(*source).TimeoutIdle)
+			schemaLoadBalancerCreateRequestServiceHTTP.TimeoutIdle = &xint2
+		}
 		pSchemaLoadBalancerCreateRequestServiceHTTP = &schemaLoadBalancerCreateRequestServiceHTTP
 	}
 	return pSchemaLoadBalancerCreateRequestServiceHTTP
@@ -2350,6 +2359,10 @@ func (c *converterImpl) pHcloudLoadBalancerUpdateServiceOptsHTTPToPSchemaLoadBal
 		schemaLoadBalancerActionUpdateServiceRequestHTTP.Certificates = int64SlicePtrFromCertificatePtrSlice((*source).Certificates)
 		schemaLoadBalancerActionUpdateServiceRequestHTTP.RedirectHTTP = (*source).RedirectHTTP
 		schemaLoadBalancerActionUpdateServiceRequestHTTP.StickySessions = (*source).StickySessions
+		if (*source).TimeoutIdle != nil {
+			xint2 := intSecondsFromDuration(*(*source).TimeoutIdle)
+			schemaLoadBalancerActionUpdateServiceRequestHTTP.TimeoutIdle = &xint2
+		}
 		pSchemaLoadBalancerActionUpdateServiceRequestHTTP = &schemaLoadBalancerActionUpdateServiceRequestHTTP
 	}
 	return pSchemaLoadBalancerActionUpdateServiceRequestHTTP
@@ -2678,6 +2691,7 @@ func (c *converterImpl) pSchemaLoadBalancerServiceHTTPToHcloudLoadBalancerServic
 		}
 		hcloudLoadBalancerServiceHTTP.RedirectHTTP = (*source).RedirectHTTP
 		hcloudLoadBalancerServiceHTTP.StickySessions = (*source).StickySessions
+		hcloudLoadBalancerServiceHTTP.TimeoutIdle = durationFromIntSeconds((*source).TimeoutIdle)
 	}
 	return hcloudLoadBalancerServiceHTTP
 }
