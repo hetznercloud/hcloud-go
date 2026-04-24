@@ -1057,7 +1057,8 @@ func TestLoadBalancerServiceSchema(t *testing.T) {
 				897
 			],
 			"redirect_http": true,
-			"sticky_sessions": true
+			"sticky_sessions": true,
+			"timeout_idle": 60
 		},
 		"health_check": {
 			"protocol": "http",

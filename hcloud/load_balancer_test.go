@@ -476,6 +476,7 @@ func TestLoadBalancerAddService(t *testing.T) {
 				CookieLifetime: Ptr(5 * 60),
 				RedirectHTTP:   Ptr(false),
 				StickySessions: Ptr(true),
+				TimeoutIdle:    Ptr(60),
 			},
 			HealthCheck: &schema.LoadBalancerActionAddServiceRequestHealthCheck{
 				Protocol: "http",
@@ -514,6 +515,7 @@ func TestLoadBalancerAddService(t *testing.T) {
 			CookieLifetime: Ptr(5 * time.Minute),
 			RedirectHTTP:   Ptr(false),
 			StickySessions: Ptr(true),
+			TimeoutIdle:    Ptr(time.Minute),
 		},
 		HealthCheck: &LoadBalancerAddServiceOptsHealthCheck{
 			Protocol: "http",
@@ -557,6 +559,7 @@ func TestLoadBalancerUpdateService(t *testing.T) {
 				CookieLifetime: Ptr(5 * 60),
 				RedirectHTTP:   Ptr(false),
 				StickySessions: Ptr(true),
+				TimeoutIdle:    Ptr(60),
 			},
 			HealthCheck: &schema.LoadBalancerActionUpdateServiceRequestHealthCheck{
 				Protocol: Ptr(string(LoadBalancerServiceProtocolHTTP)),
@@ -594,6 +597,7 @@ func TestLoadBalancerUpdateService(t *testing.T) {
 			CookieLifetime: Ptr(5 * time.Minute),
 			RedirectHTTP:   Ptr(false),
 			StickySessions: Ptr(true),
+			TimeoutIdle:    Ptr(time.Minute),
 		},
 		HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
 			Protocol: LoadBalancerServiceProtocolHTTP,
