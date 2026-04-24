@@ -81,6 +81,7 @@ type LoadBalancerServiceHTTP struct {
 	Certificates   []*Certificate
 	RedirectHTTP   bool
 	StickySessions bool
+	TimeoutIdle    time.Duration
 }
 
 // LoadBalancerServiceHealthCheck stores configuration for a service health check.
@@ -427,6 +428,7 @@ type LoadBalancerCreateOptsServiceHTTP struct {
 	Certificates   []*Certificate
 	RedirectHTTP   *bool
 	StickySessions *bool
+	TimeoutIdle    *time.Duration
 }
 
 // LoadBalancerCreateOptsServiceHealthCheck holds options for specifying a service
@@ -620,6 +622,7 @@ type LoadBalancerAddServiceOptsHTTP struct {
 	Certificates   []*Certificate
 	RedirectHTTP   *bool
 	StickySessions *bool
+	TimeoutIdle    *time.Duration
 }
 
 // LoadBalancerAddServiceOptsHealthCheck holds options for specifying a health check
@@ -676,6 +679,7 @@ type LoadBalancerUpdateServiceOptsHTTP struct {
 	Certificates   []*Certificate
 	RedirectHTTP   *bool
 	StickySessions *bool
+	TimeoutIdle    *time.Duration
 }
 
 // LoadBalancerUpdateServiceOptsHealthCheck specifies options for updating
