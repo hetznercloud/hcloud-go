@@ -16,726 +16,726 @@ import (
 var c converter
 
 // ActionFromSchema converts schema.Action to *Action.
-func ActionFromSchema(a1 schema.Action) (ap1 *Action) {
-	return c.ActionFromSchema(a1)
+func ActionFromSchema(in schema.Action) *Action {
+	return c.ActionFromSchema(in)
 }
 
 // ActionsFromSchema converts []schema.Action to []*Action.
-func ActionsFromSchema(aa1 []schema.Action) (apa1 []*Action) {
-	return c.ActionsFromSchema(aa1)
+func ActionsFromSchema(in []schema.Action) []*Action {
+	return c.ActionsFromSchema(in)
 }
 
 // CertificateFromSchema converts schema.Certificate to *Certificate.
-func CertificateFromSchema(c1 schema.Certificate) (cp1 *Certificate) {
-	return c.CertificateFromSchema(c1)
+func CertificateFromSchema(in schema.Certificate) *Certificate {
+	return c.CertificateFromSchema(in)
 }
 
 // DatacenterFromSchema converts schema.Datacenter to *Datacenter.
-func DatacenterFromSchema(d1 schema.Datacenter) (dp1 *Datacenter) {
-	return c.DatacenterFromSchema(d1)
+func DatacenterFromSchema(in schema.Datacenter) *Datacenter {
+	return c.DatacenterFromSchema(in)
 }
 
 // DeprecationFromSchema converts *schema.DeprecationInfo to *DeprecationInfo.
-func DeprecationFromSchema(dp1 *schema.DeprecationInfo) (dp2 *DeprecationInfo) {
-	return c.DeprecationFromSchema(dp1)
+func DeprecationFromSchema(in *schema.DeprecationInfo) *DeprecationInfo {
+	return c.DeprecationFromSchema(in)
 }
 
 // ErrorFromSchema converts schema.Error to Error.
-func ErrorFromSchema(e1 schema.Error) (e2 Error) {
-	return c.ErrorFromSchema(e1)
+func ErrorFromSchema(in schema.Error) Error {
+	return c.ErrorFromSchema(in)
 }
 
 // FirewallFromSchema converts schema.Firewall to *Firewall.
-func FirewallFromSchema(f1 schema.Firewall) (fp1 *Firewall) {
-	return c.FirewallFromSchema(f1)
+func FirewallFromSchema(in schema.Firewall) *Firewall {
+	return c.FirewallFromSchema(in)
 }
 
 // FloatingIPFromSchema converts schema.FloatingIP to *FloatingIP.
-func FloatingIPFromSchema(f1 schema.FloatingIP) (fp1 *FloatingIP) {
-	return c.FloatingIPFromSchema(f1)
+func FloatingIPFromSchema(in schema.FloatingIP) *FloatingIP {
+	return c.FloatingIPFromSchema(in)
 }
 
 // ISOFromSchema converts schema.ISO to *ISO.
-func ISOFromSchema(i1 schema.ISO) (ip1 *ISO) {
-	return c.ISOFromSchema(i1)
+func ISOFromSchema(in schema.ISO) *ISO {
+	return c.ISOFromSchema(in)
 }
 
 // ImageFromSchema converts schema.Image to *Image.
-func ImageFromSchema(i1 schema.Image) (ip1 *Image) {
-	return c.ImageFromSchema(i1)
+func ImageFromSchema(in schema.Image) *Image {
+	return c.ImageFromSchema(in)
 }
 
 // LoadBalancerFromSchema converts schema.LoadBalancer to *LoadBalancer.
-func LoadBalancerFromSchema(l1 schema.LoadBalancer) (lp1 *LoadBalancer) {
-	return c.LoadBalancerFromSchema(l1)
+func LoadBalancerFromSchema(in schema.LoadBalancer) *LoadBalancer {
+	return c.LoadBalancerFromSchema(in)
 }
 
 // LoadBalancerMetricsFromSchema converts *schema.LoadBalancerGetMetricsResponse to *LoadBalancerMetrics.
-func LoadBalancerMetricsFromSchema(lp1 *schema.LoadBalancerGetMetricsResponse) (lp2 *LoadBalancerMetrics, err error) {
-	return c.LoadBalancerMetricsFromSchema(lp1)
+func LoadBalancerMetricsFromSchema(in *schema.LoadBalancerGetMetricsResponse) (*LoadBalancerMetrics, error) {
+	return c.LoadBalancerMetricsFromSchema(in)
 }
 
 // LoadBalancerServiceFromSchema converts schema.LoadBalancerService to LoadBalancerService.
-func LoadBalancerServiceFromSchema(l1 schema.LoadBalancerService) (l2 LoadBalancerService) {
-	return c.LoadBalancerServiceFromSchema(l1)
+func LoadBalancerServiceFromSchema(in schema.LoadBalancerService) LoadBalancerService {
+	return c.LoadBalancerServiceFromSchema(in)
 }
 
 // LoadBalancerServiceHealthCheckFromSchema converts *schema.LoadBalancerServiceHealthCheck to LoadBalancerServiceHealthCheck.
-func LoadBalancerServiceHealthCheckFromSchema(lp1 *schema.LoadBalancerServiceHealthCheck) (l1 LoadBalancerServiceHealthCheck) {
-	return c.LoadBalancerServiceHealthCheckFromSchema(lp1)
+func LoadBalancerServiceHealthCheckFromSchema(in *schema.LoadBalancerServiceHealthCheck) LoadBalancerServiceHealthCheck {
+	return c.LoadBalancerServiceHealthCheckFromSchema(in)
 }
 
 // LoadBalancerTargetFromSchema converts schema.LoadBalancerTarget to LoadBalancerTarget.
-func LoadBalancerTargetFromSchema(l1 schema.LoadBalancerTarget) (l2 LoadBalancerTarget) {
-	return c.LoadBalancerTargetFromSchema(l1)
+func LoadBalancerTargetFromSchema(in schema.LoadBalancerTarget) LoadBalancerTarget {
+	return c.LoadBalancerTargetFromSchema(in)
 }
 
 // LoadBalancerTargetHealthStatusFromSchema converts schema.LoadBalancerTargetHealthStatus to LoadBalancerTargetHealthStatus.
-func LoadBalancerTargetHealthStatusFromSchema(l1 schema.LoadBalancerTargetHealthStatus) (l2 LoadBalancerTargetHealthStatus) {
-	return c.LoadBalancerTargetHealthStatusFromSchema(l1)
+func LoadBalancerTargetHealthStatusFromSchema(in schema.LoadBalancerTargetHealthStatus) LoadBalancerTargetHealthStatus {
+	return c.LoadBalancerTargetHealthStatusFromSchema(in)
 }
 
 // LoadBalancerTargetServerFromSchema converts schema.LoadBalancerTargetServer to LoadBalancerTargetServer.
-func LoadBalancerTargetServerFromSchema(l1 schema.LoadBalancerTargetServer) (l2 LoadBalancerTargetServer) {
-	return c.LoadBalancerTargetServerFromSchema(l1)
+func LoadBalancerTargetServerFromSchema(in schema.LoadBalancerTargetServer) LoadBalancerTargetServer {
+	return c.LoadBalancerTargetServerFromSchema(in)
 }
 
 // LoadBalancerTypeFromSchema converts schema.LoadBalancerType to *LoadBalancerType.
-func LoadBalancerTypeFromSchema(l1 schema.LoadBalancerType) (lp1 *LoadBalancerType) {
-	return c.LoadBalancerTypeFromSchema(l1)
+func LoadBalancerTypeFromSchema(in schema.LoadBalancerType) *LoadBalancerType {
+	return c.LoadBalancerTypeFromSchema(in)
 }
 
 // LoadBalancerTypeLocationPricingFromSchema converts schema.PricingLoadBalancerTypePrice to LoadBalancerTypeLocationPricing.
-func LoadBalancerTypeLocationPricingFromSchema(p1 schema.PricingLoadBalancerTypePrice) (l1 LoadBalancerTypeLocationPricing) {
-	return c.LoadBalancerTypeLocationPricingFromSchema(p1)
+func LoadBalancerTypeLocationPricingFromSchema(in schema.PricingLoadBalancerTypePrice) LoadBalancerTypeLocationPricing {
+	return c.LoadBalancerTypeLocationPricingFromSchema(in)
 }
 
 // LocationFromSchema converts schema.Location to *Location.
-func LocationFromSchema(l1 schema.Location) (lp1 *Location) {
-	return c.LocationFromSchema(l1)
+func LocationFromSchema(in schema.Location) *Location {
+	return c.LocationFromSchema(in)
 }
 
 // NetworkFromSchema converts schema.Network to *Network.
-func NetworkFromSchema(n1 schema.Network) (np1 *Network) {
-	return c.NetworkFromSchema(n1)
+func NetworkFromSchema(in schema.Network) *Network {
+	return c.NetworkFromSchema(in)
 }
 
 // NetworkRouteFromSchema converts schema.NetworkRoute to NetworkRoute.
-func NetworkRouteFromSchema(n1 schema.NetworkRoute) (n2 NetworkRoute) {
-	return c.NetworkRouteFromSchema(n1)
+func NetworkRouteFromSchema(in schema.NetworkRoute) NetworkRoute {
+	return c.NetworkRouteFromSchema(in)
 }
 
 // NetworkSubnetFromSchema converts schema.NetworkSubnet to NetworkSubnet.
-func NetworkSubnetFromSchema(n1 schema.NetworkSubnet) (n2 NetworkSubnet) {
-	return c.NetworkSubnetFromSchema(n1)
+func NetworkSubnetFromSchema(in schema.NetworkSubnet) NetworkSubnet {
+	return c.NetworkSubnetFromSchema(in)
 }
 
 // PaginationFromSchema converts schema.MetaPagination to Pagination.
-func PaginationFromSchema(m1 schema.MetaPagination) (p1 Pagination) {
-	return c.PaginationFromSchema(m1)
+func PaginationFromSchema(in schema.MetaPagination) Pagination {
+	return c.PaginationFromSchema(in)
 }
 
 // PlacementGroupFromSchema converts schema.PlacementGroup to *PlacementGroup.
-func PlacementGroupFromSchema(p1 schema.PlacementGroup) (pp1 *PlacementGroup) {
-	return c.PlacementGroupFromSchema(p1)
+func PlacementGroupFromSchema(in schema.PlacementGroup) *PlacementGroup {
+	return c.PlacementGroupFromSchema(in)
 }
 
 // PriceFromSchema converts schema.Price to Price.
-func PriceFromSchema(p1 schema.Price) (p2 Price) {
-	return c.PriceFromSchema(p1)
+func PriceFromSchema(in schema.Price) Price {
+	return c.PriceFromSchema(in)
 }
 
 // PricingFromSchema converts schema.Pricing to Pricing.
-func PricingFromSchema(p1 schema.Pricing) (p2 Pricing) {
-	return c.PricingFromSchema(p1)
+func PricingFromSchema(in schema.Pricing) Pricing {
+	return c.PricingFromSchema(in)
 }
 
 // PrimaryIPFromSchema converts schema.PrimaryIP to *PrimaryIP.
-func PrimaryIPFromSchema(p1 schema.PrimaryIP) (pp1 *PrimaryIP) {
-	return c.PrimaryIPFromSchema(p1)
+func PrimaryIPFromSchema(in schema.PrimaryIP) *PrimaryIP {
+	return c.PrimaryIPFromSchema(in)
 }
 
 // SSHKeyFromSchema converts schema.SSHKey to *SSHKey.
-func SSHKeyFromSchema(s1 schema.SSHKey) (sp1 *SSHKey) {
-	return c.SSHKeyFromSchema(s1)
+func SSHKeyFromSchema(in schema.SSHKey) *SSHKey {
+	return c.SSHKeyFromSchema(in)
 }
 
 // SchemaFromAction converts *Action to schema.Action.
-func SchemaFromAction(ap1 *Action) (a1 schema.Action) {
-	return c.SchemaFromAction(ap1)
+func SchemaFromAction(in *Action) schema.Action {
+	return c.SchemaFromAction(in)
 }
 
 // SchemaFromActions converts []*Action to []schema.Action.
-func SchemaFromActions(apa1 []*Action) (aa1 []schema.Action) {
-	return c.SchemaFromActions(apa1)
+func SchemaFromActions(in []*Action) []schema.Action {
+	return c.SchemaFromActions(in)
 }
 
 // SchemaFromCertificate converts *Certificate to schema.Certificate.
-func SchemaFromCertificate(cp1 *Certificate) (c1 schema.Certificate) {
-	return c.SchemaFromCertificate(cp1)
+func SchemaFromCertificate(in *Certificate) schema.Certificate {
+	return c.SchemaFromCertificate(in)
 }
 
 // SchemaFromDatacenter converts *Datacenter to schema.Datacenter.
-func SchemaFromDatacenter(dp1 *Datacenter) (d1 schema.Datacenter) {
-	return c.SchemaFromDatacenter(dp1)
+func SchemaFromDatacenter(in *Datacenter) schema.Datacenter {
+	return c.SchemaFromDatacenter(in)
 }
 
 // SchemaFromDeprecation converts *DeprecationInfo to *schema.DeprecationInfo.
-func SchemaFromDeprecation(dp1 *DeprecationInfo) (dp2 *schema.DeprecationInfo) {
-	return c.SchemaFromDeprecation(dp1)
+func SchemaFromDeprecation(in *DeprecationInfo) *schema.DeprecationInfo {
+	return c.SchemaFromDeprecation(in)
 }
 
 // SchemaFromError converts Error to schema.Error.
-func SchemaFromError(e1 Error) (e2 schema.Error) {
-	return c.SchemaFromError(e1)
+func SchemaFromError(in Error) schema.Error {
+	return c.SchemaFromError(in)
 }
 
 // SchemaFromFirewall converts *Firewall to schema.Firewall.
-func SchemaFromFirewall(fp1 *Firewall) (f1 schema.Firewall) {
-	return c.SchemaFromFirewall(fp1)
+func SchemaFromFirewall(in *Firewall) schema.Firewall {
+	return c.SchemaFromFirewall(in)
 }
 
 // SchemaFromFirewallCreateOpts converts FirewallCreateOpts to schema.FirewallCreateRequest.
-func SchemaFromFirewallCreateOpts(f1 FirewallCreateOpts) (f2 schema.FirewallCreateRequest) {
-	return c.SchemaFromFirewallCreateOpts(f1)
+func SchemaFromFirewallCreateOpts(in FirewallCreateOpts) schema.FirewallCreateRequest {
+	return c.SchemaFromFirewallCreateOpts(in)
 }
 
 // SchemaFromFirewallResource converts FirewallResource to schema.FirewallResource.
-func SchemaFromFirewallResource(f1 FirewallResource) (f2 schema.FirewallResource) {
-	return c.SchemaFromFirewallResource(f1)
+func SchemaFromFirewallResource(in FirewallResource) schema.FirewallResource {
+	return c.SchemaFromFirewallResource(in)
 }
 
 // SchemaFromFirewallSetRulesOpts converts FirewallSetRulesOpts to schema.FirewallActionSetRulesRequest.
-func SchemaFromFirewallSetRulesOpts(f1 FirewallSetRulesOpts) (f2 schema.FirewallActionSetRulesRequest) {
-	return c.SchemaFromFirewallSetRulesOpts(f1)
+func SchemaFromFirewallSetRulesOpts(in FirewallSetRulesOpts) schema.FirewallActionSetRulesRequest {
+	return c.SchemaFromFirewallSetRulesOpts(in)
 }
 
 // SchemaFromFloatingIP converts *FloatingIP to schema.FloatingIP.
-func SchemaFromFloatingIP(fp1 *FloatingIP) (f1 schema.FloatingIP) {
-	return c.SchemaFromFloatingIP(fp1)
+func SchemaFromFloatingIP(in *FloatingIP) schema.FloatingIP {
+	return c.SchemaFromFloatingIP(in)
 }
 
 // SchemaFromISO converts *ISO to schema.ISO.
-func SchemaFromISO(ip1 *ISO) (i1 schema.ISO) {
-	return c.SchemaFromISO(ip1)
+func SchemaFromISO(in *ISO) schema.ISO {
+	return c.SchemaFromISO(in)
 }
 
 // SchemaFromImage converts *Image to schema.Image.
-func SchemaFromImage(ip1 *Image) (i1 schema.Image) {
-	return c.SchemaFromImage(ip1)
+func SchemaFromImage(in *Image) schema.Image {
+	return c.SchemaFromImage(in)
 }
 
 // SchemaFromLoadBalancer converts *LoadBalancer to schema.LoadBalancer.
-func SchemaFromLoadBalancer(lp1 *LoadBalancer) (l1 schema.LoadBalancer) {
-	return c.SchemaFromLoadBalancer(lp1)
+func SchemaFromLoadBalancer(in *LoadBalancer) schema.LoadBalancer {
+	return c.SchemaFromLoadBalancer(in)
 }
 
 // SchemaFromLoadBalancerAddServiceOpts converts LoadBalancerAddServiceOpts to schema.LoadBalancerActionAddServiceRequest.
-func SchemaFromLoadBalancerAddServiceOpts(l1 LoadBalancerAddServiceOpts) (l2 schema.LoadBalancerActionAddServiceRequest) {
-	return c.SchemaFromLoadBalancerAddServiceOpts(l1)
+func SchemaFromLoadBalancerAddServiceOpts(in LoadBalancerAddServiceOpts) schema.LoadBalancerActionAddServiceRequest {
+	return c.SchemaFromLoadBalancerAddServiceOpts(in)
 }
 
 // SchemaFromLoadBalancerCreateOpts converts LoadBalancerCreateOpts to schema.LoadBalancerCreateRequest.
-func SchemaFromLoadBalancerCreateOpts(l1 LoadBalancerCreateOpts) (l2 schema.LoadBalancerCreateRequest) {
-	return c.SchemaFromLoadBalancerCreateOpts(l1)
+func SchemaFromLoadBalancerCreateOpts(in LoadBalancerCreateOpts) schema.LoadBalancerCreateRequest {
+	return c.SchemaFromLoadBalancerCreateOpts(in)
 }
 
 // SchemaFromLoadBalancerCreateOptsTargetServer converts LoadBalancerCreateOptsTargetServer to schema.LoadBalancerCreateRequestTargetServer.
-func SchemaFromLoadBalancerCreateOptsTargetServer(l1 LoadBalancerCreateOptsTargetServer) (l2 schema.LoadBalancerCreateRequestTargetServer) {
-	return c.SchemaFromLoadBalancerCreateOptsTargetServer(l1)
+func SchemaFromLoadBalancerCreateOptsTargetServer(in LoadBalancerCreateOptsTargetServer) schema.LoadBalancerCreateRequestTargetServer {
+	return c.SchemaFromLoadBalancerCreateOptsTargetServer(in)
 }
 
 // SchemaFromLoadBalancerServerTarget converts LoadBalancerTargetServer to schema.LoadBalancerTargetServer.
-func SchemaFromLoadBalancerServerTarget(l1 LoadBalancerTargetServer) (l2 schema.LoadBalancerTargetServer) {
-	return c.SchemaFromLoadBalancerServerTarget(l1)
+func SchemaFromLoadBalancerServerTarget(in LoadBalancerTargetServer) schema.LoadBalancerTargetServer {
+	return c.SchemaFromLoadBalancerServerTarget(in)
 }
 
 // SchemaFromLoadBalancerService converts LoadBalancerService to schema.LoadBalancerService.
-func SchemaFromLoadBalancerService(l1 LoadBalancerService) (l2 schema.LoadBalancerService) {
-	return c.SchemaFromLoadBalancerService(l1)
+func SchemaFromLoadBalancerService(in LoadBalancerService) schema.LoadBalancerService {
+	return c.SchemaFromLoadBalancerService(in)
 }
 
 // SchemaFromLoadBalancerServiceHealthCheck converts LoadBalancerServiceHealthCheck to *schema.LoadBalancerServiceHealthCheck.
-func SchemaFromLoadBalancerServiceHealthCheck(l1 LoadBalancerServiceHealthCheck) (lp1 *schema.LoadBalancerServiceHealthCheck) {
-	return c.SchemaFromLoadBalancerServiceHealthCheck(l1)
+func SchemaFromLoadBalancerServiceHealthCheck(in LoadBalancerServiceHealthCheck) *schema.LoadBalancerServiceHealthCheck {
+	return c.SchemaFromLoadBalancerServiceHealthCheck(in)
 }
 
 // SchemaFromLoadBalancerTarget converts LoadBalancerTarget to schema.LoadBalancerTarget.
-func SchemaFromLoadBalancerTarget(l1 LoadBalancerTarget) (l2 schema.LoadBalancerTarget) {
-	return c.SchemaFromLoadBalancerTarget(l1)
+func SchemaFromLoadBalancerTarget(in LoadBalancerTarget) schema.LoadBalancerTarget {
+	return c.SchemaFromLoadBalancerTarget(in)
 }
 
 // SchemaFromLoadBalancerTargetHealthStatus converts LoadBalancerTargetHealthStatus to schema.LoadBalancerTargetHealthStatus.
-func SchemaFromLoadBalancerTargetHealthStatus(l1 LoadBalancerTargetHealthStatus) (l2 schema.LoadBalancerTargetHealthStatus) {
-	return c.SchemaFromLoadBalancerTargetHealthStatus(l1)
+func SchemaFromLoadBalancerTargetHealthStatus(in LoadBalancerTargetHealthStatus) schema.LoadBalancerTargetHealthStatus {
+	return c.SchemaFromLoadBalancerTargetHealthStatus(in)
 }
 
 // SchemaFromLoadBalancerType converts *LoadBalancerType to schema.LoadBalancerType.
-func SchemaFromLoadBalancerType(lp1 *LoadBalancerType) (l1 schema.LoadBalancerType) {
-	return c.SchemaFromLoadBalancerType(lp1)
+func SchemaFromLoadBalancerType(in *LoadBalancerType) schema.LoadBalancerType {
+	return c.SchemaFromLoadBalancerType(in)
 }
 
 // SchemaFromLoadBalancerTypeLocationPricing converts LoadBalancerTypeLocationPricing to schema.PricingLoadBalancerTypePrice.
-func SchemaFromLoadBalancerTypeLocationPricing(l1 LoadBalancerTypeLocationPricing) (p1 schema.PricingLoadBalancerTypePrice) {
-	return c.SchemaFromLoadBalancerTypeLocationPricing(l1)
+func SchemaFromLoadBalancerTypeLocationPricing(in LoadBalancerTypeLocationPricing) schema.PricingLoadBalancerTypePrice {
+	return c.SchemaFromLoadBalancerTypeLocationPricing(in)
 }
 
 // SchemaFromLoadBalancerUpdateServiceOpts converts LoadBalancerUpdateServiceOpts to schema.LoadBalancerActionUpdateServiceRequest.
-func SchemaFromLoadBalancerUpdateServiceOpts(l1 LoadBalancerUpdateServiceOpts) (l2 schema.LoadBalancerActionUpdateServiceRequest) {
-	return c.SchemaFromLoadBalancerUpdateServiceOpts(l1)
+func SchemaFromLoadBalancerUpdateServiceOpts(in LoadBalancerUpdateServiceOpts) schema.LoadBalancerActionUpdateServiceRequest {
+	return c.SchemaFromLoadBalancerUpdateServiceOpts(in)
 }
 
 // SchemaFromLocation converts *Location to schema.Location.
-func SchemaFromLocation(lp1 *Location) (l1 schema.Location) {
-	return c.SchemaFromLocation(lp1)
+func SchemaFromLocation(in *Location) schema.Location {
+	return c.SchemaFromLocation(in)
 }
 
 // SchemaFromNetwork converts *Network to schema.Network.
-func SchemaFromNetwork(np1 *Network) (n1 schema.Network) {
-	return c.SchemaFromNetwork(np1)
+func SchemaFromNetwork(in *Network) schema.Network {
+	return c.SchemaFromNetwork(in)
 }
 
 // SchemaFromNetworkRoute converts NetworkRoute to schema.NetworkRoute.
-func SchemaFromNetworkRoute(n1 NetworkRoute) (n2 schema.NetworkRoute) {
-	return c.SchemaFromNetworkRoute(n1)
+func SchemaFromNetworkRoute(in NetworkRoute) schema.NetworkRoute {
+	return c.SchemaFromNetworkRoute(in)
 }
 
 // SchemaFromNetworkSubnet converts NetworkSubnet to schema.NetworkSubnet.
-func SchemaFromNetworkSubnet(n1 NetworkSubnet) (n2 schema.NetworkSubnet) {
-	return c.SchemaFromNetworkSubnet(n1)
+func SchemaFromNetworkSubnet(in NetworkSubnet) schema.NetworkSubnet {
+	return c.SchemaFromNetworkSubnet(in)
 }
 
 // SchemaFromPagination converts Pagination to schema.MetaPagination.
-func SchemaFromPagination(p1 Pagination) (m1 schema.MetaPagination) {
-	return c.SchemaFromPagination(p1)
+func SchemaFromPagination(in Pagination) schema.MetaPagination {
+	return c.SchemaFromPagination(in)
 }
 
 // SchemaFromPlacementGroup converts *PlacementGroup to schema.PlacementGroup.
-func SchemaFromPlacementGroup(pp1 *PlacementGroup) (p1 schema.PlacementGroup) {
-	return c.SchemaFromPlacementGroup(pp1)
+func SchemaFromPlacementGroup(in *PlacementGroup) schema.PlacementGroup {
+	return c.SchemaFromPlacementGroup(in)
 }
 
 // SchemaFromPlacementGroupCreateOpts converts PlacementGroupCreateOpts to schema.PlacementGroupCreateRequest.
-func SchemaFromPlacementGroupCreateOpts(p1 PlacementGroupCreateOpts) (p2 schema.PlacementGroupCreateRequest) {
-	return c.SchemaFromPlacementGroupCreateOpts(p1)
+func SchemaFromPlacementGroupCreateOpts(in PlacementGroupCreateOpts) schema.PlacementGroupCreateRequest {
+	return c.SchemaFromPlacementGroupCreateOpts(in)
 }
 
 // SchemaFromPricing converts Pricing to schema.Pricing.
-func SchemaFromPricing(p1 Pricing) (p2 schema.Pricing) {
-	return c.SchemaFromPricing(p1)
+func SchemaFromPricing(in Pricing) schema.Pricing {
+	return c.SchemaFromPricing(in)
 }
 
 // SchemaFromPrimaryIP converts *PrimaryIP to schema.PrimaryIP.
-func SchemaFromPrimaryIP(pp1 *PrimaryIP) (p1 schema.PrimaryIP) {
-	return c.SchemaFromPrimaryIP(pp1)
+func SchemaFromPrimaryIP(in *PrimaryIP) schema.PrimaryIP {
+	return c.SchemaFromPrimaryIP(in)
 }
 
 // SchemaFromPrimaryIPAssignOpts converts PrimaryIPAssignOpts to schema.PrimaryIPActionAssignRequest.
-func SchemaFromPrimaryIPAssignOpts(p1 PrimaryIPAssignOpts) (p2 schema.PrimaryIPActionAssignRequest) {
-	return c.SchemaFromPrimaryIPAssignOpts(p1)
+func SchemaFromPrimaryIPAssignOpts(in PrimaryIPAssignOpts) schema.PrimaryIPActionAssignRequest {
+	return c.SchemaFromPrimaryIPAssignOpts(in)
 }
 
 // SchemaFromPrimaryIPChangeDNSPtrOpts converts PrimaryIPChangeDNSPtrOpts to schema.PrimaryIPActionChangeDNSPtrRequest.
-func SchemaFromPrimaryIPChangeDNSPtrOpts(p1 PrimaryIPChangeDNSPtrOpts) (p2 schema.PrimaryIPActionChangeDNSPtrRequest) {
-	return c.SchemaFromPrimaryIPChangeDNSPtrOpts(p1)
+func SchemaFromPrimaryIPChangeDNSPtrOpts(in PrimaryIPChangeDNSPtrOpts) schema.PrimaryIPActionChangeDNSPtrRequest {
+	return c.SchemaFromPrimaryIPChangeDNSPtrOpts(in)
 }
 
 // SchemaFromPrimaryIPChangeProtectionOpts converts PrimaryIPChangeProtectionOpts to schema.PrimaryIPActionChangeProtectionRequest.
-func SchemaFromPrimaryIPChangeProtectionOpts(p1 PrimaryIPChangeProtectionOpts) (p2 schema.PrimaryIPActionChangeProtectionRequest) {
-	return c.SchemaFromPrimaryIPChangeProtectionOpts(p1)
+func SchemaFromPrimaryIPChangeProtectionOpts(in PrimaryIPChangeProtectionOpts) schema.PrimaryIPActionChangeProtectionRequest {
+	return c.SchemaFromPrimaryIPChangeProtectionOpts(in)
 }
 
 // SchemaFromPrimaryIPCreateOpts converts PrimaryIPCreateOpts to schema.PrimaryIPCreateRequest.
-func SchemaFromPrimaryIPCreateOpts(p1 PrimaryIPCreateOpts) (p2 schema.PrimaryIPCreateRequest) {
-	return c.SchemaFromPrimaryIPCreateOpts(p1)
+func SchemaFromPrimaryIPCreateOpts(in PrimaryIPCreateOpts) schema.PrimaryIPCreateRequest {
+	return c.SchemaFromPrimaryIPCreateOpts(in)
 }
 
 // SchemaFromPrimaryIPUpdateOpts converts PrimaryIPUpdateOpts to schema.PrimaryIPUpdateRequest.
-func SchemaFromPrimaryIPUpdateOpts(p1 PrimaryIPUpdateOpts) (p2 schema.PrimaryIPUpdateRequest) {
-	return c.SchemaFromPrimaryIPUpdateOpts(p1)
+func SchemaFromPrimaryIPUpdateOpts(in PrimaryIPUpdateOpts) schema.PrimaryIPUpdateRequest {
+	return c.SchemaFromPrimaryIPUpdateOpts(in)
 }
 
 // SchemaFromSSHKey converts *SSHKey to schema.SSHKey.
-func SchemaFromSSHKey(sp1 *SSHKey) (s1 schema.SSHKey) {
-	return c.SchemaFromSSHKey(sp1)
+func SchemaFromSSHKey(in *SSHKey) schema.SSHKey {
+	return c.SchemaFromSSHKey(in)
 }
 
 // SchemaFromServer converts *Server to schema.Server.
-func SchemaFromServer(sp1 *Server) (s1 schema.Server) {
-	return c.SchemaFromServer(sp1)
+func SchemaFromServer(in *Server) schema.Server {
+	return c.SchemaFromServer(in)
 }
 
 // SchemaFromServerPrivateNet converts ServerPrivateNet to schema.ServerPrivateNet.
-func SchemaFromServerPrivateNet(s1 ServerPrivateNet) (s2 schema.ServerPrivateNet) {
-	return c.SchemaFromServerPrivateNet(s1)
+func SchemaFromServerPrivateNet(in ServerPrivateNet) schema.ServerPrivateNet {
+	return c.SchemaFromServerPrivateNet(in)
 }
 
 // SchemaFromServerPublicNet converts ServerPublicNet to schema.ServerPublicNet.
-func SchemaFromServerPublicNet(s1 ServerPublicNet) (s2 schema.ServerPublicNet) {
-	return c.SchemaFromServerPublicNet(s1)
+func SchemaFromServerPublicNet(in ServerPublicNet) schema.ServerPublicNet {
+	return c.SchemaFromServerPublicNet(in)
 }
 
 // SchemaFromServerPublicNetIPv4 converts ServerPublicNetIPv4 to schema.ServerPublicNetIPv4.
-func SchemaFromServerPublicNetIPv4(s1 ServerPublicNetIPv4) (s2 schema.ServerPublicNetIPv4) {
-	return c.SchemaFromServerPublicNetIPv4(s1)
+func SchemaFromServerPublicNetIPv4(in ServerPublicNetIPv4) schema.ServerPublicNetIPv4 {
+	return c.SchemaFromServerPublicNetIPv4(in)
 }
 
 // SchemaFromServerPublicNetIPv6 converts ServerPublicNetIPv6 to schema.ServerPublicNetIPv6.
-func SchemaFromServerPublicNetIPv6(s1 ServerPublicNetIPv6) (s2 schema.ServerPublicNetIPv6) {
-	return c.SchemaFromServerPublicNetIPv6(s1)
+func SchemaFromServerPublicNetIPv6(in ServerPublicNetIPv6) schema.ServerPublicNetIPv6 {
+	return c.SchemaFromServerPublicNetIPv6(in)
 }
 
 // SchemaFromServerType converts *ServerType to schema.ServerType.
-func SchemaFromServerType(sp1 *ServerType) (s1 schema.ServerType) {
-	return c.SchemaFromServerType(sp1)
+func SchemaFromServerType(in *ServerType) schema.ServerType {
+	return c.SchemaFromServerType(in)
 }
 
 // SchemaFromStorageBox converts *StorageBox to schema.StorageBox.
-func SchemaFromStorageBox(sp1 *StorageBox) (s1 schema.StorageBox) {
-	return c.SchemaFromStorageBox(sp1)
+func SchemaFromStorageBox(in *StorageBox) schema.StorageBox {
+	return c.SchemaFromStorageBox(in)
 }
 
 // SchemaFromStorageBoxChangeProtectionOpts converts StorageBoxChangeProtectionOpts to schema.StorageBoxChangeProtectionRequest.
-func SchemaFromStorageBoxChangeProtectionOpts(s1 StorageBoxChangeProtectionOpts) (s2 schema.StorageBoxChangeProtectionRequest) {
-	return c.SchemaFromStorageBoxChangeProtectionOpts(s1)
+func SchemaFromStorageBoxChangeProtectionOpts(in StorageBoxChangeProtectionOpts) schema.StorageBoxChangeProtectionRequest {
+	return c.SchemaFromStorageBoxChangeProtectionOpts(in)
 }
 
 // SchemaFromStorageBoxChangeTypeOpts converts StorageBoxChangeTypeOpts to schema.StorageBoxChangeTypeRequest.
-func SchemaFromStorageBoxChangeTypeOpts(s1 StorageBoxChangeTypeOpts) (s2 schema.StorageBoxChangeTypeRequest) {
-	return c.SchemaFromStorageBoxChangeTypeOpts(s1)
+func SchemaFromStorageBoxChangeTypeOpts(in StorageBoxChangeTypeOpts) schema.StorageBoxChangeTypeRequest {
+	return c.SchemaFromStorageBoxChangeTypeOpts(in)
 }
 
 // SchemaFromStorageBoxCreateOpts converts StorageBoxCreateOpts to schema.StorageBoxCreateRequest.
-func SchemaFromStorageBoxCreateOpts(s1 StorageBoxCreateOpts) (s2 schema.StorageBoxCreateRequest) {
-	return c.SchemaFromStorageBoxCreateOpts(s1)
+func SchemaFromStorageBoxCreateOpts(in StorageBoxCreateOpts) schema.StorageBoxCreateRequest {
+	return c.SchemaFromStorageBoxCreateOpts(in)
 }
 
 // SchemaFromStorageBoxEnableSnapshotPlanOpts converts StorageBoxEnableSnapshotPlanOpts to schema.StorageBoxEnableSnapshotPlanRequest.
-func SchemaFromStorageBoxEnableSnapshotPlanOpts(s1 StorageBoxEnableSnapshotPlanOpts) (s2 schema.StorageBoxEnableSnapshotPlanRequest) {
-	return c.SchemaFromStorageBoxEnableSnapshotPlanOpts(s1)
+func SchemaFromStorageBoxEnableSnapshotPlanOpts(in StorageBoxEnableSnapshotPlanOpts) schema.StorageBoxEnableSnapshotPlanRequest {
+	return c.SchemaFromStorageBoxEnableSnapshotPlanOpts(in)
 }
 
 // SchemaFromStorageBoxResetPasswordOpts converts StorageBoxResetPasswordOpts to schema.StorageBoxResetPasswordRequest.
-func SchemaFromStorageBoxResetPasswordOpts(s1 StorageBoxResetPasswordOpts) (s2 schema.StorageBoxResetPasswordRequest) {
-	return c.SchemaFromStorageBoxResetPasswordOpts(s1)
+func SchemaFromStorageBoxResetPasswordOpts(in StorageBoxResetPasswordOpts) schema.StorageBoxResetPasswordRequest {
+	return c.SchemaFromStorageBoxResetPasswordOpts(in)
 }
 
 // SchemaFromStorageBoxRollbackSnapshotOpts converts StorageBoxRollbackSnapshotOpts to schema.StorageBoxRollbackSnapshotRequest.
-func SchemaFromStorageBoxRollbackSnapshotOpts(s1 StorageBoxRollbackSnapshotOpts) (s2 schema.StorageBoxRollbackSnapshotRequest) {
-	return c.SchemaFromStorageBoxRollbackSnapshotOpts(s1)
+func SchemaFromStorageBoxRollbackSnapshotOpts(in StorageBoxRollbackSnapshotOpts) schema.StorageBoxRollbackSnapshotRequest {
+	return c.SchemaFromStorageBoxRollbackSnapshotOpts(in)
 }
 
 // SchemaFromStorageBoxSnapshot converts *StorageBoxSnapshot to schema.StorageBoxSnapshot.
-func SchemaFromStorageBoxSnapshot(sp1 *StorageBoxSnapshot) (s1 schema.StorageBoxSnapshot) {
-	return c.SchemaFromStorageBoxSnapshot(sp1)
+func SchemaFromStorageBoxSnapshot(in *StorageBoxSnapshot) schema.StorageBoxSnapshot {
+	return c.SchemaFromStorageBoxSnapshot(in)
 }
 
 // SchemaFromStorageBoxSnapshotCreateOpts converts StorageBoxSnapshotCreateOpts to schema.StorageBoxSnapshotCreateRequest.
-func SchemaFromStorageBoxSnapshotCreateOpts(s1 StorageBoxSnapshotCreateOpts) (s2 schema.StorageBoxSnapshotCreateRequest) {
-	return c.SchemaFromStorageBoxSnapshotCreateOpts(s1)
+func SchemaFromStorageBoxSnapshotCreateOpts(in StorageBoxSnapshotCreateOpts) schema.StorageBoxSnapshotCreateRequest {
+	return c.SchemaFromStorageBoxSnapshotCreateOpts(in)
 }
 
 // SchemaFromStorageBoxSnapshotUpdateOpts converts StorageBoxSnapshotUpdateOpts to schema.StorageBoxSnapshotUpdateRequest.
-func SchemaFromStorageBoxSnapshotUpdateOpts(s1 StorageBoxSnapshotUpdateOpts) (s2 schema.StorageBoxSnapshotUpdateRequest) {
-	return c.SchemaFromStorageBoxSnapshotUpdateOpts(s1)
+func SchemaFromStorageBoxSnapshotUpdateOpts(in StorageBoxSnapshotUpdateOpts) schema.StorageBoxSnapshotUpdateRequest {
+	return c.SchemaFromStorageBoxSnapshotUpdateOpts(in)
 }
 
 // SchemaFromStorageBoxSubaccount converts *StorageBoxSubaccount to schema.StorageBoxSubaccount.
-func SchemaFromStorageBoxSubaccount(sp1 *StorageBoxSubaccount) (s1 schema.StorageBoxSubaccount) {
-	return c.SchemaFromStorageBoxSubaccount(sp1)
+func SchemaFromStorageBoxSubaccount(in *StorageBoxSubaccount) schema.StorageBoxSubaccount {
+	return c.SchemaFromStorageBoxSubaccount(in)
 }
 
 // SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts converts StorageBoxSubaccountChangeHomeDirectoryOpts to schema.StorageBoxSubaccountChangeHomeDirectoryRequest.
-func SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(s1 StorageBoxSubaccountChangeHomeDirectoryOpts) (s2 schema.StorageBoxSubaccountChangeHomeDirectoryRequest) {
-	return c.SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(s1)
+func SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(in StorageBoxSubaccountChangeHomeDirectoryOpts) schema.StorageBoxSubaccountChangeHomeDirectoryRequest {
+	return c.SchemaFromStorageBoxSubaccountChangeHomeDirectoryOpts(in)
 }
 
 // SchemaFromStorageBoxSubaccountCreateOpts converts StorageBoxSubaccountCreateOpts to schema.StorageBoxSubaccountCreateRequest.
-func SchemaFromStorageBoxSubaccountCreateOpts(s1 StorageBoxSubaccountCreateOpts) (s2 schema.StorageBoxSubaccountCreateRequest) {
-	return c.SchemaFromStorageBoxSubaccountCreateOpts(s1)
+func SchemaFromStorageBoxSubaccountCreateOpts(in StorageBoxSubaccountCreateOpts) schema.StorageBoxSubaccountCreateRequest {
+	return c.SchemaFromStorageBoxSubaccountCreateOpts(in)
 }
 
 // SchemaFromStorageBoxSubaccountResetPasswordOpts converts StorageBoxSubaccountResetPasswordOpts to schema.StorageBoxSubaccountResetPasswordRequest.
-func SchemaFromStorageBoxSubaccountResetPasswordOpts(s1 StorageBoxSubaccountResetPasswordOpts) (s2 schema.StorageBoxSubaccountResetPasswordRequest) {
-	return c.SchemaFromStorageBoxSubaccountResetPasswordOpts(s1)
+func SchemaFromStorageBoxSubaccountResetPasswordOpts(in StorageBoxSubaccountResetPasswordOpts) schema.StorageBoxSubaccountResetPasswordRequest {
+	return c.SchemaFromStorageBoxSubaccountResetPasswordOpts(in)
 }
 
 // SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts converts StorageBoxSubaccountUpdateAccessSettingsOpts to schema.StorageBoxSubaccountUpdateAccessSettingsRequest.
-func SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(s1 StorageBoxSubaccountUpdateAccessSettingsOpts) (s2 schema.StorageBoxSubaccountUpdateAccessSettingsRequest) {
-	return c.SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(s1)
+func SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(in StorageBoxSubaccountUpdateAccessSettingsOpts) schema.StorageBoxSubaccountUpdateAccessSettingsRequest {
+	return c.SchemaFromStorageBoxSubaccountUpdateAccessSettingsOpts(in)
 }
 
 // SchemaFromStorageBoxSubaccountUpdateOpts converts StorageBoxSubaccountUpdateOpts to schema.StorageBoxSubaccountUpdateRequest.
-func SchemaFromStorageBoxSubaccountUpdateOpts(s1 StorageBoxSubaccountUpdateOpts) (s2 schema.StorageBoxSubaccountUpdateRequest) {
-	return c.SchemaFromStorageBoxSubaccountUpdateOpts(s1)
+func SchemaFromStorageBoxSubaccountUpdateOpts(in StorageBoxSubaccountUpdateOpts) schema.StorageBoxSubaccountUpdateRequest {
+	return c.SchemaFromStorageBoxSubaccountUpdateOpts(in)
 }
 
 // SchemaFromStorageBoxType converts *StorageBoxType to schema.StorageBoxType.
-func SchemaFromStorageBoxType(sp1 *StorageBoxType) (s1 schema.StorageBoxType) {
-	return c.SchemaFromStorageBoxType(sp1)
+func SchemaFromStorageBoxType(in *StorageBoxType) schema.StorageBoxType {
+	return c.SchemaFromStorageBoxType(in)
 }
 
 // SchemaFromStorageBoxUpdateAccessSettingsOpts converts StorageBoxUpdateAccessSettingsOpts to schema.StorageBoxUpdateAccessSettingsRequest.
-func SchemaFromStorageBoxUpdateAccessSettingsOpts(s1 StorageBoxUpdateAccessSettingsOpts) (s2 schema.StorageBoxUpdateAccessSettingsRequest) {
-	return c.SchemaFromStorageBoxUpdateAccessSettingsOpts(s1)
+func SchemaFromStorageBoxUpdateAccessSettingsOpts(in StorageBoxUpdateAccessSettingsOpts) schema.StorageBoxUpdateAccessSettingsRequest {
+	return c.SchemaFromStorageBoxUpdateAccessSettingsOpts(in)
 }
 
 // SchemaFromStorageBoxUpdateOpts converts StorageBoxUpdateOpts to schema.StorageBoxUpdateRequest.
-func SchemaFromStorageBoxUpdateOpts(s1 StorageBoxUpdateOpts) (s2 schema.StorageBoxUpdateRequest) {
-	return c.SchemaFromStorageBoxUpdateOpts(s1)
+func SchemaFromStorageBoxUpdateOpts(in StorageBoxUpdateOpts) schema.StorageBoxUpdateRequest {
+	return c.SchemaFromStorageBoxUpdateOpts(in)
 }
 
 // SchemaFromVolume converts *Volume to schema.Volume.
-func SchemaFromVolume(vp1 *Volume) (v1 schema.Volume) {
-	return c.SchemaFromVolume(vp1)
+func SchemaFromVolume(in *Volume) schema.Volume {
+	return c.SchemaFromVolume(in)
 }
 
 // SchemaFromZone converts *Zone to schema.Zone.
-func SchemaFromZone(zp1 *Zone) (z1 schema.Zone) {
-	return c.SchemaFromZone(zp1)
+func SchemaFromZone(in *Zone) schema.Zone {
+	return c.SchemaFromZone(in)
 }
 
 // SchemaFromZoneChangePrimaryNameserversOpts converts ZoneChangePrimaryNameserversOpts to schema.ZoneChangePrimaryNameserversRequest.
-func SchemaFromZoneChangePrimaryNameserversOpts(z1 ZoneChangePrimaryNameserversOpts) (z2 schema.ZoneChangePrimaryNameserversRequest) {
-	return c.SchemaFromZoneChangePrimaryNameserversOpts(z1)
+func SchemaFromZoneChangePrimaryNameserversOpts(in ZoneChangePrimaryNameserversOpts) schema.ZoneChangePrimaryNameserversRequest {
+	return c.SchemaFromZoneChangePrimaryNameserversOpts(in)
 }
 
 // SchemaFromZoneChangeProtectionOpts converts ZoneChangeProtectionOpts to schema.ZoneChangeProtectionRequest.
-func SchemaFromZoneChangeProtectionOpts(z1 ZoneChangeProtectionOpts) (z2 schema.ZoneChangeProtectionRequest) {
-	return c.SchemaFromZoneChangeProtectionOpts(z1)
+func SchemaFromZoneChangeProtectionOpts(in ZoneChangeProtectionOpts) schema.ZoneChangeProtectionRequest {
+	return c.SchemaFromZoneChangeProtectionOpts(in)
 }
 
 // SchemaFromZoneChangeTTLOpts converts ZoneChangeTTLOpts to schema.ZoneChangeTTLRequest.
-func SchemaFromZoneChangeTTLOpts(z1 ZoneChangeTTLOpts) (z2 schema.ZoneChangeTTLRequest) {
-	return c.SchemaFromZoneChangeTTLOpts(z1)
+func SchemaFromZoneChangeTTLOpts(in ZoneChangeTTLOpts) schema.ZoneChangeTTLRequest {
+	return c.SchemaFromZoneChangeTTLOpts(in)
 }
 
 // SchemaFromZoneCreateOpts converts ZoneCreateOpts to schema.ZoneCreateRequest.
-func SchemaFromZoneCreateOpts(z1 ZoneCreateOpts) (z2 schema.ZoneCreateRequest) {
-	return c.SchemaFromZoneCreateOpts(z1)
+func SchemaFromZoneCreateOpts(in ZoneCreateOpts) schema.ZoneCreateRequest {
+	return c.SchemaFromZoneCreateOpts(in)
 }
 
 // SchemaFromZoneImportZonefileOpts converts ZoneImportZonefileOpts to schema.ZoneImportZonefileRequest.
-func SchemaFromZoneImportZonefileOpts(z1 ZoneImportZonefileOpts) (z2 schema.ZoneImportZonefileRequest) {
-	return c.SchemaFromZoneImportZonefileOpts(z1)
+func SchemaFromZoneImportZonefileOpts(in ZoneImportZonefileOpts) schema.ZoneImportZonefileRequest {
+	return c.SchemaFromZoneImportZonefileOpts(in)
 }
 
 // SchemaFromZoneRRSet converts *ZoneRRSet to schema.ZoneRRSet.
-func SchemaFromZoneRRSet(zp1 *ZoneRRSet) (z1 schema.ZoneRRSet) {
-	return c.SchemaFromZoneRRSet(zp1)
+func SchemaFromZoneRRSet(in *ZoneRRSet) schema.ZoneRRSet {
+	return c.SchemaFromZoneRRSet(in)
 }
 
 // SchemaFromZoneRRSetAddRecordsOpts converts ZoneRRSetAddRecordsOpts to schema.ZoneRRSetAddRecordsRequest.
-func SchemaFromZoneRRSetAddRecordsOpts(z1 ZoneRRSetAddRecordsOpts) (z2 schema.ZoneRRSetAddRecordsRequest) {
-	return c.SchemaFromZoneRRSetAddRecordsOpts(z1)
+func SchemaFromZoneRRSetAddRecordsOpts(in ZoneRRSetAddRecordsOpts) schema.ZoneRRSetAddRecordsRequest {
+	return c.SchemaFromZoneRRSetAddRecordsOpts(in)
 }
 
 // SchemaFromZoneRRSetChangeProtectionOpts converts ZoneRRSetChangeProtectionOpts to schema.ZoneRRSetChangeProtectionRequest.
-func SchemaFromZoneRRSetChangeProtectionOpts(z1 ZoneRRSetChangeProtectionOpts) (z2 schema.ZoneRRSetChangeProtectionRequest) {
-	return c.SchemaFromZoneRRSetChangeProtectionOpts(z1)
+func SchemaFromZoneRRSetChangeProtectionOpts(in ZoneRRSetChangeProtectionOpts) schema.ZoneRRSetChangeProtectionRequest {
+	return c.SchemaFromZoneRRSetChangeProtectionOpts(in)
 }
 
 // SchemaFromZoneRRSetChangeTTLOpts converts ZoneRRSetChangeTTLOpts to schema.ZoneRRSetChangeTTLRequest.
-func SchemaFromZoneRRSetChangeTTLOpts(z1 ZoneRRSetChangeTTLOpts) (z2 schema.ZoneRRSetChangeTTLRequest) {
-	return c.SchemaFromZoneRRSetChangeTTLOpts(z1)
+func SchemaFromZoneRRSetChangeTTLOpts(in ZoneRRSetChangeTTLOpts) schema.ZoneRRSetChangeTTLRequest {
+	return c.SchemaFromZoneRRSetChangeTTLOpts(in)
 }
 
 // SchemaFromZoneRRSetCreateOpts converts ZoneRRSetCreateOpts to schema.ZoneRRSetCreateRequest.
-func SchemaFromZoneRRSetCreateOpts(z1 ZoneRRSetCreateOpts) (z2 schema.ZoneRRSetCreateRequest) {
-	return c.SchemaFromZoneRRSetCreateOpts(z1)
+func SchemaFromZoneRRSetCreateOpts(in ZoneRRSetCreateOpts) schema.ZoneRRSetCreateRequest {
+	return c.SchemaFromZoneRRSetCreateOpts(in)
 }
 
 // SchemaFromZoneRRSetRemoveRecordsOpts converts ZoneRRSetRemoveRecordsOpts to schema.ZoneRRSetRemoveRecordsRequest.
-func SchemaFromZoneRRSetRemoveRecordsOpts(z1 ZoneRRSetRemoveRecordsOpts) (z2 schema.ZoneRRSetRemoveRecordsRequest) {
-	return c.SchemaFromZoneRRSetRemoveRecordsOpts(z1)
+func SchemaFromZoneRRSetRemoveRecordsOpts(in ZoneRRSetRemoveRecordsOpts) schema.ZoneRRSetRemoveRecordsRequest {
+	return c.SchemaFromZoneRRSetRemoveRecordsOpts(in)
 }
 
 // SchemaFromZoneRRSetSetRecordsOpts converts ZoneRRSetSetRecordsOpts to schema.ZoneRRSetSetRecordsRequest.
-func SchemaFromZoneRRSetSetRecordsOpts(z1 ZoneRRSetSetRecordsOpts) (z2 schema.ZoneRRSetSetRecordsRequest) {
-	return c.SchemaFromZoneRRSetSetRecordsOpts(z1)
+func SchemaFromZoneRRSetSetRecordsOpts(in ZoneRRSetSetRecordsOpts) schema.ZoneRRSetSetRecordsRequest {
+	return c.SchemaFromZoneRRSetSetRecordsOpts(in)
 }
 
 // SchemaFromZoneRRSetUpdateOpts converts ZoneRRSetUpdateOpts to schema.ZoneRRSetUpdateRequest.
-func SchemaFromZoneRRSetUpdateOpts(z1 ZoneRRSetUpdateOpts) (z2 schema.ZoneRRSetUpdateRequest) {
-	return c.SchemaFromZoneRRSetUpdateOpts(z1)
+func SchemaFromZoneRRSetUpdateOpts(in ZoneRRSetUpdateOpts) schema.ZoneRRSetUpdateRequest {
+	return c.SchemaFromZoneRRSetUpdateOpts(in)
 }
 
 // SchemaFromZoneRRSetUpdateRecordsOpts converts ZoneRRSetUpdateRecordsOpts to schema.ZoneRRSetUpdateRecordsRequest.
-func SchemaFromZoneRRSetUpdateRecordsOpts(z1 ZoneRRSetUpdateRecordsOpts) (z2 schema.ZoneRRSetUpdateRecordsRequest) {
-	return c.SchemaFromZoneRRSetUpdateRecordsOpts(z1)
+func SchemaFromZoneRRSetUpdateRecordsOpts(in ZoneRRSetUpdateRecordsOpts) schema.ZoneRRSetUpdateRecordsRequest {
+	return c.SchemaFromZoneRRSetUpdateRecordsOpts(in)
 }
 
 // SchemaFromZoneUpdateOpts converts ZoneUpdateOpts to schema.ZoneUpdateRequest.
-func SchemaFromZoneUpdateOpts(z1 ZoneUpdateOpts) (z2 schema.ZoneUpdateRequest) {
-	return c.SchemaFromZoneUpdateOpts(z1)
+func SchemaFromZoneUpdateOpts(in ZoneUpdateOpts) schema.ZoneUpdateRequest {
+	return c.SchemaFromZoneUpdateOpts(in)
 }
 
 // ServerFromSchema converts schema.Server to *Server.
-func ServerFromSchema(s1 schema.Server) (sp1 *Server) {
-	return c.ServerFromSchema(s1)
+func ServerFromSchema(in schema.Server) *Server {
+	return c.ServerFromSchema(in)
 }
 
 // ServerMetricsFromSchema converts *schema.ServerGetMetricsResponse to *ServerMetrics.
-func ServerMetricsFromSchema(sp1 *schema.ServerGetMetricsResponse) (sp2 *ServerMetrics, err error) {
-	return c.ServerMetricsFromSchema(sp1)
+func ServerMetricsFromSchema(in *schema.ServerGetMetricsResponse) (*ServerMetrics, error) {
+	return c.ServerMetricsFromSchema(in)
 }
 
 // ServerPrivateNetFromSchema converts schema.ServerPrivateNet to ServerPrivateNet.
-func ServerPrivateNetFromSchema(s1 schema.ServerPrivateNet) (s2 ServerPrivateNet) {
-	return c.ServerPrivateNetFromSchema(s1)
+func ServerPrivateNetFromSchema(in schema.ServerPrivateNet) ServerPrivateNet {
+	return c.ServerPrivateNetFromSchema(in)
 }
 
 // ServerPublicNetFromSchema converts schema.ServerPublicNet to ServerPublicNet.
-func ServerPublicNetFromSchema(s1 schema.ServerPublicNet) (s2 ServerPublicNet) {
-	return c.ServerPublicNetFromSchema(s1)
+func ServerPublicNetFromSchema(in schema.ServerPublicNet) ServerPublicNet {
+	return c.ServerPublicNetFromSchema(in)
 }
 
 // ServerPublicNetIPv4FromSchema converts schema.ServerPublicNetIPv4 to ServerPublicNetIPv4.
-func ServerPublicNetIPv4FromSchema(s1 schema.ServerPublicNetIPv4) (s2 ServerPublicNetIPv4) {
-	return c.ServerPublicNetIPv4FromSchema(s1)
+func ServerPublicNetIPv4FromSchema(in schema.ServerPublicNetIPv4) ServerPublicNetIPv4 {
+	return c.ServerPublicNetIPv4FromSchema(in)
 }
 
 // ServerPublicNetIPv6FromSchema converts schema.ServerPublicNetIPv6 to ServerPublicNetIPv6.
-func ServerPublicNetIPv6FromSchema(s1 schema.ServerPublicNetIPv6) (s2 ServerPublicNetIPv6) {
-	return c.ServerPublicNetIPv6FromSchema(s1)
+func ServerPublicNetIPv6FromSchema(in schema.ServerPublicNetIPv6) ServerPublicNetIPv6 {
+	return c.ServerPublicNetIPv6FromSchema(in)
 }
 
 // ServerTypeFromSchema converts schema.ServerType to *ServerType.
-func ServerTypeFromSchema(s1 schema.ServerType) (sp1 *ServerType) {
-	return c.ServerTypeFromSchema(s1)
+func ServerTypeFromSchema(in schema.ServerType) *ServerType {
+	return c.ServerTypeFromSchema(in)
 }
 
 // StorageBoxFromSchema converts schema.StorageBox to *StorageBox.
-func StorageBoxFromSchema(s1 schema.StorageBox) (sp1 *StorageBox) {
-	return c.StorageBoxFromSchema(s1)
+func StorageBoxFromSchema(in schema.StorageBox) *StorageBox {
+	return c.StorageBoxFromSchema(in)
 }
 
 // StorageBoxSnapshotFromSchema converts schema.StorageBoxSnapshot to *StorageBoxSnapshot.
-func StorageBoxSnapshotFromSchema(s1 schema.StorageBoxSnapshot) (sp1 *StorageBoxSnapshot) {
-	return c.StorageBoxSnapshotFromSchema(s1)
+func StorageBoxSnapshotFromSchema(in schema.StorageBoxSnapshot) *StorageBoxSnapshot {
+	return c.StorageBoxSnapshotFromSchema(in)
 }
 
 // StorageBoxSnapshotPlanFromSchema converts schema.StorageBoxSnapshotPlan to StorageBoxSnapshotPlan.
-func StorageBoxSnapshotPlanFromSchema(s1 schema.StorageBoxSnapshotPlan) (s2 StorageBoxSnapshotPlan) {
-	return c.StorageBoxSnapshotPlanFromSchema(s1)
+func StorageBoxSnapshotPlanFromSchema(in schema.StorageBoxSnapshotPlan) StorageBoxSnapshotPlan {
+	return c.StorageBoxSnapshotPlanFromSchema(in)
 }
 
 // StorageBoxSubaccountFromCreateResponse converts schema.StorageBoxSubaccountCreateResponseSubaccount to *StorageBoxSubaccount.
-func StorageBoxSubaccountFromCreateResponse(s1 schema.StorageBoxSubaccountCreateResponseSubaccount) (sp1 *StorageBoxSubaccount) {
-	return c.StorageBoxSubaccountFromCreateResponse(s1)
+func StorageBoxSubaccountFromCreateResponse(in schema.StorageBoxSubaccountCreateResponseSubaccount) *StorageBoxSubaccount {
+	return c.StorageBoxSubaccountFromCreateResponse(in)
 }
 
 // StorageBoxSubaccountFromSchema converts schema.StorageBoxSubaccount to *StorageBoxSubaccount.
-func StorageBoxSubaccountFromSchema(s1 schema.StorageBoxSubaccount) (sp1 *StorageBoxSubaccount) {
-	return c.StorageBoxSubaccountFromSchema(s1)
+func StorageBoxSubaccountFromSchema(in schema.StorageBoxSubaccount) *StorageBoxSubaccount {
+	return c.StorageBoxSubaccountFromSchema(in)
 }
 
 // StorageBoxTypeFromSchema converts schema.StorageBoxType to *StorageBoxType.
-func StorageBoxTypeFromSchema(s1 schema.StorageBoxType) (sp1 *StorageBoxType) {
-	return c.StorageBoxTypeFromSchema(s1)
+func StorageBoxTypeFromSchema(in schema.StorageBoxType) *StorageBoxType {
+	return c.StorageBoxTypeFromSchema(in)
 }
 
 // VolumeFromSchema converts schema.Volume to *Volume.
-func VolumeFromSchema(v1 schema.Volume) (vp1 *Volume) {
-	return c.VolumeFromSchema(v1)
+func VolumeFromSchema(in schema.Volume) *Volume {
+	return c.VolumeFromSchema(in)
 }
 
 // ZoneFromSchema converts schema.Zone to *Zone.
-func ZoneFromSchema(z1 schema.Zone) (zp1 *Zone) {
-	return c.ZoneFromSchema(z1)
+func ZoneFromSchema(in schema.Zone) *Zone {
+	return c.ZoneFromSchema(in)
 }
 
 // ZoneRRSetFromSchema converts schema.ZoneRRSet to *ZoneRRSet.
-func ZoneRRSetFromSchema(z1 schema.ZoneRRSet) (zp1 *ZoneRRSet) {
-	return c.ZoneRRSetFromSchema(z1)
+func ZoneRRSetFromSchema(in schema.ZoneRRSet) *ZoneRRSet {
+	return c.ZoneRRSetFromSchema(in)
 }
 
 // ZoneRRSetRecordFromSchema converts schema.ZoneRRSetRecord to *ZoneRRSetRecord.
-func ZoneRRSetRecordFromSchema(z1 schema.ZoneRRSetRecord) (zp1 *ZoneRRSetRecord) {
-	return c.ZoneRRSetRecordFromSchema(z1)
+func ZoneRRSetRecordFromSchema(in schema.ZoneRRSetRecord) *ZoneRRSetRecord {
+	return c.ZoneRRSetRecordFromSchema(in)
 }
 
 // intISOFromSchema converts schema.ISO to ISO.
-func intISOFromSchema(i1 schema.ISO) (i2 ISO) {
-	return c.intISOFromSchema(i1)
+func intISOFromSchema(in schema.ISO) ISO {
+	return c.intISOFromSchema(in)
 }
 
 // intSchemaFromImage converts Image to schema.Image.
-func intSchemaFromImage(i1 Image) (i2 schema.Image) {
-	return c.intSchemaFromImage(i1)
+func intSchemaFromImage(in Image) schema.Image {
+	return c.intSchemaFromImage(in)
 }
 
 // schemaFromDatacenterServerTypes converts DatacenterServerTypes to schema.DatacenterServerTypes.
-func schemaFromDatacenterServerTypes(d1 DatacenterServerTypes) (d2 schema.DatacenterServerTypes) {
-	return c.schemaFromDatacenterServerTypes(d1)
+func schemaFromDatacenterServerTypes(in DatacenterServerTypes) schema.DatacenterServerTypes {
+	return c.schemaFromDatacenterServerTypes(in)
 }
 
 // schemaFromFloatingIPPricing converts FloatingIPPricing to schema.PricingFloatingIP.
-func schemaFromFloatingIPPricing(f1 FloatingIPPricing) (p1 schema.PricingFloatingIP) {
-	return c.schemaFromFloatingIPPricing(f1)
+func schemaFromFloatingIPPricing(in FloatingIPPricing) schema.PricingFloatingIP {
+	return c.schemaFromFloatingIPPricing(in)
 }
 
 // schemaFromFloatingIPTypeLocationPricing converts FloatingIPTypeLocationPricing to schema.PricingFloatingIPTypePrice.
-func schemaFromFloatingIPTypeLocationPricing(f1 FloatingIPTypeLocationPricing) (p1 schema.PricingFloatingIPTypePrice) {
-	return c.schemaFromFloatingIPTypeLocationPricing(f1)
+func schemaFromFloatingIPTypeLocationPricing(in FloatingIPTypeLocationPricing) schema.PricingFloatingIPTypePrice {
+	return c.schemaFromFloatingIPTypeLocationPricing(in)
 }
 
 // schemaFromFloatingIPTypePricing converts FloatingIPTypePricing to schema.PricingFloatingIPType.
-func schemaFromFloatingIPTypePricing(f1 FloatingIPTypePricing) (p1 schema.PricingFloatingIPType) {
-	return c.schemaFromFloatingIPTypePricing(f1)
+func schemaFromFloatingIPTypePricing(in FloatingIPTypePricing) schema.PricingFloatingIPType {
+	return c.schemaFromFloatingIPTypePricing(in)
 }
 
 // schemaFromImagePricing converts ImagePricing to schema.PricingImage.
-func schemaFromImagePricing(i1 ImagePricing) (p1 schema.PricingImage) {
-	return c.schemaFromImagePricing(i1)
+func schemaFromImagePricing(in ImagePricing) schema.PricingImage {
+	return c.schemaFromImagePricing(in)
 }
 
 // schemaFromLoadBalancerTypePricing converts LoadBalancerTypePricing to schema.PricingLoadBalancerType.
-func schemaFromLoadBalancerTypePricing(l1 LoadBalancerTypePricing) (p1 schema.PricingLoadBalancerType) {
-	return c.schemaFromLoadBalancerTypePricing(l1)
+func schemaFromLoadBalancerTypePricing(in LoadBalancerTypePricing) schema.PricingLoadBalancerType {
+	return c.schemaFromLoadBalancerTypePricing(in)
 }
 
 // schemaFromPrimaryIPPricing converts PrimaryIPPricing to schema.PricingPrimaryIP.
-func schemaFromPrimaryIPPricing(p1 PrimaryIPPricing) (p2 schema.PricingPrimaryIP) {
-	return c.schemaFromPrimaryIPPricing(p1)
+func schemaFromPrimaryIPPricing(in PrimaryIPPricing) schema.PricingPrimaryIP {
+	return c.schemaFromPrimaryIPPricing(in)
 }
 
 // schemaFromPrimaryIPTypePricing converts PrimaryIPTypePricing to schema.PricingPrimaryIPTypePrice.
-func schemaFromPrimaryIPTypePricing(p1 PrimaryIPTypePricing) (p2 schema.PricingPrimaryIPTypePrice) {
-	return c.schemaFromPrimaryIPTypePricing(p1)
+func schemaFromPrimaryIPTypePricing(in PrimaryIPTypePricing) schema.PricingPrimaryIPTypePrice {
+	return c.schemaFromPrimaryIPTypePricing(in)
 }
 
 // schemaFromServerTypeLocation converts ServerTypeLocation to schema.ServerTypeLocation.
-func schemaFromServerTypeLocation(location ServerTypeLocation) (s1 schema.ServerTypeLocation) {
-	return c.schemaFromServerTypeLocation(location)
+func schemaFromServerTypeLocation(in ServerTypeLocation) schema.ServerTypeLocation {
+	return c.schemaFromServerTypeLocation(in)
 }
 
 // schemaFromServerTypeLocationPricing converts ServerTypeLocationPricing to schema.PricingServerTypePrice.
-func schemaFromServerTypeLocationPricing(s1 ServerTypeLocationPricing) (p1 schema.PricingServerTypePrice) {
-	return c.schemaFromServerTypeLocationPricing(s1)
+func schemaFromServerTypeLocationPricing(in ServerTypeLocationPricing) schema.PricingServerTypePrice {
+	return c.schemaFromServerTypeLocationPricing(in)
 }
 
 // schemaFromServerTypePricing converts ServerTypePricing to schema.PricingServerType.
-func schemaFromServerTypePricing(s1 ServerTypePricing) (p1 schema.PricingServerType) {
-	return c.schemaFromServerTypePricing(s1)
+func schemaFromServerTypePricing(in ServerTypePricing) schema.PricingServerType {
+	return c.schemaFromServerTypePricing(in)
 }
 
 // schemaFromTrafficPricing converts TrafficPricing to schema.PricingTraffic.
-func schemaFromTrafficPricing(t1 TrafficPricing) (p1 schema.PricingTraffic) {
-	return c.schemaFromTrafficPricing(t1)
+func schemaFromTrafficPricing(in TrafficPricing) schema.PricingTraffic {
+	return c.schemaFromTrafficPricing(in)
 }
 
 // schemaFromVolumePricing converts VolumePricing to schema.PricingVolume.
-func schemaFromVolumePricing(v1 VolumePricing) (p1 schema.PricingVolume) {
-	return c.schemaFromVolumePricing(v1)
+func schemaFromVolumePricing(in VolumePricing) schema.PricingVolume {
+	return c.schemaFromVolumePricing(in)
 }
 
 // serverTypeLocationFromSchema converts schema.ServerTypeLocation to ServerTypeLocation.
-func serverTypeLocationFromSchema(s1 schema.ServerTypeLocation) (s2 ServerTypeLocation) {
-	return c.serverTypeLocationFromSchema(s1)
+func serverTypeLocationFromSchema(in schema.ServerTypeLocation) ServerTypeLocation {
+	return c.serverTypeLocationFromSchema(in)
 }
 
 // serverTypeLocationPricingFromSchema converts schema.PricingServerTypePrice to ServerTypeLocationPricing.
-func serverTypeLocationPricingFromSchema(p1 schema.PricingServerTypePrice) (s1 ServerTypeLocationPricing) {
-	return c.serverTypeLocationPricingFromSchema(p1)
+func serverTypeLocationPricingFromSchema(in schema.PricingServerTypePrice) ServerTypeLocationPricing {
+	return c.serverTypeLocationPricingFromSchema(in)
 }

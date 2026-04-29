@@ -5,9 +5,10 @@
 
 var c converter
 
-{{range $method := .Interface.Methods}}
-// {{$method.Name}} converts {{(index $method.Params 0).Type}} to {{(index $method.Results 0).Type}}.
-func {{$method.Declaration}} {
-	{{$method.Pass "c."}}
+{{range .Interface.Methods}}
+{{$argType := (index .Params 0).Type}}
+// {{.Name}} converts {{$argType}} to {{(index .Results 0).Type}}.
+func {{.Name}}(in {{$argType}}) ({{range .Results}}{{.Type}},{{end}}) {
+	return c.{{.Name}}(in)
 }
 {{end}}
