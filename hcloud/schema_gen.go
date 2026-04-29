@@ -9,6 +9,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
+//go:generate go run github.com/hexdigest/gowrap/cmd/gowrap gen -g -p . -i converter -t schema.tmpl -o zz_schema.go
 //go:generate go run github.com/jmattheis/goverter/cmd/goverter gen ./...
 
 /*
@@ -25,7 +26,7 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 //
 // Specify where and in which package to output the generated
 // conversion methods.
-// goverter:output:file zz_schema.go
+// goverter:output:file zz_schema_converter.go
 // goverter:output:package github.com/hetznercloud/hcloud-go/v2/hcloud
 //
 // In case of *T -> T conversion, use zero value if *T is nil.
@@ -286,7 +287,7 @@ type converter interface {
 	// goverter:map PriceHourly Hourly
 	// goverter:map PriceMonthly Monthly
 	// goverter:map PricePerTBTraffic PerTBTraffic
-	serverTypePricingFromSchema(schema.PricingServerTypePrice) ServerTypeLocationPricing
+	serverTypeLocationPricingFromSchema(schema.PricingServerTypePrice) ServerTypeLocationPricing
 
 	// goverter:map Image.PerGBMonth.Currency Currency
 	// goverter:map Image.PerGBMonth.VATRate VATRate

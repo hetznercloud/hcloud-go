@@ -1508,7 +1508,7 @@ func TestDeprecationSchema(t *testing.T) {
 	}
 }
 
-func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
+func TestSchemaFromLoadBalancerCreateOpts(t *testing.T) {
 	testCases := map[string]struct {
 		Opts    LoadBalancerCreateOpts
 		Request schema.LoadBalancerCreateRequest
@@ -1691,7 +1691,7 @@ func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
 	}
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-			req := loadBalancerCreateOptsToSchema(testCase.Opts)
+			req := SchemaFromLoadBalancerCreateOpts(testCase.Opts)
 			if !cmp.Equal(testCase.Request, req) {
 				t.Log(cmp.Diff(testCase.Request, req))
 				t.Fail()
@@ -1700,7 +1700,7 @@ func TestLoadBalancerCreateOptsToSchema(t *testing.T) {
 	}
 }
 
-func TestLoadBalancerAddServiceOptsToSchema(t *testing.T) {
+func TestSchemaFromLoadBalancerAddServiceOpts(t *testing.T) {
 	testCases := map[string]struct {
 		Opts    LoadBalancerAddServiceOpts
 		Request schema.LoadBalancerActionAddServiceRequest
@@ -1797,7 +1797,7 @@ func TestLoadBalancerAddServiceOptsToSchema(t *testing.T) {
 	}
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-			req := loadBalancerAddServiceOptsToSchema(testCase.Opts)
+			req := SchemaFromLoadBalancerAddServiceOpts(testCase.Opts)
 			if !cmp.Equal(testCase.Request, req) {
 				t.Log(cmp.Diff(testCase.Request, req))
 				t.Fail()
@@ -1806,7 +1806,7 @@ func TestLoadBalancerAddServiceOptsToSchema(t *testing.T) {
 	}
 }
 
-func TestLoadBalancerUpdateServiceOptsToSchema(t *testing.T) {
+func TestSchemaFromLoadBalancerUpdateServiceOpts(t *testing.T) {
 	testCases := map[string]struct {
 		Opts    LoadBalancerUpdateServiceOpts
 		Request schema.LoadBalancerActionUpdateServiceRequest
@@ -1909,7 +1909,7 @@ func TestLoadBalancerUpdateServiceOptsToSchema(t *testing.T) {
 	}
 	for name, testCase := range testCases {
 		t.Run(name, func(t *testing.T) {
-			req := loadBalancerUpdateServiceOptsToSchema(testCase.Opts)
+			req := SchemaFromLoadBalancerUpdateServiceOpts(testCase.Opts)
 			if !cmp.Equal(testCase.Request, req) {
 				t.Log(cmp.Diff(testCase.Request, req))
 				t.Fail()
@@ -2073,7 +2073,7 @@ func TestServerMetricsFromSchema(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			resp := tt.respFn()
-			actual, err := serverMetricsFromSchema(resp)
+			actual, err := ServerMetricsFromSchema(resp)
 			if err != nil && tt.expectedErr == "" {
 				t.Fatalf("expected no error; got: %v", err)
 			}
@@ -2242,7 +2242,7 @@ func TestLoadBalancerMetricsFromSchema(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			resp := tt.respFn()
-			actual, err := loadBalancerMetricsFromSchema(resp)
+			actual, err := LoadBalancerMetricsFromSchema(resp)
 			if err != nil && tt.expectedErr == "" {
 				t.Fatalf("expected no error; got: %v", err)
 			}
