@@ -497,7 +497,7 @@ func (c *StorageBoxClient) EnableSnapshotPlan(
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, storageBox.ID)
-	reqBody := SchemaFromStorageBoxEnableSnapshotPlan(opts)
+	reqBody := SchemaFromStorageBoxEnableSnapshotPlanOpts(opts)
 
 	respBody, resp, err := postRequest[schema.ActionGetResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {

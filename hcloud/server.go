@@ -1106,7 +1106,7 @@ func (c *ServerClient) GetMetrics(ctx context.Context, server *Server, opts Serv
 		return nil, resp, err
 	}
 
-	metrics, err := serverMetricsFromSchema(&respBody)
+	metrics, err := ServerMetricsFromSchema(&respBody)
 	if err != nil {
 		return nil, nil, fmt.Errorf("convert response body: %w", err)
 	}

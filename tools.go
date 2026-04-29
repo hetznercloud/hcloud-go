@@ -4,6 +4,7 @@
 package tools
 
 import (
+	_ "github.com/hexdigest/gowrap/cmd/gowrap"
 	_ "github.com/jmattheis/goverter/cmd/goverter"
 	_ "github.com/vburenin/ifacemaker"
 )

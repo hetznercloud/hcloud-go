@@ -1624,7 +1624,7 @@ func (c *converterImpl) ServerTypeFromSchema(source schema.ServerType) *ServerTy
 	if source.Prices != nil {
 		hcloudServerType.Pricings = make([]ServerTypeLocationPricing, len(source.Prices))
 		for i := 0; i < len(source.Prices); i++ {
-			hcloudServerType.Pricings[i] = c.serverTypePricingFromSchema(source.Prices[i])
+			hcloudServerType.Pricings[i] = c.serverTypeLocationPricingFromSchema(source.Prices[i])
 		}
 	}
 	hcloudServerType.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
@@ -3111,7 +3111,7 @@ func (c *converterImpl) serverTypeLocationFromSchema(source schema.ServerTypeLoc
 	hcloudServerTypeLocation.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
 	return hcloudServerTypeLocation
 }
-func (c *converterImpl) serverTypePricingFromSchema(source schema.PricingServerTypePrice) ServerTypeLocationPricing {
+func (c *converterImpl) serverTypeLocationPricingFromSchema(source schema.PricingServerTypePrice) ServerTypeLocationPricing {
 	var hcloudServerTypeLocationPricing ServerTypeLocationPricing
 	hcloudLocation := locationFromString(source.Location)
 	hcloudServerTypeLocationPricing.Location = &hcloudLocation

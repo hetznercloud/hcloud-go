@@ -154,7 +154,7 @@ func (c *PlacementGroupClient) Create(ctx context.Context, opts PlacementGroupCr
 		return result, nil, err
 	}
 
-	reqBody := placementGroupCreateOptsToSchema(opts)
+	reqBody := SchemaFromPlacementGroupCreateOpts(opts)
 
 	respBody, resp, err := postRequest[schema.PlacementGroupCreateResponse](ctx, c.client, reqPath, reqBody)
 	if err != nil {

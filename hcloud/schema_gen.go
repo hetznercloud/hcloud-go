@@ -286,7 +286,7 @@ type converter interface {
 	// goverter:map PriceHourly Hourly
 	// goverter:map PriceMonthly Monthly
 	// goverter:map PricePerTBTraffic PerTBTraffic
-	serverTypePricingFromSchema(schema.PricingServerTypePrice) ServerTypeLocationPricing
+	serverTypeLocationPricingFromSchema(schema.PricingServerTypePrice) ServerTypeLocationPricing
 
 	// goverter:map Image.PerGBMonth.Currency Currency
 	// goverter:map Image.PerGBMonth.VATRate VATRate
