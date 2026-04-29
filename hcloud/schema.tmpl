@@ -1,8 +1,3 @@
-//go:generate go run github.com/hexdigest/gowrap/cmd/gowrap gen -g -p . -i converter -t schema.tmpl -o schema.go
-
-// This file provides converter functions to convert models in the
-// schema package to models in the hcloud package and vice versa.
-
 var c converter
 
 {{range .Interface.Methods}}
