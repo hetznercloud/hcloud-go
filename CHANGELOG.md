@@ -1,5 +1,17 @@
 # Changelog
 
+## [v2.40.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.40.0)
+
+### Load Balancer HTTP Services now support `TimeoutIdle`
+
+HTTP Services now support the field `TimeoutIdle`, which controls the time a HTTP connection is allowed to idle before it is being dropped.
+
+See the [changelog](https://docs.hetzner.cloud/changelog#2026-04-30-load-balancers-http-idle-timeout-can-now-be-configured) for more information.
+
+### Features
+
+- **load-balancer**: support `timeout_idle` http service field (#842)
+
 ## [v2.39.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.39.0)
 
 ### Primary IPs `assignee_type` behavior change
