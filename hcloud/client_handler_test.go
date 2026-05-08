@@ -16,7 +16,7 @@ type mockHandler struct {
 	f func(req *http.Request, v any) (resp *Response, err error)
 }
 
-func (h *mockHandler) Do(req *http.Request, v interface{}) (*Response, error) { return h.f(req, v) }
+func (h *mockHandler) Do(req *http.Request, v any) (*Response, error) { return h.f(req, v) }
 
 func fakeResponse(t *testing.T, statusCode int, body string, json bool) *Response {
 	t.Helper()

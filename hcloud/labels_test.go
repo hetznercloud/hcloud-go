@@ -8,7 +8,7 @@ import (
 
 func TestCheckLabels(t *testing.T) {
 	t.Run("correct labels", func(t *testing.T) {
-		labelMap := map[string]interface{}{
+		labelMap := map[string]any{
 			"label1":                    "correct.de",
 			"label2.de/hallo":           "1correct2.de",
 			"label3-test.de/hallo.welt": "233344444443",
@@ -33,7 +33,7 @@ func TestCheckLabels(t *testing.T) {
 		}
 
 		for _, label := range incorrectLabels {
-			labelMap := map[string]interface{}{
+			labelMap := map[string]any{
 				"test1": "valid",
 				"test2": label,
 			}
@@ -60,7 +60,7 @@ func TestCheckLabels(t *testing.T) {
 		}
 
 		for _, label := range incorrectLabels {
-			labelMap := map[string]interface{}{
+			labelMap := map[string]any{
 				label: "cor-rect.de",
 			}
 			ok, err := ValidateResourceLabels(labelMap)

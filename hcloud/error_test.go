@@ -12,7 +12,7 @@ func TestError_Error(t *testing.T) {
 	type fields struct {
 		Code     ErrorCode
 		Message  string
-		Details  interface{}
+		Details  any
 		response *Response
 	}
 	tests := []struct {

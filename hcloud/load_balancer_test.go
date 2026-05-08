@@ -1092,33 +1092,33 @@ func TestLoadBalancerGetMetrics(t *testing.T) {
 				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
 				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
 					"open_connections": {
-						Values: []interface{}{
-							[]interface{}{1435781470.622, "42"},
-							[]interface{}{1435781471.622, "43"},
+						Values: []any{
+							[]any{1435781470.622, "42"},
+							[]any{1435781471.622, "43"},
 						},
 					},
 					"connections_per_second": {
-						Values: []interface{}{
-							[]interface{}{1435781480.622, "100"},
-							[]interface{}{1435781481.622, "150"},
+						Values: []any{
+							[]any{1435781480.622, "100"},
+							[]any{1435781481.622, "150"},
 						},
 					},
 					"requests_per_second": {
-						Values: []interface{}{
-							[]interface{}{1435781480.622, "50"},
-							[]interface{}{1435781481.622, "55"},
+						Values: []any{
+							[]any{1435781480.622, "50"},
+							[]any{1435781481.622, "55"},
 						},
 					},
 					"bandwidth.in": {
-						Values: []interface{}{
-							[]interface{}{1435781490.622, "70"},
-							[]interface{}{1435781491.622, "75"},
+						Values: []any{
+							[]any{1435781490.622, "70"},
+							[]any{1435781491.622, "75"},
 						},
 					},
 					"bandwidth.out": {
-						Values: []interface{}{
-							[]interface{}{1435781590.622, "60"},
-							[]interface{}{1435781591.622, "65"},
+						Values: []any{
+							[]any{1435781590.622, "60"},
+							[]any{1435781591.622, "65"},
 						},
 					},
 				}

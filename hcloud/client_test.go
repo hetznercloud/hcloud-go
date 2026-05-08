@@ -255,7 +255,7 @@ func TestClientDoPost(t *testing.T) {
 
 		callCount++
 		w.Header().Set("Content-Type", "application/json")
-		var dat map[string]interface{}
+		var dat map[string]any
 		body, err := io.ReadAll(r.Body)
 		r.Body.Close()
 		if err != nil {
