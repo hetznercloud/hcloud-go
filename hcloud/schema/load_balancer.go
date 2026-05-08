@@ -406,7 +406,7 @@ type LoadBalancerGetMetricsResponse struct {
 // LoadBalancerTimeSeriesVals contains the values for a Load Balancer time
 // series.
 type LoadBalancerTimeSeriesVals struct {
-	Values []interface{} `json:"values"`
+	Values []any `json:"values"`
 }
 
 // LoadBalancerActionChangeDNSPtrRequest defines the schema for the request to

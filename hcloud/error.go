@@ -113,7 +113,7 @@ const (
 type Error struct {
 	Code    ErrorCode
 	Message string
-	Details interface{}
+	Details any
 
 	response *Response
 }
