@@ -69,6 +69,10 @@ linters:
       - linters:
           - staticcheck
         text: schema\.DatacenterServerTypes is deprecated
+      - # TODO: can be removed once https://github.com/leighmcculloch/gocheckcompilerdirectives/pull/6 is merged
+        linters:
+          - gocheckcompilerdirectives
+        text: "compiler directive unrecognized: //go:fix"
 
 formatters:
   enable:
