@@ -136,6 +136,8 @@ type PrimaryIPAssignOpts struct {
 }
 
 // Deprecated: Please use [schema.PrimaryIPActionAssignResponse] instead.
+//
+//go:fix inline
 type PrimaryIPAssignResult = schema.PrimaryIPActionAssignResponse
 
 // PrimaryIPChangeDNSPtrOpts defines the request to
@@ -147,6 +149,8 @@ type PrimaryIPChangeDNSPtrOpts struct {
 }
 
 // Deprecated: Please use [schema.PrimaryIPChangeDNSPtrResponse] instead.
+//
+//go:fix inline
 type PrimaryIPChangeDNSPtrResult = schema.PrimaryIPActionChangeDNSPtrResponse
 
 // PrimaryIPChangeProtectionOpts defines the request to
@@ -157,6 +161,8 @@ type PrimaryIPChangeProtectionOpts struct {
 }
 
 // Deprecated: Please use [schema.PrimaryIPActionChangeProtectionResponse] instead.
+//
+//go:fix inline
 type PrimaryIPChangeProtectionResult = schema.PrimaryIPActionChangeProtectionResponse
 
 // PrimaryIPClient is a client for the Primary IP API.

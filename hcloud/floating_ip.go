@@ -39,8 +39,10 @@ func (o *FloatingIP) pathID() (string, error) {
 // DNSPtrForIP returns the reverse DNS pointer of the IP address.
 //
 // Deprecated: Use GetDNSPtrForIP instead.
+//
+//go:fix inline
 func (o *FloatingIP) DNSPtrForIP(ip net.IP) string {
-	return o.DNSPtr[ip.String()]
+	return IgnoreError(o.GetDNSPtrForIP(ip))
 }
 
 // FloatingIPProtection represents the protection level of a Floating IP.
