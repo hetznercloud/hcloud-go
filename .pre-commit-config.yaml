@@ -47,6 +47,12 @@ repos:
         entry: go generate ./...
         pass_filenames: false
 
+      - id: go-fix
+        name: go fix
+        language: golang
+        entry: go fix ./...
+        pass_filenames: false
+
   - repo: https://github.com/golangci/golangci-lint
     rev: v2.11.4
     hooks:
