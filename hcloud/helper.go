@@ -34,7 +34,3 @@ func Bool(b bool) *bool { return Ptr(b) }
 //
 //go:fix inline
 func Duration(d time.Duration) *time.Duration { return Ptr(d) }
-
-func IgnoreError[T any](t T, _ error) T {
-	return t
-}
