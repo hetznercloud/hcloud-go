@@ -192,7 +192,7 @@ func TestActionClientAll(t *testing.T) {
 	})
 
 	ctx := context.Background()
-	actions, err := env.Client.Action.All(ctx)
+	actions, err := env.Client.Action.AllWithOpts(ctx, ActionListOpts{})
 	if err != nil {
 		t.Fatal(err)
 	}

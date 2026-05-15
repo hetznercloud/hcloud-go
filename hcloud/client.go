@@ -166,6 +166,8 @@ func WithToken(token string) ClientOption {
 //	hcloud.WithPollOpts(hcloud.PollOpts{
 //		BackoffFunc: hcloud.ConstantBackoff(2 * time.Second),
 //	})
+//
+//go:fix inline
 func WithPollInterval(pollInterval time.Duration) ClientOption {
 	return WithPollOpts(PollOpts{
 		BackoffFunc: ConstantBackoff(pollInterval),
@@ -176,6 +178,8 @@ func WithPollInterval(pollInterval time.Duration) ClientOption {
 // function when polling from the API.
 //
 // Deprecated: WithPollBackoffFunc is deprecated, use [WithPollOpts] instead.
+//
+//go:fix inline
 func WithPollBackoffFunc(f BackoffFunc) ClientOption {
 	return WithPollOpts(PollOpts{
 		BackoffFunc: f,
@@ -202,10 +206,12 @@ func WithPollOpts(opts PollOpts) ClientOption {
 // The backoff function is used for retrying HTTP requests.
 //
 // Deprecated: WithBackoffFunc is deprecated, use [WithRetryOpts] instead.
+//
+//go:fix inline
 func WithBackoffFunc(f BackoffFunc) ClientOption {
-	return func(client *Client) {
-		client.retryBackoffFunc = f
-	}
+	return WithRetryOpts(RetryOpts{
+		BackoffFunc: f,
+	})
 }
 
 // RetryOpts defines the options used by [WithRetryOpts].

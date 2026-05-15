@@ -106,6 +106,8 @@ const (
 	// before Hetzner Cloud launched into the public. To make clients using the
 	// old error code still work as expected, we set the value of the old error
 	// code to that of the new error code.
+	//
+	//go:fix inline
 	ErrorCodeLimitReached = ErrorCodeRateLimitExceeded
 )
 
