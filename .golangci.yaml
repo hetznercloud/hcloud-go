@@ -18,6 +18,7 @@ linters:
     - gocheckcompilerdirectives
     - gochecksumtype
     - gocritic
+    - godoclint
     - gomoddirectives
     - gomodguard_v2
     - gosec
