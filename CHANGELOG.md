@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.41.1](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.41.1)
+
+### Bug Fixes
+
+- **metadata**: add go inline fix hint to deprecated method (#855)
+
 ## [v2.41.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.41.0)
 
 ### Features
