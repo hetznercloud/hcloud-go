@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.41.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.41.0)
+
+### Features
+
+- **metadata**: add context-aware Client methods (#852)
+
 ## [v2.40.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.40.0)
 
 ### Load Balancer HTTP Services now support `TimeoutIdle`
