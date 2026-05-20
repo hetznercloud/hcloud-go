@@ -112,8 +112,10 @@ func (c *Client) get(ctx context.Context, path string) (string, error) {
 // if the endpoint answers with a non-empty value this method returns true, otherwise false.
 //
 // Deprecated: Use [Client.IsHcloudServerWithContext] instead so callers can control the request lifecycle.
+//
+//go:fix inline
 func (c *Client) IsHcloudServer() bool {
-	return c.IsHcloudServerWithContext(context.Background())
+	return c.IsHcloudServerWithContext(context.TODO())
 }
 
 // IsHcloudServerWithContext checks if the currently called server is a hcloud server by calling a metadata
@@ -129,8 +131,10 @@ func (c *Client) IsHcloudServerWithContext(ctx context.Context) bool {
 // Hostname returns the hostname of the server that did the request to the Metadata server.
 //
 // Deprecated: Use [Client.HostnameWithContext] instead so callers can control the request lifecycle.
+//
+//go:fix inline
 func (c *Client) Hostname() (string, error) {
-	return c.HostnameWithContext(context.Background())
+	return c.HostnameWithContext(context.TODO())
 }
 
 // HostnameWithContext returns the hostname of the server that did the request to the Metadata server.
@@ -141,8 +145,10 @@ func (c *Client) HostnameWithContext(ctx context.Context) (string, error) {
 // InstanceID returns the ID of the server that did the request to the Metadata server.
 //
 // Deprecated: Use [Client.InstanceIDWithContext] instead so callers can control the request lifecycle.
+//
+//go:fix inline
 func (c *Client) InstanceID() (int64, error) {
-	return c.InstanceIDWithContext(context.Background())
+	return c.InstanceIDWithContext(context.TODO())
 }
 
 // InstanceIDWithContext returns the ID of the server that did the request to the Metadata server.
@@ -157,8 +163,10 @@ func (c *Client) InstanceIDWithContext(ctx context.Context) (int64, error) {
 // PublicIPv4 returns the Public IPv4 of the server that did the request to the Metadata server.
 //
 // Deprecated: Use [Client.PublicIPv4WithContext] instead so callers can control the request lifecycle.
+//
+//go:fix inline
 func (c *Client) PublicIPv4() (net.IP, error) {
-	return c.PublicIPv4WithContext(context.Background())
+	return c.PublicIPv4WithContext(context.TODO())
 }
 
 // PublicIPv4WithContext returns the Public IPv4 of the server that did the request to the Metadata server.
@@ -173,8 +181,10 @@ func (c *Client) PublicIPv4WithContext(ctx context.Context) (net.IP, error) {
 // Region returns the Network Zone of the server that did the request to the Metadata server.
 //
 // Deprecated: Use [Client.RegionWithContext] instead so callers can control the request lifecycle.
+//
+//go:fix inline
 func (c *Client) Region() (string, error) {
-	return c.RegionWithContext(context.Background())
+	return c.RegionWithContext(context.TODO())
 }
 
 // RegionWithContext returns the Network Zone of the server that did the request to the Metadata server.
@@ -185,8 +195,10 @@ func (c *Client) RegionWithContext(ctx context.Context) (string, error) {
 // AvailabilityZone returns the datacenter of the server that did the request to the Metadata server.
 //
 // Deprecated: Use [Client.AvailabilityZoneWithContext] instead so callers can control the request lifecycle.
+//
+//go:fix inline
 func (c *Client) AvailabilityZone() (string, error) {
-	return c.AvailabilityZoneWithContext(context.Background())
+	return c.AvailabilityZoneWithContext(context.TODO())
 }
 
 // AvailabilityZoneWithContext returns the datacenter of the server that did the request to the Metadata server.
@@ -198,8 +210,10 @@ func (c *Client) AvailabilityZoneWithContext(ctx context.Context) (string, error
 // Returns YAML (unparsed).
 //
 // Deprecated: Use [Client.PrivateNetworksWithContext] instead so callers can control the request lifecycle.
+//
+//go:fix inline
 func (c *Client) PrivateNetworks() (string, error) {
-	return c.PrivateNetworksWithContext(context.Background())
+	return c.PrivateNetworksWithContext(context.TODO())
 }
 
 // PrivateNetworksWithContext returns details about the private networks the server is attached to.
