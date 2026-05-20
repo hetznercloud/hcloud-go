@@ -1,9 +1,11 @@
 package metadata
 
 import (
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/stretchr/testify/assert"
@@ -54,18 +56,68 @@ func TestClient_Base(t *testing.T) {
 		w.Write([]byte("not found"))
 	})
 
-	if body, err := env.Client.get("/ok"); assert.NoError(t, err) {
+	ctx := context.Background()
+	if body, err := env.Client.get(ctx, "/ok"); assert.NoError(t, err) {
 		assert.Equal(t, "ok", body)
 	}
-	if body, err := env.Client.get("/sanitized"); assert.NoError(t, err) {
+	if body, err := env.Client.get(ctx, "/sanitized"); assert.NoError(t, err) {
 		assert.Equal(t, "sanitized", body)
 	}
-	if body, err := env.Client.get("/no-content"); assert.NoError(t, err) {
+	if body, err := env.Client.get(ctx, "/no-content"); assert.NoError(t, err) {
 		assert.Empty(t, body)
 	}
-	if body, err := env.Client.get("/not-found"); assert.EqualError(t, err, "response status was 404") {
+	if body, err := env.Client.get(ctx, "/not-found"); assert.EqualError(t, err, "response status was 404") {
 		assert.Equal(t, "not found", body)
 	}
+}
+
+func TestClient_GetRespectsContext(t *testing.T) {
+	env := newTestEnv()
+	blocked := make(chan struct{})
+	defer close(blocked)
+	env.Mux.HandleFunc("/blocks", func(_ http.ResponseWriter, r *http.Request) {
+		select {
+		case <-blocked:
+		case <-r.Context().Done():
+		}
+	})
+
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	_, err := env.Client.get(ctx, "/blocks")
+	require.Error(t, err)
+	assert.ErrorIs(t, err, context.Canceled)
+}
+
+func TestClient_HostnameWithContext(t *testing.T) {
+	env := newTestEnv()
+	env.Mux.HandleFunc("/hostname", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("my-server"))
+	})
+
+	hostname, err := env.Client.HostnameWithContext(context.Background())
+	require.NoError(t, err)
+	require.Equal(t, "my-server", hostname)
+}
+
+func TestClient_HostnameWithContext_Cancelled(t *testing.T) {
+	env := newTestEnv()
+	blocked := make(chan struct{})
+	defer close(blocked)
+	env.Mux.HandleFunc("/hostname", func(_ http.ResponseWriter, r *http.Request) {
+		select {
+		case <-blocked:
+		case <-r.Context().Done():
+		}
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+
+	_, err := env.Client.HostnameWithContext(ctx)
+	require.Error(t, err)
+	assert.ErrorIs(t, err, context.DeadlineExceeded)
 }
 
 func TestClient_IsHcloudServer(t *testing.T) {
