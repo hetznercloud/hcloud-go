@@ -26,13 +26,9 @@ type CertificateStatusType string
 
 // Possible certificate status.
 const (
-	CertificateStatusTypePending CertificateStatusType = "pending"
-	CertificateStatusTypeFailed  CertificateStatusType = "failed"
-
-	// only in issuance.
-	CertificateStatusTypeCompleted CertificateStatusType = "completed"
-
-	// only in renewal.
+	CertificateStatusTypePending     CertificateStatusType = "pending"
+	CertificateStatusTypeFailed      CertificateStatusType = "failed"
+	CertificateStatusTypeCompleted   CertificateStatusType = "completed"
 	CertificateStatusTypeScheduled   CertificateStatusType = "scheduled"
 	CertificateStatusTypeUnavailable CertificateStatusType = "unavailable"
 )

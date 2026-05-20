@@ -191,7 +191,7 @@ type StorageBoxSubaccountCreateOpts struct {
 	Labels         map[string]string
 }
 
-// StorageBoxSubaccountAccessSettingsOpts represents the options for [StorageBoxSubaccountAccessSettings] of a [StorageBoxSubaccount].
+// StorageBoxSubaccountCreateOptsAccessSettings represents the options for [StorageBoxSubaccountCreateOpts.AccessSettings].
 type StorageBoxSubaccountCreateOptsAccessSettings struct {
 	ReachableExternally *bool
 	Readonly            *bool
@@ -353,7 +353,7 @@ type StorageBoxSubaccountChangeHomeDirectoryOpts struct {
 	HomeDirectory string
 }
 
-// UpdateSubaccountAccessSettings changes the home directory of a [StorageBoxSubaccount].
+// ChangeSubaccountHomeDirectory changes the home directory of a [StorageBoxSubaccount].
 //
 // See https://docs.hetzner.cloud/reference/hetzner#storage-box-subaccount-actions-change-home-directory
 func (c *StorageBoxClient) ChangeSubaccountHomeDirectory(

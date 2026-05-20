@@ -23,7 +23,7 @@ import (
 // Endpoint is the base URL of the Cloud API.
 const Endpoint = "https://api.hetzner.cloud/v1"
 
-// Endpoint is the base URL of the Hetzner API.
+// HetznerEndpoint is the base URL of the Hetzner API.
 const HetznerEndpoint = "https://api.hetzner.com/v1"
 
 // UserAgent is the value for the library part of the User-Agent header
