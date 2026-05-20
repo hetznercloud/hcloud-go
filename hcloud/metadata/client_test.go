@@ -2,7 +2,6 @@ package metadata
 
 import (
 	"context"
-	"errors"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -88,7 +87,7 @@ func TestClient_GetRespectsContext(t *testing.T) {
 
 	_, err := env.Client.get(ctx, "/blocks")
 	require.Error(t, err)
-	assert.True(t, errors.Is(err, context.Canceled), "got %v", err)
+	assert.ErrorIs(t, err, context.Canceled)
 }
 
 func TestClient_HostnameWithContext(t *testing.T) {
@@ -118,7 +117,7 @@ func TestClient_HostnameWithContext_Cancelled(t *testing.T) {
 
 	_, err := env.Client.HostnameWithContext(ctx)
 	require.Error(t, err)
-	assert.True(t, errors.Is(err, context.DeadlineExceeded), "got %v", err)
+	assert.ErrorIs(t, err, context.DeadlineExceeded)
 }
 
 func TestClient_IsHcloudServer(t *testing.T) {
