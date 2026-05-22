@@ -9,9 +9,6 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
-//go:generate go run github.com/hexdigest/gowrap/cmd/gowrap gen -g -p . -i converter -t schema.tmpl -o zz_schema.go
-//go:generate go run github.com/jmattheis/goverter/cmd/goverter gen ./...
-
 /*
 This file generates conversions methods between the schema and the hcloud package.
 Goverter (https://github.com/jmattheis/goverter) is used to generate these conversion
