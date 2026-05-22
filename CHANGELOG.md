@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.41.2](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.41.2)
+
+### Bug Fixes
+
+- remove tools dependencies from go.mod (#847)
+
 ## [v2.41.1](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.41.1)
 
 ### Bug Fixes
