@@ -78,7 +78,7 @@ func TestIDOrNameUnMarshall(t *testing.T) {
 }
 
 func TestIDOrName(t *testing.T) {
-	// Make sure the behavior does not change from the use of an interface{}.
+	// Make sure the behavior does not change from the use of an any.
 	type FakeRequest struct {
 		Old any      `json:"old"`
 		New IDOrName `json:"new"`

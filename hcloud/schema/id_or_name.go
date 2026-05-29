@@ -25,7 +25,7 @@ func (o IDOrName) MarshalJSON() ([]byte, error) {
 		return json.Marshal(o.Name)
 	}
 
-	// We want to preserve the behavior of an empty interface{} to prevent breaking
+	// We want to preserve the behavior of an empty any to prevent breaking
 	// changes (marshaled to null when empty).
 	return json.Marshal(nil)
 }
