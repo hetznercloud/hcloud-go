@@ -144,12 +144,11 @@ func (e Error) LogValue() slog.Value {
 		slog.String("code", string(e.Code)),
 	}
 
-	// Rework once moved from the exp package namespace to the hcloud package, because
-	// some hcloud private APIs are not available from here.
 	if resp := e.Response(); resp != nil {
-		if value := resp.Header.Get("X-Correlation-Id"); value != "" {
+		correlationID := resp.internalCorrelationID()
+		if correlationID != "" {
 			attrs = append(attrs,
-				slog.String("correlation-id", value),
+				slog.String("correlation-id", correlationID),
 			)
 		}
 	}
