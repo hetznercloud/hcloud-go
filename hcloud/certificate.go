@@ -134,7 +134,7 @@ type CertificateListOpts struct {
 	Sort []string
 }
 
-func (l CertificateListOpts) values() url.Values {
+func (l CertificateListOpts) Values() url.Values {
 	vals := l.ListOpts.Values()
 	if l.Name != "" {
 		vals.Add("name", l.Name)
@@ -153,7 +153,7 @@ func (c *CertificateClient) List(ctx context.Context, opts CertificateListOpts) 
 	const opPath = "/certificates?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
+	reqPath := fmt.Sprintf(opPath, opts.Values().Encode())
 
 	respBody, resp, err := getRequest[schema.CertificateListResponse](ctx, c.client, reqPath)
 	if err != nil {

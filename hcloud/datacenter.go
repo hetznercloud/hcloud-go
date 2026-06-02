@@ -78,7 +78,7 @@ type DatacenterListOpts struct {
 	Sort []string
 }
 
-func (l DatacenterListOpts) values() url.Values {
+func (l DatacenterListOpts) Values() url.Values {
 	vals := l.ListOpts.Values()
 	if l.Name != "" {
 		vals.Add("name", l.Name)
@@ -97,7 +97,7 @@ func (c *DatacenterClient) List(ctx context.Context, opts DatacenterListOpts) ([
 	const opPath = "/datacenters?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
+	reqPath := fmt.Sprintf(opPath, opts.Values().Encode())
 
 	respBody, resp, err := getRequest[schema.DatacenterListResponse](ctx, c.client, reqPath)
 	if err != nil {
