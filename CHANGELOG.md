@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.42.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.42.0)
+
+### Features
+
+- implement [slog.LogValuer] for [hcloud.Error] (#864)
+- **exp**: remove errutil package (#864)
+- export list opts Values() methods (#863)
+
 ## [v2.41.2](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.41.2)
 
 ### Bug Fixes
