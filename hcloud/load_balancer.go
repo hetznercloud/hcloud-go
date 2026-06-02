@@ -293,7 +293,7 @@ type LoadBalancerListOpts struct {
 	Sort []string
 }
 
-func (l LoadBalancerListOpts) values() url.Values {
+func (l LoadBalancerListOpts) Values() url.Values {
 	vals := l.ListOpts.Values()
 	if l.Name != "" {
 		vals.Add("name", l.Name)
@@ -312,7 +312,7 @@ func (c *LoadBalancerClient) List(ctx context.Context, opts LoadBalancerListOpts
 	const opPath = "/load_balancers?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, opts.values().Encode())
+	reqPath := fmt.Sprintf(opPath, opts.Values().Encode())
 
 	respBody, resp, err := getRequest[schema.LoadBalancerListResponse](ctx, c.client, reqPath)
 	if err != nil {
@@ -933,7 +933,7 @@ func (o LoadBalancerGetMetricsOpts) Validate() error {
 	return nil
 }
 
-func (o LoadBalancerGetMetricsOpts) values() url.Values {
+func (o LoadBalancerGetMetricsOpts) Values() url.Values {
 	query := url.Values{}
 
 	for _, typ := range o.Types {
@@ -979,7 +979,7 @@ func (c *LoadBalancerClient) GetMetrics(
 		return nil, nil, err
 	}
 
-	reqPath := fmt.Sprintf(opPath, loadBalancer.ID, opts.values().Encode())
+	reqPath := fmt.Sprintf(opPath, loadBalancer.ID, opts.Values().Encode())
 
 	respBody, resp, err := getRequest[schema.LoadBalancerGetMetricsResponse](ctx, c.client, reqPath)
 	if err != nil {
