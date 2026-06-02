@@ -3,6 +3,7 @@ package hcloud
 import (
 	"errors"
 	"fmt"
+	"log/slog"
 	"net"
 	"slices"
 	"strings"
@@ -134,6 +135,42 @@ func (e Error) Error() string {
 // Response returns the [Response] that contained the error if available.
 func (e Error) Response() *Response {
 	return e.response
+}
+
+// LogValue implements [slog.LogValuer] for a [Error].
+func (e Error) LogValue() slog.Value {
+	attrs := []slog.Attr{
+		slog.String("msg", e.Message),
+		slog.String("code", string(e.Code)),
+	}
+
+	if resp := e.Response(); resp != nil {
+		correlationID := resp.internalCorrelationID()
+		if correlationID != "" {
+			attrs = append(attrs,
+				slog.String("correlation-id", correlationID),
+			)
+		}
+	}
+
+	if e.Details != nil {
+		switch details := e.Details.(type) {
+		case ErrorDetailsInvalidInput:
+			attrs = append(attrs,
+				slog.String("details", fmt.Sprintf("%v", details.Fields)),
+			)
+		case ErrorDetailsDeprecatedAPIEndpoint:
+			attrs = append(attrs,
+				slog.String("details", fmt.Sprintf("%v", details)),
+			)
+		default:
+			attrs = append(attrs,
+				slog.String("details", fmt.Sprintf("%v", details)),
+			)
+		}
+	}
+
+	return slog.GroupValue(attrs...)
 }
 
 // ErrorDetailsInvalidInput contains the details of an 'invalid_input' error.

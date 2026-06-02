@@ -2,8 +2,11 @@ package hcloud
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
+	"strings"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -241,6 +244,64 @@ func TestArgumentError(t *testing.T) {
 	} {
 		t.Run("", func(t *testing.T) {
 			assert.EqualError(t, tt.err, tt.want)
+		})
+	}
+}
+
+func TestLogValue(t *testing.T) {
+	testCases := []struct {
+		desc string
+		err  *Error
+		want string
+	}{
+
+		{
+			desc: "api error without details",
+			err: &Error{
+				Code:    `unauthorized`,
+				Message: `unauthorized request`,
+			},
+			want: `err.msg="unauthorized request" err.code=unauthorized`,
+		},
+		{
+			desc: "api error with invalid input single message",
+			err: &Error{
+				Code:    `invalid_input`,
+				Message: `invalid input for "labels"`,
+				Details: ErrorDetailsInvalidInput{
+					Fields: []ErrorDetailsInvalidInputField{
+						{Name: "labels", Messages: []string{"value is too long"}},
+					},
+				},
+			},
+			want: `err.msg="invalid input for \"labels\"" err.code=invalid_input err.details="[{labels [value is too long]}]"`,
+		},
+		{
+			desc: "api error with invalid input many message",
+			err: &Error{
+				Code:    `invalid_input`,
+				Message: `invalid input for "name", "labels"`,
+				Details: ErrorDetailsInvalidInput{
+					Fields: []ErrorDetailsInvalidInputField{
+						{Name: "name", Messages: []string{"value is too long"}},
+						{Name: "labels", Messages: []string{"value is too long"}},
+					},
+				},
+			},
+			want: `err.msg="invalid input for \"name\", \"labels\"" err.code=invalid_input err.details="[{name [value is too long]} {labels [value is too long]}]"`,
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.desc, func(t *testing.T) {
+			var out strings.Builder
+			logger := slog.New(slog.NewTextHandler(&out, nil))
+			r := slog.NewRecord(time.Time{}, slog.LevelInfo, "test", 0)
+			r.Add("err", testCase.err.LogValue())
+			logger.Handler().Handle(t.Context(), r)
+
+			// Remove leading log level and msg
+			got := strings.TrimSpace(out.String()[20:])
+			assert.Equal(t, testCase.want, got)
 		})
 	}
 }
