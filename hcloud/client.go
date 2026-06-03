@@ -18,6 +18,8 @@ import (
 	"golang.org/x/net/http/httpguts"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/internal/instrumentation"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/internal/util"
+	"github.com/hetznercloud/hcloud-go/v2/version"
 )
 
 // Endpoint is the base URL of the Cloud API.
@@ -28,7 +30,7 @@ const HetznerEndpoint = "https://api.hetzner.com/v1"
 
 // UserAgent is the value for the library part of the User-Agent header
 // that is sent with each request.
-const UserAgent = "hcloud-go/" + Version
+const UserAgent = "hcloud-go/" + version.Version
 
 // A BackoffFunc returns the duration to wait before performing the
 // next retry. The retries argument specifies how many retries have
@@ -94,8 +96,6 @@ type Client struct {
 	retryMaxRetries         int
 	pollBackoffFunc         BackoffFunc
 	httpClient              *http.Client
-	applicationName         string
-	applicationVersion      string
 	userAgent               string
 	debugWriter             io.Writer
 	instrumentationRegistry prometheus.Registerer
@@ -238,8 +238,7 @@ func WithRetryOpts(opts RetryOpts) ClientOption {
 // to at least set an application name.
 func WithApplication(name, version string) ClientOption {
 	return func(client *Client) {
-		client.applicationName = name
-		client.applicationVersion = version
+		client.userAgent = util.BuildUserAgent(name, version, UserAgent)
 	}
 }
 
@@ -268,6 +267,7 @@ func WithInstrumentation(registry prometheus.Registerer) ClientOption {
 // NewClient creates a new client.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
+		userAgent:       UserAgent,
 		endpoint:        Endpoint,
 		hetznerEndpoint: HetznerEndpoint,
 		tokenValid:      true,
@@ -288,7 +288,6 @@ func NewClient(options ...ClientOption) *Client {
 		option(client)
 	}
 
-	client.buildUserAgent()
 	if client.instrumentationRegistry != nil {
 		i := instrumentation.New("api", client.instrumentationRegistry)
 		client.httpClient.Transport = i.InstrumentedRoundTripper(client.httpClient.Transport)
@@ -361,17 +360,6 @@ func (c *Client) NewRequest(ctx context.Context, method, path string, body io.Re
 // a struct to json.Unmarshal the response to.
 func (c *Client) Do(req *http.Request, v any) (*Response, error) {
 	return c.handler.Do(req, v)
-}
-
-func (c *Client) buildUserAgent() {
-	switch {
-	case c.applicationName != "" && c.applicationVersion != "":
-		c.userAgent = c.applicationName + "/" + c.applicationVersion + " " + UserAgent
-	case c.applicationName != "" && c.applicationVersion == "":
-		c.userAgent = c.applicationName + " " + UserAgent
-	default:
-		c.userAgent = UserAgent
-	}
 }
 
 const (
