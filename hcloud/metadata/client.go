@@ -15,12 +15,18 @@ import (
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/ctxutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/internal/instrumentation"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/internal/util"
+	"github.com/hetznercloud/hcloud-go/v2/version"
 )
 
 const Endpoint = "http://169.254.169.254/hetzner/v1/metadata"
 
+const UserAgent = "hcloud-go/" + version.Version
+
 // Client is a client for the Hetzner Cloud Server Metadata Endpoints.
 type Client struct {
+	userAgent string
+
 	endpoint string
 	timeout  time.Duration
 
@@ -59,9 +65,19 @@ func WithTimeout(timeout time.Duration) ClientOption {
 	}
 }
 
+// WithApplication configures a Client with the given application name and
+// application version. The version may be blank. Programs are encouraged
+// to at least set an application name.
+func WithApplication(name, version string) ClientOption {
+	return func(client *Client) {
+		client.userAgent = util.BuildUserAgent(name, version, UserAgent)
+	}
+}
+
 // NewClient creates a new [Client] with the options applied.
 func NewClient(options ...ClientOption) *Client {
 	client := &Client{
+		userAgent:  UserAgent,
 		endpoint:   Endpoint,
 		httpClient: &http.Client{},
 		timeout:    5 * time.Second,
@@ -88,6 +104,8 @@ func (c *Client) get(ctx context.Context, path string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	req.Header.Set("User-Agent", c.userAgent)
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
