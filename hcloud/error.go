@@ -33,6 +33,7 @@ const (
 	ErrorCodeResourceLocked        ErrorCode = "resource_locked"         // The resource is locked. The caller should contact support
 	ErrorCodeServerError           ErrorCode = "server_error"            // Error within the API backend
 	ErrorCodeTokenReadonly         ErrorCode = "token_readonly"          // The token is only allowed to perform GET requests
+	ErrorCodeBadGateway            ErrorCode = "bad_gateway"             // The request could not be answered by the API backend, please retry
 	ErrorCodeTimeout               ErrorCode = "timeout"                 // The request could not be answered in time, please retry
 	ErrorUnsupportedError          ErrorCode = "unsupported_error"       // The given resource does not support this
 	ErrorDeprecatedAPIEndpoint     ErrorCode = "deprecated_api_endpoint" // The request can not be answered because the API functionality was removed

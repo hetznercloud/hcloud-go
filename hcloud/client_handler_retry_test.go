@@ -121,6 +121,11 @@ func TestRetryPolicy(t *testing.T) {
 			want: true,
 		},
 		{
+			name: "api returns bad_gateway error",
+			resp: fakeResponse(t, 502, `{"error":{"code":"bad_gateway"}}`, true),
+			want: true,
+		},
+		{
 			name: "api returns unavailable error",
 			resp: fakeResponse(t, 503, `{"error":{"code":"unavailable"}}`, true),
 			want: false,
