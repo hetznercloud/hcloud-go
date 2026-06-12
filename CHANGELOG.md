@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.43.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.43.0)
+
+### Features
+
+- retry requests on api `bad_gateway` error (#874)
+
 ## [v2.42.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.42.0)
 
 ### Features
