@@ -103,7 +103,6 @@ type Client struct {
 
 	Action           ActionClient
 	Certificate      CertificateClient
-	Datacenter       DatacenterClient
 	Firewall         FirewallClient
 	FloatingIP       FloatingIPClient
 	Image            ImageClient
@@ -123,6 +122,10 @@ type Client struct {
 	PrimaryIP        PrimaryIPClient
 	StorageBoxType   StorageBoxTypeClient
 	Zone             ZoneClient
+
+	// Deprecated: [DatacenterClient] is deprecated and will be removed after the 2026-10-01. See
+	// https://docs.hetzner.cloud/changelog#2026-06-02-datacenters-deprecated.
+	Datacenter DatacenterClient
 }
 
 // A ClientOption is used to configure a Client.
