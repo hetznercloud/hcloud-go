@@ -1,5 +1,19 @@
 # Changelog
 
+## [v2.44.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.44.0)
+
+### Datacenters resource is now deprecated
+
+The endpoints `GET /v1/datacenters` and `GET /v1/datacenters/{id}` are now deprecated and will be removed after 1 Oct. 2026. After this date, requests to these endpoints will return `HTTP 410 Gone`.
+
+The [DatacenterClient](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud#DatacenterClient), [Datacenter](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2/hcloud#Datacenter) and related structs are now deprecated.
+
+See the [changelog](https://docs.hetzner.cloud/changelog#2026-06-02-datacenters-deprecated) for more details.
+
+### Features
+
+- deprecate datacenters resource (#867)
+
 ## [v2.43.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.43.0)
 
 ### Features
