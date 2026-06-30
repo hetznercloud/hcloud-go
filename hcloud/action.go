@@ -44,11 +44,21 @@ type ActionResourceType string
 
 // List of action resource reference types.
 const (
-	ActionResourceTypeServer     ActionResourceType = "server"
-	ActionResourceTypeImage      ActionResourceType = "image"
-	ActionResourceTypeISO        ActionResourceType = "iso"
-	ActionResourceTypeFloatingIP ActionResourceType = "floating_ip"
-	ActionResourceTypeVolume     ActionResourceType = "volume"
+	ActionResourceTypeServer               ActionResourceType = "server"
+	ActionResourceTypeImage                ActionResourceType = "image"
+	ActionResourceTypeISO                  ActionResourceType = "iso"
+	ActionResourceTypeFloatingIP           ActionResourceType = "floating_ip"
+	ActionResourceTypeVolume               ActionResourceType = "volume"
+	ActionResourceTypeNetwork              ActionResourceType = "network"
+	ActionResourceTypeCertificate          ActionResourceType = "certificate"
+	ActionResourceTypeLoadBalancer         ActionResourceType = "load_balancer"
+	ActionResourceTypeFirewall             ActionResourceType = "firewall"
+	ActionResourceTypePlacementGroup       ActionResourceType = "placement_group"
+	ActionResourceTypePrimaryIP            ActionResourceType = "primary_ip"
+	ActionResourceTypeZone                 ActionResourceType = "zone"
+	ActionResourceTypeStorageBox           ActionResourceType = "storage_box"
+	ActionResourceTypeStorageBoxSnapshot   ActionResourceType = "storage_box_snapshot"
+	ActionResourceTypeStorageBoxSubaccount ActionResourceType = "storage_box_subaccount"
 )
 
 // ActionError is the error of an action.
