@@ -119,7 +119,7 @@ type StorageBoxSubaccountListOpts struct {
 	Sort          []string
 }
 
-func (o StorageBoxSubaccountListOpts) values() url.Values {
+func (o StorageBoxSubaccountListOpts) Values() url.Values {
 	vals := url.Values{}
 	if o.Name != "" {
 		vals.Add("name", o.Name)
@@ -147,7 +147,7 @@ func (c *StorageBoxClient) ListSubaccounts(
 	const opPath = "/storage_boxes/%d/subaccounts?%s"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, storageBox.ID, opts.values().Encode())
+	reqPath := fmt.Sprintf(opPath, storageBox.ID, opts.Values().Encode())
 
 	respBody, resp, err := getRequest[schema.StorageBoxSubaccountListResponse](ctx, c.client, reqPath)
 	if err != nil {

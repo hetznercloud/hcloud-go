@@ -69,6 +69,9 @@ linters:
         text: "unused-parameter: parameter '(w|r)' seems to be unused, consider removing or renaming it as _"
       - linters:
           - staticcheck
+        text: "\\[Datacenter\\] is deprecated"
+      - linters:
+          - staticcheck
         text: schema\.DatacenterServerTypes is deprecated
       - # TODO: can be removed once https://github.com/leighmcculloch/gocheckcompilerdirectives/pull/6 is merged
         linters:
