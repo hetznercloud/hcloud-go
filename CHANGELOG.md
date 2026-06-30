@@ -1,5 +1,11 @@
 # Changelog
 
+## [v2.45.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.45.0)
+
+### Features
+
+- **action**: add missing ActionResourceType constants (#862)
+
 ## [v2.44.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.44.0)
 
 ### Datacenters resource is now deprecated
