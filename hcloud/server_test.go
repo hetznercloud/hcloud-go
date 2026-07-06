@@ -125,38 +125,6 @@ func TestServerClientGetByID(t *testing.T) {
         }
       ]
     },
-    "datacenter": {
-      "id": 3,
-      "description": "Helsinki 1 virtual DC 2",
-      "location": {
-        "id": 3,
-        "name": "hel1",
-        "description": "Helsinki DC Park 1",
-        "city": "Helsinki",
-        "country": "FI",
-        "latitude": 60.169855,
-        "longitude": 24.938379,
-        "network_zone": "eu-central"
-      },
-      "name": "hel1-dc2",
-      "server_types": {
-        "available": [
-          22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 45, 93, 94, 95, 96, 97, 98,
-          99, 100, 101, 102, 104, 105, 108, 109, 110, 111, 112, 113, 114, 115,
-          116, 117
-        ],
-        "available_for_migration": [
-          22, 23, 24, 25, 27, 28, 29, 30, 31, 32, 45, 93, 94, 95, 96, 97, 98,
-          99, 100, 101, 102, 104, 105, 108, 109, 110, 111, 112, 113, 114, 115,
-          116, 117
-        ],
-        "supported": [
-          1, 3, 5, 7, 9, 11, 12, 13, 14, 15, 22, 23, 24, 25, 26, 27, 28, 29, 30,
-          31, 33, 34, 35, 36, 37, 38, 45, 93, 94, 95, 96, 97, 98, 99, 100, 101,
-          104, 105, 106, 107, 109, 110, 111, 112, 113, 114, 115, 116, 117
-        ]
-      }
-    },
     "location": {
       "id": 3,
       "name": "hel1",
@@ -237,8 +205,6 @@ func TestServerClientGetByID(t *testing.T) {
 	assert.Equal(t, ServerStatusRunning, result.Status)
 	assert.Equal(t, int64(104), result.ServerType.ID)
 	assert.Equal(t, "cx22", result.ServerType.Name)
-	assert.Equal(t, int64(3), result.Datacenter.ID)
-	assert.Equal(t, "hel1-dc2", result.Datacenter.Name)
 	assert.Equal(t, int64(3), result.Location.ID)
 	assert.Equal(t, "hel1", result.Location.Name)
 	assert.Equal(t, int64(310554929), result.Image.ID)
@@ -867,74 +833,6 @@ func TestServersCreateWithDefaultPublicNet(t *testing.T) {
 	}
 	if len(result.NextActions) != 1 || result.NextActions[0].ID != 2 {
 		t.Errorf("unexpected next actions: %v", result.NextActions)
-	}
-}
-
-func TestServersCreateWithDatacenterID(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
-		var reqBody schema.ServerCreateRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			t.Fatal(err)
-		}
-		if reqBody.Datacenter != "1" { // nolint:staticcheck // Deprecated
-			t.Errorf("unexpected datacenter: %v", reqBody.Datacenter) // nolint:staticcheck // Deprecated
-		}
-		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
-			Server: schema.Server{
-				ID: 1,
-			},
-		})
-	})
-
-	ctx := context.Background()
-	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
-		Name:       "test",
-		ServerType: &ServerType{ID: 1},
-		Image:      &Image{ID: 2},
-		Datacenter: &Datacenter{ID: 1},
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if result.Server == nil {
-		t.Fatal("no server")
-	}
-}
-
-func TestServersCreateWithDatacenterName(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/servers", func(w http.ResponseWriter, r *http.Request) {
-		var reqBody schema.ServerCreateRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			t.Fatal(err)
-		}
-		if reqBody.Datacenter != "dc1" { // nolint:staticcheck // Deprecated
-			t.Errorf("unexpected datacenter: %v", reqBody.Datacenter) // nolint:staticcheck // Deprecated
-		}
-		json.NewEncoder(w).Encode(schema.ServerCreateResponse{
-			Server: schema.Server{
-				ID: 1,
-			},
-		})
-	})
-
-	ctx := context.Background()
-	result, _, err := env.Client.Server.Create(ctx, ServerCreateOpts{
-		Name:       "test",
-		ServerType: &ServerType{ID: 1},
-		Image:      &Image{ID: 2},
-		Datacenter: &Datacenter{Name: "dc1"},
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if result.Server == nil {
-		t.Fatal("no server")
 	}
 }
 

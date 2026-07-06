@@ -443,7 +443,6 @@ func (c *converterImpl) PrimaryIPFromSchema(source schema.PrimaryIP) *PrimaryIP 
 	hcloudPrimaryIP.Blocked = source.Blocked
 	hcloudPrimaryIP.Created = c.timeTimeToTimeTime(source.Created)
 	hcloudPrimaryIP.Location = c.LocationFromSchema(source.Location)
-	hcloudPrimaryIP.Datacenter = c.pSchemaDatacenterToPHcloudDatacenter(source.Datacenter)
 	return &hcloudPrimaryIP
 }
 func (c *converterImpl) SSHKeyFromSchema(source schema.SSHKey) *SSHKey {
@@ -958,7 +957,6 @@ func (c *converterImpl) SchemaFromPrimaryIP(source *PrimaryIP) schema.PrimaryIP 
 		schemaPrimaryIP.Blocked = (*source).Blocked
 		schemaPrimaryIP.Created = c.timeTimeToTimeTime((*source).Created)
 		schemaPrimaryIP.Location = c.SchemaFromLocation((*source).Location)
-		schemaPrimaryIP.Datacenter = c.pHcloudDatacenterToPSchemaDatacenter((*source).Datacenter)
 	}
 	return schemaPrimaryIP
 }
@@ -989,7 +987,6 @@ func (c *converterImpl) SchemaFromPrimaryIPCreateOpts(source PrimaryIPCreateOpts
 	schemaPrimaryIPCreateRequest.Labels = stringMapToStringMapPtr(source.Labels)
 	schemaPrimaryIPCreateRequest.AutoDelete = source.AutoDelete
 	schemaPrimaryIPCreateRequest.Location = source.Location
-	schemaPrimaryIPCreateRequest.Datacenter = source.Datacenter
 	return schemaPrimaryIPCreateRequest
 }
 func (c *converterImpl) SchemaFromPrimaryIPUpdateOpts(source PrimaryIPUpdateOpts) schema.PrimaryIPUpdateRequest {
@@ -1051,7 +1048,6 @@ func (c *converterImpl) SchemaFromServer(source *Server) schema.Server {
 				schemaServer.LoadBalancers[k] = c.pHcloudLoadBalancerToInt64((*source).LoadBalancers[k])
 			}
 		}
-		schemaServer.Datacenter = c.pHcloudDatacenterToPSchemaDatacenter((*source).Datacenter)
 	}
 	return schemaServer
 }
@@ -1535,7 +1531,6 @@ func (c *converterImpl) ServerFromSchema(source schema.Server) *Server {
 			hcloudServer.LoadBalancers[k] = &hcloudLoadBalancer
 		}
 	}
-	hcloudServer.Datacenter = c.pSchemaDatacenterToPHcloudDatacenter(source.Datacenter)
 	return &hcloudServer
 }
 func (c *converterImpl) ServerMetricsFromSchema(source *schema.ServerGetMetricsResponse) (*ServerMetrics, error) {
@@ -2114,19 +2109,6 @@ func (c *converterImpl) pHcloudCertificateStatusToPSchemaCertificateStatusRef(so
 	}
 	return pSchemaCertificateStatusRef
 }
-func (c *converterImpl) pHcloudDatacenterToPSchemaDatacenter(source *Datacenter) *schema.Datacenter {
-	var pSchemaDatacenter *schema.Datacenter
-	if source != nil {
-		var schemaDatacenter schema.Datacenter
-		schemaDatacenter.ID = (*source).ID
-		schemaDatacenter.Name = (*source).Name
-		schemaDatacenter.Description = (*source).Description
-		schemaDatacenter.Location = c.SchemaFromLocation((*source).Location)
-		schemaDatacenter.ServerTypes = schemaPtrFromDatacenterServerTypes((*source).ServerTypes)
-		pSchemaDatacenter = &schemaDatacenter
-	}
-	return pSchemaDatacenter
-}
 func (c *converterImpl) pHcloudErrorToPSchemaError(source *Error) *schema.Error {
 	var pSchemaError *schema.Error
 	if source != nil {
@@ -2587,19 +2569,6 @@ func (c *converterImpl) pSchemaDatacenterServerTypesToHcloudDatacenterServerType
 		}
 	}
 	return hcloudDatacenterServerTypes
-}
-func (c *converterImpl) pSchemaDatacenterToPHcloudDatacenter(source *schema.Datacenter) *Datacenter {
-	var pHcloudDatacenter *Datacenter
-	if source != nil {
-		var hcloudDatacenter Datacenter
-		hcloudDatacenter.ID = (*source).ID
-		hcloudDatacenter.Name = (*source).Name
-		hcloudDatacenter.Description = (*source).Description
-		hcloudDatacenter.Location = c.LocationFromSchema((*source).Location)
-		hcloudDatacenter.ServerTypes = c.pSchemaDatacenterServerTypesToHcloudDatacenterServerTypes((*source).ServerTypes)
-		pHcloudDatacenter = &hcloudDatacenter
-	}
-	return pHcloudDatacenter
 }
 func (c *converterImpl) pSchemaErrorToPHcloudError(source *schema.Error) *Error {
 	var pHcloudError *Error
