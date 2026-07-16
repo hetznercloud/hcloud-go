@@ -28,11 +28,6 @@ type PrimaryIP struct {
 	Blocked      bool
 	Created      time.Time
 	Location     *Location
-
-	// Deprecated: [PrimaryIP.Datacenter] is deprecated and will be removed after 1 July 2026.
-	// Use [PrimaryIP.Location] instead.
-	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
-	Datacenter *Datacenter
 }
 
 func (o *PrimaryIP) pathID() (string, error) {
@@ -105,11 +100,6 @@ type PrimaryIPCreateOpts struct {
 	Labels       map[string]string
 	Name         string
 	Type         PrimaryIPType
-
-	// Deprecated: [PrimaryIPCreateOpts.Datacenter] is deprecated and will be removed after 1 July 2026.
-	// Use [PrimaryIPCreateOpts.Location] instead.
-	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
-	Datacenter string
 }
 
 // PrimaryIPCreateResult defines the response

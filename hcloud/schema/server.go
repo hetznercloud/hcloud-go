@@ -26,11 +26,6 @@ type Server struct {
 	PrimaryDiskSize int                `json:"primary_disk_size"`
 	PlacementGroup  *PlacementGroup    `json:"placement_group"`
 	LoadBalancers   []int64            `json:"load_balancers"`
-
-	// Deprecated: [Server.Datacenter] is deprecated and will be removed after 1 July 2026.
-	// Use [Server.Location] instead.
-	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
-	Datacenter *Datacenter `json:"datacenter"`
 }
 
 // ServerProtection defines the schema of a server's resource protection.
@@ -117,11 +112,6 @@ type ServerCreateRequest struct {
 	Firewalls        []ServerCreateFirewalls `json:"firewalls,omitempty"`
 	PlacementGroup   int64                   `json:"placement_group,omitempty"`
 	PublicNet        *ServerCreatePublicNet  `json:"public_net,omitempty"`
-
-	// Deprecated: [ServerCreateRequest.Datacenter] is deprecated and will be removed after 1 July 2026.
-	// Use [ServerCreateRequest.Location] instead.
-	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
-	Datacenter string `json:"datacenter,omitempty"`
 }
 
 // ServerCreatePublicNet defines the public network configuration of a server.

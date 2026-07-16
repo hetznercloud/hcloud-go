@@ -37,11 +37,6 @@ type Server struct {
 	PrimaryDiskSize int
 	PlacementGroup  *PlacementGroup
 	LoadBalancers   []*LoadBalancer
-
-	// Deprecated: [Server.Datacenter] is deprecated and will be removed after 1 July 2026.
-	// Use [Server.Location] instead.
-	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
-	Datacenter *Datacenter
 }
 
 func (o *Server) pathID() (string, error) {
@@ -316,11 +311,6 @@ type ServerCreateOpts struct {
 	Firewalls        []*ServerCreateFirewall
 	PlacementGroup   *PlacementGroup
 	PublicNet        *ServerCreatePublicNet
-
-	// Deprecated: [ServerCreateOpts.Datacenter] is deprecated and will be removed after 1 July 2026.
-	// Use [ServerCreateOpts.Location] instead.
-	// See https://docs.hetzner.cloud/changelog#2025-12-16-phasing-out-datacenters
-	Datacenter *Datacenter
 }
 
 type ServerCreatePublicNet struct {
@@ -345,9 +335,6 @@ func (o ServerCreateOpts) Validate() error {
 	}
 	if o.Image == nil || (o.Image.ID == 0 && o.Image.Name == "") {
 		return missingField(o, "Image")
-	}
-	if o.Location != nil && o.Datacenter != nil {
-		return mutuallyExclusiveFields(o, "Location", "Datacenter")
 	}
 	return nil
 }
@@ -419,13 +406,6 @@ func (c *ServerClient) Create(ctx context.Context, opts ServerCreateOpts) (Serve
 			reqBody.Location = strconv.FormatInt(opts.Location.ID, 10)
 		} else {
 			reqBody.Location = opts.Location.Name
-		}
-	}
-	if opts.Datacenter != nil {
-		if opts.Datacenter.ID != 0 {
-			reqBody.Datacenter = strconv.FormatInt(opts.Datacenter.ID, 10) // nolint:staticcheck // Deprecated
-		} else {
-			reqBody.Datacenter = opts.Datacenter.Name // nolint:staticcheck // Deprecated
 		}
 	}
 	if opts.PlacementGroup != nil {
