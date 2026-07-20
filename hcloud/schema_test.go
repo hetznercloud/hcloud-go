@@ -883,7 +883,11 @@ func TestLoadBalancerTypeSchema(t *testing.T) {
 		"max_services": 3,
 		"max_targets": 25,
 		"max_assigned_certificates": 10,
-		"deprecated": "2016-01-30T23:50:00+00:00",
+		"deprecation": {
+			"unavailable_after": "2016-04-30T23:50:00Z",
+			"announced": "2016-01-30T23:50:00Z"
+		},
+		"deprecated": "2016-01-30T23:50:00Z",
 		"prices": [
 			{
 				"location": "fsn1",

@@ -5,36 +5,90 @@ import (
 	"encoding/json"
 	"net/http"
 	"testing"
+	"time"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 func TestLoadBalancerTypeClient(t *testing.T) {
 	t.Run("GetByID", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
+		ctx, server, client := makeTestUtils(t)
 
-		env.Mux.HandleFunc("/load_balancer_types/1", func(w http.ResponseWriter, r *http.Request) {
-			json.NewEncoder(w).Encode(schema.LoadBalancerTypeGetResponse{
-				LoadBalancerType: schema.LoadBalancerType{
-					ID: 1,
-				},
-			})
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/load_balancer_types/42",
+				Status: 200,
+				JSONRaw: `
+				{
+					"load_balancer_type": {
+						"id": 42,
+						"name": "lb11",
+						"description": "LB11",
+						"max_connections": 20000,
+						"max_services": 5,
+						"max_targets": 25,
+						"max_assigned_certificates": 10,
+						"deprecation": {
+							"unavailable_after": "2023-09-01T00:00:00Z",
+							"announced": "2023-06-01T00:00:00Z"
+						},
+						"prices": [
+							{
+								"location": "fsn1",
+								"price_hourly": {
+									"net": "1.0000",
+									"gross": "1.1900"
+								},
+								"price_monthly": {
+									"net": "1.0000",
+									"gross": "1.1900"
+								},
+								"included_traffic": 654321,
+								"price_per_tb_traffic": {
+									"net": "1.0000",
+									"gross": "1.1900"
+								}
+							}
+						]
+					}
+				}`,
+			},
 		})
 
-		ctx := context.Background()
-		loadBalancerType, _, err := env.Client.LoadBalancerType.GetByID(ctx, 1)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if loadBalancerType == nil {
-			t.Fatal("no load balancer type")
-		}
-		if loadBalancerType.ID != 1 {
-			t.Errorf("unexpected load balancer type ID: %v", loadBalancerType.ID)
-		}
+		result, _, err := client.LoadBalancerType.GetByID(ctx, 42)
+		require.NoError(t, err)
+		require.NotNil(t, result)
+		assert.Equal(t, int64(42), result.ID)
+		assert.Equal(t, "lb11", result.Name)
+		assert.Equal(t, "LB11", result.Description)
+		assert.Equal(t, 20000, result.MaxConnections)
+		assert.Equal(t, 5, result.MaxServices)
+		assert.Equal(t, 25, result.MaxTargets)
+		assert.Equal(t, 10, result.MaxAssignedCertificates)
+		assert.NotNil(t, result.Deprecation)
+		assert.Equal(t, "2023-06-01T00:00:00Z", result.Deprecation.Announced.Format(time.RFC3339))
+		assert.Equal(t, "2023-09-01T00:00:00Z", result.Deprecation.UnavailableAfter.Format(time.RFC3339))
+		assert.NotNil(t, result.Deprecated)
+		assert.Equal(t, "2023-06-01T00:00:00Z", *result.Deprecated)
 
 		t.Run("via Get", func(t *testing.T) {
+			env := newTestEnv()
+			defer env.Teardown()
+
+			env.Mux.HandleFunc("/load_balancer_types/1", func(w http.ResponseWriter, r *http.Request) {
+				json.NewEncoder(w).Encode(schema.LoadBalancerTypeGetResponse{
+					LoadBalancerType: schema.LoadBalancerType{
+						ID: 1,
+					},
+				})
+			})
+
+			ctx := context.Background()
+
 			loadBalancerType, _, err := env.Client.LoadBalancerType.Get(ctx, "1")
 			if err != nil {
 				t.Fatal(err)

@@ -57,3 +57,4 @@ func (o DeprecatableResource) DeprecationAnnounced() time.Time {
 
 // Make sure that all expected Resources actually implement the interface.
 var _ Deprecatable = ServerType{}
+var _ Deprecatable = LoadBalancerType{}
