@@ -1,5 +1,41 @@
 # Changelog
 
+## [v2.45.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.45.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.44.0...v2.45.0)
+
+### Removed deprecated Datacenter property from Server and PrimaryIP
+
+Removed the deprecated Datacenter property from the Server and PrimaryIP resources. Since the property was already removed from the Hetzner Cloud API, we do not consider this a breaking change (see [changelog entry](https://docs.hetzner.cloud/changelog#2026-07-01-removing-datacenters)).
+
+> [!IMPORTANT]
+> **Action required:** Please update all code that accesses `Server.Datacenter` or `PrimaryIP.Datacenter` to use the `Location` property instead, as shown below.
+
+**Before:**
+
+```go
+server, _, _ := client.Server.GetByID(ctx, 42)
+fmt.Println(server.Datacenter.Location.Name)
+
+primaryIP, _, _ := client.PrimaryIP.GetByID(ctx, 7)
+fmt.Println(primaryIP.Datacenter.Location.Name)
+```
+
+**After:**
+
+```go
+server, _, _ := client.Server.GetByID(ctx, 42)
+fmt.Println(server.Location.Name)
+
+primaryIP, _, _ := client.PrimaryIP.GetByID(ctx, 7)
+fmt.Println(primaryIP.Location.Name)
+```
+
+### Features
+
+- **action**: add missing ActionResourceType constants (#862) ([77a6fae](https://github.com/hetznercloud/hcloud-go/commit/77a6faebba23c605f04ef4ab0b026402b9132ed1))
+- remove datacenter property from server and primary_ip (#890) ([298cccc](https://github.com/hetznercloud/hcloud-go/commit/298cccc5077eb6f93bd0706427aaf37911efb7e6))
+
 ## [v2.44.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.44.0)
 
 ### Datacenters resource is now deprecated
