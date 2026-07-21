@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.46.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.46.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.45.0...v2.46.0)
+
+### Features
+
+- add deprecation info to load balancer type (#896) ([0bb30b2](https://github.com/hetznercloud/hcloud-go/commit/0bb30b2d7536e047da670b4b75f16c6a6c394a78))
+
 ## [v2.45.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.45.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.44.0...v2.45.0)
