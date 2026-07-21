@@ -83,6 +83,7 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend stringSlicePtrFromStringSlice
 // goverter:extend locationFromServerTypeLocationSchema
 // goverter:extend schemaPtrFromDatacenterServerTypes
+// goverter:extend deprecatedStrFromDeprecationSchema
 type converter interface {
 
 	// goverter:map Error.Code ErrorCode
@@ -218,6 +219,7 @@ type converter interface {
 	SchemaFromLoadBalancer(*LoadBalancer) schema.LoadBalancer
 
 	// goverter:map Prices Pricings
+	// goverter:map DeprecatableResource.Deprecation Deprecated | deprecatedStrFromDeprecationSchema
 	LoadBalancerTypeFromSchema(schema.LoadBalancerType) *LoadBalancerType
 
 	// goverter:map Pricings Prices
@@ -1062,6 +1064,14 @@ func mapZeroFloat32ToNil(f float32) *float32 {
 
 func isDeprecationNotNil(d *DeprecationInfo) bool {
 	return d != nil
+}
+
+func deprecatedStrFromDeprecationSchema(d *schema.DeprecationInfo) *string {
+	if d != nil {
+		value := d.Announced.Format(time.RFC3339)
+		return &value
+	}
+	return nil
 }
 
 // int64SlicePtrFromCertificatePtrSlice is needed so that a nil slice is mapped to nil instead of &nil.

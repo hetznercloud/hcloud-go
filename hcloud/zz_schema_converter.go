@@ -304,7 +304,8 @@ func (c *converterImpl) LoadBalancerTypeFromSchema(source schema.LoadBalancerTyp
 			hcloudLoadBalancerType.Pricings[i] = c.LoadBalancerTypeLocationPricingFromSchema(source.Prices[i])
 		}
 	}
-	hcloudLoadBalancerType.Deprecated = source.Deprecated
+	hcloudLoadBalancerType.DeprecatableResource = c.schemaDeprecatableResourceToHcloudDeprecatableResource(source.DeprecatableResource)
+	hcloudLoadBalancerType.Deprecated = deprecatedStrFromDeprecationSchema(source.DeprecatableResource.Deprecation)
 	return &hcloudLoadBalancerType
 }
 func (c *converterImpl) LoadBalancerTypeLocationPricingFromSchema(source schema.PricingLoadBalancerTypePrice) LoadBalancerTypeLocationPricing {
@@ -789,6 +790,7 @@ func (c *converterImpl) SchemaFromLoadBalancerType(source *LoadBalancerType) sch
 				schemaLoadBalancerType.Prices[i] = c.SchemaFromLoadBalancerTypeLocationPricing((*source).Pricings[i])
 			}
 		}
+		schemaLoadBalancerType.DeprecatableResource = c.hcloudDeprecatableResourceToSchemaDeprecatableResource((*source).DeprecatableResource)
 		schemaLoadBalancerType.Deprecated = (*source).Deprecated
 	}
 	return schemaLoadBalancerType
