@@ -29,6 +29,7 @@ jobs:
             --cache
             --max-cache-age 2d
             --include-fragments
+            ${{ startsWith(github.head_ref, 'releaser-pleaser--') && '--exclude https://github.com/hetznercloud/hcloud-go' || '' }}
             --exclude 'api.hetzner.cloud'
             --exclude 'api.hetzner.com'
             --exclude 'https://docs.hetzner.cloud/reference/cloud#'
