@@ -1,5 +1,14 @@
 # Changelog
 
+## [v2.47.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.47.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.46.0...v2.47.0)
+
+### Features
+
+- **exp**: add LoadBalancerTypeMessage to deprecationutil (#899) ([f5928f8](https://github.com/hetznercloud/hcloud-go/commit/f5928f8db9736b735c06bd9375c76e59cbdbd86a))
+- **metadata**: add user agent header (#866) ([b8a6787](https://github.com/hetznercloud/hcloud-go/commit/b8a6787a9d41c69b280542c3d43dbf0d62090d1e))
+
 ## [v2.46.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.46.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.45.0...v2.46.0)
