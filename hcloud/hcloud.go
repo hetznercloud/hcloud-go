@@ -80,5 +80,7 @@ breaking changes.
 */
 package hcloud
 
+import "github.com/hetznercloud/hcloud-go/v2/hcloud/internal/version"
+
 // Version is the library's version following Semantic Versioning.
-const Version = "2.46.0" // x-releaser-pleaser-version
+const Version = version.Version
