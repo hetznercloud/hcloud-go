@@ -20,7 +20,12 @@ func TestImageIsDeprecated(t *testing.T) {
 
 	t.Run("deprecated", func(t *testing.T) {
 		image := &Image{
-			Deprecated: time.Now(),
+			DeprecatableResource: DeprecatableResource{
+				Deprecation: &DeprecationInfo{
+					Announced:        time.Now().AddDate(0, 0, -1),
+					UnavailableAfter: time.Now().AddDate(0, 3, -1),
+				},
+			},
 		}
 		if !image.IsDeprecated() {
 			t.Errorf("unexpected value for IsDeprecated: %v", image.IsDeprecated())

@@ -655,6 +655,11 @@ func intISOFromSchema(in schema.ISO) ISO {
 	return c.intISOFromSchema(in)
 }
 
+// intImageFromSchema converts schema.Image to Image.
+func intImageFromSchema(in schema.Image) Image {
+	return c.intImageFromSchema(in)
+}
+
 // intSchemaFromImage converts Image to schema.Image.
 func intSchemaFromImage(in Image) schema.Image {
 	return c.intSchemaFromImage(in)
