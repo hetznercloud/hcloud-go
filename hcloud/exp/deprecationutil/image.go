@@ -13,10 +13,7 @@ import (
 // Experimental: `exp` package is experimental, breaking changes may occur within minor releases.
 func ImageMessage(image *hcloud.Image) (string, bool) {
 	if image.IsDeprecated() {
-		// Images are unavailable 3 months after the announcement
-		unavailableAfter := image.Deprecated.AddDate(0, 3, 0)
-
-		if time.Now().After(unavailableAfter) {
+		if time.Now().After(image.UnavailableAfter()) {
 			return fmt.Sprintf(
 				"Image %q is unavailable and can no longer be ordered",
 				image.Name,
@@ -25,7 +22,7 @@ func ImageMessage(image *hcloud.Image) (string, bool) {
 		return fmt.Sprintf(
 			"Image %q is deprecated and will no longer be available for order as of %s",
 			image.Name,
-			unavailableAfter.Format(time.DateOnly),
+			image.UnavailableAfter().Format(time.DateOnly),
 		), false
 	}
 

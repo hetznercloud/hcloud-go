@@ -774,7 +774,11 @@ func TestImageSchema(t *testing.T) {
 		"protection": {
 			"delete": true
 		},
-		"deprecated": "2018-02-28T00:00:00+00:00",
+		"deprecated": "2018-02-28T00:00:00Z",
+		"deprecation": {
+			"announced": "2018-02-28T00:00:00Z",
+			"unavailable_after": "2018-05-28T00:00:00Z"
+		},
 		"deleted": "2016-01-30T23:55:01+00:00",
 		"labels": {
 			"key": "value",

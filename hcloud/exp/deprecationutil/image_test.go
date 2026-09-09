@@ -20,9 +20,16 @@ func TestImageMessage(t *testing.T) {
 	})
 
 	t.Run("deprecated", func(t *testing.T) {
-		deprecated := time.Now().UTC().AddDate(0, 0, -1)
+		now := time.Now()
+		deprecated := now.AddDate(0, 0, -1)
+		unavailable := deprecated.AddDate(0, 3, 0)
 
-		o := &hcloud.Image{Name: "debian-13", Deprecated: deprecated}
+		o := &hcloud.Image{Name: "debian-13", DeprecatableResource: hcloud.DeprecatableResource{
+			Deprecation: &hcloud.DeprecationInfo{
+				Announced:        deprecated,
+				UnavailableAfter: unavailable,
+			},
+		}}
 
 		message, isUnavailable := ImageMessage(o)
 		assert.Equal(t, fmt.Sprintf(`Image "debian-13" is deprecated and will no longer be available for order as of %s`, deprecated.AddDate(0, 3, 0).Format(time.DateOnly)), message)
@@ -30,9 +37,16 @@ func TestImageMessage(t *testing.T) {
 	})
 
 	t.Run("unavailable", func(t *testing.T) {
-		deprecated := time.Now().UTC().AddDate(0, -3, -1)
+		now := time.Now()
+		deprecated := now.AddDate(0, -3, -1)
+		unavailable := now.AddDate(0, 0, -1)
 
-		o := &hcloud.Image{Name: "debian-13", Deprecated: deprecated}
+		o := &hcloud.Image{Name: "debian-13", DeprecatableResource: hcloud.DeprecatableResource{
+			Deprecation: &hcloud.DeprecationInfo{
+				Announced:        deprecated,
+				UnavailableAfter: unavailable,
+			},
+		}}
 
 		message, isUnavailable := ImageMessage(o)
 		assert.Equal(t, `Image "debian-13" is unavailable and can no longer be ordered`, message)

@@ -84,6 +84,8 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend locationFromServerTypeLocationSchema
 // goverter:extend schemaPtrFromDatacenterServerTypes
 // goverter:extend deprecatedStrFromDeprecationSchema
+// goverter:extend deprecatedTimeFromDeprecationSchema
+// goverter:extend deprecatedTimePtrSchemaFromDeprecation
 type converter interface {
 
 	// goverter:map Error.Code ErrorCode
@@ -182,10 +184,14 @@ type converter interface {
 
 	ImageFromSchema(schema.Image) *Image
 
+	// goverter:map DeprecatableResource.Deprecation Deprecated | deprecatedTimeFromDeprecationSchema
+	intImageFromSchema(schema.Image) Image
+
 	SchemaFromImage(*Image) schema.Image
 
 	// Needed because of how goverter works internally, see https://github.com/jmattheis/goverter/issues/114
 	// goverter:map ImageSize | mapZeroFloat32ToNil
+	// goverter:map DeprecatableResource.Deprecation Deprecated | deprecatedTimePtrSchemaFromDeprecation
 	intSchemaFromImage(Image) schema.Image
 
 	// goverter:ignore Currency
@@ -1066,12 +1072,26 @@ func isDeprecationNotNil(d *DeprecationInfo) bool {
 	return d != nil
 }
 
+func deprecatedTimePtrSchemaFromDeprecation(d *DeprecationInfo) *time.Time {
+	if d != nil {
+		return &d.Announced
+	}
+	return nil
+}
+
 func deprecatedStrFromDeprecationSchema(d *schema.DeprecationInfo) *string {
 	if d != nil {
 		value := d.Announced.Format(time.RFC3339)
 		return &value
 	}
 	return nil
+}
+
+func deprecatedTimeFromDeprecationSchema(d *schema.DeprecationInfo) time.Time {
+	if d != nil {
+		return d.Announced
+	}
+	return time.Time{}
 }
 
 // int64SlicePtrFromCertificatePtrSlice is needed so that a nil slice is mapped to nil instead of &nil.
