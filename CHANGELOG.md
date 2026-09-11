@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.48.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.48.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.47.0...v2.48.0)
+
+### Features
+
+- add deprecation info to image (#919) ([575d0a3](https://github.com/hetznercloud/hcloud-go/commit/575d0a3d50947be24c9c42598c09fa73d42e0bc7))
+
 ## [v2.47.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.47.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.46.0...v2.47.0)
