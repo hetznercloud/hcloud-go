@@ -21,7 +21,7 @@ tool github.com/vburenin/ifacemaker -f pricing.go -s PricingClient -i IPricingCl
 tool github.com/vburenin/ifacemaker -f server.go -s ServerClient -i IServerClient -p hcloud -o zz_server_client_iface.go
 tool github.com/vburenin/ifacemaker -f server_type.go -s ServerTypeClient -i IServerTypeClient -p hcloud -o zz_server_type_client_iface.go
 tool github.com/vburenin/ifacemaker -f ssh_key.go -s SSHKeyClient -i ISSHKeyClient -p hcloud -o zz_ssh_key_client_iface.go
-tool github.com/vburenin/ifacemaker -f volume.go -s VolumeClient -i IVolumeClient -p hcloud -o zz_volume_client_iface.go
+tool github.com/vburenin/ifacemaker -f volume.go -f volume_snapshot.go -s VolumeClient -i IVolumeClient -p hcloud -o zz_volume_client_iface.go
 tool github.com/vburenin/ifacemaker -f load_balancer.go -s LoadBalancerClient -i ILoadBalancerClient -p hcloud -o zz_load_balancer_client_iface.go
 tool github.com/vburenin/ifacemaker -f load_balancer_type.go -s LoadBalancerTypeClient -i ILoadBalancerTypeClient -p hcloud -o zz_load_balancer_type_client_iface.go
 tool github.com/vburenin/ifacemaker -f certificate.go -s CertificateClient -i ICertificateClient -p hcloud -o zz_certificate_client_iface.go

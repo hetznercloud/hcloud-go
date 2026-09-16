@@ -151,6 +151,7 @@ func (c *VolumeClient) AllWithOpts(ctx context.Context, opts VolumeListOpts) ([]
 type VolumeCreateOpts struct {
 	Name      string
 	Size      int
+	Snapshot  *VolumeSnapshot
 	Server    *Server
 	Location  *Location
 	Labels    map[string]string
@@ -202,6 +203,9 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 		Size:      opts.Size,
 		Automount: opts.Automount,
 		Format:    opts.Format,
+	}
+	if opts.Snapshot != nil {
+		reqBody.Snapshot = Ptr(opts.Snapshot.ID)
 	}
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels

@@ -40,4 +40,18 @@ type IVolumeClient interface {
 	ChangeProtection(ctx context.Context, volume *Volume, opts VolumeChangeProtectionOpts) (*Action, *Response, error)
 	// Resize changes the size of a volume.
 	Resize(ctx context.Context, volume *Volume, size int) (*Action, *Response, error)
+	// GetSnapshotByID returns a volume snapshot by ID. A missing snapshot returns nil.
+	GetSnapshotByID(ctx context.Context, id int64) (*VolumeSnapshot, *Response, error)
+	// GetSnapshotByName returns the first volume snapshot with name. A missing snapshot returns nil.
+	GetSnapshotByName(ctx context.Context, name string) (*VolumeSnapshot, *Response, error)
+	// ListSnapshots returns one page of block volume snapshots.
+	ListSnapshots(ctx context.Context, opts VolumeSnapshotListOpts) ([]*VolumeSnapshot, *Response, error)
+	// AllSnapshots returns all block volume snapshots.
+	AllSnapshots(ctx context.Context) ([]*VolumeSnapshot, error)
+	// AllSnapshotsWithOpts returns all block volume snapshots matching opts.
+	AllSnapshotsWithOpts(ctx context.Context, opts VolumeSnapshotListOpts) ([]*VolumeSnapshot, error)
+	// CreateSnapshot creates a point-in-time snapshot of volume.
+	CreateSnapshot(ctx context.Context, volume *Volume, opts VolumeSnapshotCreateOpts) (VolumeSnapshotCreateResult, *Response, error)
+	// DeleteSnapshot deletes a block volume snapshot.
+	DeleteSnapshot(ctx context.Context, snapshot *VolumeSnapshot) (*Action, *Response, error)
 }

@@ -22,6 +22,7 @@ type Volume struct {
 type VolumeCreateRequest struct {
 	Name      string             `json:"name"`
 	Size      int                `json:"size"`
+	Snapshot  *int64             `json:"snapshot,omitempty"`
 	Server    *int64             `json:"server,omitempty"`
 	Location  *IDOrName          `json:"location,omitempty"`
 	Labels    *map[string]string `json:"labels,omitempty"`
