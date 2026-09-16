@@ -20,7 +20,7 @@ require (
 	github.com/huandu/xstrings v1.3.2 // indirect
 	github.com/imdario/mergo v0.3.12 // indirect
 	github.com/jessevdk/go-flags v1.6.1 // indirect
-	github.com/jmattheis/goverter v1.10.0 // indirect
+	github.com/jmattheis/goverter v1.11.0 // indirect
 	github.com/mitchellh/copystructure v1.1.2 // indirect
 	github.com/mitchellh/reflectwalk v1.0.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
