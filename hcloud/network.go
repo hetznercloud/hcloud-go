@@ -478,7 +478,7 @@ func (c *NetworkClient) ChangeProtection(ctx context.Context, network *Network, 
 	return ActionFromSchema(respBody.Action), resp, nil
 }
 
-// NetworkMemberListOpts specifies options for listing members of a network.
+// NetworkMemberListOpts specifies options for listing members of a [Network].
 type NetworkMemberListOpts struct {
 	ListOpts
 	Type   []NetworkMemberType
@@ -504,7 +504,7 @@ func (l NetworkMemberListOpts) Values() url.Values {
 	return vals
 }
 
-// ListMembers returns a list of members attached to a specific network.
+// ListMembers returns a list of [NetworkMember] attached to a specific [Network] for the given options.
 //
 // See https://docs.hetzner.cloud/reference/cloud#tag/networks/list_network_members
 func (c *NetworkClient) ListMembers(ctx context.Context, network *Network, opts NetworkMemberListOpts) ([]*NetworkMember, *Response, error) {
@@ -521,14 +521,7 @@ func (c *NetworkClient) ListMembers(ctx context.Context, network *Network, opts 
 	return allFromSchemaFunc(respBody.Members, NetworkMemberFromSchema), resp, nil
 }
 
-// AllMembers returns all members attached to a specific network.
-//
-// See https://docs.hetzner.cloud/reference/cloud#tag/networks/list_network_members
-func (c *NetworkClient) AllMembers(ctx context.Context, network *Network) ([]*NetworkMember, error) {
-	return c.AllMembersWithOpts(ctx, network, NetworkMemberListOpts{})
-}
-
-// AllMembersWithOpts returns all members attached to a specific network for the given options.
+// AllMembersWithOpts returns all [NetworkMember] attached to a specific [Network] for the given options.
 //
 // See https://docs.hetzner.cloud/reference/cloud#tag/networks/list_network_members
 func (c *NetworkClient) AllMembersWithOpts(ctx context.Context, network *Network, opts NetworkMemberListOpts) ([]*NetworkMember, error) {
@@ -539,4 +532,11 @@ func (c *NetworkClient) AllMembersWithOpts(ctx context.Context, network *Network
 		opts.Page = page
 		return c.ListMembers(ctx, network, opts)
 	})
+}
+
+// AllMembers returns all [NetworkMember] attached to a specific [Network].
+//
+// See https://docs.hetzner.cloud/reference/cloud#tag/networks/list_network_members
+func (c *NetworkClient) AllMembers(ctx context.Context, network *Network) ([]*NetworkMember, error) {
+	return c.AllMembersWithOpts(ctx, network, NetworkMemberListOpts{})
 }
