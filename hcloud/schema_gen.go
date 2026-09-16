@@ -218,6 +218,10 @@ type converter interface {
 
 	SchemaFromNetworkRoute(NetworkRoute) schema.NetworkRoute
 
+	NetworkMemberFromSchema(schema.NetworkMember) *NetworkMember
+
+	SchemaFromNetworkMember(*NetworkMember) schema.NetworkMember
+
 	LoadBalancerFromSchema(schema.LoadBalancer) *LoadBalancer
 
 	// goverter:map OutgoingTraffic | mapZeroUint64ToNil
