@@ -7,8 +7,10 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -737,4 +739,104 @@ func TestNetworkClientChangeProtection(t *testing.T) {
 			t.Errorf("unexpected action ID: %v", action.ID)
 		}
 	})
+}
+
+func TestNetworkClientListMembers(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "GET", Path: "/networks/1/members?status=attaching&subnet=10.0.1.0%2F24&type=server",
+			Status: 200,
+			JSONRaw: `
+			{
+				"members": [
+					{
+						"type": "server",
+						"id": 123,
+						"ip": "10.0.1.2",
+						"status": "attaching",
+						"alias_ips": [
+							"10.0.1.20"
+						],
+						"subnet": "10.0.1.0/24"
+					},
+					{
+						"type": "load_balancer",
+						"id": 43,
+						"ip": "10.0.1.3",
+						"status": "attaching",
+						"alias_ips": [],
+						"subnet": "10.0.1.0/24"
+					}
+				]
+			}
+			`,
+		},
+	})
+
+	members, _, err := client.Network.ListMembers(ctx, &Network{ID: 1}, NetworkMemberListOpts{
+		Status: []NetworkMemberStatus{NetworkMemberStatusAttaching},
+		Type:   []NetworkMemberType{NetworkMemberTypeServer},
+		Subnet: []*net.IPNet{{IP: net.IPv4(10, 0, 1, 0), Mask: net.CIDRMask(24, 32)}},
+	})
+	require.NoError(t, err)
+	require.NotEmpty(t, members)
+	require.Len(t, members, 2)
+
+	member := members[0]
+	assert.Equal(t, NetworkMemberTypeServer, member.Type)
+	assert.Equal(t, int64(123), member.ID)
+	assert.Equal(t, net.IPv4(10, 0, 1, 2), member.IP)
+	assert.Equal(t, NetworkMemberStatusAttaching, member.Status)
+	assert.Equal(t, []net.IP{net.IPv4(10, 0, 1, 20)}, member.AliasIPs)
+	assert.Equal(t, "10.0.1.0/24", member.Subnet.String())
+}
+
+func TestNetworkClientAllMembers(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "GET", Path: "/networks/1/members?page=1&per_page=50",
+			Status: 200,
+			JSONRaw: `{
+				"members": [
+					{ "type": "server", "id": 123, "ip": "10.0.1.2", "status": "ok", "subnet": "10.0.1.0/24" }
+				],
+				"meta": { "pagination": { "page": 1, "per_page": 50 }}
+			}`,
+		},
+	})
+
+	members, err := client.Network.AllMembers(ctx, &Network{ID: 1})
+	require.NoError(t, err)
+	require.Len(t, members, 1)
+	assert.Equal(t, NetworkMemberTypeServer, members[0].Type)
+	assert.Equal(t, int64(123), members[0].ID)
+}
+
+func TestNetworkClientAllMembersWithOpts(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "GET", Path: "/networks/1/members?page=1&per_page=50&type=server",
+			Status: 200,
+			JSONRaw: `{
+				"members": [
+					{ "type": "server", "id": 123, "ip": "10.0.1.2", "status": "ok", "subnet": "10.0.1.0/24" }
+				],
+				"meta": { "pagination": { "page": 1, "per_page": 50 }}
+			}`,
+		},
+	})
+
+	members, err := client.Network.AllMembersWithOpts(ctx, &Network{ID: 1}, NetworkMemberListOpts{
+		Type: []NetworkMemberType{NetworkMemberTypeServer},
+	})
+	require.NoError(t, err)
+	require.Len(t, members, 1)
+	assert.Equal(t, NetworkMemberTypeServer, members[0].Type)
+	assert.Equal(t, int64(123), members[0].ID)
 }

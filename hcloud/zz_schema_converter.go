@@ -341,6 +341,22 @@ func (c *converterImpl) NetworkFromSchema(source schema.Network) *Network {
 	hcloudNetwork.ExposeRoutesToVSwitch = source.ExposeRoutesToVSwitch
 	return &hcloudNetwork
 }
+func (c *converterImpl) NetworkMemberFromSchema(source schema.NetworkMember) *NetworkMember {
+	var hcloudNetworkMember NetworkMember
+	hcloudNetworkMember.Type = NetworkMemberType(source.Type)
+	hcloudNetworkMember.ID = source.ID
+	hcloudNetworkMember.IP = ipFromString(source.IP)
+	hcloudNetworkMember.Status = NetworkMemberStatus(source.Status)
+	if source.AliasIPs != nil {
+		hcloudNetworkMember.AliasIPs = make([]net.IP, len(source.AliasIPs))
+		for i := 0; i < len(source.AliasIPs); i++ {
+			hcloudNetworkMember.AliasIPs[i] = ipFromString(source.AliasIPs[i])
+		}
+	}
+	netIPNet := ipNetFromString(source.Subnet)
+	hcloudNetworkMember.Subnet = &netIPNet
+	return &hcloudNetworkMember
+}
 func (c *converterImpl) NetworkRouteFromSchema(source schema.NetworkRoute) NetworkRoute {
 	var hcloudNetworkRoute NetworkRoute
 	netIPNet := ipNetFromString(source.Destination)
@@ -836,6 +852,23 @@ func (c *converterImpl) SchemaFromNetwork(source *Network) schema.Network {
 		schemaNetwork.ExposeRoutesToVSwitch = (*source).ExposeRoutesToVSwitch
 	}
 	return schemaNetwork
+}
+func (c *converterImpl) SchemaFromNetworkMember(source *NetworkMember) schema.NetworkMember {
+	var schemaNetworkMember schema.NetworkMember
+	if source != nil {
+		schemaNetworkMember.Type = string((*source).Type)
+		schemaNetworkMember.ID = (*source).ID
+		schemaNetworkMember.IP = stringFromIP((*source).IP)
+		schemaNetworkMember.Status = string((*source).Status)
+		if (*source).AliasIPs != nil {
+			schemaNetworkMember.AliasIPs = make([]string, len((*source).AliasIPs))
+			for i := 0; i < len((*source).AliasIPs); i++ {
+				schemaNetworkMember.AliasIPs[i] = stringFromIP((*source).AliasIPs[i])
+			}
+		}
+		schemaNetworkMember.Subnet = c.pNetIPNetToString((*source).Subnet)
+	}
+	return schemaNetworkMember
 }
 func (c *converterImpl) SchemaFromNetworkRoute(source NetworkRoute) schema.NetworkRoute {
 	var schemaNetworkRoute schema.NetworkRoute

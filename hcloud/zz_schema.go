@@ -115,6 +115,11 @@ func NetworkFromSchema(in schema.Network) *Network {
 	return c.NetworkFromSchema(in)
 }
 
+// NetworkMemberFromSchema converts schema.NetworkMember to *NetworkMember.
+func NetworkMemberFromSchema(in schema.NetworkMember) *NetworkMember {
+	return c.NetworkMemberFromSchema(in)
+}
+
 // NetworkRouteFromSchema converts schema.NetworkRoute to NetworkRoute.
 func NetworkRouteFromSchema(in schema.NetworkRoute) NetworkRoute {
 	return c.NetworkRouteFromSchema(in)
@@ -288,6 +293,11 @@ func SchemaFromLocation(in *Location) schema.Location {
 // SchemaFromNetwork converts *Network to schema.Network.
 func SchemaFromNetwork(in *Network) schema.Network {
 	return c.SchemaFromNetwork(in)
+}
+
+// SchemaFromNetworkMember converts *NetworkMember to schema.NetworkMember.
+func SchemaFromNetworkMember(in *NetworkMember) schema.NetworkMember {
+	return c.SchemaFromNetworkMember(in)
 }
 
 // SchemaFromNetworkRoute converts NetworkRoute to schema.NetworkRoute.
