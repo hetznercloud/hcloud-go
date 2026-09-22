@@ -86,7 +86,7 @@ func TestZoneGetRRSet(t *testing.T) {
 		require.Equal(t, "www/A", result.ID)
 		require.Equal(t, "www", result.Name)
 		require.Equal(t, ZoneRRSetTypeA, result.Type)
-		require.Equal(t, Ptr(3600), result.TTL)
+		require.Equal(t, new(3600), result.TTL)
 		require.Equal(t, map[string]string{"key": "value"}, result.Labels)
 		require.True(t, result.Protection.Change)
 		require.Equal(t, []ZoneRRSetRecord{
@@ -270,7 +270,7 @@ func TestZoneCreateRRSet(t *testing.T) {
 		ZoneRRSetCreateOpts{
 			Name:   "www",
 			Type:   ZoneRRSetTypeA,
-			TTL:    Ptr(3600),
+			TTL:    new(3600),
 			Labels: map[string]string{"key": "value"},
 			Records: []ZoneRRSetRecord{
 				{Value: "198.51.100.1", Comment: "web server"},
@@ -417,7 +417,7 @@ func TestZoneChangeRRSetProtection(t *testing.T) {
 			ID:   "www/A",
 		},
 		ZoneRRSetChangeProtectionOpts{
-			Change: Ptr(true),
+			Change: new(true),
 		},
 	)
 	require.NoError(t, err)
@@ -451,7 +451,7 @@ func TestZoneChangeRRSetTTL(t *testing.T) {
 			ID:   "www/A",
 		},
 		ZoneRRSetChangeTTLOpts{
-			TTL: Ptr(3600),
+			TTL: new(3600),
 		},
 	)
 	require.NoError(t, err)

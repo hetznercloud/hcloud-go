@@ -254,10 +254,10 @@ func TestZoneCreate(t *testing.T) {
 		result, resp, err := client.Zone.Create(ctx, ZoneCreateOpts{
 			Name:   "example.com",
 			Mode:   ZoneModePrimary,
-			TTL:    Ptr(10800),
+			TTL:    new(10800),
 			Labels: map[string]string{"key": "value"},
 			RRSets: []ZoneCreateOptsRRSet{
-				{Name: "www", Type: "A", TTL: Ptr(3600), Records: []ZoneRRSetRecord{
+				{Name: "www", Type: "A", TTL: new(3600), Records: []ZoneRRSetRecord{
 					{Value: "78.34.234.13"},
 					{Value: "78.34.234.14", Comment: "Web server"},
 				}},
@@ -300,7 +300,7 @@ func TestZoneCreate(t *testing.T) {
 		result, resp, err := client.Zone.Create(ctx, ZoneCreateOpts{
 			Name:     "example.com",
 			Mode:     ZoneModePrimary,
-			TTL:      Ptr(10800),
+			TTL:      new(10800),
 			Labels:   map[string]string{"key": "value"},
 			Zonefile: "content\ncontent",
 		})
@@ -345,7 +345,7 @@ func TestZoneCreate(t *testing.T) {
 		result, resp, err := client.Zone.Create(ctx, ZoneCreateOpts{
 			Name:   "example.com",
 			Mode:   ZoneModeSecondary,
-			TTL:    Ptr(10800),
+			TTL:    new(10800),
 			Labels: map[string]string{"key": "value"},
 			PrimaryNameservers: []ZoneCreateOptsPrimaryNameserver{
 				{Address: "78.34.234.13"},
@@ -524,7 +524,7 @@ func TestZoneChangeProtection(t *testing.T) {
 	result, resp, err := client.Zone.ChangeProtection(ctx,
 		&Zone{Name: "example.com"},
 		ZoneChangeProtectionOpts{
-			Delete: Ptr(true),
+			Delete: new(true),
 		},
 	)
 	require.NoError(t, err)

@@ -241,8 +241,8 @@ func TestStorageBoxClientCreate(t *testing.T) {
 			Labels:         map[string]string{"env": "test"},
 			SSHKeys:        []*SSHKey{{PublicKey: "ssh-rsa AAAAB3NzaC1yc2E..."}},
 			AccessSettings: &StorageBoxCreateOptsAccessSettings{
-				ReachableExternally: Ptr(true),
-				SSHEnabled:          Ptr(false),
+				ReachableExternally: new(true),
+				SSHEnabled:          new(false),
 			},
 		}
 
@@ -378,7 +378,7 @@ func TestStorageBoxClientChangeProtection(t *testing.T) {
 
 	storageBox := &StorageBox{ID: 42}
 
-	opts := StorageBoxChangeProtectionOpts{Delete: Ptr(true)}
+	opts := StorageBoxChangeProtectionOpts{Delete: new(true)}
 	action, _, err := client.StorageBox.ChangeProtection(ctx, storageBox, opts)
 	require.NoError(t, err, "ChangeProtection failed")
 	require.NotNil(t, action, "no action returned")
@@ -441,11 +441,11 @@ func TestStorageBoxUpdateAccessSettings(t *testing.T) {
 		})
 
 		opts := StorageBoxUpdateAccessSettingsOpts{
-			SambaEnabled:        Ptr(true),
-			SSHEnabled:          Ptr(false),
-			WebDAVEnabled:       Ptr(true),
-			ZFSEnabled:          Ptr(false),
-			ReachableExternally: Ptr(true),
+			SambaEnabled:        new(true),
+			SSHEnabled:          new(false),
+			WebDAVEnabled:       new(true),
+			ZFSEnabled:          new(false),
+			ReachableExternally: new(true),
 		}
 		action, _, err := client.StorageBox.UpdateAccessSettings(ctx, storageBox, opts)
 		require.NoError(t, err, "UpdateAccessSettings failed")
@@ -475,8 +475,8 @@ func TestStorageBoxUpdateAccessSettings(t *testing.T) {
 		})
 
 		opts := StorageBoxUpdateAccessSettingsOpts{
-			SambaEnabled: Ptr(true),
-			SSHEnabled:   Ptr(false),
+			SambaEnabled: new(true),
+			SSHEnabled:   new(false),
 		}
 		action, _, err := client.StorageBox.UpdateAccessSettings(ctx, storageBox, opts)
 		require.NoError(t, err, "UpdateAccessSettings failed")

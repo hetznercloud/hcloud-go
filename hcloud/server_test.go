@@ -566,7 +566,7 @@ func TestServersCreateWithoutSSHKeys(t *testing.T) {
 			Server: schema.Server{
 				ID: 1,
 			},
-			RootPassword: Ptr("test"),
+			RootPassword: new("test"),
 		})
 	})
 
@@ -624,7 +624,7 @@ func TestServersCreateWithVolumes(t *testing.T) {
 			{ID: 1},
 			{ID: 2},
 		},
-		Automount: Ptr(true),
+		Automount: new(true),
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -1003,7 +1003,7 @@ func TestServersCreateWithLabels(t *testing.T) {
 			Server: schema.Server{
 				ID: 1,
 			},
-			RootPassword: Ptr("test"),
+			RootPassword: new("test"),
 		})
 	})
 
@@ -1049,7 +1049,7 @@ func TestServersCreateWithoutStarting(t *testing.T) {
 		Name:             "test",
 		ServerType:       &ServerType{ID: 1},
 		Image:            &Image{ID: 2},
-		StartAfterCreate: Ptr(false),
+		StartAfterCreate: new(false),
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -1530,7 +1530,7 @@ func TestServerClientCreateImageWithOptions(t *testing.T) {
 	ctx := context.Background()
 	opts := &ServerCreateImageOpts{
 		Type:        ImageTypeBackup,
-		Description: Ptr("my backup"),
+		Description: new("my backup"),
 	}
 	result, _, err := env.Client.Server.CreateImage(ctx, &Server{ID: 1}, opts)
 	if err != nil {
@@ -1700,7 +1700,7 @@ func TestServerClientRebuildWithResult(t *testing.T) {
 				Action: schema.Action{
 					ID: 1,
 				},
-				RootPassword: Ptr("hetzner"),
+				RootPassword: new("hetzner"),
 			})
 		})
 
@@ -2007,8 +2007,8 @@ func TestServerClientChangeProtection(t *testing.T) {
 		})
 
 		opts := ServerChangeProtectionOpts{
-			Delete:  Ptr(true),
-			Rebuild: Ptr(true),
+			Delete:  new(true),
+			Rebuild: new(true),
 		}
 		action, _, err := env.Client.Server.ChangeProtection(ctx, server, opts)
 		if err != nil {

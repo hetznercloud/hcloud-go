@@ -806,10 +806,10 @@ func (c *LoadBalancerClient) AttachToNetwork(ctx context.Context, loadBalancer *
 		Network: opts.Network.ID,
 	}
 	if opts.IP != nil {
-		reqBody.IP = Ptr(opts.IP.String())
+		reqBody.IP = new(opts.IP.String())
 	}
 	if opts.IPRange != nil {
-		reqBody.IPRange = Ptr(opts.IPRange.String())
+		reqBody.IPRange = new(opts.IPRange.String())
 	}
 
 	respBody, resp, err := postRequest[schema.LoadBalancerActionAttachToNetworkResponse](ctx, c.client, reqPath, reqBody)

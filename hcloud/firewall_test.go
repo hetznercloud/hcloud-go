@@ -324,7 +324,7 @@ func TestFirewallClientUpdate(t *testing.T) {
 			t.Fatal(err)
 		}
 		expectedReqBody := schema.FirewallUpdateRequest{
-			Name: Ptr("test"),
+			Name: new("test"),
 			Labels: func() *map[string]string {
 				labels := map[string]string{"key": "value"}
 				return &labels
