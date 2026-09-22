@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.49.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.49.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.48.0...v2.49.0)
+
+### Features
+
+- list network members (#923) ([bfb335a](https://github.com/hetznercloud/hcloud-go/commit/bfb335ab1dac2dd1d3e618499ea28881cf2f8218))
+
 ## [v2.48.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.48.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.47.0...v2.48.0)
