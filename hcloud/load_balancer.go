@@ -48,14 +48,18 @@ type LoadBalancerPublicNet struct {
 
 // LoadBalancerPublicNetIPv4 represents a Load Balancer's public IPv4 address.
 type LoadBalancerPublicNetIPv4 struct {
-	IP     net.IP
-	DNSPtr string
+	ID      int64
+	IP      net.IP
+	Blocked bool
+	DNSPtr  string
 }
 
 // LoadBalancerPublicNetIPv6 represents a Load Balancer's public IPv6 address.
 type LoadBalancerPublicNetIPv6 struct {
-	IP     net.IP
-	DNSPtr string
+	ID      int64
+	IP      net.IP
+	Blocked bool
+	DNSPtr  string
 }
 
 // LoadBalancerPrivateNet represents a Load Balancer's private network.
@@ -400,6 +404,7 @@ type LoadBalancerCreateOpts struct {
 	Targets          []LoadBalancerCreateOptsTarget
 	Services         []LoadBalancerCreateOptsService
 	PublicInterface  *bool
+	PublicNet        *LoadBalancerCreateOptsPublicNet
 	Network          *Network
 }
 
@@ -411,6 +416,13 @@ type LoadBalancerCreateOptsTarget struct {
 	LabelSelector LoadBalancerCreateOptsTargetLabelSelector
 	IP            LoadBalancerCreateOptsTargetIP
 	UsePrivateIP  *bool
+}
+
+// LoadBalancerCreateOptsPublicNet holds options for specifying the public network
+// when creating a new Load Balancer.
+type LoadBalancerCreateOptsPublicNet struct {
+	IPv4 *PrimaryIP
+	IPv6 *PrimaryIP
 }
 
 // LoadBalancerCreateOptsTargetServer holds options for specifying a server target
