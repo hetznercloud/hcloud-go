@@ -515,13 +515,35 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 }
 
 // Delete deletes a Load Balancer.
+//
+// Deprecated: Use [LoadBalancerClient.DeleteWithResult] instead.
 func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalancer) (*Response, error) {
+	_, resp, err := c.DeleteWithResult(ctx, loadBalancer)
+	return resp, err
+}
+
+// LoadBalancerDeleteResult is the result of a delete [LoadBalancer] operation.
+type LoadBalancerDeleteResult struct {
+	Action *Action
+}
+
+// DeleteWithResult deletes a Load Balancer and returns an [Action].
+func (c *LoadBalancerClient) DeleteWithResult(ctx context.Context, loadBalancer *LoadBalancer) (LoadBalancerDeleteResult, *Response, error) {
 	const opPath = "/load_balancers/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
 
-	return deleteRequestNoResult(ctx, c.client, reqPath)
+	result := LoadBalancerDeleteResult{}
+
+	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
+	if err != nil {
+		return result, resp, err
+	}
+
+	result.Action = ActionFromSchema(respBody.Action)
+
+	return result, resp, nil
 }
 
 func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionAddTargetRequest) (*Action, *Response, error) {

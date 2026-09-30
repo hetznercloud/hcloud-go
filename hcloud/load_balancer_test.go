@@ -367,20 +367,41 @@ func TestLoadBalancerCreate(t *testing.T) {
 }
 
 func TestLoadBalancerDelete(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+	ctx, server, client := makeTestUtils(t)
 
-	env.Mux.HandleFunc("/load_balancers/1", func(w http.ResponseWriter, r *http.Request) {})
+	t.Run("with result", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "DELETE", Path: "/load_balancers/1",
+				Status: 201,
+				JSONRaw: `{
+					"action": { "id": 14 }
+				}`,
+			},
+		})
 
-	var (
-		ctx          = context.Background()
-		loadBalancer = &LoadBalancer{ID: 1}
-	)
+		result, resp, err := client.LoadBalancer.DeleteWithResult(ctx, &LoadBalancer{ID: 1})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, result.Action)
+		require.Equal(t, int64(14), result.Action.ID)
+	})
 
-	_, err := env.Client.LoadBalancer.Delete(ctx, loadBalancer)
-	if err != nil {
-		t.Fatal(err)
-	}
+	t.Run("without result", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "DELETE", Path: "/load_balancers/1",
+				Status: 201,
+				JSONRaw: `{
+					"action": { "id": 14 }
+				}`,
+			},
+		})
+
+		resp, err := client.LoadBalancer.Delete(ctx, &LoadBalancer{ID: 1})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
 }
 
 func TestLoadBalancerClientUpdate(t *testing.T) {
