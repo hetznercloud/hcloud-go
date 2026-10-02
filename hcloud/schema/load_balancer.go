@@ -95,8 +95,10 @@ type LoadBalancerTarget struct {
 }
 
 type LoadBalancerTargetHealthStatus struct {
-	ListenPort int    `json:"listen_port"`
-	Status     string `json:"status"`
+	ListenPort     int     `json:"listen_port"`
+	Status         string  `json:"status"`
+	Detail         *string `json:"detail"`
+	HTTPStatusCode *int    `json:"http_status_code"`
 }
 
 type LoadBalancerTargetServer struct {

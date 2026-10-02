@@ -1176,18 +1176,35 @@ func TestLoadBalancerTargetSchema(t *testing.T) {
 }
 
 func TestLoadBalancerTargetHealthStatusSchema(t *testing.T) {
-	data := []byte(`{
-		"listen_port": 443,
-		"status": "healthy"
-	}`)
+	testCases := map[string]string{
+		"healthy": `{
+			"listen_port": 443,
+			"status": "healthy"
+		}`,
+		"unhealthy with details": `{
+			"listen_port": 443,
+			"status": "unhealthy",
+			"detail": "unexpected_http_status",
+			"http_status_code": 503
+		}`,
+		"unhealthy with detail only": `{
+			"listen_port": 443,
+			"status": "unhealthy",
+			"detail": "layer4_timeout"
+		}`,
+	}
 
-	var s schema.LoadBalancerTargetHealthStatus
-	assert.NoError(t, json.Unmarshal(data, &s))
+	for name, data := range testCases {
+		t.Run(name, func(t *testing.T) {
+			var s schema.LoadBalancerTargetHealthStatus
+			assert.NoError(t, json.Unmarshal([]byte(data), &s))
 
-	assert.Equal(t, s, SchemaFromLoadBalancerTargetHealthStatus(LoadBalancerTargetHealthStatusFromSchema(s)))
+			assert.Equal(t, s, SchemaFromLoadBalancerTargetHealthStatus(LoadBalancerTargetHealthStatusFromSchema(s)))
 
-	hs := LoadBalancerTargetHealthStatusFromSchema(s)
-	assert.Equal(t, hs, LoadBalancerTargetHealthStatusFromSchema(SchemaFromLoadBalancerTargetHealthStatus(hs)))
+			hs := LoadBalancerTargetHealthStatusFromSchema(s)
+			assert.Equal(t, hs, LoadBalancerTargetHealthStatusFromSchema(SchemaFromLoadBalancerTargetHealthStatus(hs)))
+		})
+	}
 }
 
 func TestCertificateSchema(t *testing.T) {
