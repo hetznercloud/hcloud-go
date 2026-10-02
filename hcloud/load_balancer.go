@@ -193,10 +193,32 @@ const (
 	LoadBalancerTargetHealthStatusStatusUnhealthy LoadBalancerTargetHealthStatusStatus = "unhealthy"
 )
 
+// LoadBalancerTargetHealthStatusDetail describes additional details about why
+// a health check failed. It is only present when the health status is
+// unhealthy.
+type LoadBalancerTargetHealthStatusDetail string
+
+const (
+	// LoadBalancerTargetHealthStatusDetailUnspecified denotes that the reason for a failed health check is unspecified.
+	LoadBalancerTargetHealthStatusDetailUnspecified LoadBalancerTargetHealthStatusDetail = "unspecified"
+	// LoadBalancerTargetHealthStatusDetailLayer4NoConnection denotes that no connection could be established to the target.
+	LoadBalancerTargetHealthStatusDetailLayer4NoConnection LoadBalancerTargetHealthStatusDetail = "layer4_no_connection"
+	// LoadBalancerTargetHealthStatusDetailLayer4Timeout denotes that the target did not respond in time.
+	LoadBalancerTargetHealthStatusDetailLayer4Timeout LoadBalancerTargetHealthStatusDetail = "layer4_timeout"
+	// LoadBalancerTargetHealthStatusDetailLayer7Timeout denotes that the target did not respond in time.
+	LoadBalancerTargetHealthStatusDetailLayer7Timeout LoadBalancerTargetHealthStatusDetail = "layer7_timeout"
+	// LoadBalancerTargetHealthStatusDetailUnexpectedHTTPStatus denotes that the target responded with an unexpected HTTP status code.
+	LoadBalancerTargetHealthStatusDetailUnexpectedHTTPStatus LoadBalancerTargetHealthStatusDetail = "unexpected_http_status"
+	// LoadBalancerTargetHealthStatusDetailUnexpectedHTTPContent denotes that the target responded with unexpected HTTP content.
+	LoadBalancerTargetHealthStatusDetailUnexpectedHTTPContent LoadBalancerTargetHealthStatusDetail = "unexpected_http_content"
+)
+
 // LoadBalancerTargetHealthStatus describes a target's health for a specific service.
 type LoadBalancerTargetHealthStatus struct {
-	ListenPort int
-	Status     LoadBalancerTargetHealthStatusStatus
+	ListenPort     int
+	Status         LoadBalancerTargetHealthStatusStatus
+	Detail         *LoadBalancerTargetHealthStatusDetail
+	HTTPStatusCode *int
 }
 
 // LoadBalancerProtection represents the protection level of a Load Balancer.

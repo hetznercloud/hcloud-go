@@ -254,6 +254,11 @@ func (c *converterImpl) LoadBalancerTargetHealthStatusFromSchema(source schema.L
 	var hcloudLoadBalancerTargetHealthStatus LoadBalancerTargetHealthStatus
 	hcloudLoadBalancerTargetHealthStatus.ListenPort = source.ListenPort
 	hcloudLoadBalancerTargetHealthStatus.Status = LoadBalancerTargetHealthStatusStatus(source.Status)
+	if source.Detail != nil {
+		hcloudLoadBalancerTargetHealthStatusDetail := LoadBalancerTargetHealthStatusDetail(*source.Detail)
+		hcloudLoadBalancerTargetHealthStatus.Detail = &hcloudLoadBalancerTargetHealthStatusDetail
+	}
+	hcloudLoadBalancerTargetHealthStatus.HTTPStatusCode = source.HTTPStatusCode
 	return hcloudLoadBalancerTargetHealthStatus
 }
 func (c *converterImpl) LoadBalancerTargetServerFromSchema(source schema.LoadBalancerTargetServer) LoadBalancerTargetServer {
@@ -761,6 +766,11 @@ func (c *converterImpl) SchemaFromLoadBalancerTargetHealthStatus(source LoadBala
 	var schemaLoadBalancerTargetHealthStatus schema.LoadBalancerTargetHealthStatus
 	schemaLoadBalancerTargetHealthStatus.ListenPort = source.ListenPort
 	schemaLoadBalancerTargetHealthStatus.Status = string(source.Status)
+	if source.Detail != nil {
+		xstring := string(*source.Detail)
+		schemaLoadBalancerTargetHealthStatus.Detail = &xstring
+	}
+	schemaLoadBalancerTargetHealthStatus.HTTPStatusCode = source.HTTPStatusCode
 	return schemaLoadBalancerTargetHealthStatus
 }
 func (c *converterImpl) SchemaFromLoadBalancerType(source *LoadBalancerType) schema.LoadBalancerType {
