@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.50.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.50.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.49.0...v2.50.0)
+
+### Features
+
+- **load-balancer**: add health check diagnostic details (#928) ([8470cf0](https://github.com/hetznercloud/hcloud-go/commit/8470cf0fea40e107d58f3cd7105c7c1d39c775cd))
+
 ## [v2.49.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.49.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.48.0...v2.49.0)
