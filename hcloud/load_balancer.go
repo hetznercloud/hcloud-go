@@ -48,14 +48,18 @@ type LoadBalancerPublicNet struct {
 
 // LoadBalancerPublicNetIPv4 represents a Load Balancer's public IPv4 address.
 type LoadBalancerPublicNetIPv4 struct {
-	IP     net.IP
-	DNSPtr string
+	ID      int64
+	IP      net.IP
+	Blocked bool
+	DNSPtr  string
 }
 
 // LoadBalancerPublicNetIPv6 represents a Load Balancer's public IPv6 address.
 type LoadBalancerPublicNetIPv6 struct {
-	IP     net.IP
-	DNSPtr string
+	ID      int64
+	IP      net.IP
+	Blocked bool
+	DNSPtr  string
 }
 
 // LoadBalancerPrivateNet represents a Load Balancer's private network.
@@ -400,6 +404,7 @@ type LoadBalancerCreateOpts struct {
 	Targets          []LoadBalancerCreateOptsTarget
 	Services         []LoadBalancerCreateOptsService
 	PublicInterface  *bool
+	PublicNet        *LoadBalancerCreateOptsPublicNet
 	Network          *Network
 }
 
@@ -411,6 +416,13 @@ type LoadBalancerCreateOptsTarget struct {
 	LabelSelector LoadBalancerCreateOptsTargetLabelSelector
 	IP            LoadBalancerCreateOptsTargetIP
 	UsePrivateIP  *bool
+}
+
+// LoadBalancerCreateOptsPublicNet holds options for specifying the public network
+// when creating a new Load Balancer.
+type LoadBalancerCreateOptsPublicNet struct {
+	IPv4 *PrimaryIP
+	IPv6 *PrimaryIP
 }
 
 // LoadBalancerCreateOptsTargetServer holds options for specifying a server target
@@ -503,13 +515,35 @@ func (c *LoadBalancerClient) Create(ctx context.Context, opts LoadBalancerCreate
 }
 
 // Delete deletes a Load Balancer.
+//
+// Deprecated: Use [LoadBalancerClient.DeleteWithResult] instead.
 func (c *LoadBalancerClient) Delete(ctx context.Context, loadBalancer *LoadBalancer) (*Response, error) {
+	_, resp, err := c.DeleteWithResult(ctx, loadBalancer)
+	return resp, err
+}
+
+// LoadBalancerDeleteResult is the result of a delete [LoadBalancer] operation.
+type LoadBalancerDeleteResult struct {
+	Action *Action
+}
+
+// DeleteWithResult deletes a Load Balancer and returns an [Action].
+func (c *LoadBalancerClient) DeleteWithResult(ctx context.Context, loadBalancer *LoadBalancer) (LoadBalancerDeleteResult, *Response, error) {
 	const opPath = "/load_balancers/%d"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
 	reqPath := fmt.Sprintf(opPath, loadBalancer.ID)
 
-	return deleteRequestNoResult(ctx, c.client, reqPath)
+	result := LoadBalancerDeleteResult{}
+
+	respBody, resp, err := deleteRequest[schema.ActionGetResponse](ctx, c.client, reqPath)
+	if err != nil {
+		return result, resp, err
+	}
+
+	result.Action = ActionFromSchema(respBody.Action)
+
+	return result, resp, nil
 }
 
 func (c *LoadBalancerClient) addTarget(ctx context.Context, loadBalancer *LoadBalancer, reqBody schema.LoadBalancerActionAddTargetRequest) (*Action, *Response, error) {

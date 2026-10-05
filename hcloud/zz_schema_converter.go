@@ -702,6 +702,7 @@ func (c *converterImpl) SchemaFromLoadBalancerCreateOpts(source LoadBalancerCrea
 		}
 	}
 	schemaLoadBalancerCreateRequest.PublicInterface = source.PublicInterface
+	schemaLoadBalancerCreateRequest.PublicNet = c.pHcloudLoadBalancerCreateOptsPublicNetToPSchemaLoadBalancerCreateRequestPublicNet(source.PublicNet)
 	schemaLoadBalancerCreateRequest.Network = c.pHcloudNetworkToPInt64(source.Network)
 	return schemaLoadBalancerCreateRequest
 }
@@ -1893,13 +1894,17 @@ func (c *converterImpl) hcloudLoadBalancerProtectionToSchemaLoadBalancerProtecti
 }
 func (c *converterImpl) hcloudLoadBalancerPublicNetIPv4ToSchemaLoadBalancerPublicNetIPv4(source LoadBalancerPublicNetIPv4) schema.LoadBalancerPublicNetIPv4 {
 	var schemaLoadBalancerPublicNetIPv4 schema.LoadBalancerPublicNetIPv4
+	schemaLoadBalancerPublicNetIPv4.ID = source.ID
 	schemaLoadBalancerPublicNetIPv4.IP = stringFromIP(source.IP)
+	schemaLoadBalancerPublicNetIPv4.Blocked = source.Blocked
 	schemaLoadBalancerPublicNetIPv4.DNSPtr = source.DNSPtr
 	return schemaLoadBalancerPublicNetIPv4
 }
 func (c *converterImpl) hcloudLoadBalancerPublicNetIPv6ToSchemaLoadBalancerPublicNetIPv6(source LoadBalancerPublicNetIPv6) schema.LoadBalancerPublicNetIPv6 {
 	var schemaLoadBalancerPublicNetIPv6 schema.LoadBalancerPublicNetIPv6
+	schemaLoadBalancerPublicNetIPv6.ID = source.ID
 	schemaLoadBalancerPublicNetIPv6.IP = stringFromIP(source.IP)
+	schemaLoadBalancerPublicNetIPv6.Blocked = source.Blocked
 	schemaLoadBalancerPublicNetIPv6.DNSPtr = source.DNSPtr
 	return schemaLoadBalancerPublicNetIPv6
 }
@@ -2272,6 +2277,16 @@ func (c *converterImpl) pHcloudLoadBalancerAlgorithmToPSchemaLoadBalancerCreateR
 		pSchemaLoadBalancerCreateRequestAlgorithm = &schemaLoadBalancerCreateRequestAlgorithm
 	}
 	return pSchemaLoadBalancerCreateRequestAlgorithm
+}
+func (c *converterImpl) pHcloudLoadBalancerCreateOptsPublicNetToPSchemaLoadBalancerCreateRequestPublicNet(source *LoadBalancerCreateOptsPublicNet) *schema.LoadBalancerCreateRequestPublicNet {
+	var pSchemaLoadBalancerCreateRequestPublicNet *schema.LoadBalancerCreateRequestPublicNet
+	if source != nil {
+		var schemaLoadBalancerCreateRequestPublicNet schema.LoadBalancerCreateRequestPublicNet
+		schemaLoadBalancerCreateRequestPublicNet.IPv4 = int64FromPrimaryIP((*source).IPv4)
+		schemaLoadBalancerCreateRequestPublicNet.IPv6 = int64FromPrimaryIP((*source).IPv6)
+		pSchemaLoadBalancerCreateRequestPublicNet = &schemaLoadBalancerCreateRequestPublicNet
+	}
+	return pSchemaLoadBalancerCreateRequestPublicNet
 }
 func (c *converterImpl) pHcloudLoadBalancerCreateOptsServiceHTTPToPSchemaLoadBalancerCreateRequestServiceHTTP(source *LoadBalancerCreateOptsServiceHTTP) *schema.LoadBalancerCreateRequestServiceHTTP {
 	var pSchemaLoadBalancerCreateRequestServiceHTTP *schema.LoadBalancerCreateRequestServiceHTTP
@@ -2991,13 +3006,17 @@ func (c *converterImpl) schemaLoadBalancerProtectionToHcloudLoadBalancerProtecti
 }
 func (c *converterImpl) schemaLoadBalancerPublicNetIPv4ToHcloudLoadBalancerPublicNetIPv4(source schema.LoadBalancerPublicNetIPv4) LoadBalancerPublicNetIPv4 {
 	var hcloudLoadBalancerPublicNetIPv4 LoadBalancerPublicNetIPv4
+	hcloudLoadBalancerPublicNetIPv4.ID = source.ID
 	hcloudLoadBalancerPublicNetIPv4.IP = ipFromString(source.IP)
+	hcloudLoadBalancerPublicNetIPv4.Blocked = source.Blocked
 	hcloudLoadBalancerPublicNetIPv4.DNSPtr = source.DNSPtr
 	return hcloudLoadBalancerPublicNetIPv4
 }
 func (c *converterImpl) schemaLoadBalancerPublicNetIPv6ToHcloudLoadBalancerPublicNetIPv6(source schema.LoadBalancerPublicNetIPv6) LoadBalancerPublicNetIPv6 {
 	var hcloudLoadBalancerPublicNetIPv6 LoadBalancerPublicNetIPv6
+	hcloudLoadBalancerPublicNetIPv6.ID = source.ID
 	hcloudLoadBalancerPublicNetIPv6.IP = ipFromString(source.IP)
+	hcloudLoadBalancerPublicNetIPv6.Blocked = source.Blocked
 	hcloudLoadBalancerPublicNetIPv6.DNSPtr = source.DNSPtr
 	return hcloudLoadBalancerPublicNetIPv6
 }

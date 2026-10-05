@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/url"
@@ -12,47 +13,119 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 func TestLoadBalancerClientGetByID(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+	ctx, server, client := makeTestUtils(t)
 
-	env.Mux.HandleFunc("/load_balancers/1", func(w http.ResponseWriter, r *http.Request) {
-		json.NewEncoder(w).Encode(schema.LoadBalancerGetResponse{
-			LoadBalancer: schema.LoadBalancer{
-				ID: 1,
-			},
-		})
+	server.Expect([]mockutil.Request{
+		{
+			Method: "GET", Path: "/load_balancers/1",
+			Status: 200,
+			JSONRaw: `{
+				"load_balancer": {
+					"id": 1,
+					"name": "test",
+					"algorithm": { "type": "round_robin" },
+					"labels": { "key": "value" },
+					"created": "2026-09-22T17:23:18Z",
+					"included_traffic": 21990232555520,
+					"ingoing_traffic": 0,
+					"outgoing_traffic": 0,
+					"load_balancer_type": {
+						"id": 1,
+						"name": "lb11",
+						"description": "LB11",
+						"max_connections": 10000,
+						"max_services": 5,
+						"max_targets": 25,
+						"max_assigned_certificates": 10,
+						"deprecated": null,
+						"deprecation": null
+					},
+					"location": {
+						"id": 1,
+						"city": "Falkenstein",
+						"country": "DE",
+						"description": "Falkenstein DC Park 1",
+						"latitude": 50.47612,
+						"longitude": 12.370071,
+						"name": "fsn1",
+						"network_zone": "eu-central"
+					},
+					"protection": {
+						"delete": false
+					},
+					"public_net": {
+						"enabled": true,
+						"ipv4": {
+							"dns_ptr": "static.46.217.98.91.clients.your-server.de",
+							"ip": "91.98.217.46"
+						},
+						"ipv6": {
+							"dns_ptr": "",
+							"ip": "2a01:4f8:c01e:1461::1"
+						}
+					},
+					"private_net": [],
+					"services": [],
+					"targets": []
+				}
+			}`,
+		},
 	})
 
-	ctx := context.Background()
+	result, resp, err := client.LoadBalancer.GetByID(ctx, 1)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
 
-	loadBalancer, _, err := env.Client.LoadBalancer.GetByID(ctx, 1)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if loadBalancer == nil {
-		t.Fatal("no load balancer")
-	}
-	if loadBalancer.ID != 1 {
-		t.Errorf("unexpected load balancer ID: %v", loadBalancer.ID)
-	}
+	require.NotNil(t, result)
+	assert.Equal(t, int64(1), result.ID)
+	assert.Equal(t, "test", result.Name)
+	assert.Equal(t, LoadBalancerAlgorithmTypeRoundRobin, result.Algorithm.Type)
+	assert.Equal(t, map[string]string{"key": "value"}, result.Labels)
+	assert.Equal(t, "2026-09-22T17:23:18Z", result.Created.Format(time.RFC3339))
+	assert.Equal(t, uint64(21990232555520), result.IncludedTraffic)
+	assert.Equal(t, uint64(0), result.IngoingTraffic)
+	assert.Equal(t, uint64(0), result.OutgoingTraffic)
+	assert.Equal(t, int64(1), result.LoadBalancerType.ID)
+	assert.Equal(t, "lb11", result.LoadBalancerType.Name)
+	assert.Equal(t, int64(1), result.Location.ID)
+	assert.Equal(t, "fsn1", result.Location.Name)
+	assert.False(t, result.Protection.Delete)
+	assert.True(t, result.PublicNet.Enabled)
+	assert.Equal(t, "91.98.217.46", result.PublicNet.IPv4.IP.String())
+	assert.Equal(t, "static.46.217.98.91.clients.your-server.de", result.PublicNet.IPv4.DNSPtr)
+	assert.Equal(t, "2a01:4f8:c01e:1461::1", result.PublicNet.IPv6.IP.String())
+	assert.Empty(t, result.PublicNet.IPv6.DNSPtr)
+	assert.Equal(t, []LoadBalancerPrivateNet{}, result.PrivateNet)
+	assert.Equal(t, []LoadBalancerService{}, result.Services)
+	assert.Equal(t, []LoadBalancerTarget{}, result.Targets)
 
 	t.Run("called via Get", func(t *testing.T) {
-		loadBalancer, _, err := env.Client.LoadBalancer.Get(ctx, "1")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if loadBalancer == nil {
-			t.Fatal("no load balancer")
-		}
-		if loadBalancer.ID != 1 {
-			t.Errorf("unexpected load balancer ID: %v", loadBalancer.ID)
-		}
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/load_balancers/1",
+				Status: 200,
+				JSONRaw: `{
+					"load_balancer": {
+						"id": 1
+					}
+				}`,
+			},
+		})
+
+		result, resp, err := client.LoadBalancer.Get(ctx, "1")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		require.NotNil(t, result)
+		assert.Equal(t, int64(1), result.ID)
 	})
 }
 
@@ -208,72 +281,127 @@ func TestLoadBalancerClientGetByNameEmpty(t *testing.T) {
 }
 
 func TestLoadBalancerCreate(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+	ctx, server, client := makeTestUtils(t)
 
-	env.Mux.HandleFunc("/load_balancers", func(w http.ResponseWriter, r *http.Request) {
-		var reqBody schema.LoadBalancerCreateRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			t.Fatal(err)
-		}
-		expectedReqBody := schema.LoadBalancerCreateRequest{
-			Name:             "load-balancer",
-			LoadBalancerType: schema.IDOrName{Name: "lb1"},
-			Algorithm: &schema.LoadBalancerCreateRequestAlgorithm{
-				Type: "round_robin",
+	t.Run("minimal", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/load_balancers",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+
+					assert.JSONEq(t, `{
+						"name": "load-balancer",
+						"load_balancer_type": "lb1"
+					}`, string(body))
+				},
+				Status: 201,
+				JSONRaw: `{
+					"load_balancer": { "id": 1 },
+					"action": { "id": 1509772237 }
+				}`,
 			},
-			Location: Ptr("fsn1"),
-		}
-		if !cmp.Equal(expectedReqBody, reqBody) {
-			t.Log(cmp.Diff(expectedReqBody, reqBody))
-			t.Error("unexpected request body")
-		}
-		json.NewEncoder(w).Encode(schema.LoadBalancerCreateResponse{
-			LoadBalancer: schema.LoadBalancer{ID: 2},
-			Action:       schema.Action{ID: 1},
 		})
+
+		result, resp, err := client.LoadBalancer.Create(ctx, LoadBalancerCreateOpts{
+			Name:             "load-balancer",
+			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		assert.Equal(t, int64(1), result.LoadBalancer.ID)
+		assert.Equal(t, int64(1509772237), result.Action.ID)
 	})
 
-	var (
-		ctx       = context.Background()
-		lbType    = &LoadBalancerType{Name: "lb1"}
-		algorithm = &LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmTypeRoundRobin}
-		location  = &Location{Name: "fsn1"}
-		opts      = LoadBalancerCreateOpts{
-			Name:             "load-balancer",
-			LoadBalancerType: lbType,
-			Algorithm:        algorithm,
-			Location:         location,
-		}
-	)
+	t.Run("full", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/load_balancers",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
 
-	result, _, err := env.Client.LoadBalancer.Create(ctx, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if result.Action.ID != 1 {
-		t.Errorf("unexpected action ID: %d", result.Action.ID)
-	}
-	if result.LoadBalancer.ID != 2 {
-		t.Errorf("unexpected load balancer ID: %d", result.LoadBalancer.ID)
-	}
+					assert.JSONEq(t, `{
+						"name": "load-balancer",
+						"load_balancer_type": "lb1",
+						"algorithm": { "type": "round_robin" },
+						"location": "fsn1",
+						"labels": { "key": "value" },
+						"public_interface": true,
+						"public_net": {
+							"ipv4": 123
+						},
+						"network": 987
+					}`, string(body))
+				},
+				Status: 201,
+				JSONRaw: `{
+					"load_balancer": { "id": 1 },
+					"action": { "id": 1509772237 }
+				}`,
+			},
+		})
+
+		result, resp, err := client.LoadBalancer.Create(ctx, LoadBalancerCreateOpts{
+			Name:             "load-balancer",
+			LoadBalancerType: &LoadBalancerType{Name: "lb1"},
+			Algorithm:        &LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmTypeRoundRobin},
+			Location:         &Location{Name: "fsn1"},
+			Labels:           map[string]string{"key": "value"},
+			PublicInterface:  Ptr(true),
+			PublicNet: &LoadBalancerCreateOptsPublicNet{
+				IPv4: &PrimaryIP{ID: 123},
+				IPv6: nil,
+			},
+			Network: &Network{ID: 987},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+
+		assert.Equal(t, int64(1), result.LoadBalancer.ID)
+		assert.Equal(t, int64(1509772237), result.Action.ID)
+	})
+
 }
 
 func TestLoadBalancerDelete(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+	ctx, server, client := makeTestUtils(t)
 
-	env.Mux.HandleFunc("/load_balancers/1", func(w http.ResponseWriter, r *http.Request) {})
+	t.Run("with result", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "DELETE", Path: "/load_balancers/1",
+				Status: 201,
+				JSONRaw: `{
+					"action": { "id": 14 }
+				}`,
+			},
+		})
 
-	var (
-		ctx          = context.Background()
-		loadBalancer = &LoadBalancer{ID: 1}
-	)
+		result, resp, err := client.LoadBalancer.DeleteWithResult(ctx, &LoadBalancer{ID: 1})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, result.Action)
+		require.Equal(t, int64(14), result.Action.ID)
+	})
 
-	_, err := env.Client.LoadBalancer.Delete(ctx, loadBalancer)
-	if err != nil {
-		t.Fatal(err)
-	}
+	t.Run("without result", func(t *testing.T) {
+		server.Expect([]mockutil.Request{
+			{
+				Method: "DELETE", Path: "/load_balancers/1",
+				Status: 201,
+				JSONRaw: `{
+					"action": { "id": 14 }
+				}`,
+			},
+		})
+
+		resp, err := client.LoadBalancer.Delete(ctx, &LoadBalancer{ID: 1})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
 }
 
 func TestLoadBalancerClientUpdate(t *testing.T) {

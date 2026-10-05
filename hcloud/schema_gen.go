@@ -58,6 +58,7 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend int64FromZone
 // goverter:extend floatingIPFromInt64
 // goverter:extend int64FromFloatingIP
+// goverter:extend int64FromPrimaryIP
 // goverter:extend storageBoxFromInt64
 // goverter:extend int64FromStorageBox
 // goverter:extend mapFromFloatingIPDNSPtrSchema
@@ -638,6 +639,13 @@ func floatingIPFromInt64(id int64) *FloatingIP {
 }
 
 func int64FromFloatingIP(f *FloatingIP) int64 {
+	if f == nil {
+		return 0
+	}
+	return f.ID
+}
+
+func int64FromPrimaryIP(f *PrimaryIP) int64 {
 	if f == nil {
 		return 0
 	}
