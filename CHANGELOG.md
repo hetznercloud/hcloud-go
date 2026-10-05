@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.51.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.51.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.50.0...v2.51.0)
+
+### Features
+
+- deprecate "token_readonly" error code (#930) ([010d5c5](https://github.com/hetznercloud/hcloud-go/commit/010d5c508e494901dc6b79d98ccb23086586d995))
+
 ## [v2.50.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.50.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.49.0...v2.50.0)
