@@ -1,5 +1,42 @@
 # Changelog
 
+## [v2.52.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.52.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.51.0...v2.52.0)
+
+### Load Balancers can now be created with existing Primary IPs
+
+Primary IPs, which were previously available exclusively for Servers, are now also available for Load Balancers. When creating a Load Balancer, you can assign an [existing Primary IP](https://docs.hetzner.cloud/reference/cloud#tag/primary-ips/list_primary_ips) instead of having an IP address allocated automatically. Currently, you cannot change the Primary IP once the Load Balancer has been created.
+
+To support this change, we added the new `public_net` property to the request body of the endpoint [POST /load_balancers](https://docs.hetzner.cloud/reference/cloud#tag/load-balancers/create_load_balancer), with the following child properties:
+
+- `public_net.ipv4`: ID of an IPv4 Primary IP to assign to the Load Balancer.
+- `public_net.ipv6`: ID of an IPv6 Primary IP to assign to the Load Balancer.
+
+If you omit a property, a new Primary IP of that version is allocated for the Load Balancer, as before.
+
+A Primary IP can currently only be assigned when the Load Balancer is created. It stays assigned for the entire lifetime of the Load Balancer.
+
+Related to https://docs.hetzner.cloud/changelog#2026-10-05-load-balancers-can-use-existing-primary-ips.
+
+### Deleting a Load Balancer now returns an Action
+
+> [!IMPORTANT]
+> Please update all code that accesses [`LoadBalancerClient.Delete`](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2@v2.51.0/hcloud#LoadBalancerClient.Delete) to use [`LoadBalancerClient.DeleteWithResult`](https://pkg.go.dev/github.com/hetznercloud/hcloud-go/v2@v2.52.0/hcloud#LoadBalancerClient.DeleteWithResult) method instead.
+
+As part of our work on supporting [existing Primary IPs for Load Balancers](https://docs.hetzner.cloud/changelog#2026-10-05-load-balancers-can-use-existing-primary-ips), deleting a Load Balancer is now tracked with an Action.
+
+The endpoint [DELETE /load_balancers/{id}](https://docs.hetzner.cloud/reference/cloud#tag/load-balancers/delete_load_balancer) now returns a 201 status code with an Action in the response body, instead of a 204 status code with an empty response body.
+
+You can use the returned Action to track the progress of the deletion.
+
+Related to https://docs.hetzner.cloud/changelog#2026-10-05-delete-load-balancer-returns-action.
+
+### Features
+
+- allow creating load balancers with primary ips (#932) ([b092899](https://github.com/hetznercloud/hcloud-go/commit/b092899312800809f5afdb4a670314eeaaacc51c))
+- delete load balancer now returns an action (#932) ([b092899](https://github.com/hetznercloud/hcloud-go/commit/b092899312800809f5afdb4a670314eeaaacc51c))
+
 ## [v2.51.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.51.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.50.0...v2.51.0)
