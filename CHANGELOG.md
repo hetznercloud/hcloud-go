@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.53.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.53.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.52.0...v2.53.0)
+
+### Features
+
+- support for go1.27 and drop go1.25 (#935) ([8e49e87](https://github.com/hetznercloud/hcloud-go/commit/8e49e8751a0925f5bb54ad45961493cd4ad808fb))
+
 ## [v2.52.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.52.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.51.0...v2.52.0)
