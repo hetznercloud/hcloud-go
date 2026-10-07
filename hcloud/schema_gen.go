@@ -1162,7 +1162,7 @@ func mapStorageBoxIntPtrToWeekdayPtr(i *int) *time.Weekday {
 	}
 
 	if *i == 7 {
-		return Ptr(time.Sunday)
+		return new(time.Sunday)
 	}
 
 	return new(time.Weekday(*i))

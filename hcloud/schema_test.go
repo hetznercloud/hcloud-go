@@ -1571,7 +1571,7 @@ func TestSchemaFromLoadBalancerCreateOpts(t *testing.T) {
 						Proxyprotocol:   new(true),
 						HTTP: &LoadBalancerCreateOptsServiceHTTP{
 							CookieName:     new("keks"),
-							CookieLifetime: Ptr(5 * time.Minute),
+							CookieLifetime: new(5 * time.Minute),
 							RedirectHTTP:   new(true),
 							StickySessions: new(true),
 							Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
@@ -1579,8 +1579,8 @@ func TestSchemaFromLoadBalancerCreateOpts(t *testing.T) {
 						HealthCheck: &LoadBalancerCreateOptsServiceHealthCheck{
 							Protocol: LoadBalancerServiceProtocolHTTP,
 							Port:     new(80),
-							Interval: Ptr(5 * time.Second),
-							Timeout:  Ptr(1 * time.Second),
+							Interval: new(5 * time.Second),
+							Timeout:  new(1 * time.Second),
 							Retries:  new(3),
 							HTTP: &LoadBalancerCreateOptsServiceHealthCheckHTTP{
 								Domain:      new("example.com"),
@@ -1597,7 +1597,7 @@ func TestSchemaFromLoadBalancerCreateOpts(t *testing.T) {
 						Proxyprotocol:   new(true),
 						HTTP: &LoadBalancerCreateOptsServiceHTTP{
 							CookieName:     new("keks"),
-							CookieLifetime: Ptr(5 * time.Minute),
+							CookieLifetime: new(5 * time.Minute),
 							RedirectHTTP:   new(true),
 							StickySessions: new(true),
 							Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
@@ -1605,8 +1605,8 @@ func TestSchemaFromLoadBalancerCreateOpts(t *testing.T) {
 						HealthCheck: &LoadBalancerCreateOptsServiceHealthCheck{
 							Protocol: LoadBalancerServiceProtocolHTTP,
 							Port:     new(443),
-							Interval: Ptr(5 * time.Second),
-							Timeout:  Ptr(1 * time.Second),
+							Interval: new(5 * time.Second),
+							Timeout:  new(1 * time.Second),
 							Retries:  new(3),
 							HTTP: &LoadBalancerCreateOptsServiceHealthCheckHTTP{
 								Domain:      new("example.com"),
@@ -1746,7 +1746,7 @@ func TestSchemaFromLoadBalancerAddServiceOpts(t *testing.T) {
 				Proxyprotocol:   new(true),
 				HTTP: &LoadBalancerAddServiceOptsHTTP{
 					CookieName:     new("keks"),
-					CookieLifetime: Ptr(5 * time.Minute),
+					CookieLifetime: new(5 * time.Minute),
 					RedirectHTTP:   new(true),
 					StickySessions: new(true),
 					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
@@ -1754,8 +1754,8 @@ func TestSchemaFromLoadBalancerAddServiceOpts(t *testing.T) {
 				HealthCheck: &LoadBalancerAddServiceOptsHealthCheck{
 					Protocol: LoadBalancerServiceProtocolHTTP,
 					Port:     new(80),
-					Interval: Ptr(5 * time.Second),
-					Timeout:  Ptr(1 * time.Second),
+					Interval: new(5 * time.Second),
+					Timeout:  new(1 * time.Second),
 					Retries:  new(3),
 					HTTP: &LoadBalancerAddServiceOptsHealthCheckHTTP{
 						Domain:      new("example.com"),
@@ -1800,7 +1800,7 @@ func TestSchemaFromLoadBalancerAddServiceOpts(t *testing.T) {
 				Proxyprotocol:   new(true),
 				HTTP: &LoadBalancerAddServiceOptsHTTP{
 					CookieName:     new("keks"),
-					CookieLifetime: Ptr(5 * time.Minute),
+					CookieLifetime: new(5 * time.Minute),
 					RedirectHTTP:   new(true),
 					StickySessions: new(true),
 					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
@@ -1858,7 +1858,7 @@ func TestSchemaFromLoadBalancerUpdateServiceOpts(t *testing.T) {
 				Proxyprotocol:   new(true),
 				HTTP: &LoadBalancerUpdateServiceOptsHTTP{
 					CookieName:     new("keks"),
-					CookieLifetime: Ptr(5 * time.Minute),
+					CookieLifetime: new(5 * time.Minute),
 					RedirectHTTP:   new(true),
 					StickySessions: new(true),
 					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
@@ -1866,8 +1866,8 @@ func TestSchemaFromLoadBalancerUpdateServiceOpts(t *testing.T) {
 				HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
 					Protocol: LoadBalancerServiceProtocolHTTP,
 					Port:     new(80),
-					Interval: Ptr(5 * time.Second),
-					Timeout:  Ptr(1 * time.Second),
+					Interval: new(5 * time.Second),
+					Timeout:  new(1 * time.Second),
 					Retries:  new(3),
 					HTTP: &LoadBalancerUpdateServiceOptsHealthCheckHTTP{
 						Domain:      new("example.com"),
@@ -1912,7 +1912,7 @@ func TestSchemaFromLoadBalancerUpdateServiceOpts(t *testing.T) {
 				Proxyprotocol:   new(true),
 				HTTP: &LoadBalancerUpdateServiceOptsHTTP{
 					CookieName:     new("keks"),
-					CookieLifetime: Ptr(5 * time.Minute),
+					CookieLifetime: new(5 * time.Minute),
 					RedirectHTTP:   new(true),
 					StickySessions: new(true),
 					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
@@ -2422,12 +2422,12 @@ func TestMapStorageBoxWeekdayPtrToIntrPtr(t *testing.T) {
 	}{
 		{
 			Name:       "monday",
-			WeekdayPtr: Ptr(time.Monday),
+			WeekdayPtr: new(time.Monday),
 			IntPtr:     new(1),
 		},
 		{
 			Name:       "sunday",
-			WeekdayPtr: Ptr(time.Sunday),
+			WeekdayPtr: new(time.Sunday),
 			IntPtr:     new(7),
 		},
 		{
@@ -2437,7 +2437,7 @@ func TestMapStorageBoxWeekdayPtrToIntrPtr(t *testing.T) {
 		},
 		{
 			Name:       "wednesday",
-			WeekdayPtr: Ptr(time.Wednesday),
+			WeekdayPtr: new(time.Wednesday),
 			IntPtr:     new(3),
 		},
 	}
@@ -2458,12 +2458,12 @@ func TestMapStorageBoxIntPtrToWeekdayPtr(t *testing.T) {
 	}{
 		{
 			Name:       "monday",
-			WeekdayPtr: Ptr(time.Monday),
+			WeekdayPtr: new(time.Monday),
 			IntPtr:     new(1),
 		},
 		{
 			Name:       "sunday",
-			WeekdayPtr: Ptr(time.Sunday),
+			WeekdayPtr: new(time.Sunday),
 			IntPtr:     new(7),
 		},
 		{
@@ -2473,7 +2473,7 @@ func TestMapStorageBoxIntPtrToWeekdayPtr(t *testing.T) {
 		},
 		{
 			Name:       "wednesday",
-			WeekdayPtr: Ptr(time.Wednesday),
+			WeekdayPtr: new(time.Wednesday),
 			IntPtr:     new(3),
 		},
 	}

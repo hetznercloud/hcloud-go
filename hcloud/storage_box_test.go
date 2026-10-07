@@ -541,7 +541,7 @@ func TestStorageBoxEnableSnapshotPlan(t *testing.T) {
 		MaxSnapshots: 10,
 		Minute:       5,
 		Hour:         6,
-		DayOfWeek:    Ptr(time.Sunday),
+		DayOfWeek:    new(time.Sunday),
 	}
 	action, _, err := client.StorageBox.EnableSnapshotPlan(ctx, storageBox, opts)
 	require.NoError(t, err, "RollbackSnapshot failed")

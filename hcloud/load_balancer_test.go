@@ -640,16 +640,16 @@ func TestLoadBalancerAddService(t *testing.T) {
 		DestinationPort: new(80),
 		HTTP: &LoadBalancerAddServiceOptsHTTP{
 			CookieName:     new("HCLBSTICKY"),
-			CookieLifetime: Ptr(5 * time.Minute),
+			CookieLifetime: new(5 * time.Minute),
 			RedirectHTTP:   new(false),
 			StickySessions: new(true),
-			TimeoutIdle:    Ptr(time.Minute),
+			TimeoutIdle:    new(time.Minute),
 		},
 		HealthCheck: &LoadBalancerAddServiceOptsHealthCheck{
 			Protocol: "http",
 			Port:     new(4711),
-			Interval: Ptr(15 * time.Second),
-			Timeout:  Ptr(10 * time.Second),
+			Interval: new(15 * time.Second),
+			Timeout:  new(10 * time.Second),
 			Retries:  new(3),
 			HTTP: &LoadBalancerAddServiceOptsHealthCheckHTTP{
 				Domain: new("example.com"),
@@ -722,16 +722,16 @@ func TestLoadBalancerUpdateService(t *testing.T) {
 		DestinationPort: new(80),
 		HTTP: &LoadBalancerUpdateServiceOptsHTTP{
 			CookieName:     new("HCLBSTICKY"),
-			CookieLifetime: Ptr(5 * time.Minute),
+			CookieLifetime: new(5 * time.Minute),
 			RedirectHTTP:   new(false),
 			StickySessions: new(true),
-			TimeoutIdle:    Ptr(time.Minute),
+			TimeoutIdle:    new(time.Minute),
 		},
 		HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
 			Protocol: LoadBalancerServiceProtocolHTTP,
 			Port:     new(4711),
-			Interval: Ptr(15 * time.Second),
-			Timeout:  Ptr(10 * time.Second),
+			Interval: new(15 * time.Second),
+			Timeout:  new(10 * time.Second),
 			Retries:  new(3),
 			HTTP: &LoadBalancerUpdateServiceOptsHealthCheckHTTP{
 				Domain: new("example.com"),
