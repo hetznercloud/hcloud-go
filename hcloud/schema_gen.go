@@ -1150,10 +1150,10 @@ func mapStorageBoxWeekdayPtrToIntPtr(w *time.Weekday) *int {
 	}
 
 	if *w == time.Sunday {
-		return Ptr(7)
+		return new(7)
 	}
 
-	return Ptr(int(*w))
+	return new(int(*w))
 }
 
 func mapStorageBoxIntPtrToWeekdayPtr(i *int) *time.Weekday {
@@ -1162,10 +1162,10 @@ func mapStorageBoxIntPtrToWeekdayPtr(i *int) *time.Weekday {
 	}
 
 	if *i == 7 {
-		return Ptr(time.Sunday)
+		return new(time.Sunday)
 	}
 
-	return Ptr(time.Weekday(*i))
+	return new(time.Weekday(*i))
 }
 
 // hcloud.DatacenterServerTypes is not nullable but *schema.DatacenterServerTypes is.
@@ -1174,5 +1174,5 @@ func schemaPtrFromDatacenterServerTypes(dst DatacenterServerTypes) *schema.Datac
 	if dst.Available == nil && dst.AvailableForMigration == nil && dst.Supported == nil {
 		return nil
 	}
-	return Ptr(schemaFromDatacenterServerTypes(dst))
+	return new(schemaFromDatacenterServerTypes(dst))
 }

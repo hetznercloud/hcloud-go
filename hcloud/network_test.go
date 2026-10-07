@@ -401,7 +401,7 @@ func TestNetworkClientUpdate(t *testing.T) {
 		})
 
 		opts := NetworkUpdateOpts{
-			ExposeRoutesToVSwitch: Ptr(true),
+			ExposeRoutesToVSwitch: new(true),
 		}
 		updatedNetwork, _, err := env.Client.Network.Update(ctx, network, opts)
 		if err != nil {
@@ -728,7 +728,7 @@ func TestNetworkClientChangeProtection(t *testing.T) {
 		})
 
 		opts := NetworkChangeProtectionOpts{
-			Delete: Ptr(true),
+			Delete: new(true),
 		}
 		action, _, err := env.Client.Network.ChangeProtection(ctx, network, opts)
 		if err != nil {

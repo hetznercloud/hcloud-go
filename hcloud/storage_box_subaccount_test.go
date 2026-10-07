@@ -280,11 +280,11 @@ func TestStorageBoxClientCreateSubaccount(t *testing.T) {
 			Password:      "my-password",
 			Description:   "This describes my subaccount",
 			AccessSettings: &StorageBoxSubaccountCreateOptsAccessSettings{
-				ReachableExternally: Ptr(true),
-				Readonly:            Ptr(false),
-				SambaEnabled:        Ptr(true),
-				SSHEnabled:          Ptr(false),
-				WebDAVEnabled:       Ptr(true),
+				ReachableExternally: new(true),
+				Readonly:            new(false),
+				SambaEnabled:        new(true),
+				SSHEnabled:          new(false),
+				WebDAVEnabled:       new(true),
 			},
 			Labels: map[string]string{
 				"environment": "prod",
@@ -379,7 +379,7 @@ func TestStorageBoxClientUpdateSubaccount(t *testing.T) {
 
 		opts := StorageBoxSubaccountUpdateOpts{
 			Name:        "subaccount1",
-			Description: Ptr("Updated description"),
+			Description: new("Updated description"),
 			Labels: map[string]string{
 				"environment":    "prod",
 				"example.com/my": "label",
@@ -522,11 +522,11 @@ func TestStorageBoxSubaccountUpdateAccessSettings(t *testing.T) {
 	}
 
 	opts := StorageBoxSubaccountUpdateAccessSettingsOpts{
-		SambaEnabled:        Ptr(false),
-		SSHEnabled:          Ptr(true),
-		WebDAVEnabled:       Ptr(false),
-		Readonly:            Ptr(false),
-		ReachableExternally: Ptr(true),
+		SambaEnabled:        new(false),
+		SSHEnabled:          new(true),
+		WebDAVEnabled:       new(false),
+		Readonly:            new(false),
+		ReachableExternally: new(true),
 	}
 	action, resp, err := client.StorageBox.UpdateSubaccountAccessSettings(ctx, subaccount, opts)
 	require.NoError(t, err)

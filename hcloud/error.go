@@ -206,8 +206,7 @@ func IsError(err error, code ...ErrorCode) bool {
 
 // StabilizeError returns an error without any correlation ID.
 func StabilizeError(err error) error {
-	var e Error
-	if errors.As(err, &e) {
+	if e, ok := errors.AsType[Error](err); ok {
 		e.response = nil
 		return e
 	}

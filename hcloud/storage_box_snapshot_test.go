@@ -147,7 +147,7 @@ func TestStorageBoxClientListSnapshot(t *testing.T) {
 			LabelSelector: "environment=prod",
 			Name:          "my-resource",
 			Sort:          []string{"id:asc"},
-			IsAutomatic:   Ptr(true),
+			IsAutomatic:   new(true),
 		}
 		snapshots, err := client.StorageBox.AllSnapshotsWithOpts(ctx, storageBox, opts)
 		require.NoError(t, err)

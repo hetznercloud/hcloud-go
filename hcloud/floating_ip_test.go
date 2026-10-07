@@ -291,7 +291,7 @@ func TestFloatingIPClientCreate(t *testing.T) {
 
 	opts := FloatingIPCreateOpts{
 		Type:         FloatingIPTypeIPv4,
-		Description:  Ptr("test"),
+		Description:  new("test"),
 		HomeLocation: &Location{Name: "test"},
 		Server:       &Server{ID: 1},
 		Labels:       map[string]string{"key": "value"},
@@ -336,10 +336,10 @@ func TestFloatingIPClientCreateWithName(t *testing.T) {
 
 	opts := FloatingIPCreateOpts{
 		Type:         FloatingIPTypeIPv4,
-		Description:  Ptr("test"),
+		Description:  new("test"),
 		HomeLocation: &Location{Name: "test"},
 		Server:       &Server{ID: 1},
-		Name:         Ptr("MyFloatingIP"),
+		Name:         new("MyFloatingIP"),
 		Labels:       map[string]string{"key": "value"},
 	}
 
@@ -608,7 +608,7 @@ func TestFloatingIPClientChangeProtection(t *testing.T) {
 		})
 
 		opts := FloatingIPChangeProtectionOpts{
-			Delete: Ptr(true),
+			Delete: new(true),
 		}
 		action, _, err := env.Client.FloatingIP.ChangeProtection(ctx, floatingIP, opts)
 		if err != nil {
