@@ -350,7 +350,7 @@ func TestLoadBalancerCreate(t *testing.T) {
 			Algorithm:        &LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmTypeRoundRobin},
 			Location:         &Location{Name: "fsn1"},
 			Labels:           map[string]string{"key": "value"},
-			PublicInterface:  Ptr(true),
+			PublicInterface:  new(true),
 			PublicNet: &LoadBalancerCreateOptsPublicNet{
 				IPv4: &PrimaryIP{ID: 123},
 				IPv6: nil,
@@ -417,7 +417,7 @@ func TestLoadBalancerClientUpdate(t *testing.T) {
 			t.Fatal(err)
 		}
 		expectedReqBody := schema.LoadBalancerUpdateRequest{
-			Name: Ptr("test"),
+			Name: new("test"),
 		}
 		if !cmp.Equal(expectedReqBody, reqBody) {
 			t.Log(cmp.Diff(expectedReqBody, reqBody))
@@ -460,7 +460,7 @@ func TestLoadBalancerClientChangeProtection(t *testing.T) {
 			t.Fatal(err)
 		}
 		expectedReqBody := schema.LoadBalancerActionChangeProtectionRequest{
-			Delete: Ptr(true),
+			Delete: new(true),
 		}
 		if !cmp.Equal(expectedReqBody, reqBody) {
 			t.Log(cmp.Diff(expectedReqBody, reqBody))
@@ -479,7 +479,7 @@ func TestLoadBalancerClientChangeProtection(t *testing.T) {
 	)
 
 	opts := LoadBalancerChangeProtectionOpts{
-		Delete: Ptr(true),
+		Delete: new(true),
 	}
 	action, _, err := env.Client.LoadBalancer.ChangeProtection(ctx, loadBalancer, opts)
 	if err != nil {
@@ -507,7 +507,7 @@ func TestLoadBalancerClientAddServerTarget(t *testing.T) {
 			Server: &schema.LoadBalancerActionAddTargetRequestServer{
 				ID: 1,
 			},
-			UsePrivateIP: Ptr(true),
+			UsePrivateIP: new(true),
 		}
 		if !cmp.Equal(expectedReqBody, reqBody) {
 			t.Log(cmp.Diff(expectedReqBody, reqBody))
@@ -528,7 +528,7 @@ func TestLoadBalancerClientAddServerTarget(t *testing.T) {
 
 	opts := LoadBalancerAddServerTargetOpts{
 		Server:       server,
-		UsePrivateIP: Ptr(true),
+		UsePrivateIP: new(true),
 	}
 	action, _, err := env.Client.LoadBalancer.AddServerTarget(ctx, loadBalancer, opts)
 	if err != nil {
@@ -597,24 +597,24 @@ func TestLoadBalancerAddService(t *testing.T) {
 		}
 		expectedReqBody := schema.LoadBalancerActionAddServiceRequest{
 			Protocol:        string(LoadBalancerServiceProtocolHTTP),
-			ListenPort:      Ptr(4711),
-			DestinationPort: Ptr(80),
+			ListenPort:      new(4711),
+			DestinationPort: new(80),
 			HTTP: &schema.LoadBalancerActionAddServiceRequestHTTP{
-				CookieName:     Ptr("HCLBSTICKY"),
-				CookieLifetime: Ptr(5 * 60),
-				RedirectHTTP:   Ptr(false),
-				StickySessions: Ptr(true),
-				TimeoutIdle:    Ptr(60),
+				CookieName:     new("HCLBSTICKY"),
+				CookieLifetime: new(5 * 60),
+				RedirectHTTP:   new(false),
+				StickySessions: new(true),
+				TimeoutIdle:    new(60),
 			},
 			HealthCheck: &schema.LoadBalancerActionAddServiceRequestHealthCheck{
 				Protocol: "http",
-				Port:     Ptr(4711),
-				Interval: Ptr(15),
-				Timeout:  Ptr(10),
-				Retries:  Ptr(3),
+				Port:     new(4711),
+				Interval: new(15),
+				Timeout:  new(10),
+				Retries:  new(3),
 				HTTP: &schema.LoadBalancerActionAddServiceRequestHealthCheckHTTP{
-					Domain: Ptr("example.com"),
-					Path:   Ptr("/"),
+					Domain: new("example.com"),
+					Path:   new("/"),
 				},
 			},
 		}
@@ -636,24 +636,24 @@ func TestLoadBalancerAddService(t *testing.T) {
 
 	opts := LoadBalancerAddServiceOpts{
 		Protocol:        LoadBalancerServiceProtocolHTTP,
-		ListenPort:      Ptr(4711),
-		DestinationPort: Ptr(80),
+		ListenPort:      new(4711),
+		DestinationPort: new(80),
 		HTTP: &LoadBalancerAddServiceOptsHTTP{
-			CookieName:     Ptr("HCLBSTICKY"),
+			CookieName:     new("HCLBSTICKY"),
 			CookieLifetime: Ptr(5 * time.Minute),
-			RedirectHTTP:   Ptr(false),
-			StickySessions: Ptr(true),
+			RedirectHTTP:   new(false),
+			StickySessions: new(true),
 			TimeoutIdle:    Ptr(time.Minute),
 		},
 		HealthCheck: &LoadBalancerAddServiceOptsHealthCheck{
 			Protocol: "http",
-			Port:     Ptr(4711),
+			Port:     new(4711),
 			Interval: Ptr(15 * time.Second),
 			Timeout:  Ptr(10 * time.Second),
-			Retries:  Ptr(3),
+			Retries:  new(3),
 			HTTP: &LoadBalancerAddServiceOptsHealthCheckHTTP{
-				Domain: Ptr("example.com"),
-				Path:   Ptr("/"),
+				Domain: new("example.com"),
+				Path:   new("/"),
 			},
 		},
 	}
@@ -679,25 +679,25 @@ func TestLoadBalancerUpdateService(t *testing.T) {
 			t.Fatal(err)
 		}
 		expectedReqBody := schema.LoadBalancerActionUpdateServiceRequest{
-			Protocol:        Ptr(string(LoadBalancerServiceProtocolHTTP)),
+			Protocol:        new(string(LoadBalancerServiceProtocolHTTP)),
 			ListenPort:      4711,
-			DestinationPort: Ptr(80),
+			DestinationPort: new(80),
 			HTTP: &schema.LoadBalancerActionUpdateServiceRequestHTTP{
-				CookieName:     Ptr("HCLBSTICKY"),
-				CookieLifetime: Ptr(5 * 60),
-				RedirectHTTP:   Ptr(false),
-				StickySessions: Ptr(true),
-				TimeoutIdle:    Ptr(60),
+				CookieName:     new("HCLBSTICKY"),
+				CookieLifetime: new(5 * 60),
+				RedirectHTTP:   new(false),
+				StickySessions: new(true),
+				TimeoutIdle:    new(60),
 			},
 			HealthCheck: &schema.LoadBalancerActionUpdateServiceRequestHealthCheck{
-				Protocol: Ptr(string(LoadBalancerServiceProtocolHTTP)),
-				Port:     Ptr(4711),
-				Interval: Ptr(15),
-				Timeout:  Ptr(10),
-				Retries:  Ptr(3),
+				Protocol: new(string(LoadBalancerServiceProtocolHTTP)),
+				Port:     new(4711),
+				Interval: new(15),
+				Timeout:  new(10),
+				Retries:  new(3),
 				HTTP: &schema.LoadBalancerActionUpdateServiceRequestHealthCheckHTTP{
-					Domain: Ptr("example.com"),
-					Path:   Ptr("/"),
+					Domain: new("example.com"),
+					Path:   new("/"),
 				},
 			},
 		}
@@ -719,23 +719,23 @@ func TestLoadBalancerUpdateService(t *testing.T) {
 
 	opts := LoadBalancerUpdateServiceOpts{
 		Protocol:        LoadBalancerServiceProtocolHTTP,
-		DestinationPort: Ptr(80),
+		DestinationPort: new(80),
 		HTTP: &LoadBalancerUpdateServiceOptsHTTP{
-			CookieName:     Ptr("HCLBSTICKY"),
+			CookieName:     new("HCLBSTICKY"),
 			CookieLifetime: Ptr(5 * time.Minute),
-			RedirectHTTP:   Ptr(false),
-			StickySessions: Ptr(true),
+			RedirectHTTP:   new(false),
+			StickySessions: new(true),
 			TimeoutIdle:    Ptr(time.Minute),
 		},
 		HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
 			Protocol: LoadBalancerServiceProtocolHTTP,
-			Port:     Ptr(4711),
+			Port:     new(4711),
 			Interval: Ptr(15 * time.Second),
 			Timeout:  Ptr(10 * time.Second),
-			Retries:  Ptr(3),
+			Retries:  new(3),
 			HTTP: &LoadBalancerUpdateServiceOptsHealthCheckHTTP{
-				Domain: Ptr("example.com"),
-				Path:   Ptr("/"),
+				Domain: new("example.com"),
+				Path:   new("/"),
 			},
 		},
 	}
@@ -845,8 +845,8 @@ func TestLoadBalancerClientAttachToNetwork(t *testing.T) {
 		}
 		expectedReqBody := schema.LoadBalancerActionAttachToNetworkRequest{
 			Network: 1,
-			IP:      Ptr("10.0.1.1"),
-			IPRange: Ptr("10.0.1.0/24"),
+			IP:      new("10.0.1.1"),
+			IPRange: new("10.0.1.0/24"),
 		}
 		if !cmp.Equal(expectedReqBody, reqBody) {
 			t.Log(cmp.Diff(expectedReqBody, reqBody))
@@ -1076,7 +1076,7 @@ func TestLoadBalancerClientAddLabelSelectorTarget(t *testing.T) {
 	ctx := context.Background()
 	action, _, err := env.Client.LoadBalancer.AddLabelSelectorTarget(ctx, &LoadBalancer{ID: 1}, LoadBalancerAddLabelSelectorTargetOpts{
 		Selector:     "key=value",
-		UsePrivateIP: Ptr(false),
+		UsePrivateIP: new(false),
 	})
 	if err != nil {
 		t.Fatal(err)
