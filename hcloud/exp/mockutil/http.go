@@ -1,10 +1,15 @@
 package mockutil
 
 import (
+	"bytes"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -118,6 +123,10 @@ func (m *Server) handler(w http.ResponseWriter, r *http.Request) {
 			m.t.Fatal(err)
 		}
 	case expected.JSONRaw != "":
+		if err := validateJSONSyntax(expected.JSONRaw); err != nil {
+			m.t.Fatal(err)
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(expected.Status)
 		_, err := w.Write([]byte(expected.JSONRaw))
@@ -136,4 +145,60 @@ func (m *Server) handler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	m.index++
+}
+
+func validateJSONSyntax(raw string) error {
+	data := []byte(raw)
+
+	err := json.Unmarshal(data, new(map[string]any))
+	if err == nil {
+		return nil
+	}
+
+	var syntaxErr *json.SyntaxError
+	if !errors.As(err, &syntaxErr) {
+		return err
+	}
+
+	pos := max(0, min(int(syntaxErr.Offset)-1, len(data))) // Offset points just past the bad byte
+	start := bytes.LastIndexByte(data[:pos], '\n') + 1
+	end := len(data)
+	if i := bytes.IndexByte(data[pos:], '\n'); i >= 0 {
+		end = pos + i
+	}
+
+	line := bytes.Count(data[:start], []byte("\n")) + 1
+	col := utf8.RuneCount(data[start:pos]) + 1
+
+	// blank out everything before the error, keeping tabs so the caret lines up.
+	pad := strings.Map(func(r rune) rune {
+		if r == '\t' {
+			return r
+		}
+		return ' '
+	}, string(data[start:pos]))
+
+	// gutter width, wide enough for the last number shown
+	width := len(fmt.Sprint(line + 1))
+
+	var b strings.Builder
+	fmt.Fprintf(&b, "(line %d, column %d)\n", line, col)
+
+	if start > 0 { // line before
+		prevStart := bytes.LastIndexByte(data[:start-1], '\n') + 1
+		fmt.Fprintf(&b, "%*d | %s\n", width, line-1, data[prevStart:start-1])
+	}
+
+	fmt.Fprintf(&b, "%*d | %s\n", width, line, data[start:end])
+	fmt.Fprintf(&b, "%*s | %s^", width, "", pad)
+
+	if end < len(data) { // line after
+		next := data[end+1:]
+		if i := bytes.IndexByte(next, '\n'); i >= 0 {
+			next = next[:i]
+		}
+		fmt.Fprintf(&b, "\n%*d | %s", width, line+1, next)
+	}
+
+	return fmt.Errorf("%w %s", err, b.String())
 }

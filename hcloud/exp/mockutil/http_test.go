@@ -101,3 +101,18 @@ func readBody(t *testing.T, resp *http.Response) string {
 	require.NoError(t, resp.Body.Close())
 	return strings.TrimSuffix(string(body), "\n")
 }
+
+func TestValidateJSONSyntax(t *testing.T) {
+	assert.EqualError(t, validateJSONSyntax(`{
+		"actions": [
+			{ "id": 1509772237, "status": "running", "progress": 40 },
+		],
+		"meta": { "pagination": { "page": 1 }}
+	}`),
+		`invalid character ']' looking for beginning of value (line 4, column 3)
+3 | 			{ "id": 1509772237, "status": "running", "progress": 40 },
+4 | 		],
+  | 		^
+5 | 		"meta": { "pagination": { "page": 1 }}`,
+	)
+}
