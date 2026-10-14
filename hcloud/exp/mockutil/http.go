@@ -155,8 +155,8 @@ func validateJSONSyntax(raw string) error {
 		return nil
 	}
 
-	var syntaxErr *json.SyntaxError
-	if !errors.As(err, &syntaxErr) {
+	syntaxErr, ok := errors.AsType[*json.SyntaxError](err)
+	if !ok {
 		return err
 	}
 
