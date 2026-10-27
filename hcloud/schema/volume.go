@@ -90,10 +90,6 @@ type VolumeActionAttachVolumeResponse struct {
 	Action Action `json:"action"`
 }
 
-// VolumeActionDetachVolumeRequest defines the schema of the request to
-// create an detach volume action.
-type VolumeActionDetachVolumeRequest struct{}
-
 // VolumeActionDetachVolumeResponse defines the schema of the response when
 // creating an detach volume action.
 type VolumeActionDetachVolumeResponse struct {

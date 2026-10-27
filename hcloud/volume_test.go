@@ -481,7 +481,7 @@ func TestVolumeClientDetach(t *testing.T) {
 			Want: func(t *testing.T, r *http.Request) {
 				body, err := io.ReadAll(r.Body)
 				require.NoError(t, err)
-				assert.JSONEq(t, `{}`, string(body))
+				require.Empty(t, body)
 			},
 			Status:  201,
 			JSONRaw: `{"action": {"id": 3}}`,
