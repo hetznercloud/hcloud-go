@@ -16,8 +16,9 @@ type Volume struct {
 	LinuxDevice string            `json:"linux_device"`
 	Created     time.Time         `json:"created"`
 
-	// Deprecated: [Server] is deprecated and will be removed after the 2027-10-27. See
-	// https://docs.hetzner.cloud/changelog#2026-10-27-volumes-allow-generic-resource-targets.
+	// Deprecated: [Volume.Server] is deprecated and will be removed after
+	// the 2027-10-27, use [Volume.Assignee] instead.
+	// See https://docs.hetzner.cloud/changelog#2026-10-27-volumes-allow-generic-resource-targets.
 	Server *int64 `json:"server"`
 }
 
