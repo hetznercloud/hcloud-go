@@ -1,5 +1,13 @@
 # Changelog
 
+## [v2.53.1](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.53.1)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.53.0...v2.53.1)
+
+### Bug Fixes
+
+- do not send empty json body in volume detach (#955) ([9adc140](https://github.com/hetznercloud/hcloud-go/commit/9adc140755042b41d7a1d865d8c1afe94535b5d6))
+
 ## [v2.53.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.53.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.52.0...v2.53.0)
