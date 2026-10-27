@@ -305,9 +305,7 @@ func (c *VolumeClient) Detach(ctx context.Context, volume *Volume) (*Action, *Re
 
 	reqPath := fmt.Sprintf(opPath, volume.ID)
 
-	var reqBody schema.VolumeActionDetachVolumeRequest
-
-	respBody, resp, err := postRequest[schema.VolumeActionDetachVolumeResponse](ctx, c.client, reqPath, reqBody)
+	respBody, resp, err := postRequest[schema.VolumeActionDetachVolumeResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
 		return nil, resp, err
 	}
