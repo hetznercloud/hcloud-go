@@ -391,3 +391,155 @@ func TestVolumeClientDelete(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 }
+
+func TestVolumeClientAttachWithOpts(t *testing.T) {
+	t.Run("minimal", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/volumes/1/actions/attach",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, `{
+						"server": 2
+					}`, string(body))
+				},
+				Status:  201,
+				JSONRaw: `{"action": {"id": 3}}`,
+			},
+		})
+
+		action, resp, err := client.Volume.AttachWithOpts(ctx, &Volume{ID: 1}, VolumeAttachOpts{
+			Server: &Server{ID: 2},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, int64(3), action.ID)
+	})
+
+	t.Run("full", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/volumes/1/actions/attach",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, `{
+						"server": 2,
+						"automount": false
+					}`, string(body))
+				},
+				Status:  201,
+				JSONRaw: `{"action": {"id": 3}}`,
+			},
+		})
+
+		action, resp, err := client.Volume.AttachWithOpts(ctx, &Volume{ID: 1}, VolumeAttachOpts{
+			Server:    &Server{ID: 2},
+			Automount: new(false),
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, int64(3), action.ID)
+	})
+}
+
+func TestVolumeClientAttach(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/volumes/1/actions/attach",
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+				assert.JSONEq(t, `{
+					"server": 2
+				}`, string(body))
+			},
+			Status:  201,
+			JSONRaw: `{"action": {"id": 3}}`,
+		},
+	})
+
+	action, resp, err := client.Volume.Attach(ctx, &Volume{ID: 1}, &Server{ID: 2})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	assert.Equal(t, int64(3), action.ID)
+}
+
+func TestVolumeClientDetach(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/volumes/1/actions/detach",
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+				assert.JSONEq(t, `{}`, string(body))
+			},
+			Status:  201,
+			JSONRaw: `{"action": {"id": 3}}`,
+		},
+	})
+
+	action, resp, err := client.Volume.Detach(ctx, &Volume{ID: 1})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	assert.Equal(t, int64(3), action.ID)
+}
+
+func TestVolumeClientChangeProtection(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/volumes/1/actions/change_protection",
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+				assert.JSONEq(t, `{
+					"delete": true
+				}`, string(body))
+			},
+			Status:  201,
+			JSONRaw: `{"action": {"id": 3}}`,
+		},
+	})
+
+	action, resp, err := client.Volume.ChangeProtection(ctx, &Volume{ID: 1}, VolumeChangeProtectionOpts{
+		Delete: new(true),
+	})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	assert.Equal(t, int64(3), action.ID)
+}
+
+func TestVolumeClientResize(t *testing.T) {
+	ctx, server, client := makeTestUtils(t)
+
+	server.Expect([]mockutil.Request{
+		{
+			Method: "POST", Path: "/volumes/1/actions/resize",
+			Want: func(t *testing.T, r *http.Request) {
+				body, err := io.ReadAll(r.Body)
+				require.NoError(t, err)
+				assert.JSONEq(t, `{
+					"size": 50
+				}`, string(body))
+			},
+			Status:  201,
+			JSONRaw: `{"action": {"id": 3}}`,
+		},
+	})
+
+	action, resp, err := client.Volume.Resize(ctx, &Volume{ID: 1}, 50)
+	require.NoError(t, err)
+	require.NotNil(t, resp)
+	assert.Equal(t, int64(3), action.ID)
+}
