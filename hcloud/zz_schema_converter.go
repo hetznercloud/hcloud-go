@@ -1329,7 +1329,7 @@ func (c *converterImpl) SchemaFromVolume(source *Volume) schema.Volume {
 	if source != nil {
 		schemaVolume.ID = (*source).ID
 		schemaVolume.Name = (*source).Name
-		schemaVolume.Server = c.pHcloudServerToPInt64((*source).Server)
+		schemaVolume.Assignee = c.pHcloudResourceToPSchemaResource((*source).Assignee)
 		schemaVolume.Status = string((*source).Status)
 		schemaVolume.Location = c.SchemaFromLocation((*source).Location)
 		schemaVolume.Size = (*source).Size
@@ -1338,6 +1338,7 @@ func (c *converterImpl) SchemaFromVolume(source *Volume) schema.Volume {
 		schemaVolume.Labels = (*source).Labels
 		schemaVolume.LinuxDevice = (*source).LinuxDevice
 		schemaVolume.Created = c.timeTimeToTimeTime((*source).Created)
+		schemaVolume.Server = resourceToSchemaServerID((*source).Assignee)
 	}
 	return schemaVolume
 }
@@ -1738,10 +1739,7 @@ func (c *converterImpl) VolumeFromSchema(source schema.Volume) *Volume {
 	hcloudVolume.ID = source.ID
 	hcloudVolume.Name = source.Name
 	hcloudVolume.Status = VolumeStatus(source.Status)
-	if source.Server != nil {
-		hcloudServer := serverFromInt64(*source.Server)
-		hcloudVolume.Server = &hcloudServer
-	}
+	hcloudVolume.Assignee = c.pSchemaResourceToPHcloudResource(source.Assignee)
 	hcloudVolume.Location = c.LocationFromSchema(source.Location)
 	hcloudVolume.Size = source.Size
 	hcloudVolume.Format = source.Format
@@ -1749,6 +1747,7 @@ func (c *converterImpl) VolumeFromSchema(source schema.Volume) *Volume {
 	hcloudVolume.Labels = source.Labels
 	hcloudVolume.LinuxDevice = source.LinuxDevice
 	hcloudVolume.Created = c.timeTimeToTimeTime(source.Created)
+	hcloudVolume.Server = schemaResourceToServer(source.Assignee)
 	return &hcloudVolume
 }
 func (c *converterImpl) ZoneFromSchema(source schema.Zone) *Zone {
@@ -2500,6 +2499,16 @@ func (c *converterImpl) pHcloudPlacementGroupToPSchemaPlacementGroup(source *Pla
 	}
 	return pSchemaPlacementGroup
 }
+func (c *converterImpl) pHcloudResourceToPSchemaResource(source *Resource) *schema.Resource {
+	var pSchemaResource *schema.Resource
+	if source != nil {
+		var schemaResource schema.Resource
+		schemaResource.ID = (*source).ID
+		schemaResource.Type = (*source).Type
+		pSchemaResource = &schemaResource
+	}
+	return pSchemaResource
+}
 func (c *converterImpl) pHcloudServerToInt64(source *Server) int64 {
 	var xint64 int64
 	if source != nil {
@@ -2755,6 +2764,16 @@ func (c *converterImpl) pSchemaPlacementGroupToPHcloudPlacementGroup(source *sch
 		pHcloudPlacementGroup = &hcloudPlacementGroup
 	}
 	return pHcloudPlacementGroup
+}
+func (c *converterImpl) pSchemaResourceToPHcloudResource(source *schema.Resource) *Resource {
+	var pHcloudResource *Resource
+	if source != nil {
+		var hcloudResource Resource
+		hcloudResource.ID = (*source).ID
+		hcloudResource.Type = (*source).Type
+		pHcloudResource = &hcloudResource
+	}
+	return pHcloudResource
 }
 func (c *converterImpl) pSchemaStorageBoxSnapshotPlanToPHcloudStorageBoxSnapshotPlan(source *schema.StorageBoxSnapshotPlan) *StorageBoxSnapshotPlan {
 	var pHcloudStorageBoxSnapshotPlan *StorageBoxSnapshotPlan

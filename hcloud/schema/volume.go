@@ -6,7 +6,7 @@ import "time"
 type Volume struct {
 	ID          int64             `json:"id"`
 	Name        string            `json:"name"`
-	Server      *int64            `json:"server"`
+	Assignee    *Resource         `json:"assignee"`
 	Status      string            `json:"status"`
 	Location    Location          `json:"location"`
 	Size        int               `json:"size"`
@@ -15,6 +15,10 @@ type Volume struct {
 	Labels      map[string]string `json:"labels"`
 	LinuxDevice string            `json:"linux_device"`
 	Created     time.Time         `json:"created"`
+
+	// Deprecated: [Server] is deprecated and will be removed after the 2027-10-27. See
+	// https://docs.hetzner.cloud/changelog#2026-10-27-volumes-allow-generic-resource-targets.
+	Server *int64 `json:"server"`
 }
 
 // VolumeCreateRequest defines the schema of the request
@@ -22,7 +26,7 @@ type Volume struct {
 type VolumeCreateRequest struct {
 	Name      string             `json:"name"`
 	Size      int                `json:"size"`
-	Server    *int64             `json:"server,omitempty"`
+	Assignee  *Resource          `json:"assignee,omitempty"`
 	Location  *IDOrName          `json:"location,omitempty"`
 	Labels    *map[string]string `json:"labels,omitempty"`
 	Automount *bool              `json:"automount,omitempty"`
@@ -80,8 +84,8 @@ type VolumeActionChangeProtectionResponse struct {
 // VolumeActionAttachVolumeRequest defines the schema of the request to
 // attach a volume to a server.
 type VolumeActionAttachVolumeRequest struct {
-	Server    int64 `json:"server"`
-	Automount *bool `json:"automount,omitempty"`
+	Assignee  Resource `json:"assignee"`
+	Automount *bool    `json:"automount,omitempty"`
 }
 
 // VolumeActionAttachVolumeResponse defines the schema of the response when
