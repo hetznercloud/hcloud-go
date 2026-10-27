@@ -59,12 +59,14 @@ func TestVolumeClientGetByID(t *testing.T) {
 		assert.Equal(t, "volume1", volume.Name)
 		assert.Equal(t, "2026-10-27T11:17:32Z", volume.Created.Format(time.RFC3339))
 		assert.Equal(t, map[string]string{"key": "value"}, volume.Labels)
+		require.NotNil(t, volume.Location)
 		assert.Equal(t, int64(3), volume.Location.ID)
 		assert.Equal(t, "hel1", volume.Location.Name)
 		assert.Equal(t, VolumeProtection{Delete: true}, volume.Protection)
 		assert.Equal(t, VolumeStatusAvailable, volume.Status)
 		assert.Equal(t, 10, volume.Size)
-		assert.Equal(t, "xfs", *volume.Format)
+		assert.Equal(t, new("xfs"), volume.Format)
+		require.NotNil(t, volume.Server)
 		assert.Equal(t, int64(2), volume.Server.ID)
 		assert.Equal(t, "/dev/disk/by-id/scsi-0HC_Volume_1", volume.LinuxDevice)
 	})
@@ -141,6 +143,15 @@ func TestVolumeClientGetByName(t *testing.T) {
 		assert.Nil(t, volume)
 	})
 
+	t.Run("GetByName (empty name)", func(t *testing.T) {
+		ctx, _, client := makeTestUtils(t)
+
+		volume, resp, err := client.Volume.GetByName(ctx, "")
+		require.NoError(t, err)
+		require.Nil(t, resp)
+		require.Nil(t, volume)
+	})
+
 	t.Run("Get", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
@@ -185,9 +196,7 @@ func TestVolumeClientGet(t *testing.T) {
 	})
 
 	t.Run("Get (empty name)", func(t *testing.T) {
-		ctx, server, client := makeTestUtils(t)
-
-		server.Expect([]mockutil.Request{})
+		ctx, _, client := makeTestUtils(t)
 
 		volume, resp, err := client.Volume.Get(ctx, "")
 		require.NoError(t, err)
