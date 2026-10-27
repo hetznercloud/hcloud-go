@@ -1,620 +1,393 @@
 package hcloud
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
+	"io"
 	"net/http"
 	"testing"
+	"time"
 
-	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
 )
 
-func TestVolumeClientGet(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+func TestVolumeClientGetByID(t *testing.T) {
+	t.Run("GetByID", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
 
-	env.Mux.HandleFunc("/volumes/1", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `{
-			"volume": {
-				"id": 1,
-				"created": "2016-01-30T23:50:11+00:00",
-				"name": "db-storage",
-				"status": "creating",
-				"server": null,
-				"location": {
-					"id": 1,
-					"name": "fsn1",
-					"description": "Falkenstein DC Park 1",
-					"country": "DE",
-					"city": "Falkenstein",
-					"latitude": 50.47612,
-					"longitude": 12.370071
-				},
-				"size": 42,
-				"linux_device":"/dev/disk/by-id/scsi-0HC_volume_1",
-				"protection": {
-					"delete": true
-				}
-			}
-		}`)
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/volumes/1",
+				Status: 200,
+				JSONRaw: `{
+					"volume": {
+						"id": 1,
+						"name": "volume1",
+						"created": "2026-10-27T11:17:32Z",
+						"labels": {
+							"key": "value"
+						},
+						"location": {
+							"id": 3,
+							"name": "hel1",
+							"description": "Helsinki DC Park 1",
+							"city": "Helsinki",
+							"country": "FI",
+							"latitude": 60.169855,
+							"longitude": 24.938379,
+							"network_zone": "eu-central"
+						},
+						"protection": {
+							"delete": true
+						},
+						"status": "available",
+						"size": 10,
+						"format": "xfs",
+						"server": 2,
+						"linux_device": "/dev/disk/by-id/scsi-0HC_Volume_1"
+					}
+				}`,
+			},
+		})
+
+		volume, resp, err := client.Volume.GetByID(ctx, 1)
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, volume)
+		assert.Equal(t, int64(1), volume.ID)
+		assert.Equal(t, "volume1", volume.Name)
+		assert.Equal(t, "2026-10-27T11:17:32Z", volume.Created.Format(time.RFC3339))
+		assert.Equal(t, map[string]string{"key": "value"}, volume.Labels)
+		require.NotNil(t, volume.Location)
+		assert.Equal(t, int64(3), volume.Location.ID)
+		assert.Equal(t, "hel1", volume.Location.Name)
+		assert.Equal(t, VolumeProtection{Delete: true}, volume.Protection)
+		assert.Equal(t, VolumeStatusAvailable, volume.Status)
+		assert.Equal(t, 10, volume.Size)
+		assert.Equal(t, new("xfs"), volume.Format)
+		require.NotNil(t, volume.Server)
+		assert.Equal(t, int64(2), volume.Server.ID)
+		assert.Equal(t, "/dev/disk/by-id/scsi-0HC_Volume_1", volume.LinuxDevice)
 	})
 
-	ctx := context.Background()
+	t.Run("GetByID (not found)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
 
-	t.Run("GetByID", func(t *testing.T) {
-		volume, _, err := env.Client.Volume.GetByID(ctx, 1)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if volume == nil {
-			t.Fatal("no volume")
-		}
-		if volume.ID != 1 {
-			t.Errorf("unexpected volume ID: %v", volume.ID)
-		}
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/volumes/1",
+				Status:  404,
+				JSONRaw: `{ "error": { "code": "not_found" }}`,
+			},
+		})
+
+		volume, resp, err := client.Volume.GetByID(ctx, 1)
+		require.NoError(t, err)
+		assert.NotNil(t, resp)
+		assert.Nil(t, volume)
 	})
 
 	t.Run("Get", func(t *testing.T) {
-		volume, _, err := env.Client.Volume.Get(ctx, "1")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if volume == nil {
-			t.Fatal("no volume")
-		}
-		if volume.ID != 1 {
-			t.Errorf("unexpected volume ID: %v", volume.ID)
-		}
-	})
-}
+		ctx, server, client := makeTestUtils(t)
 
-func TestVolumeClientGetByIDNotFound(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/volumes/1", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(schema.ErrorResponse{
-			Error: schema.Error{
-				Code: string(ErrorCodeNotFound),
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/volumes/1",
+				Status:  200,
+				JSONRaw: `{ "volume": { "id": 1 }}`,
 			},
 		})
-	})
 
-	ctx := context.Background()
-	volume, _, err := env.Client.Volume.GetByID(ctx, 1)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if volume != nil {
-		t.Fatal("expected no volume")
-	}
+		volume, resp, err := client.Volume.Get(ctx, "1")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, volume)
+		assert.Equal(t, int64(1), volume.ID)
+	})
 }
 
 func TestVolumeClientGetByName(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+	t.Run("GetByName", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
 
-	env.Mux.HandleFunc("/volumes", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.RawQuery != "name=my-volume" {
-			t.Fatal("missing name query")
-		}
-		fmt.Fprint(w, `{
-			"volumes": [
-				{
-					"id": 1,
-					"created": "2016-01-30T23:50:11+00:00",
-					"name": "my-volume",
-					"status": "creating",
-					"server": null,
-					"location": {
-						"id": 1,
-						"name": "fsn1",
-						"description": "Falkenstein DC Park 1",
-						"country": "DE",
-						"city": "Falkenstein",
-						"latitude": 50.47612,
-						"longitude": 12.370071
-					},
-					"size": 42,
-					"linux_device":"/dev/disk/by-id/scsi-0HC_volume_1",
-					"protection": {
-						"delete": true
-					}
-				}
-			]
-		}`)
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/volumes?name=my-volume",
+				Status:  200,
+				JSONRaw: `{ "volumes": [{ "id": 1 }]}`,
+			},
+		})
+
+		volume, resp, err := client.Volume.GetByName(ctx, "my-volume")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, volume)
+		assert.Equal(t, int64(1), volume.ID)
 	})
 
-	ctx := context.Background()
+	t.Run("GetByName (not found)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
 
-	t.Run("GetByName", func(t *testing.T) {
-		volume, _, err := env.Client.Volume.GetByName(ctx, "my-volume")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if volume == nil {
-			t.Fatal("no volume")
-		}
-		if volume.ID != 1 {
-			t.Errorf("unexpected volume ID: %v", volume.ID)
-		}
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/volumes?name=my-volume",
+				Status:  200,
+				JSONRaw: `{ "volumes": []}`,
+			},
+		})
+
+		volume, resp, err := client.Volume.GetByName(ctx, "my-volume")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Nil(t, volume)
+	})
+
+	t.Run("GetByName (empty name)", func(t *testing.T) {
+		ctx, _, client := makeTestUtils(t)
+
+		volume, resp, err := client.Volume.GetByName(ctx, "")
+		require.NoError(t, err)
+		require.Nil(t, resp)
+		require.Nil(t, volume)
 	})
 
 	t.Run("Get", func(t *testing.T) {
-		volume, _, err := env.Client.Volume.Get(ctx, "my-volume")
-		if err != nil {
-			t.Fatal(err)
-		}
-		if volume == nil {
-			t.Fatal("no volume")
-		}
-		if volume.ID != 1 {
-			t.Errorf("unexpected volume ID: %v", volume.ID)
-		}
-	})
-}
+		ctx, server, client := makeTestUtils(t)
 
-func TestVolumeClientGetByNumericName(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/volumes/123", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusNotFound)
-		json.NewEncoder(w).Encode(schema.ErrorResponse{
-			Error: schema.Error{
-				Code: string(ErrorCodeNotFound),
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/volumes?name=my-volume",
+				Status:  200,
+				JSONRaw: `{ "volumes": [{ "id": 1 }]}`,
 			},
 		})
+
+		volume, resp, err := client.Volume.Get(ctx, "my-volume")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, volume)
+		assert.Equal(t, int64(1), volume.ID)
 	})
-
-	env.Mux.HandleFunc("/volumes", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.RawQuery != "name=123" {
-			t.Fatal("missing name query")
-		}
-		fmt.Fprint(w, `{
-			"volumes": [
-				{
-					"id": 1,
-					"created": "2016-01-30T23:50:11+00:00",
-					"name": "123",
-					"status": "creating",
-					"server": null,
-					"location": {
-						"id": 1,
-						"name": "fsn1",
-						"description": "Falkenstein DC Park 1",
-						"country": "DE",
-						"city": "Falkenstein",
-						"latitude": 50.47612,
-						"longitude": 12.370071
-					},
-					"size": 42,
-					"linux_device":"/dev/disk/by-id/scsi-0HC_volume_1",
-					"protection": {
-						"delete": true
-					}
-				}
-			]
-		}`)
-	})
-
-	ctx := context.Background()
-
-	volume, _, err := env.Client.Volume.Get(ctx, "123")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if volume == nil {
-		t.Fatal("no volume")
-	}
-	if volume.ID != 1 {
-		t.Errorf("unexpected volume ID: %v", volume.ID)
-	}
 }
 
-func TestVolumeClientGetByNameNotFound(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+func TestVolumeClientGet(t *testing.T) {
+	t.Run("Get (numeric name)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
 
-	env.Mux.HandleFunc("/volumes", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.RawQuery != "name=my-volume" {
-			t.Fatal("missing name query")
-		}
-		fmt.Fprint(w, `{
-			"volumes": []
-		}`)
+		server.Expect([]mockutil.Request{
+			{
+				Method: "GET", Path: "/volumes/123",
+				Status:  404,
+				JSONRaw: `{ "error": { "code": "not_found" }}`,
+			},
+			{
+				Method: "GET", Path: "/volumes?name=123",
+				Status:  200,
+				JSONRaw: `{ "volumes": [{ "id": 1 }]}`,
+			},
+		})
+
+		volume, resp, err := client.Volume.Get(ctx, "123")
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		require.NotNil(t, volume)
+		assert.Equal(t, int64(1), volume.ID)
 	})
 
-	ctx := context.Background()
-	volume, _, err := env.Client.Volume.GetByName(ctx, "my-volume")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if volume != nil {
-		t.Fatal("unexpected volume")
-	}
+	t.Run("Get (empty name)", func(t *testing.T) {
+		ctx, _, client := makeTestUtils(t)
+
+		volume, resp, err := client.Volume.Get(ctx, "")
+		require.NoError(t, err)
+		require.Nil(t, resp)
+		require.Nil(t, volume)
+	})
 }
 
-func TestVolumeClientGetByNameEmpty(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+func TestVolumeClientCreate(t *testing.T) {
+	t.Run("Create (minimal with server)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
 
-	ctx := context.Background()
-	volume, _, err := env.Client.Volume.GetByName(ctx, "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if volume != nil {
-		t.Fatal("unexpected volume")
-	}
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/volumes",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, `{
+						"name": "my-volume",
+						"size": 42,
+						"server": 1
+					}`, string(body))
+				},
+				Status: 201,
+				JSONRaw: `{
+					"volume": { "id": 1 },
+					"action": { "id": 2 },
+					"next_actions": [{ "id": 3 }]
+				}`,
+			},
+		})
+
+		result, resp, err := client.Volume.Create(ctx, VolumeCreateOpts{
+			Name:   "my-volume",
+			Size:   42,
+			Server: &Server{ID: 1},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, int64(1), result.Volume.ID)
+		assert.Equal(t, int64(2), result.Action.ID)
+		require.Len(t, result.NextActions, 1)
+		assert.Equal(t, int64(3), result.NextActions[0].ID)
+	})
+
+	t.Run("Create (full with server)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/volumes",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, `{
+						"name": "my-volume",
+						"size": 42,
+						"server": 1,
+						"automount": true,
+						"format": "xfs",
+						"labels": { "key": "value" }
+					}`, string(body))
+				},
+				Status: 201,
+				JSONRaw: `{
+					"volume": { "id": 1 },
+					"action": { "id": 2 },
+					"next_actions": [{ "id": 3 }]
+				}`,
+			},
+		})
+
+		result, resp, err := client.Volume.Create(ctx, VolumeCreateOpts{
+			Name:      "my-volume",
+			Size:      42,
+			Server:    &Server{ID: 1},
+			Automount: new(true),
+			Format:    new("xfs"),
+			Labels:    map[string]string{"key": "value"},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, int64(1), result.Volume.ID)
+		assert.Equal(t, int64(2), result.Action.ID)
+		require.Len(t, result.NextActions, 1)
+		assert.Equal(t, int64(3), result.NextActions[0].ID)
+	})
+
+	t.Run("Create (with location)", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/volumes",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, `{
+						"name": "my-volume",
+						"size": 42,
+						"location": 1,
+						"labels": {"key": "value"}
+					}`, string(body))
+				},
+				Status: 201,
+				JSONRaw: `{
+					"volume": { "id": 1 },
+					"action": { "id": 2 },
+					"next_actions": []
+				}`,
+			},
+		})
+
+		result, resp, err := client.Volume.Create(ctx, VolumeCreateOpts{
+			Name:     "my-volume",
+			Size:     42,
+			Location: &Location{ID: 1},
+			Labels:   map[string]string{"key": "value"},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, int64(1), result.Volume.ID)
+		assert.Equal(t, int64(2), result.Action.ID)
+		require.Empty(t, result.NextActions)
+	})
+}
+
+func TestVolumeClientUpdate(t *testing.T) {
+	t.Run("minimal", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "PUT", Path: "/volumes/1",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, `{}`, string(body))
+				},
+				Status:  200,
+				JSONRaw: `{"volume": {"id": 1}}`,
+			},
+		})
+
+		volume, resp, err := client.Volume.Update(ctx, &Volume{ID: 1}, VolumeUpdateOpts{})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, int64(1), volume.ID)
+	})
+
+	t.Run("full", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "PUT", Path: "/volumes/1",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, `{
+						"name": "volume1",
+						"labels": {"key": "value"}
+					}`, string(body))
+				},
+				Status:  200,
+				JSONRaw: `{"volume": {"id": 1}}`,
+			},
+		})
+
+		result, resp, err := client.Volume.Update(ctx, &Volume{ID: 1}, VolumeUpdateOpts{
+			Name:   "volume1",
+			Labels: map[string]string{"key": "value"},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, int64(1), result.ID)
+	})
 }
 
 func TestVolumeClientDelete(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
+	ctx, server, client := makeTestUtils(t)
 
-	env.Mux.HandleFunc("/volumes/1", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != "DELETE" {
-			t.Error("expected DELETE")
-		}
+	server.Expect([]mockutil.Request{
+		{
+			Method: "DELETE", Path: "/volumes/1",
+			Status: 204,
+		},
 	})
 
-	var (
-		ctx    = context.Background()
-		volume = &Volume{ID: 1}
-	)
-	_, err := env.Client.Volume.Delete(ctx, volume)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestVolumeClientCreateWithServer(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/volumes", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprint(w, `{
-			"volume": {
-				"id": 1,
-				"created": "2016-01-30T23:50:11+00:00",
-				"name": "my-volume",
-				"status": "creating",
-				"server": 1,
-				"location": {
-					"id": 1,
-					"name": "fsn1",
-					"description": "Falkenstein DC Park 1",
-					"country": "DE",
-					"city": "Falkenstein",
-					"latitude": 50.47612,
-					"longitude": 12.370071
-				},
-				"size": 42,
-				"linux_device":"/dev/disk/by-id/scsi-0HC_volume_1",
-				"protection": {
-					"delete": true
-				},
-				"labels": {}
-			},
-			"action": {
-				"id": 2,
-				"command": "create_volume",
-				"status": "running",
-				"progress": 0,
-				"started": "2016-01-30T23:50:11+00:00",
-				"finished": null,
-				"resources": [
-					{
-						"id": 42,
-						"type": "server"
-					},
-					{
-						"id": 1,
-						"type": "volume"
-					}
-				]
-			},
-			"next_actions": [
-				{
-					"id": 3,
-					"command": "attach_volume",
-					"status": "running",
-					"progress": 0,
-					"started": "2016-01-30T23:50:15+00:00",
-					"finished": null,
-					"resources": [
-						{
-							"id": 42,
-							"type": "server"
-						},
-						{
-							"id": 1,
-							"type": "volume"
-						}
-					]
-				}
-			]
-		}`)
-	})
-
-	ctx := context.Background()
-	opts := VolumeCreateOpts{
-		Name:   "my-volume",
-		Size:   42,
-		Server: &Server{ID: 1},
-	}
-	result, _, err := env.Client.Volume.Create(ctx, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if result.Volume.ID != 1 {
-		t.Errorf("unexpected volume ID: %v", result.Volume.ID)
-	}
-	if result.Action.ID != 2 {
-		t.Errorf("unexpected action ID: %v", result.Action.ID)
-	}
-	if len(result.NextActions) != 1 || result.NextActions[0].ID != 3 {
-		t.Errorf("unexpected next actions: %v", result.NextActions)
-	}
-}
-
-func TestVolumeClientCreateWithLocation(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/volumes", func(w http.ResponseWriter, r *http.Request) {
-		var reqBody schema.VolumeCreateRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			t.Fatal(err)
-		}
-		if reqBody.Name != "my-volume" {
-			t.Errorf("unexpected volume name in request: %v", reqBody.Name)
-		}
-		if reqBody.Size != 42 {
-			t.Errorf("unexpected volume size in request: %v", reqBody.Size)
-		}
-		if reqBody.Location.ID != 1 {
-			t.Errorf("unexpected volume location in request: %v", reqBody.Location)
-		}
-		if reqBody.Server != nil {
-			t.Errorf("unexpected server in request: %v", reqBody.Server)
-		}
-		if reqBody.Labels == nil || (*reqBody.Labels)["key"] != "value" {
-			t.Errorf("unexpected labels in request: %v", reqBody.Labels)
-		}
-		if reqBody.Automount != nil {
-			t.Errorf("unexpected automount in request: %v", reqBody.Automount)
-		}
-		if reqBody.Format != nil {
-			t.Errorf("unexpected format in request: %v", reqBody.Automount)
-		}
-		fmt.Fprint(w, `{
-			"volume": {
-				"id": 1,
-				"created": "2016-01-30T23:50:11+00:00",
-				"name": "my-volume",
-				"server": null,
-				"status": "creating",
-				"location": {
-					"id": 1,
-					"name": "fsn1",
-					"description": "Falkenstein DC Park 1",
-					"country": "DE",
-					"city": "Falkenstein",
-					"latitude": 50.47612,
-					"longitude": 12.370071
-				},
-				"size": 42,
-				"linux_device":"/dev/disk/by-id/scsi-0HC_volume_1",
-				"protection": {
-					"delete": true
-				},
-				"labels": {
-					"key": "value"
-				}
-			}
-		}`)
-	})
-
-	ctx := context.Background()
-	opts := VolumeCreateOpts{
-		Name:     "my-volume",
-		Size:     42,
-		Location: &Location{ID: 1},
-		Labels:   map[string]string{"key": "value"},
-	}
-	result, _, err := env.Client.Volume.Create(ctx, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if result.Volume.ID != 1 {
-		t.Errorf("unexpected volume ID: %v", result.Volume.ID)
-	}
-}
-func TestVolumeClientCreateWithAutomount(t *testing.T) {
-	env := newTestEnv()
-	defer env.Teardown()
-
-	env.Mux.HandleFunc("/volumes", func(w http.ResponseWriter, r *http.Request) {
-		var reqBody schema.VolumeCreateRequest
-		if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-			t.Fatal(err)
-		}
-		if reqBody.Name != "my-volume" {
-			t.Errorf("unexpected volume name in request: %v", reqBody.Name)
-		}
-		if reqBody.Size != 42 {
-			t.Errorf("unexpected volume size in request: %v", reqBody.Size)
-		}
-		if reqBody.Server == nil || *reqBody.Server != 1 {
-			t.Errorf("unexpected server in request: %v", reqBody.Server)
-		}
-		if reqBody.Labels == nil || (*reqBody.Labels)["key"] != "value" {
-			t.Errorf("unexpected labels in request: %v", reqBody.Labels)
-		}
-		if *reqBody.Automount != true {
-			t.Errorf("unexpected automount in request: %v", reqBody.Automount)
-		}
-		if *reqBody.Format != "xfs" {
-			t.Errorf("unexpected format in request: %v", reqBody.Automount)
-		}
-		fmt.Fprint(w, `{
-			"volume": {
-				"id": 1,
-				"created": "2016-01-30T23:50:11+00:00",
-				"name": "my-volume",
-				"status": "creating",
-				"server": 1,
-				"location": {
-					"id": 1,
-					"name": "fsn1",
-					"description": "Falkenstein DC Park 1",
-					"country": "DE",
-					"city": "Falkenstein",
-					"latitude": 50.47612,
-					"longitude": 12.370071
-				},
-				"size": 42,
-				"linux_device":"/dev/disk/by-id/scsi-0HC_volume_1",
-				"protection": {
-					"delete": true
-				},
-				"labels": {
-					"key": "value"
-				}
-			}
-		}`)
-	})
-
-	ctx := context.Background()
-	opts := VolumeCreateOpts{
-		Name:      "my-volume",
-		Size:      42,
-		Server:    &Server{ID: 1},
-		Labels:    map[string]string{"key": "value"},
-		Automount: new(true),
-		Format:    new("xfs"),
-	}
-	result, _, err := env.Client.Volume.Create(ctx, opts)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if result.Volume.ID != 1 {
-		t.Errorf("unexpected volume ID: %v", result.Volume.ID)
-	}
-}
-func TestVolumeClientUpdate(t *testing.T) {
-	var (
-		ctx    = context.Background()
-		volume = &Volume{ID: 1}
-	)
-
-	t.Run("name", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/volumes/1", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "PUT" {
-				t.Error("expected PUT")
-			}
-			var reqBody schema.VolumeUpdateRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Name != "test" {
-				t.Errorf("unexpected name: %v", reqBody.Name)
-			}
-			json.NewEncoder(w).Encode(schema.VolumeUpdateResponse{
-				Volume: schema.Volume{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := VolumeUpdateOpts{
-			Name: "test",
-		}
-		updatedVolume, _, err := env.Client.Volume.Update(ctx, volume, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if updatedVolume.ID != 1 {
-			t.Errorf("unexpected volume ID: %v", updatedVolume.ID)
-		}
-	})
-
-	t.Run("labels", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/volumes/1", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "PUT" {
-				t.Error("expected PUT")
-			}
-			var reqBody schema.VolumeUpdateRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Labels == nil || (*reqBody.Labels)["key"] != "value" {
-				t.Errorf("unexpected labels in request: %v", reqBody.Labels)
-			}
-			json.NewEncoder(w).Encode(schema.VolumeUpdateResponse{
-				Volume: schema.Volume{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := VolumeUpdateOpts{
-			Name:   "test",
-			Labels: map[string]string{"key": "value"},
-		}
-		updatedVolume, _, err := env.Client.Volume.Update(ctx, volume, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if updatedVolume.ID != 1 {
-			t.Errorf("unexpected volume ID: %v", updatedVolume.ID)
-		}
-	})
-
-	t.Run("no updates", func(t *testing.T) {
-		env := newTestEnv()
-		defer env.Teardown()
-
-		env.Mux.HandleFunc("/volumes/1", func(w http.ResponseWriter, r *http.Request) {
-			if r.Method != "PUT" {
-				t.Error("expected PUT")
-			}
-			var reqBody schema.VolumeUpdateRequest
-			if err := json.NewDecoder(r.Body).Decode(&reqBody); err != nil {
-				t.Fatal(err)
-			}
-			if reqBody.Name != "" {
-				t.Errorf("unexpected no name, but got: %v", reqBody.Name)
-			}
-			if reqBody.Labels != nil {
-				t.Errorf("unexpected no labels, but got: %v", reqBody.Labels)
-			}
-			json.NewEncoder(w).Encode(schema.VolumeUpdateResponse{
-				Volume: schema.Volume{
-					ID: 1,
-				},
-			})
-		})
-
-		opts := VolumeUpdateOpts{}
-		updatedVolume, _, err := env.Client.Volume.Update(ctx, volume, opts)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if updatedVolume.ID != 1 {
-			t.Errorf("unexpected volume ID: %v", updatedVolume.ID)
-		}
-	})
+	resp, err := client.Volume.Delete(ctx, &Volume{ID: 1})
+	require.NoError(t, err)
+	require.NotNil(t, resp)
 }
