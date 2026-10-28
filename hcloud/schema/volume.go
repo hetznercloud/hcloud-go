@@ -6,7 +6,7 @@ import "time"
 type Volume struct {
 	ID          int64             `json:"id"`
 	Name        string            `json:"name"`
-	Assignee    *Resource         `json:"assignee"`
+	Assignee    *VolumeAssignee   `json:"assignee"`
 	Status      string            `json:"status"`
 	Location    Location          `json:"location"`
 	Size        int               `json:"size"`
@@ -22,12 +22,14 @@ type Volume struct {
 	Server *int64 `json:"server"`
 }
 
+type VolumeAssignee Resource
+
 // VolumeCreateRequest defines the schema of the request
 // to create a volume.
 type VolumeCreateRequest struct {
 	Name      string             `json:"name"`
 	Size      int                `json:"size"`
-	Assignee  *Resource          `json:"assignee,omitempty"`
+	Assignee  *VolumeAssignee    `json:"assignee,omitempty"`
 	Location  *IDOrName          `json:"location,omitempty"`
 	Labels    *map[string]string `json:"labels,omitempty"`
 	Automount *bool              `json:"automount,omitempty"`
@@ -85,8 +87,8 @@ type VolumeActionChangeProtectionResponse struct {
 // VolumeActionAttachVolumeRequest defines the schema of the request to
 // attach a volume to a server.
 type VolumeActionAttachVolumeRequest struct {
-	Assignee  Resource `json:"assignee"`
-	Automount *bool    `json:"automount,omitempty"`
+	Assignee  VolumeAssignee `json:"assignee"`
+	Automount *bool          `json:"automount,omitempty"`
 }
 
 // VolumeActionAttachVolumeResponse defines the schema of the response when

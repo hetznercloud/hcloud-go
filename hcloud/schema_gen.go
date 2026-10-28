@@ -87,8 +87,8 @@ You can find a documentation of goverter here: https://goverter.jmattheis.de/
 // goverter:extend deprecatedStrFromDeprecationSchema
 // goverter:extend deprecatedTimeFromDeprecationSchema
 // goverter:extend deprecatedTimePtrSchemaFromDeprecation
-// goverter:extend schemaResourceToServer
-// goverter:extend resourceToSchemaServerID
+// goverter:extend schemaVolumeAssigneeToServer
+// goverter:extend volumeAssigneeToSchemaServerID
 type converter interface {
 
 	// goverter:map Error.Code ErrorCode
@@ -1181,7 +1181,7 @@ func schemaPtrFromDatacenterServerTypes(dst DatacenterServerTypes) *schema.Datac
 	return new(schemaFromDatacenterServerTypes(dst))
 }
 
-func schemaResourceToServer(o *schema.Resource) *Server {
+func schemaVolumeAssigneeToServer(o *schema.VolumeAssignee) *Server {
 	if o == nil {
 		return nil
 	}
@@ -1191,7 +1191,7 @@ func schemaResourceToServer(o *schema.Resource) *Server {
 	return &Server{ID: o.ID}
 }
 
-func resourceToSchemaServerID(o *Resource) *int64 {
+func volumeAssigneeToSchemaServerID(o *VolumeAssignee) *int64 {
 	if o == nil {
 		return nil
 	}

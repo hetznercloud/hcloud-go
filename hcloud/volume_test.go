@@ -415,7 +415,7 @@ func TestVolumeClientAttachWithOpts(t *testing.T) {
 		})
 
 		action, resp, err := client.Volume.AttachWithOpts(ctx, &Volume{ID: 1}, VolumeAttachOpts{
-			Assignee: &Resource{Type: "server", ID: 2},
+			Assignee: &VolumeAssignee{Type: "server", ID: 2},
 		})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
@@ -442,7 +442,7 @@ func TestVolumeClientAttachWithOpts(t *testing.T) {
 		})
 
 		action, resp, err := client.Volume.AttachWithOpts(ctx, &Volume{ID: 1}, VolumeAttachOpts{
-			Assignee:  &Resource{Type: "server", ID: 2},
+			Assignee:  &VolumeAssignee{Type: "server", ID: 2},
 			Automount: new(false),
 		})
 		require.NoError(t, err)

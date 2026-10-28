@@ -16,7 +16,7 @@ type Volume struct {
 	ID          int64
 	Name        string
 	Status      VolumeStatus
-	Assignee    *Resource
+	Assignee    *VolumeAssignee
 	Location    *Location
 	Size        int
 	Format      *string
@@ -30,6 +30,9 @@ type Volume struct {
 	// See https://docs.hetzner.cloud/changelog#2026-10-27-volumes-allow-generic-resource-targets.
 	Server *Server
 }
+
+// VolumeAssignee represents a Resource assigned to a [Volume].
+type VolumeAssignee Resource
 
 func (o *Volume) pathID() (string, error) {
 	if o.ID == 0 {
@@ -156,7 +159,7 @@ func (c *VolumeClient) AllWithOpts(ctx context.Context, opts VolumeListOpts) ([]
 type VolumeCreateOpts struct {
 	Name      string
 	Size      int
-	Assignee  *Resource
+	Assignee  *VolumeAssignee
 	Location  *Location
 	Labels    map[string]string
 	Automount *bool
@@ -218,9 +221,9 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 	}
 	switch {
 	case opts.Assignee != nil:
-		reqBody.Assignee = &schema.Resource{Type: opts.Assignee.Type, ID: opts.Assignee.ID}
+		reqBody.Assignee = &schema.VolumeAssignee{Type: opts.Assignee.Type, ID: opts.Assignee.ID}
 	case opts.Server != nil:
-		reqBody.Assignee = &schema.Resource{Type: "server", ID: opts.Server.ID}
+		reqBody.Assignee = &schema.VolumeAssignee{Type: "server", ID: opts.Server.ID}
 	}
 	if opts.Location != nil {
 		if opts.Location.ID != 0 || opts.Location.Name != "" {
@@ -282,7 +285,7 @@ func (c *VolumeClient) Update(ctx context.Context, volume *Volume, opts VolumeUp
 
 // VolumeAttachOpts specifies options for attaching a volume.
 type VolumeAttachOpts struct {
-	Assignee  *Resource
+	Assignee  *VolumeAssignee
 	Automount *bool
 
 	// Deprecated: [VolumeAttachOpts.Server] is deprecated and will be removed after
@@ -301,9 +304,9 @@ func (c *VolumeClient) AttachWithOpts(ctx context.Context, volume *Volume, opts 
 	reqBody := schema.VolumeActionAttachVolumeRequest{}
 	switch {
 	case opts.Assignee != nil:
-		reqBody.Assignee = schema.Resource{Type: opts.Assignee.Type, ID: opts.Assignee.ID}
+		reqBody.Assignee = schema.VolumeAssignee{Type: opts.Assignee.Type, ID: opts.Assignee.ID}
 	case opts.Server != nil:
-		reqBody.Assignee = schema.Resource{Type: "server", ID: opts.Server.ID}
+		reqBody.Assignee = schema.VolumeAssignee{Type: "server", ID: opts.Server.ID}
 	}
 	if opts.Automount != nil {
 		reqBody.Automount = opts.Automount
