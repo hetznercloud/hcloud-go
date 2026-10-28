@@ -1329,7 +1329,7 @@ func (c *converterImpl) SchemaFromVolume(source *Volume) schema.Volume {
 	if source != nil {
 		schemaVolume.ID = (*source).ID
 		schemaVolume.Name = (*source).Name
-		schemaVolume.Server = c.pHcloudServerToPInt64((*source).Server)
+		schemaVolume.Assignee = c.pHcloudVolumeAssigneeToPSchemaVolumeAssignee((*source).Assignee)
 		schemaVolume.Status = string((*source).Status)
 		schemaVolume.Location = c.SchemaFromLocation((*source).Location)
 		schemaVolume.Size = (*source).Size
@@ -1338,6 +1338,7 @@ func (c *converterImpl) SchemaFromVolume(source *Volume) schema.Volume {
 		schemaVolume.Labels = (*source).Labels
 		schemaVolume.LinuxDevice = (*source).LinuxDevice
 		schemaVolume.Created = c.timeTimeToTimeTime((*source).Created)
+		schemaVolume.Server = volumeAssigneeToSchemaServerID((*source).Assignee)
 	}
 	return schemaVolume
 }
@@ -1738,10 +1739,7 @@ func (c *converterImpl) VolumeFromSchema(source schema.Volume) *Volume {
 	hcloudVolume.ID = source.ID
 	hcloudVolume.Name = source.Name
 	hcloudVolume.Status = VolumeStatus(source.Status)
-	if source.Server != nil {
-		hcloudServer := serverFromInt64(*source.Server)
-		hcloudVolume.Server = &hcloudServer
-	}
+	hcloudVolume.Assignee = c.pSchemaVolumeAssigneeToPHcloudVolumeAssignee(source.Assignee)
 	hcloudVolume.Location = c.LocationFromSchema(source.Location)
 	hcloudVolume.Size = source.Size
 	hcloudVolume.Format = source.Format
@@ -1749,6 +1747,7 @@ func (c *converterImpl) VolumeFromSchema(source schema.Volume) *Volume {
 	hcloudVolume.Labels = source.Labels
 	hcloudVolume.LinuxDevice = source.LinuxDevice
 	hcloudVolume.Created = c.timeTimeToTimeTime(source.Created)
+	hcloudVolume.Server = schemaVolumeAssigneeToServer(source.Assignee)
 	return &hcloudVolume
 }
 func (c *converterImpl) ZoneFromSchema(source schema.Zone) *Zone {
@@ -2594,6 +2593,16 @@ func (c *converterImpl) pHcloudStorageBoxTypeToSchemaIDOrName(source *StorageBox
 	}
 	return schemaIDOrName
 }
+func (c *converterImpl) pHcloudVolumeAssigneeToPSchemaVolumeAssignee(source *VolumeAssignee) *schema.VolumeAssignee {
+	var pSchemaVolumeAssignee *schema.VolumeAssignee
+	if source != nil {
+		var schemaVolumeAssignee schema.VolumeAssignee
+		schemaVolumeAssignee.ID = (*source).ID
+		schemaVolumeAssignee.Type = (*source).Type
+		pSchemaVolumeAssignee = &schemaVolumeAssignee
+	}
+	return pSchemaVolumeAssignee
+}
 func (c *converterImpl) pNetIPNetToString(source *net.IPNet) string {
 	var xstring string
 	if source != nil {
@@ -2763,6 +2772,16 @@ func (c *converterImpl) pSchemaStorageBoxSnapshotPlanToPHcloudStorageBoxSnapshot
 		pHcloudStorageBoxSnapshotPlan = &hcloudStorageBoxSnapshotPlan
 	}
 	return pHcloudStorageBoxSnapshotPlan
+}
+func (c *converterImpl) pSchemaVolumeAssigneeToPHcloudVolumeAssignee(source *schema.VolumeAssignee) *VolumeAssignee {
+	var pHcloudVolumeAssignee *VolumeAssignee
+	if source != nil {
+		var hcloudVolumeAssignee VolumeAssignee
+		hcloudVolumeAssignee.ID = (*source).ID
+		hcloudVolumeAssignee.Type = (*source).Type
+		pHcloudVolumeAssignee = &hcloudVolumeAssignee
+	}
+	return pHcloudVolumeAssignee
 }
 func (c *converterImpl) pTimeTimeToTimeTime(source *time.Time) time.Time {
 	var timeTime time.Time

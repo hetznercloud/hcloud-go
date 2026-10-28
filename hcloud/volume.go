@@ -16,7 +16,7 @@ type Volume struct {
 	ID          int64
 	Name        string
 	Status      VolumeStatus
-	Server      *Server
+	Assignee    *VolumeAssignee
 	Location    *Location
 	Size        int
 	Format      *string
@@ -24,7 +24,15 @@ type Volume struct {
 	Labels      map[string]string
 	LinuxDevice string
 	Created     time.Time
+
+	// Deprecated: [Volume.Server] is deprecated and will be removed after
+	// the 2027-10-27, use [Volume.Assignee] instead.
+	// See https://docs.hetzner.cloud/changelog#2026-10-27-volumes-allow-generic-resource-targets.
+	Server *Server
 }
+
+// VolumeAssignee represents a Resource assigned to a [Volume].
+type VolumeAssignee Resource
 
 func (o *Volume) pathID() (string, error) {
 	if o.ID == 0 {
@@ -151,11 +159,16 @@ func (c *VolumeClient) AllWithOpts(ctx context.Context, opts VolumeListOpts) ([]
 type VolumeCreateOpts struct {
 	Name      string
 	Size      int
-	Server    *Server
+	Assignee  *VolumeAssignee
 	Location  *Location
 	Labels    map[string]string
 	Automount *bool
 	Format    *string
+
+	// Deprecated: [VolumeCreateOpts.Server] is deprecated and will be removed after
+	// the 2027-10-27, use [VolumeCreateOpts.Assignee] instead.
+	// See https://docs.hetzner.cloud/changelog#2026-10-27-volumes-allow-generic-resource-targets.
+	Server *Server
 }
 
 // Validate checks if options are valid.
@@ -206,8 +219,11 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 	if opts.Labels != nil {
 		reqBody.Labels = &opts.Labels
 	}
-	if opts.Server != nil {
-		reqBody.Server = new(opts.Server.ID)
+	switch {
+	case opts.Assignee != nil:
+		reqBody.Assignee = &schema.VolumeAssignee{Type: opts.Assignee.Type, ID: opts.Assignee.ID}
+	case opts.Server != nil:
+		reqBody.Assignee = &schema.VolumeAssignee{Type: "server", ID: opts.Server.ID}
 	}
 	if opts.Location != nil {
 		if opts.Location.ID != 0 || opts.Location.Name != "" {
@@ -269,8 +285,13 @@ func (c *VolumeClient) Update(ctx context.Context, volume *Volume, opts VolumeUp
 
 // VolumeAttachOpts specifies options for attaching a volume.
 type VolumeAttachOpts struct {
-	Server    *Server
+	Assignee  *VolumeAssignee
 	Automount *bool
+
+	// Deprecated: [VolumeAttachOpts.Server] is deprecated and will be removed after
+	// the 2027-10-27, use [VolumeAttachOpts.Assignee] instead.
+	// See https://docs.hetzner.cloud/changelog#2026-10-27-volumes-allow-generic-resource-targets.
+	Server *Server
 }
 
 // AttachWithOpts attaches a volume to a server.
@@ -280,9 +301,15 @@ func (c *VolumeClient) AttachWithOpts(ctx context.Context, volume *Volume, opts 
 
 	reqPath := fmt.Sprintf(opPath, volume.ID)
 
-	reqBody := schema.VolumeActionAttachVolumeRequest{
-		Server:    opts.Server.ID,
-		Automount: opts.Automount,
+	reqBody := schema.VolumeActionAttachVolumeRequest{}
+	switch {
+	case opts.Assignee != nil:
+		reqBody.Assignee = schema.VolumeAssignee{Type: opts.Assignee.Type, ID: opts.Assignee.ID}
+	case opts.Server != nil:
+		reqBody.Assignee = schema.VolumeAssignee{Type: "server", ID: opts.Server.ID}
+	}
+	if opts.Automount != nil {
+		reqBody.Automount = opts.Automount
 	}
 
 	respBody, resp, err := postRequest[schema.VolumeActionAttachVolumeResponse](ctx, c.client, reqPath, reqBody)
