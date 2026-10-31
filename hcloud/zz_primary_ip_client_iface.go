@@ -33,11 +33,11 @@ type IPrimaryIPClient interface {
 	// Update updates a Primary IP.
 	Update(ctx context.Context, primaryIP *PrimaryIP, opts PrimaryIPUpdateOpts) (*PrimaryIP, *Response, error)
 	// Assign a Primary IP to a resource.
-	Assign(ctx context.Context, opts PrimaryIPAssignOpts) (*Action, *Response, error)
+	Assign(ctx context.Context, primaryIP *PrimaryIP, opts PrimaryIPAssignOpts) (*Action, *Response, error)
 	// Unassign a Primary IP from a resource.
-	Unassign(ctx context.Context, id int64) (*Action, *Response, error)
+	Unassign(ctx context.Context, primaryIP *PrimaryIP) (*Action, *Response, error)
 	// ChangeDNSPtr Change the reverse DNS from a Primary IP.
-	ChangeDNSPtr(ctx context.Context, opts PrimaryIPChangeDNSPtrOpts) (*Action, *Response, error)
+	ChangeDNSPtr(ctx context.Context, primaryIP *PrimaryIP, opts PrimaryIPChangeDNSPtrOpts) (*Action, *Response, error)
 	// ChangeProtection Changes the protection configuration of a Primary IP.
-	ChangeProtection(ctx context.Context, opts PrimaryIPChangeProtectionOpts) (*Action, *Response, error)
+	ChangeProtection(ctx context.Context, primaryIP *PrimaryIP, opts PrimaryIPChangeProtectionOpts) (*Action, *Response, error)
 }

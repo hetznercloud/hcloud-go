@@ -310,11 +310,11 @@ func (c *PrimaryIPClient) Update(ctx context.Context, primaryIP *PrimaryIP, opts
 }
 
 // Assign a Primary IP to a resource.
-func (c *PrimaryIPClient) Assign(ctx context.Context, opts PrimaryIPAssignOpts) (*Action, *Response, error) {
+func (c *PrimaryIPClient) Assign(ctx context.Context, primaryIP *PrimaryIP, opts PrimaryIPAssignOpts) (*Action, *Response, error) {
 	const opPath = "/primary_ips/%d/actions/assign"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, opts.ID)
+	reqPath := fmt.Sprintf(opPath, primaryIP.ID)
 
 	reqBody := SchemaFromPrimaryIPAssignOpts(opts)
 
@@ -327,11 +327,11 @@ func (c *PrimaryIPClient) Assign(ctx context.Context, opts PrimaryIPAssignOpts) 
 }
 
 // Unassign a Primary IP from a resource.
-func (c *PrimaryIPClient) Unassign(ctx context.Context, id int64) (*Action, *Response, error) {
+func (c *PrimaryIPClient) Unassign(ctx context.Context, primaryIP *PrimaryIP) (*Action, *Response, error) {
 	const opPath = "/primary_ips/%d/actions/unassign"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, id)
+	reqPath := fmt.Sprintf(opPath, primaryIP.ID)
 
 	respBody, resp, err := postRequest[schema.PrimaryIPActionUnassignResponse](ctx, c.client, reqPath, nil)
 	if err != nil {
@@ -342,11 +342,11 @@ func (c *PrimaryIPClient) Unassign(ctx context.Context, id int64) (*Action, *Res
 }
 
 // ChangeDNSPtr Change the reverse DNS from a Primary IP.
-func (c *PrimaryIPClient) ChangeDNSPtr(ctx context.Context, opts PrimaryIPChangeDNSPtrOpts) (*Action, *Response, error) {
+func (c *PrimaryIPClient) ChangeDNSPtr(ctx context.Context, primaryIP *PrimaryIP, opts PrimaryIPChangeDNSPtrOpts) (*Action, *Response, error) {
 	const opPath = "/primary_ips/%d/actions/change_dns_ptr"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, opts.ID)
+	reqPath := fmt.Sprintf(opPath, primaryIP.ID)
 
 	reqBody := SchemaFromPrimaryIPChangeDNSPtrOpts(opts)
 
@@ -359,11 +359,11 @@ func (c *PrimaryIPClient) ChangeDNSPtr(ctx context.Context, opts PrimaryIPChange
 }
 
 // ChangeProtection Changes the protection configuration of a Primary IP.
-func (c *PrimaryIPClient) ChangeProtection(ctx context.Context, opts PrimaryIPChangeProtectionOpts) (*Action, *Response, error) {
+func (c *PrimaryIPClient) ChangeProtection(ctx context.Context, primaryIP *PrimaryIP, opts PrimaryIPChangeProtectionOpts) (*Action, *Response, error) {
 	const opPath = "/primary_ips/%d/actions/change_protection"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
-	reqPath := fmt.Sprintf(opPath, opts.ID)
+	reqPath := fmt.Sprintf(opPath, primaryIP.ID)
 
 	reqBody := SchemaFromPrimaryIPChangeProtectionOpts(opts)
 
