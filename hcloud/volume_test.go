@@ -392,7 +392,7 @@ func TestVolumeClientDelete(t *testing.T) {
 	require.NotNil(t, resp)
 }
 
-func TestVolumeClientAttachWithOpts(t *testing.T) {
+func TestVolumeClientAttach(t *testing.T) {
 	t.Run("minimal", func(t *testing.T) {
 		ctx, server, client := makeTestUtils(t)
 
@@ -411,7 +411,7 @@ func TestVolumeClientAttachWithOpts(t *testing.T) {
 			},
 		})
 
-		action, resp, err := client.Volume.AttachWithOpts(ctx, &Volume{ID: 1}, VolumeAttachOpts{
+		action, resp, err := client.Volume.Attach(ctx, &Volume{ID: 1}, VolumeAttachOpts{
 			Server: &Server{ID: 2},
 		})
 		require.NoError(t, err)
@@ -438,7 +438,7 @@ func TestVolumeClientAttachWithOpts(t *testing.T) {
 			},
 		})
 
-		action, resp, err := client.Volume.AttachWithOpts(ctx, &Volume{ID: 1}, VolumeAttachOpts{
+		action, resp, err := client.Volume.Attach(ctx, &Volume{ID: 1}, VolumeAttachOpts{
 			Server:    &Server{ID: 2},
 			Automount: new(false),
 		})
@@ -446,30 +446,6 @@ func TestVolumeClientAttachWithOpts(t *testing.T) {
 		require.NotNil(t, resp)
 		assert.Equal(t, int64(3), action.ID)
 	})
-}
-
-func TestVolumeClientAttach(t *testing.T) {
-	ctx, server, client := makeTestUtils(t)
-
-	server.Expect([]mockutil.Request{
-		{
-			Method: "POST", Path: "/volumes/1/actions/attach",
-			Want: func(t *testing.T, r *http.Request) {
-				body, err := io.ReadAll(r.Body)
-				require.NoError(t, err)
-				assert.JSONEq(t, `{
-					"server": 2
-				}`, string(body))
-			},
-			Status:  201,
-			JSONRaw: `{"action": {"id": 3}}`,
-		},
-	})
-
-	action, resp, err := client.Volume.Attach(ctx, &Volume{ID: 1}, &Server{ID: 2})
-	require.NoError(t, err)
-	require.NotNil(t, resp)
-	assert.Equal(t, int64(3), action.ID)
 }
 
 func TestVolumeClientDetach(t *testing.T) {

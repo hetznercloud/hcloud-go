@@ -273,8 +273,8 @@ type VolumeAttachOpts struct {
 	Automount *bool
 }
 
-// AttachWithOpts attaches a volume to a server.
-func (c *VolumeClient) AttachWithOpts(ctx context.Context, volume *Volume, opts VolumeAttachOpts) (*Action, *Response, error) {
+// Attach attaches a volume to a server.
+func (c *VolumeClient) Attach(ctx context.Context, volume *Volume, opts VolumeAttachOpts) (*Action, *Response, error) {
 	const opPath = "/volumes/%d/actions/attach"
 	ctx = ctxutil.SetOpPath(ctx, opPath)
 
@@ -291,11 +291,6 @@ func (c *VolumeClient) AttachWithOpts(ctx context.Context, volume *Volume, opts 
 	}
 
 	return ActionFromSchema(respBody.Action), resp, nil
-}
-
-// Attach attaches a volume to a server.
-func (c *VolumeClient) Attach(ctx context.Context, volume *Volume, server *Server) (*Action, *Response, error) {
-	return c.AttachWithOpts(ctx, volume, VolumeAttachOpts{Server: server})
 }
 
 // Detach detaches a volume from a server.

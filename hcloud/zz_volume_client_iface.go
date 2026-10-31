@@ -30,10 +30,8 @@ type IVolumeClient interface {
 	Delete(ctx context.Context, volume *Volume) (*Response, error)
 	// Update updates a volume.
 	Update(ctx context.Context, volume *Volume, opts VolumeUpdateOpts) (*Volume, *Response, error)
-	// AttachWithOpts attaches a volume to a server.
-	AttachWithOpts(ctx context.Context, volume *Volume, opts VolumeAttachOpts) (*Action, *Response, error)
 	// Attach attaches a volume to a server.
-	Attach(ctx context.Context, volume *Volume, server *Server) (*Action, *Response, error)
+	Attach(ctx context.Context, volume *Volume, opts VolumeAttachOpts) (*Action, *Response, error)
 	// Detach detaches a volume from a server.
 	Detach(ctx context.Context, volume *Volume) (*Action, *Response, error)
 	// ChangeProtection changes the resource protection level of a volume.
