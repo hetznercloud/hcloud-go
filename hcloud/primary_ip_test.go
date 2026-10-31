@@ -406,13 +406,14 @@ func TestPrimaryIPClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
+		primaryIP := &PrimaryIP{ID: 1}
 		opts := PrimaryIPAssignOpts{
 			AssigneeType: "server",
 			AssigneeID:   1,
 			ID:           1,
 		}
 
-		action, resp, err := env.Client.PrimaryIP.Assign(ctx, opts)
+		action, resp, err := env.Client.PrimaryIP.Assign(ctx, primaryIP, opts)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp, "no response returned")
 		assert.NotNil(t, action, "no action returned")
@@ -432,8 +433,9 @@ func TestPrimaryIPClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
+		primaryIP := &PrimaryIP{ID: 1}
 
-		action, resp, err := env.Client.PrimaryIP.Unassign(ctx, 1)
+		action, resp, err := env.Client.PrimaryIP.Unassign(ctx, primaryIP)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp, "no response returned")
 		assert.NotNil(t, action, "no action returned")
@@ -462,13 +464,14 @@ func TestPrimaryIPClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
+		primaryIP := &PrimaryIP{ID: 1}
 		opts := PrimaryIPChangeDNSPtrOpts{
 			ID:     1,
 			DNSPtr: "value",
 			IP:     "127.0.0.1",
 		}
 
-		action, resp, err := env.Client.PrimaryIP.ChangeDNSPtr(ctx, opts)
+		action, resp, err := env.Client.PrimaryIP.ChangeDNSPtr(ctx, primaryIP, opts)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp, "no response returned")
 		assert.NotNil(t, action, "no action returned")
@@ -495,12 +498,13 @@ func TestPrimaryIPClient(t *testing.T) {
 		})
 
 		ctx := context.Background()
+		primaryIP := &PrimaryIP{ID: 1}
 		opts := PrimaryIPChangeProtectionOpts{
 			ID:     1,
 			Delete: true,
 		}
 
-		action, resp, err := env.Client.PrimaryIP.ChangeProtection(ctx, opts)
+		action, resp, err := env.Client.PrimaryIP.ChangeProtection(ctx, primaryIP, opts)
 		assert.NoError(t, err)
 		assert.NotNil(t, resp, "no response returned")
 		assert.NotNil(t, action, "no action returned")
