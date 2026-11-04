@@ -291,12 +291,15 @@ func NewClient(options ...ClientOption) *Client {
 		option(client)
 	}
 
+	httpClient := client.httpClient
 	if client.instrumentationRegistry != nil {
 		i := instrumentation.New("api", client.instrumentationRegistry)
-		client.httpClient.Transport = i.InstrumentedRoundTripper(client.httpClient.Transport)
+		instrumentedHTTPClient := *httpClient
+		instrumentedHTTPClient.Transport = i.InstrumentedRoundTripper(httpClient.Transport)
+		httpClient = &instrumentedHTTPClient
 	}
 
-	client.handler = assembleHandlerChain(client)
+	client.handler = assembleHandlerChain(client, httpClient)
 
 	// Cloud API
 	client.Action = ActionClient{action: &ResourceActionClient[noopResource]{client: client}}

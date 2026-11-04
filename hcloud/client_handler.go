@@ -17,9 +17,9 @@ type handler interface {
 // assembleHandlerChain assembles the chain of handlers used to make API requests.
 //
 // The order of the handlers is important.
-func assembleHandlerChain(client *Client) handler {
+func assembleHandlerChain(client *Client, httpClient *http.Client) handler {
 	// Start down the chain: sending the http request
-	h := newHTTPHandler(client.httpClient)
+	h := newHTTPHandler(httpClient)
 
 	// Insert debug writer if enabled
 	if client.debugWriter != nil {
