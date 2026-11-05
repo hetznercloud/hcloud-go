@@ -206,18 +206,16 @@ func validateJSONSyntax(raw string) error {
 // NewErrorRequest returns a new generic error request for the given HTTP method and
 // path and status.
 func NewErrorRequest(method string, path string, status int, errorCode, errorMessage string) Request {
-	jsonRaw := `{
-		"error": {
-			"code": "` + errorCode + `",
-			"message": "` + errorMessage + `",
-			"details": null
-		}
-	}`
-
 	return Request{
 		Method: method, Path: path,
-		Status:  status,
-		JSONRaw: jsonRaw,
+		Status: status,
+		JSON: map[string]any{
+			"error": map[string]any{
+				"code":    errorCode,
+				"message": errorMessage,
+				"details": nil,
+			},
+		},
 	}
 }
 

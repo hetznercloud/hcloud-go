@@ -123,7 +123,7 @@ func TestNewErrorRequest(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 		assert.Equal(t, "/path", r.Path)
 		assert.Equal(t, 500, r.Status)
-		assert.JSONEq(t, `{ "error": {"code": "server_error", "details": null, "message": "server error" }}`, r.JSONRaw)
+		assert.Equal(t, map[string]any{"error": map[string]any{"code": "server_error", "message": "server error", "details": nil}}, r.JSON)
 	})
 
 	t.Run("not found", func(t *testing.T) {
@@ -131,7 +131,6 @@ func TestNewErrorRequest(t *testing.T) {
 		assert.Equal(t, "POST", r.Method)
 		assert.Equal(t, "/path", r.Path)
 		assert.Equal(t, 404, r.Status)
-		assert.JSONEq(t, `{ "error": {"code": "not_found", "details": null, "message": "entity not found" }}`, r.JSONRaw)
+		assert.Equal(t, map[string]any{"error": map[string]any{"code": "not_found", "message": "entity not found", "details": nil}}, r.JSON)
 	})
-
 }
