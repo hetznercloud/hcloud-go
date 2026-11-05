@@ -7,7 +7,7 @@ import (
 	"github.com/hetznercloud/hcloud-go/v2/hcloud"
 )
 
-// Message return a deprecation message when the given deprecatable resource is
+// Message returns a deprecation message when the given deprecatable resource is
 // deprecated and whether the given resource is unavailable.
 //
 // The resource argument must be a resource type name in Capital Case, e.g. "Load
