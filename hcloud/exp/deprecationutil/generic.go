@@ -10,6 +10,10 @@ import (
 // Message return a deprecation message when the given deprecatable resource is
 // deprecated and whether the given resource is unavailable.
 //
+// The resource argument must be a resource type name in Capital Case, e.g. "Load
+// Balancer Type". The identifier argument should be the name or the id of the
+// deprecation resource e.g. "lb11".
+//
 // Experimental: `exp` package is experimental, breaking changes may occur within minor releases.
 func Message[T hcloud.Deprecatable](o T, resource string, identifier string) (string, bool) {
 	if o.IsDeprecated() {
