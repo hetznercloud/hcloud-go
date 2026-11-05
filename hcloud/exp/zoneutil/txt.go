@@ -2,7 +2,6 @@ package zoneutil
 
 import (
 	"fmt"
-	"slices"
 	"strings"
 )
 
@@ -15,21 +14,39 @@ func IsTXTRecordQuoted(value string) bool {
 }
 
 // FormatTXTRecord splits a long string in chunks of 255 characters, and quotes each of
-// the chunks. Existing quotes will be escaped.
+// the chunks. Existing quotes and backslashes will be escaped.
 //
 // - hello world	=> "hello world"
 // - hello "world"	=> "hello \"world\""
 //
-// This function can be reversed with [ParseTXTValue].
+// This function can be reversed with [ParseTXTRecord].
 func FormatTXTRecord(value string) string {
-	// Escape existing quotes
-	value = strings.ReplaceAll(value, "\"", "\\\"")
-
-	// Split in chunks of 255 characters
 	parts := []string{}
-	for chunk := range slices.Chunk([]byte(value), 255) {
-		parts = append(parts, fmt.Sprintf(`"%s"`, chunk))
+
+	var cur strings.Builder
+	for _, c := range []byte(value) {
+		escape := c == '"' || c == '\\'
+
+		size := 1
+		if escape {
+			size = 2
+		}
+
+		// Do not split an escape sequence between two chunks
+		if cur.Len()+size > 255 {
+			parts = append(parts, fmt.Sprintf(`"%s"`, cur.String()))
+			cur.Reset()
+		}
+
+		if escape {
+			cur.WriteByte('\\')
+		}
+		cur.WriteByte(c)
 	}
+	if cur.Len() > 0 {
+		parts = append(parts, fmt.Sprintf(`"%s"`, cur.String()))
+	}
+
 	return strings.Join(parts, " ")
 }
 

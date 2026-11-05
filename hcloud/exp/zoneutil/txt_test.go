@@ -17,6 +17,7 @@ type TestCaseTXT struct {
 var (
 	manyA        = strings.Repeat("a", 255)
 	fewB         = strings.Repeat("b", 10)
+	almostManyA  = strings.Repeat("a", 254)
 	testCasesTXT = []TestCaseTXT{
 		{
 			desc:    "empty",
@@ -52,6 +53,21 @@ var (
 			desc:    "quotes odd",
 			raw:     `hello "world`,
 			encoded: `"hello \"world"`,
+		},
+		{
+			desc:    "backslash",
+			raw:     `hello\world`,
+			encoded: `"hello\\world"`,
+		},
+		{
+			desc:    "quote at chunk boundary",
+			raw:     almostManyA + `"` + fewB,
+			encoded: fmt.Sprintf(`"%s" "\"%s"`, almostManyA, fewB),
+		},
+		{
+			desc:    "multi-byte characters",
+			raw:     "hällo wörld",
+			encoded: `"hällo wörld"`,
 		},
 	}
 )
