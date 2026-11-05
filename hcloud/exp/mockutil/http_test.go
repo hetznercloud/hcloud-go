@@ -116,3 +116,21 @@ func TestValidateJSONSyntax(t *testing.T) {
 5 | 		"meta": { "pagination": { "page": 1 }}`,
 	)
 }
+
+func TestNewErrorRequest(t *testing.T) {
+	t.Run("server error", func(t *testing.T) {
+		r := ServerErrorRequest(http.MethodPost, "/path")
+		assert.Equal(t, "POST", r.Method)
+		assert.Equal(t, "/path", r.Path)
+		assert.Equal(t, 500, r.Status)
+		assert.Equal(t, map[string]any{"error": map[string]any{"code": "server_error", "message": "server error", "details": nil}}, r.JSON)
+	})
+
+	t.Run("not found", func(t *testing.T) {
+		r := NotFoundRequest(http.MethodPost, "/path")
+		assert.Equal(t, "POST", r.Method)
+		assert.Equal(t, "/path", r.Path)
+		assert.Equal(t, 404, r.Status)
+		assert.Equal(t, map[string]any{"error": map[string]any{"code": "not_found", "message": "entity not found", "details": nil}}, r.JSON)
+	})
+}
