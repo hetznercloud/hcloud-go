@@ -44,7 +44,7 @@ func TestVolumeClientGetByID(t *testing.T) {
 						"status": "available",
 						"size": 10,
 						"format": "xfs",
-						"server": 2,
+						"assignee": {"type": "server", "id": 2},
 						"linux_device": "/dev/disk/by-id/scsi-0HC_Volume_1"
 					}
 				}`,
@@ -66,6 +66,9 @@ func TestVolumeClientGetByID(t *testing.T) {
 		assert.Equal(t, VolumeStatusAvailable, volume.Status)
 		assert.Equal(t, 10, volume.Size)
 		assert.Equal(t, new("xfs"), volume.Format)
+		require.NotNil(t, volume.Assignee)
+		require.Equal(t, int64(2), volume.Assignee.ID)
+		require.Equal(t, "server", volume.Assignee.Type)
 		require.NotNil(t, volume.Server)
 		assert.Equal(t, int64(2), volume.Server.ID)
 		assert.Equal(t, "/dev/disk/by-id/scsi-0HC_Volume_1", volume.LinuxDevice)
@@ -218,7 +221,7 @@ func TestVolumeClientCreate(t *testing.T) {
 					assert.JSONEq(t, `{
 						"name": "my-volume",
 						"size": 42,
-						"server": 1
+						"assignee": {"type": "server", "id": 1}
 					}`, string(body))
 				},
 				Status: 201,
@@ -255,7 +258,7 @@ func TestVolumeClientCreate(t *testing.T) {
 					assert.JSONEq(t, `{
 						"name": "my-volume",
 						"size": 42,
-						"server": 1,
+						"assignee": {"type": "server", "id": 1},
 						"automount": true,
 						"format": "xfs",
 						"labels": { "key": "value" }
@@ -403,7 +406,7 @@ func TestVolumeClientAttachWithOpts(t *testing.T) {
 					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.JSONEq(t, `{
-						"server": 2
+						"assignee": {"type": "server", "id": 2}
 					}`, string(body))
 				},
 				Status:  201,
@@ -412,7 +415,7 @@ func TestVolumeClientAttachWithOpts(t *testing.T) {
 		})
 
 		action, resp, err := client.Volume.AttachWithOpts(ctx, &Volume{ID: 1}, VolumeAttachOpts{
-			Server: &Server{ID: 2},
+			Assignee: &VolumeAssignee{Type: "server", ID: 2},
 		})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
@@ -429,7 +432,7 @@ func TestVolumeClientAttachWithOpts(t *testing.T) {
 					body, err := io.ReadAll(r.Body)
 					require.NoError(t, err)
 					assert.JSONEq(t, `{
-						"server": 2,
+						"assignee": {"type": "server", "id": 2},
 						"automount": false
 					}`, string(body))
 				},
@@ -439,8 +442,34 @@ func TestVolumeClientAttachWithOpts(t *testing.T) {
 		})
 
 		action, resp, err := client.Volume.AttachWithOpts(ctx, &Volume{ID: 1}, VolumeAttachOpts{
-			Server:    &Server{ID: 2},
+			Assignee:  &VolumeAssignee{Type: "server", ID: 2},
 			Automount: new(false),
+		})
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+		assert.Equal(t, int64(3), action.ID)
+	})
+
+	t.Run("backward compatible", func(t *testing.T) {
+		ctx, server, client := makeTestUtils(t)
+
+		server.Expect([]mockutil.Request{
+			{
+				Method: "POST", Path: "/volumes/1/actions/attach",
+				Want: func(t *testing.T, r *http.Request) {
+					body, err := io.ReadAll(r.Body)
+					require.NoError(t, err)
+					assert.JSONEq(t, `{
+						"assignee": {"type": "server", "id": 2}
+					}`, string(body))
+				},
+				Status:  201,
+				JSONRaw: `{"action": {"id": 3}}`,
+			},
+		})
+
+		action, resp, err := client.Volume.AttachWithOpts(ctx, &Volume{ID: 1}, VolumeAttachOpts{
+			Server: &Server{ID: 2},
 		})
 		require.NoError(t, err)
 		require.NotNil(t, resp)
@@ -458,7 +487,7 @@ func TestVolumeClientAttach(t *testing.T) {
 				body, err := io.ReadAll(r.Body)
 				require.NoError(t, err)
 				assert.JSONEq(t, `{
-					"server": 2
+					"assignee": {"type": "server", "id": 2}
 				}`, string(body))
 			},
 			Status:  201,

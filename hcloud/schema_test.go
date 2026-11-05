@@ -671,7 +671,7 @@ func TestVolumeSchema(t *testing.T) {
 		"created": "2016-01-30T23:50:11+00:00",
 		"name": "db-storage",
 		"status": "creating",
-		"server": 2,
+		"assignee": {"type": "server", "id": 2},
 		"format": "xfs",
 		"location": {
 			"id": 1,
@@ -693,12 +693,25 @@ func TestVolumeSchema(t *testing.T) {
 		}
 	}`)
 
-	var s schema.Volume
-	assert.NoError(t, json.Unmarshal(data, &s))
+	var s1 schema.Volume
+	assert.NoError(t, json.Unmarshal(data, &s1))
 
-	assert.Equal(t, s, SchemaFromVolume(VolumeFromSchema(s)))
+	assert.Nil(t, s1.Server) // nolint:staticcheck
 
-	v := VolumeFromSchema(s)
+	o := VolumeFromSchema(s1)
+	assert.Equal(t, int64(2), o.Assignee.ID)
+	assert.Equal(t, "server", o.Assignee.Type)
+	assert.Equal(t, int64(2), o.Server.ID)
+
+	s2 := SchemaFromVolume(o)
+	assert.Equal(t, int64(2), s2.Assignee.ID)
+	assert.Equal(t, "server", s2.Assignee.Type)
+	assert.Equal(t, new(int64(2)), s2.Server) // nolint:staticcheck
+
+	s2.Server = nil // nolint:staticcheck
+	assert.Equal(t, s2, s1)
+
+	v := VolumeFromSchema(s1)
 	assert.Equal(t, v, VolumeFromSchema(SchemaFromVolume(v)))
 }
 
