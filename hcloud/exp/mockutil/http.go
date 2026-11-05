@@ -202,3 +202,27 @@ func validateJSONSyntax(raw string) error {
 
 	return fmt.Errorf("%w %s", err, b.String())
 }
+
+// NewErrorRequest returns a new generic error request for the given HTTP method and
+// path and status.
+func NewErrorRequest(method string, path string, status int, errorCode, errorMessage string) Request {
+	jsonRaw := `{
+		"error": {
+			"code": "` + errorCode + `",
+			"message": "` + errorMessage + `",
+			"details": null
+		}
+	}`
+
+	return Request{
+		Method: method, Path: path,
+		Status:  status,
+		JSONRaw: jsonRaw,
+	}
+}
+
+// NotFoundRequest returns a generic `Not found` (404) request for the given HTTP method
+// and path.
+func NotFoundRequest(method string, path string) Request {
+	return NewErrorRequest(method, path, http.StatusNotFound, "not_found", "entity not found")
+}
