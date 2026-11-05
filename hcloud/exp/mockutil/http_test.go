@@ -119,7 +119,7 @@ func TestValidateJSONSyntax(t *testing.T) {
 
 func TestNewErrorRequest(t *testing.T) {
 	t.Run("server error", func(t *testing.T) {
-		r := NewErrorRequest(http.MethodPost, "/path", 500, "server_error", "server error")
+		r := ServerErrorRequest(http.MethodPost, "/path")
 		assert.Equal(t, "POST", r.Method)
 		assert.Equal(t, "/path", r.Path)
 		assert.Equal(t, 500, r.Status)

@@ -226,3 +226,9 @@ func NewErrorRequest(method string, path string, status int, errorCode, errorMes
 func NotFoundRequest(method string, path string) Request {
 	return NewErrorRequest(method, path, http.StatusNotFound, "not_found", "entity not found")
 }
+
+// ServerErrorRequest returns a generic `Internal Server Error` (500) request for the
+// given HTTP method and path.
+func ServerErrorRequest(method string, path string) Request {
+	return NewErrorRequest(method, path, http.StatusInternalServerError, "server_error", "server error")
+}
