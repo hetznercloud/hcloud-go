@@ -84,6 +84,47 @@ func TestClientEndpointTrailingSlashesRemoved(t *testing.T) {
 	}
 }
 
+func TestClientInstrumentationSharedHTTPClient(t *testing.T) {
+	ctx := context.Background()
+
+	server := mockutil.NewServer(t, []mockutil.Request{
+		{
+			Method: "GET", Path: "/servers/1",
+			Status: 200,
+			JSON:   schema.ServerGetResponse{Server: schema.Server{ID: 1}},
+		},
+	})
+
+	registry := prometheus.NewRegistry()
+	httpClient := &http.Client{}
+
+	client := NewClient(
+		WithEndpoint(server.URL),
+		WithHTTPClient(httpClient),
+		WithInstrumentation(registry),
+	)
+	NewClient(
+		WithEndpoint(server.URL),
+		WithHTTPClient(httpClient),
+		WithInstrumentation(registry),
+	)
+
+	assert.Nil(t, httpClient.Transport)
+
+	_, _, err := client.Server.GetByID(ctx, 1)
+	require.NoError(t, err)
+
+	families, err := registry.Gather()
+	require.NoError(t, err)
+	var requestsTotal float64
+	for _, family := range families {
+		if family.GetName() == "hcloud_api_requests_total" {
+			requestsTotal = family.GetMetric()[0].GetCounter().GetValue()
+		}
+	}
+	assert.InDelta(t, 1.0, requestsTotal, 0)
+}
+
 func TestClientError(t *testing.T) {
 	env := newTestEnv()
 	defer env.Teardown()
