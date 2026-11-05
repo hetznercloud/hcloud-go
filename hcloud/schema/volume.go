@@ -22,7 +22,10 @@ type Volume struct {
 	Server *int64 `json:"server"`
 }
 
-type VolumeAssignee Resource
+type VolumeAssignee struct {
+	ID   int64  `json:"id"`
+	Type string `json:"type"`
+}
 
 // VolumeCreateRequest defines the schema of the request
 // to create a volume.

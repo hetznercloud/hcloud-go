@@ -2598,7 +2598,7 @@ func (c *converterImpl) pHcloudVolumeAssigneeToPSchemaVolumeAssignee(source *Vol
 	if source != nil {
 		var schemaVolumeAssignee schema.VolumeAssignee
 		schemaVolumeAssignee.ID = (*source).ID
-		schemaVolumeAssignee.Type = (*source).Type
+		schemaVolumeAssignee.Type = string((*source).Type)
 		pSchemaVolumeAssignee = &schemaVolumeAssignee
 	}
 	return pSchemaVolumeAssignee
@@ -2778,7 +2778,7 @@ func (c *converterImpl) pSchemaVolumeAssigneeToPHcloudVolumeAssignee(source *sch
 	if source != nil {
 		var hcloudVolumeAssignee VolumeAssignee
 		hcloudVolumeAssignee.ID = (*source).ID
-		hcloudVolumeAssignee.Type = (*source).Type
+		hcloudVolumeAssignee.Type = VolumeAssigneeType((*source).Type)
 		pHcloudVolumeAssignee = &hcloudVolumeAssignee
 	}
 	return pHcloudVolumeAssignee

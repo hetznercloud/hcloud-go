@@ -32,7 +32,18 @@ type Volume struct {
 }
 
 // VolumeAssignee represents a Resource assigned to a [Volume].
-type VolumeAssignee Resource
+type VolumeAssignee struct {
+	ID   int64
+	Type VolumeAssigneeType
+}
+
+// VolumeAssigneeType represents an [VolumeAssignee] resource type.
+type VolumeAssigneeType string
+
+// List of [VolumeAssigneeType] resource types.
+const (
+	VolumeAssigneeTypeServer VolumeAssigneeType = "server"
+)
 
 func (o *Volume) pathID() (string, error) {
 	if o.ID == 0 {
@@ -221,9 +232,9 @@ func (c *VolumeClient) Create(ctx context.Context, opts VolumeCreateOpts) (Volum
 	}
 	switch {
 	case opts.Assignee != nil:
-		reqBody.Assignee = &schema.VolumeAssignee{Type: opts.Assignee.Type, ID: opts.Assignee.ID}
+		reqBody.Assignee = &schema.VolumeAssignee{Type: string(opts.Assignee.Type), ID: opts.Assignee.ID}
 	case opts.Server != nil:
-		reqBody.Assignee = &schema.VolumeAssignee{Type: "server", ID: opts.Server.ID}
+		reqBody.Assignee = &schema.VolumeAssignee{Type: string(VolumeAssigneeTypeServer), ID: opts.Server.ID}
 	}
 	if opts.Location != nil {
 		if opts.Location.ID != 0 || opts.Location.Name != "" {
@@ -304,9 +315,9 @@ func (c *VolumeClient) AttachWithOpts(ctx context.Context, volume *Volume, opts 
 	reqBody := schema.VolumeActionAttachVolumeRequest{}
 	switch {
 	case opts.Assignee != nil:
-		reqBody.Assignee = schema.VolumeAssignee{Type: opts.Assignee.Type, ID: opts.Assignee.ID}
+		reqBody.Assignee = schema.VolumeAssignee{Type: string(opts.Assignee.Type), ID: opts.Assignee.ID}
 	case opts.Server != nil:
-		reqBody.Assignee = schema.VolumeAssignee{Type: "server", ID: opts.Server.ID}
+		reqBody.Assignee = schema.VolumeAssignee{Type: string(VolumeAssigneeTypeServer), ID: opts.Server.ID}
 	}
 	if opts.Automount != nil {
 		reqBody.Automount = opts.Automount
