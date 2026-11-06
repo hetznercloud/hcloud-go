@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
@@ -634,4 +635,56 @@ func TestFirewallRemoveFromResources(t *testing.T) {
 	if len(actions) != 1 || actions[0].ID != 1 {
 		t.Errorf("unexpected actions: %v", actions)
 	}
+}
+
+func TestFirewallSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 897,
+		"name": "my firewall",
+		"labels": {
+			"key": "value",
+			"key2": "value2"
+		},
+		"created": "2016-01-30T23:50:00+00:00",
+		"rules": [
+			{
+			  "direction": "in",
+			  "source_ips": [
+				"28.239.13.1/32",
+				"28.239.14.0/24",
+				"ff21:1eac:9a3b:ee58:5ca:990c:8bc9:c03b/128"
+			  ],
+			  "destination_ips": [
+				"28.239.13.1/32",
+				"28.239.14.0/24",
+				"ff21:1eac:9a3b:ee58:5ca:990c:8bc9:c03b/128"
+			  ],
+			  "protocol": "tcp",
+			  "port": "80",
+			  "description": "allow http in"
+			}
+		],
+		"applied_to": [
+			{
+			 	"server": {
+					"id": 42
+				},
+				"type": "server"
+			},
+			{
+			 	"label_selector": {
+					"selector": "a=b"
+				},
+				"type": "label_selector"
+			}
+		  ]
+	}`)
+
+	var s schema.Firewall
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromFirewall(FirewallFromSchema(s)))
+
+	fw := FirewallFromSchema(s)
+	assert.Equal(t, fw, FirewallFromSchema(SchemaFromFirewall(fw)))
 }

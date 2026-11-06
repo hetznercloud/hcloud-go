@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -270,4 +272,44 @@ func TestDatacenterClient(t *testing.T) {
 			t.Errorf("unexpected datacenters")
 		}
 	})
+}
+
+func TestDatacenterSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 1,
+		"name": "fsn1-dc8",
+		"description": "Falkenstein 1 DC 8",
+		"location": {
+			"id": 1,
+			"name": "fsn1",
+			"description": "Falkenstein DC Park 1",
+			"country": "DE",
+			"city": "Falkenstein",
+			"latitude": 50.47612,
+			"longitude": 12.370071,
+			"network_zone": "eu-central"
+		},
+		"server_types": {
+			"supported": [
+				1,
+				1,
+				2,
+				3
+			],
+			"available": [
+				1,
+				1,
+				2,
+				3
+			]
+		}
+	}`)
+
+	var s schema.Datacenter
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromDatacenter(DatacenterFromSchema(s)))
+
+	dc := DatacenterFromSchema(s)
+	assert.Equal(t, dc, DatacenterFromSchema(SchemaFromDatacenter(dc)))
 }

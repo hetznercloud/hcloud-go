@@ -351,3 +351,22 @@ func TestExponentialBackoff(t *testing.T) {
 		}
 	})
 }
+
+func TestPaginationSchema(t *testing.T) {
+	data := []byte(`{
+		"page": 2,
+		"per_page": 25,
+		"previous_page": 1,
+		"next_page": 3,
+		"last_page": 13,
+		"total_entries": 322
+	}`)
+
+	var s schema.MetaPagination
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromPagination(PaginationFromSchema(s)))
+
+	p := PaginationFromSchema(s)
+	assert.Equal(t, p, PaginationFromSchema(SchemaFromPagination(p)))
+}

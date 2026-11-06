@@ -1442,3 +1442,873 @@ func TestLoadBalancerPrivateNetForNetwork(t *testing.T) {
 		require.Nil(t, got)
 	})
 }
+
+func TestLoadBalancerSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 4711,
+		"name": "Web Frontend",
+		"public_net": {
+			"ipv4": {
+				"ip": "131.232.99.1",
+				"dns_ptr": "example.org"
+			},
+			"ipv6": {
+				"ip": "2001:db8::1",
+				"dns_ptr": "example.com"
+			}
+		},
+		"private_net": [
+			{
+				"network": 4711,
+				"ip": "10.0.255.1"
+			}
+		],
+		"location": {
+			"id": 1,
+			"name": "fsn1",
+			"description": "Falkenstein DC Park 1",
+			"country": "DE",
+			"city": "Falkenstein",
+			"latitude": 50.47612,
+			"longitude": 12.370071,
+			"network_zone": "eu-central"
+		},
+		"load_balancer_type": {
+			"id": 1,
+			"name": "lx11",
+			"description": "LX11",
+			"max_connections": 20000,
+			"services": 3,
+			"prices": [
+				{
+					"location": "fsn-1",
+					"price_hourly": {
+						"net": "1",
+						"gross": "1.19"
+					},
+					"price_monthly": {
+						"net": "1",
+						"gross": "1.19"
+					}
+				}
+			]
+		},
+		"outgoing_traffic": 123456,
+		"ingoing_traffic": 7891011,
+		"included_traffic": 654321,
+		"protection": {
+			"delete": false
+		},
+		"labels": {},
+		"created": "2016-01-30T23:50:00+00:00",
+		"services": [
+			{
+				"protocol": "http",
+				"listen_port": 443,
+				"destination_port": 80,
+				"proxyprotocol": false,
+				"sticky_sessions": false,
+				"http": {
+					"cookie_name": "HCLBSTICKY",
+					"cookie_lifetime": 300,
+					"certificates": [
+						897
+					]
+				},
+				"health_check": {
+					"protocol": "http",
+					"port": 4711,
+					"interval": 15,
+					"timeout": 10,
+					"retries": 3,
+					"http": {
+						"domain": "example.com",
+						"path": "/"
+					}
+				}
+			}
+		],
+		"targets": [
+			{
+				"type": "server",
+				"server": {
+					"id": 80
+				},
+				"label_selector": null,
+				"health_status": [
+					{
+						"listen_port": 443,
+						"status": "healthy"
+					}
+				],
+				"use_private_ip": false
+			},
+			{
+				"type": "label_selector",
+				"label_selector": {
+					"selector": "lbt"
+				},
+				"targets": [
+					{
+						"type": "server",
+						"server": {
+							"id": 80
+						},
+						"health_status": [
+							{
+								"listen_port": 443,
+								"status": "healthy"
+							}
+						],
+						"use_private_ip": false
+					}
+				]
+			}
+		],
+		"algorithm": {
+			"type": "round_robin"
+		}
+	}`)
+
+	var s schema.LoadBalancer
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromLoadBalancer(LoadBalancerFromSchema(s)))
+
+	lb := LoadBalancerFromSchema(s)
+	assert.Equal(t, lb, LoadBalancerFromSchema(SchemaFromLoadBalancer(lb)))
+}
+
+func TestLoadBalancerServiceSchema(t *testing.T) {
+	data := []byte(`{
+		"protocol": "http",
+		"listen_port": 443,
+		"destination_port": 80,
+		"proxyprotocol": false,
+		"http": {
+			"cookie_name": "HCLBSTICKY",
+			"cookie_lifetime": 300,
+			"certificates": [
+				897
+			],
+			"redirect_http": true,
+			"sticky_sessions": true,
+			"timeout_idle": 60
+		},
+		"health_check": {
+			"protocol": "http",
+			"port": 4711,
+			"interval": 15,
+			"timeout": 10,
+			"retries": 3,
+			"http": {
+				"domain": "example.com",
+				"path": "/",
+				"response": "",
+				"status_codes":["200","201"],
+				"tls": false
+			}
+		}
+	}`)
+
+	var s schema.LoadBalancerService
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromLoadBalancerService(LoadBalancerServiceFromSchema(s)))
+
+	lbs := LoadBalancerServiceFromSchema(s)
+	assert.Equal(t, lbs, LoadBalancerServiceFromSchema(SchemaFromLoadBalancerService(lbs)))
+}
+
+func TestLoadBalancerServiceHealthCheckSchema(t *testing.T) {
+	data := []byte(`{
+		"protocol": "http",
+		"port": 4711,
+		"interval": 15,
+		"timeout": 10,
+		"retries": 3,
+		"http": {
+			"domain": "example.com",
+			"path": "/",
+			"response": "",
+			"status_codes":["200","201"],
+			"tls": false
+		}
+	}`)
+
+	var s *schema.LoadBalancerServiceHealthCheck
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromLoadBalancerServiceHealthCheck(LoadBalancerServiceHealthCheckFromSchema(s)))
+
+	hc := LoadBalancerServiceHealthCheckFromSchema(s)
+	assert.Equal(t, hc, LoadBalancerServiceHealthCheckFromSchema(SchemaFromLoadBalancerServiceHealthCheck(hc)))
+}
+
+func TestLoadBalancerTargetSchema(t *testing.T) {
+	testCases := map[string]string{
+		"server target": `{
+			"type": "server",
+			"server": {
+				"id": 80
+			},
+			"label_selector": null,
+			"health_status": [
+				{
+					"listen_port": 443,
+					"status": "healthy"
+				}
+			],
+			"use_private_ip": false
+		}`,
+		"label_selector target": `{
+			"type": "label_selector",
+			"label_selector": {
+				"selector": "lbt"
+			},
+			"targets": [
+				{
+					"type": "server",
+					"server": {
+						"id": 80
+					},
+					"health_status": [
+						{
+							"listen_port": 443,
+							"status": "healthy"
+						}
+					]
+				}
+			]
+		}`,
+		"ip target": `{
+			"type": "ip",
+			"ip": {
+				"ip": "1.2.3.4"
+			}
+		}`,
+	}
+
+	for name, data := range testCases {
+		t.Run(name, func(t *testing.T) {
+			var s schema.LoadBalancerTarget
+			assert.NoError(t, json.Unmarshal([]byte(data), &s))
+
+			assert.Equal(t, s, SchemaFromLoadBalancerTarget(LoadBalancerTargetFromSchema(s)))
+
+			lbt := LoadBalancerTargetFromSchema(s)
+			assert.Equal(t, lbt, LoadBalancerTargetFromSchema(SchemaFromLoadBalancerTarget(lbt)))
+		})
+	}
+}
+
+func TestLoadBalancerTargetHealthStatusSchema(t *testing.T) {
+	testCases := map[string]string{
+		"healthy": `{
+			"listen_port": 443,
+			"status": "healthy"
+		}`,
+		"unhealthy with details": `{
+			"listen_port": 443,
+			"status": "unhealthy",
+			"detail": "unexpected_http_status",
+			"http_status_code": 503
+		}`,
+		"unhealthy with detail only": `{
+			"listen_port": 443,
+			"status": "unhealthy",
+			"detail": "layer4_timeout"
+		}`,
+	}
+
+	for name, data := range testCases {
+		t.Run(name, func(t *testing.T) {
+			var s schema.LoadBalancerTargetHealthStatus
+			assert.NoError(t, json.Unmarshal([]byte(data), &s))
+
+			assert.Equal(t, s, SchemaFromLoadBalancerTargetHealthStatus(LoadBalancerTargetHealthStatusFromSchema(s)))
+
+			hs := LoadBalancerTargetHealthStatusFromSchema(s)
+			assert.Equal(t, hs, LoadBalancerTargetHealthStatusFromSchema(SchemaFromLoadBalancerTargetHealthStatus(hs)))
+		})
+	}
+}
+
+func TestSchemaFromLoadBalancerCreateOpts(t *testing.T) {
+	testCases := map[string]struct {
+		Opts    LoadBalancerCreateOpts
+		Request schema.LoadBalancerCreateRequest
+	}{
+		"minimal": {
+			Opts: LoadBalancerCreateOpts{
+				Name:             "test",
+				LoadBalancerType: &LoadBalancerType{Name: "lb11"},
+				Algorithm:        &LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmTypeRoundRobin},
+				NetworkZone:      NetworkZoneEUCentral,
+			},
+			Request: schema.LoadBalancerCreateRequest{
+				Name:             "test",
+				LoadBalancerType: schema.IDOrName{Name: "lb11"},
+				Algorithm: &schema.LoadBalancerCreateRequestAlgorithm{
+					Type: string(LoadBalancerAlgorithmTypeRoundRobin),
+				},
+				NetworkZone: new(string(NetworkZoneEUCentral)),
+			},
+		},
+		"all set": {
+			Opts: LoadBalancerCreateOpts{
+				Name:             "test",
+				LoadBalancerType: &LoadBalancerType{Name: "lb11"},
+				Algorithm:        &LoadBalancerAlgorithm{Type: LoadBalancerAlgorithmTypeRoundRobin},
+				NetworkZone:      NetworkZoneEUCentral,
+				Labels:           map[string]string{"foo": "bar"},
+				PublicInterface:  new(true),
+				Network:          &Network{ID: 3},
+				Services: []LoadBalancerCreateOptsService{
+					{
+						Protocol:        LoadBalancerServiceProtocolHTTP,
+						DestinationPort: new(80),
+						Proxyprotocol:   new(true),
+						HTTP: &LoadBalancerCreateOptsServiceHTTP{
+							CookieName:     new("keks"),
+							CookieLifetime: new(5 * time.Minute),
+							RedirectHTTP:   new(true),
+							StickySessions: new(true),
+							Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+						},
+						HealthCheck: &LoadBalancerCreateOptsServiceHealthCheck{
+							Protocol: LoadBalancerServiceProtocolHTTP,
+							Port:     new(80),
+							Interval: new(5 * time.Second),
+							Timeout:  new(1 * time.Second),
+							Retries:  new(3),
+							HTTP: &LoadBalancerCreateOptsServiceHealthCheckHTTP{
+								Domain:      new("example.com"),
+								Path:        new("/health"),
+								Response:    new("ok"),
+								StatusCodes: []string{"2??", "3??"},
+								TLS:         new(true),
+							},
+						},
+					},
+					{
+						Protocol:        LoadBalancerServiceProtocolHTTP,
+						DestinationPort: new(443),
+						Proxyprotocol:   new(true),
+						HTTP: &LoadBalancerCreateOptsServiceHTTP{
+							CookieName:     new("keks"),
+							CookieLifetime: new(5 * time.Minute),
+							RedirectHTTP:   new(true),
+							StickySessions: new(true),
+							Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+						},
+						HealthCheck: &LoadBalancerCreateOptsServiceHealthCheck{
+							Protocol: LoadBalancerServiceProtocolHTTP,
+							Port:     new(443),
+							Interval: new(5 * time.Second),
+							Timeout:  new(1 * time.Second),
+							Retries:  new(3),
+							HTTP: &LoadBalancerCreateOptsServiceHealthCheckHTTP{
+								Domain:      new("example.com"),
+								Path:        new("/health"),
+								Response:    new("ok"),
+								StatusCodes: []string{"4??", "5??"},
+								TLS:         new(true),
+							},
+						},
+					},
+				},
+				Targets: []LoadBalancerCreateOptsTarget{
+					{
+						Type: LoadBalancerTargetTypeServer,
+						Server: LoadBalancerCreateOptsTargetServer{
+							Server: &Server{ID: 5},
+						},
+					},
+					{
+						Type: LoadBalancerTargetTypeIP,
+						IP:   LoadBalancerCreateOptsTargetIP{IP: "1.2.3.4"},
+					},
+				},
+			},
+			Request: schema.LoadBalancerCreateRequest{
+				Name:             "test",
+				LoadBalancerType: schema.IDOrName{Name: "lb11"},
+				Algorithm: &schema.LoadBalancerCreateRequestAlgorithm{
+					Type: string(LoadBalancerAlgorithmTypeRoundRobin),
+				},
+				NetworkZone: new(string(NetworkZoneEUCentral)),
+				Labels: func() *map[string]string {
+					labels := map[string]string{"foo": "bar"}
+					return &labels
+				}(),
+				PublicInterface: new(true),
+				Network:         new(int64(3)),
+				Services: []schema.LoadBalancerCreateRequestService{
+					{
+						Protocol:        string(LoadBalancerServiceProtocolHTTP),
+						DestinationPort: new(80),
+						Proxyprotocol:   new(true),
+						HTTP: &schema.LoadBalancerCreateRequestServiceHTTP{
+							CookieName:     new("keks"),
+							CookieLifetime: new(5 * 60),
+							RedirectHTTP:   new(true),
+							StickySessions: new(true),
+							Certificates:   new([]int64{1, 2}),
+						},
+						HealthCheck: &schema.LoadBalancerCreateRequestServiceHealthCheck{
+							Protocol: string(LoadBalancerServiceProtocolHTTP),
+							Port:     new(80),
+							Interval: new(5),
+							Timeout:  new(1),
+							Retries:  new(3),
+							HTTP: &schema.LoadBalancerCreateRequestServiceHealthCheckHTTP{
+								Domain:      new("example.com"),
+								Path:        new("/health"),
+								Response:    new("ok"),
+								StatusCodes: new([]string{"2??", "3??"}),
+								TLS:         new(true),
+							},
+						},
+					},
+					{
+						Protocol:        string(LoadBalancerServiceProtocolHTTP),
+						DestinationPort: new(443),
+						Proxyprotocol:   new(true),
+						HTTP: &schema.LoadBalancerCreateRequestServiceHTTP{
+							CookieName:     new("keks"),
+							CookieLifetime: new(5 * 60),
+							RedirectHTTP:   new(true),
+							StickySessions: new(true),
+							Certificates:   new([]int64{1, 2}),
+						},
+						HealthCheck: &schema.LoadBalancerCreateRequestServiceHealthCheck{
+							Protocol: string(LoadBalancerServiceProtocolHTTP),
+							Port:     new(443),
+							Interval: new(5),
+							Timeout:  new(1),
+							Retries:  new(3),
+							HTTP: &schema.LoadBalancerCreateRequestServiceHealthCheckHTTP{
+								Domain:      new("example.com"),
+								Path:        new("/health"),
+								Response:    new("ok"),
+								StatusCodes: new([]string{"4??", "5??"}),
+								TLS:         new(true),
+							},
+						},
+					},
+				},
+				Targets: []schema.LoadBalancerCreateRequestTarget{
+					{
+						Type: "server",
+						Server: &schema.LoadBalancerCreateRequestTargetServer{
+							ID: 5,
+						},
+					},
+					{
+						Type: "ip",
+						IP: &schema.LoadBalancerCreateRequestTargetIP{
+							IP: "1.2.3.4",
+						},
+					},
+				},
+			},
+		},
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			req := SchemaFromLoadBalancerCreateOpts(testCase.Opts)
+			if !cmp.Equal(testCase.Request, req) {
+				t.Log(cmp.Diff(testCase.Request, req))
+				t.Fail()
+			}
+		})
+	}
+}
+
+func TestSchemaFromLoadBalancerAddServiceOpts(t *testing.T) {
+	testCases := map[string]struct {
+		Opts    LoadBalancerAddServiceOpts
+		Request schema.LoadBalancerActionAddServiceRequest
+	}{
+		"minimal": {
+			Opts: LoadBalancerAddServiceOpts{
+				Protocol: LoadBalancerServiceProtocolHTTP,
+			},
+			Request: schema.LoadBalancerActionAddServiceRequest{
+				Protocol: string(LoadBalancerServiceProtocolHTTP),
+			},
+		},
+		"all set": {
+			Opts: LoadBalancerAddServiceOpts{
+				Protocol:        LoadBalancerServiceProtocolHTTP,
+				DestinationPort: new(80),
+				Proxyprotocol:   new(true),
+				HTTP: &LoadBalancerAddServiceOptsHTTP{
+					CookieName:     new("keks"),
+					CookieLifetime: new(5 * time.Minute),
+					RedirectHTTP:   new(true),
+					StickySessions: new(true),
+					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+				},
+				HealthCheck: &LoadBalancerAddServiceOptsHealthCheck{
+					Protocol: LoadBalancerServiceProtocolHTTP,
+					Port:     new(80),
+					Interval: new(5 * time.Second),
+					Timeout:  new(1 * time.Second),
+					Retries:  new(3),
+					HTTP: &LoadBalancerAddServiceOptsHealthCheckHTTP{
+						Domain:      new("example.com"),
+						Path:        new("/health"),
+						Response:    new("ok"),
+						StatusCodes: []string{"2??", "3??"},
+						TLS:         new(true),
+					},
+				},
+			},
+			Request: schema.LoadBalancerActionAddServiceRequest{
+				Protocol:        string(LoadBalancerServiceProtocolHTTP),
+				DestinationPort: new(80),
+				Proxyprotocol:   new(true),
+				HTTP: &schema.LoadBalancerActionAddServiceRequestHTTP{
+					CookieName:     new("keks"),
+					CookieLifetime: new(5 * 60),
+					RedirectHTTP:   new(true),
+					StickySessions: new(true),
+					Certificates:   new([]int64{1, 2}),
+				},
+				HealthCheck: &schema.LoadBalancerActionAddServiceRequestHealthCheck{
+					Protocol: string(LoadBalancerServiceProtocolHTTP),
+					Port:     new(80),
+					Interval: new(5),
+					Timeout:  new(1),
+					Retries:  new(3),
+					HTTP: &schema.LoadBalancerActionAddServiceRequestHealthCheckHTTP{
+						Domain:      new("example.com"),
+						Path:        new("/health"),
+						Response:    new("ok"),
+						StatusCodes: new([]string{"2??", "3??"}),
+						TLS:         new(true),
+					},
+				},
+			},
+		},
+		"no health check": {
+			Opts: LoadBalancerAddServiceOpts{
+				Protocol:        LoadBalancerServiceProtocolHTTP,
+				DestinationPort: new(80),
+				Proxyprotocol:   new(true),
+				HTTP: &LoadBalancerAddServiceOptsHTTP{
+					CookieName:     new("keks"),
+					CookieLifetime: new(5 * time.Minute),
+					RedirectHTTP:   new(true),
+					StickySessions: new(true),
+					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+				},
+			},
+			Request: schema.LoadBalancerActionAddServiceRequest{
+				Protocol:        string(LoadBalancerServiceProtocolHTTP),
+				DestinationPort: new(80),
+				Proxyprotocol:   new(true),
+				HTTP: &schema.LoadBalancerActionAddServiceRequestHTTP{
+					CookieName:     new("keks"),
+					CookieLifetime: new(5 * 60),
+					RedirectHTTP:   new(true),
+					StickySessions: new(true),
+					Certificates:   new([]int64{1, 2}),
+				},
+				HealthCheck: nil,
+			},
+		},
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			req := SchemaFromLoadBalancerAddServiceOpts(testCase.Opts)
+			if !cmp.Equal(testCase.Request, req) {
+				t.Log(cmp.Diff(testCase.Request, req))
+				t.Fail()
+			}
+		})
+	}
+}
+
+func TestSchemaFromLoadBalancerUpdateServiceOpts(t *testing.T) {
+	testCases := map[string]struct {
+		Opts    LoadBalancerUpdateServiceOpts
+		Request schema.LoadBalancerActionUpdateServiceRequest
+	}{
+		"empty": {
+			Opts: LoadBalancerUpdateServiceOpts{
+				HTTP: &LoadBalancerUpdateServiceOptsHTTP{},
+				HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
+					HTTP: &LoadBalancerUpdateServiceOptsHealthCheckHTTP{},
+				},
+			},
+			Request: schema.LoadBalancerActionUpdateServiceRequest{
+				HTTP: &schema.LoadBalancerActionUpdateServiceRequestHTTP{},
+				HealthCheck: &schema.LoadBalancerActionUpdateServiceRequestHealthCheck{
+					HTTP: &schema.LoadBalancerActionUpdateServiceRequestHealthCheckHTTP{},
+				},
+			},
+		},
+		"all set": {
+			Opts: LoadBalancerUpdateServiceOpts{
+				Protocol:        LoadBalancerServiceProtocolHTTP,
+				DestinationPort: new(80),
+				Proxyprotocol:   new(true),
+				HTTP: &LoadBalancerUpdateServiceOptsHTTP{
+					CookieName:     new("keks"),
+					CookieLifetime: new(5 * time.Minute),
+					RedirectHTTP:   new(true),
+					StickySessions: new(true),
+					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+				},
+				HealthCheck: &LoadBalancerUpdateServiceOptsHealthCheck{
+					Protocol: LoadBalancerServiceProtocolHTTP,
+					Port:     new(80),
+					Interval: new(5 * time.Second),
+					Timeout:  new(1 * time.Second),
+					Retries:  new(3),
+					HTTP: &LoadBalancerUpdateServiceOptsHealthCheckHTTP{
+						Domain:      new("example.com"),
+						Path:        new("/health"),
+						Response:    new("ok"),
+						StatusCodes: []string{"2??", "3??"},
+						TLS:         new(true),
+					},
+				},
+			},
+			Request: schema.LoadBalancerActionUpdateServiceRequest{
+				Protocol:        new(string(LoadBalancerServiceProtocolHTTP)),
+				DestinationPort: new(80),
+				Proxyprotocol:   new(true),
+				HTTP: &schema.LoadBalancerActionUpdateServiceRequestHTTP{
+					CookieName:     new("keks"),
+					CookieLifetime: new(5 * 60),
+					RedirectHTTP:   new(true),
+					StickySessions: new(true),
+					Certificates:   new([]int64{1, 2}),
+				},
+				HealthCheck: &schema.LoadBalancerActionUpdateServiceRequestHealthCheck{
+					Protocol: new(string(LoadBalancerServiceProtocolHTTP)),
+					Port:     new(80),
+					Interval: new(5),
+					Timeout:  new(1),
+					Retries:  new(3),
+					HTTP: &schema.LoadBalancerActionUpdateServiceRequestHealthCheckHTTP{
+						Domain:      new("example.com"),
+						Path:        new("/health"),
+						Response:    new("ok"),
+						StatusCodes: new([]string{"2??", "3??"}),
+						TLS:         new(true),
+					},
+				},
+			},
+		},
+		"no health check": {
+			Opts: LoadBalancerUpdateServiceOpts{
+				Protocol:        LoadBalancerServiceProtocolHTTP,
+				DestinationPort: new(80),
+				Proxyprotocol:   new(true),
+				HTTP: &LoadBalancerUpdateServiceOptsHTTP{
+					CookieName:     new("keks"),
+					CookieLifetime: new(5 * time.Minute),
+					RedirectHTTP:   new(true),
+					StickySessions: new(true),
+					Certificates:   []*Certificate{{ID: 1}, {ID: 2}},
+				},
+			},
+			Request: schema.LoadBalancerActionUpdateServiceRequest{
+				Protocol:        new(string(LoadBalancerServiceProtocolHTTP)),
+				DestinationPort: new(80),
+				Proxyprotocol:   new(true),
+				HTTP: &schema.LoadBalancerActionUpdateServiceRequestHTTP{
+					CookieName:     new("keks"),
+					CookieLifetime: new(5 * 60),
+					RedirectHTTP:   new(true),
+					StickySessions: new(true),
+					Certificates:   new([]int64{1, 2}),
+				},
+				HealthCheck: nil,
+			},
+		},
+	}
+	for name, testCase := range testCases {
+		t.Run(name, func(t *testing.T) {
+			req := SchemaFromLoadBalancerUpdateServiceOpts(testCase.Opts)
+			if !cmp.Equal(testCase.Request, req) {
+				t.Log(cmp.Diff(testCase.Request, req))
+				t.Fail()
+			}
+		})
+	}
+}
+
+func TestLoadBalancerMetricsFromSchema(t *testing.T) {
+	tests := []struct {
+		name        string
+		respFn      func() *schema.LoadBalancerGetMetricsResponse
+		expected    *LoadBalancerMetrics
+		expectedErr string
+	}{
+		{
+			name: "values not tuples",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []any{"some value"},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "failed to convert value to tuple: some value",
+		},
+		{
+			name: "invalid tuple size",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []any{
+							[]any{1435781471.622, "43", "something else"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "invalid tuple size: 3: [1.435781471622e+09 43 something else]",
+		},
+		{
+			name: "invalid time stamp",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []any{
+							[]any{"1435781471.622", "43"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "convert to float64: 1435781471.622",
+		},
+		{
+			name: "invalid value",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []any{
+							[]any{1435781471.622, 43},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "not a string: 43",
+		},
+		{
+			name: "valid response",
+			respFn: func() *schema.LoadBalancerGetMetricsResponse {
+				var resp schema.LoadBalancerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.LoadBalancerTimeSeriesVals{
+					"open_connections": {
+						Values: []any{
+							[]any{1435781470.622, "42"},
+							[]any{1435781471.622, "43"},
+						},
+					},
+					"connections_per_second": {
+						Values: []any{
+							[]any{1435781480.622, "100"},
+							[]any{1435781481.622, "150"},
+						},
+					},
+					"requests_per_second": {
+						Values: []any{
+							[]any{1435781480.622, "50"},
+							[]any{1435781481.622, "55"},
+						},
+					},
+					"bandwidth.in": {
+						Values: []any{
+							[]any{1435781490.622, "70"},
+							[]any{1435781491.622, "75"},
+						},
+					},
+					"bandwidth.out": {
+						Values: []any{
+							[]any{1435781590.622, "60"},
+							[]any{1435781591.622, "65"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expected: &LoadBalancerMetrics{
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
+				TimeSeries: map[string][]LoadBalancerMetricsValue{
+					"open_connections": {
+						{Timestamp: 1435781470.622, Value: "42"},
+						{Timestamp: 1435781471.622, Value: "43"},
+					},
+					"connections_per_second": {
+						{Timestamp: 1435781480.622, Value: "100"},
+						{Timestamp: 1435781481.622, Value: "150"},
+					},
+					"requests_per_second": {
+						{Timestamp: 1435781480.622, Value: "50"},
+						{Timestamp: 1435781481.622, Value: "55"},
+					},
+					"bandwidth.in": {
+						{Timestamp: 1435781490.622, Value: "70"},
+						{Timestamp: 1435781491.622, Value: "75"},
+					},
+					"bandwidth.out": {
+						{Timestamp: 1435781590.622, Value: "60"},
+						{Timestamp: 1435781591.622, Value: "65"},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp := tt.respFn()
+			actual, err := LoadBalancerMetricsFromSchema(resp)
+			if err != nil && tt.expectedErr == "" {
+				t.Fatalf("expected no error; got: %v", err)
+			}
+			if err != nil && tt.expectedErr != err.Error() {
+				t.Fatalf("expected error: %s; got: %v", tt.expectedErr, err)
+			}
+			if !cmp.Equal(tt.expected, actual) {
+				t.Errorf("unexpected result:\n%s", cmp.Diff(tt.expected, actual))
+			}
+		})
+	}
+}

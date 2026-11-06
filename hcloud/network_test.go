@@ -840,3 +840,86 @@ func TestNetworkClientAllMembersWithOpts(t *testing.T) {
 	assert.Equal(t, NetworkMemberTypeServer, members[0].Type)
 	assert.Equal(t, int64(123), members[0].ID)
 }
+
+func TestNetworkSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 4711,
+		"name": "mynet",
+		"created": "2017-08-16T17:29:14+00:00",
+		"ip_range": "10.0.0.0/16",
+		"subnets": [
+			{
+				"type": "server",
+				"ip_range": "10.0.1.0/24",
+				"network_zone": "eu-central",
+				"gateway": "10.0.0.1"
+			}
+		],
+		"routes": [
+			{
+				"destination": "10.100.1.0/24",
+				"gateway": "10.0.1.1"
+			}
+		],
+		"servers": [
+			4711
+		],
+		"protection": {
+			"delete": false
+		},
+		"labels": {}
+	}`)
+
+	var s schema.Network
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromNetwork(NetworkFromSchema(s)))
+
+	n := NetworkFromSchema(s)
+	assert.Equal(t, n, NetworkFromSchema(SchemaFromNetwork(n)))
+}
+
+func TestNetworkSubnetSchema(t *testing.T) {
+	testCases := map[string]string{
+		"server_subnet": `{
+			"type": "server",
+			"ip_range": "10.0.1.0/24",
+			"network_zone": "eu-central",
+			"gateway": "10.0.0.1"
+		}`,
+		"vswitch_subnet": `{
+			"type": "vswitch",
+			"ip_range": "10.0.1.0/24",
+			"network_zone": "eu-central",
+			"gateway": "10.0.0.1",
+			"vswitch_id": 123
+		}`,
+	}
+
+	for name, data := range testCases {
+		t.Run(name, func(t *testing.T) {
+			var s schema.NetworkSubnet
+			assert.NoError(t, json.Unmarshal([]byte(data), &s))
+
+			assert.Equal(t, s, SchemaFromNetworkSubnet(NetworkSubnetFromSchema(s)))
+
+			n := NetworkSubnetFromSchema(s)
+			assert.Equal(t, n, NetworkSubnetFromSchema(SchemaFromNetworkSubnet(n)))
+		})
+	}
+}
+
+func TestNetworkRouteSchema(t *testing.T) {
+	data := []byte(`{
+		"destination": "10.100.1.0/24",
+		"gateway": "10.0.1.1"
+	}`)
+
+	var s schema.NetworkRoute
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromNetworkRoute(NetworkRouteFromSchema(s)))
+
+	r := NetworkRouteFromSchema(s)
+	assert.Equal(t, r, NetworkRouteFromSchema(SchemaFromNetworkRoute(r)))
+}
