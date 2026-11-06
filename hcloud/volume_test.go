@@ -1,6 +1,7 @@
 package hcloud
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"testing"
@@ -10,6 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 func TestVolumeClientGetByID(t *testing.T) {
@@ -542,4 +544,41 @@ func TestVolumeClientResize(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 	assert.Equal(t, int64(3), action.ID)
+}
+
+func TestVolumeSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 4711,
+		"created": "2016-01-30T23:50:11+00:00",
+		"name": "db-storage",
+		"status": "creating",
+		"server": 2,
+		"format": "xfs",
+		"location": {
+			"id": 1,
+			"name": "fsn1",
+			"description": "Falkenstein DC Park 1",
+			"country": "DE",
+			"city": "Falkenstein",
+			"latitude": 50.47612,
+			"longitude": 12.370071
+		},
+		"size": 42,
+		"linux_device":"/dev/disk/by-id/scsi-0HC_volume_1",
+		"protection": {
+			"delete": true
+		},
+		"labels": {
+			"key": "value",
+			"key2": "value2"
+		}
+	}`)
+
+	var s schema.Volume
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromVolume(VolumeFromSchema(s)))
+
+	v := VolumeFromSchema(s)
+	assert.Equal(t, v, VolumeFromSchema(SchemaFromVolume(v)))
 }

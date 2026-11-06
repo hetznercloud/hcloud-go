@@ -2590,3 +2590,402 @@ func TestServerPrivateNetForNetwork(t *testing.T) {
 		require.Nil(t, got)
 	})
 }
+
+func TestServerSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 1,
+		"name": "server.example.com",
+		"status": "running",
+		"created": "2017-08-16T17:29:14+00:00",
+		"public_net": {
+			"ipv4": null,
+			"ipv6": {
+				"ip": "2a01:4f8:1c11:3400::/64",
+				"blocked": false,
+				"dns_ptr": [
+					{
+						"ip": "2a01:4f8:1c11:3400::1/64",
+						"dns_ptr": "server01.example.com"
+					}
+				]
+			}
+		},
+		"private_net": [
+			{
+				"network": 4711,
+				"ip": "10.0.1.1",
+				"aliases": [
+					"10.0.1.2"
+				]
+			}
+		],
+		"server_type": {
+			"id": 2
+		},
+		"outgoing_traffic": 123456,
+		"ingoing_traffic": 7891011,
+		"included_traffic": 654321,
+		"backup_window": "22-02",
+		"rescue_enabled": true,
+		"primary_disk_size": 20,
+		"image": {
+			"id": 4711,
+			"type": "system",
+			"status": "available",
+			"name": "ubuntu16.04-standard-x64",
+			"description": "Ubuntu 16.04 Standard 64 bit",
+			"image_size": 2.3,
+			"disk_size": 10,
+			"created": "2017-08-16T17:29:14+00:00",
+			"created_from": {
+				"id": 1,
+				"name": "Server"
+			},
+			"bound_to": 1,
+			"os_flavor": "ubuntu",
+			"os_version": "16.04",
+			"rapid_deploy": false
+		},
+		"iso": {
+			"id": 4711,
+			"name": "FreeBSD-11.0-RELEASE-amd64-dvd1",
+			"description": "FreeBSD 11.0 x64",
+			"type": "public"
+		},
+		"datacenter": {
+			"id": 1,
+			"name": "fsn1-dc8",
+			"description": "Falkenstein 1 DC 8",
+			"location": {
+				"id": 1,
+				"name": "fsn1",
+				"description": "Falkenstein DC Park 1",
+				"country": "DE",
+				"city": "Falkenstein",
+				"latitude": 50.47612,
+				"longitude": 12.370071,
+				"network_zone": "eu-central"
+			}
+		},
+		"protection": {
+			"delete": true,
+			"rebuild": true
+		},
+		"locked": true,
+		"labels": {
+			"key": "value",
+			"key2": "value2"
+		},
+		"volumes": [123, 456, 789],
+		"placement_group": {
+			"created": "2019-01-08T12:10:00+00:00",
+			"id": 897,
+			"labels": {
+			  "key": "value"
+			},
+			"name": "my Placement Group",
+			"servers": [
+			  4711,
+			  4712
+			],
+			"type": "spread"
+		}
+	}`)
+
+	var s schema.Server
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromServer(ServerFromSchema(s)))
+
+	iso := ServerFromSchema(s)
+	assert.Equal(t, iso, ServerFromSchema(SchemaFromServer(iso)))
+}
+
+func TestServerSchemaNoTraffic(t *testing.T) {
+	data := []byte(`{
+		"public_net": {
+			"ipv4": {
+				"ip": "1.2.3.4",
+				"blocked": false,
+				"dns_ptr": "server01.example.com"
+			},
+			"ipv6": {
+				"ip": "2a01:4f8:1c11:3400::/64",
+				"blocked": false,
+				"dns_ptr": [
+					{
+						"ip": "2a01:4f8:1c11:3400::1/64",
+						"dns_ptr": "server01.example.com"
+					}
+				]
+			}
+		},
+		"outgoing_traffic": null,
+		"ingoing_traffic": null
+	}`)
+
+	var s schema.Server
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromServer(ServerFromSchema(s)))
+
+	iso := ServerFromSchema(s)
+	assert.Equal(t, iso, ServerFromSchema(SchemaFromServer(iso)))
+}
+
+func TestServerPublicNetSchema(t *testing.T) {
+	data := []byte(`{
+		"ipv4": {
+			"id": 1,
+			"ip": "1.2.3.4",
+			"blocked": false,
+			"dns_ptr": "server.example.com"
+		},
+		"ipv6": {
+			"id": 2,
+			"ip": "2a01:4f8:1c19:1403::/64",
+			"blocked": false,
+			"dns_ptr": []
+		},
+		"floating_ips": [4],
+		"firewalls": [
+			{
+				"id": 23,
+				"status": "applied"
+			}
+		]
+	}`)
+
+	var s schema.ServerPublicNet
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromServerPublicNet(ServerPublicNetFromSchema(s)))
+
+	net := ServerPublicNetFromSchema(s)
+	assert.Equal(t, net, ServerPublicNetFromSchema(SchemaFromServerPublicNet(net)))
+}
+
+func TestServerPublicNetIPv4Schema(t *testing.T) {
+	data := []byte(`{
+		"ip": "1.2.3.4",
+		"blocked": true,
+		"dns_ptr": "server.example.com"
+	}`)
+
+	var s schema.ServerPublicNetIPv4
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromServerPublicNetIPv4(ServerPublicNetIPv4FromSchema(s)))
+
+	net := ServerPublicNetIPv4FromSchema(s)
+	assert.Equal(t, net, ServerPublicNetIPv4FromSchema(SchemaFromServerPublicNetIPv4(net)))
+}
+
+func TestServerPublicNetIPv6Schema(t *testing.T) {
+	data := []byte(`{
+		"ip": "2a01:4f8:1c11:3400::/64",
+		"blocked": true,
+		"dns_ptr": [
+			{
+				"ip": "2a01:4f8:1c11:3400::1/64",
+				"blocked": "server01.example.com"
+			}
+		]
+	}`)
+
+	var s schema.ServerPublicNetIPv6
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromServerPublicNetIPv6(ServerPublicNetIPv6FromSchema(s)))
+
+	net := ServerPublicNetIPv6FromSchema(s)
+	assert.Equal(t, net, ServerPublicNetIPv6FromSchema(SchemaFromServerPublicNetIPv6(net)))
+}
+
+func TestServerPrivateNetSchema(t *testing.T) {
+	data := []byte(`{
+		"network": 4711,
+		"ip": "10.0.1.1",
+		"alias_ips": [
+			"10.0.1.2"
+		],
+		"mac_address": "86:00:ff:2a:7d:e1"
+	}`)
+
+	var s schema.ServerPrivateNet
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromServerPrivateNet(ServerPrivateNetFromSchema(s)))
+
+	net := ServerPrivateNetFromSchema(s)
+	assert.Equal(t, net, ServerPrivateNetFromSchema(SchemaFromServerPrivateNet(net)))
+}
+
+func TestServerMetricsFromSchema(t *testing.T) {
+	tests := []struct {
+		name        string
+		respFn      func() *schema.ServerGetMetricsResponse
+		expected    *ServerMetrics
+		expectedErr string
+	}{
+		{
+			name: "values not tuples",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []any{"some value"},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "failed to convert value to tuple: some value",
+		},
+		{
+			name: "invalid tuple size",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []any{
+							[]any{1435781471.622, "43", "something else"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "invalid tuple size: 3: [1.435781471622e+09 43 something else]",
+		},
+		{
+			name: "invalid time stamp",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []any{
+							[]any{"1435781471.622", "43"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "convert to float64: 1435781471.622",
+		},
+		{
+			name: "invalid value",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []any{
+							[]any{1435781471.622, 43},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expectedErr: "not a string: 43",
+		},
+		{
+			name: "valid response",
+			respFn: func() *schema.ServerGetMetricsResponse {
+				var resp schema.ServerGetMetricsResponse
+
+				resp.Metrics.Start = mustParseTime(t, "2017-01-01T00:00:00Z")
+				resp.Metrics.End = mustParseTime(t, "2017-01-01T23:00:00Z")
+				resp.Metrics.TimeSeries = map[string]schema.ServerTimeSeriesVals{
+					"cpu": {
+						Values: []any{
+							[]any{1435781470.622, "42"},
+							[]any{1435781471.622, "43"},
+						},
+					},
+					"disk.0.iops.read": {
+						Values: []any{
+							[]any{1435781480.622, "100"},
+							[]any{1435781481.622, "150"},
+						},
+					},
+					"disk.0.iops.write": {
+						Values: []any{
+							[]any{1435781480.622, "50"},
+							[]any{1435781481.622, "55"},
+						},
+					},
+					"network.0.pps.in": {
+						Values: []any{
+							[]any{1435781490.622, "70"},
+							[]any{1435781491.622, "75"},
+						},
+					},
+					"network.0.pps.out": {
+						Values: []any{
+							[]any{1435781590.622, "60"},
+							[]any{1435781591.622, "65"},
+						},
+					},
+				}
+
+				return &resp
+			},
+			expected: &ServerMetrics{
+				Start: mustParseTime(t, "2017-01-01T00:00:00Z"),
+				End:   mustParseTime(t, "2017-01-01T23:00:00Z"),
+				TimeSeries: map[string][]ServerMetricsValue{
+					"cpu": {
+						{Timestamp: 1435781470.622, Value: "42"},
+						{Timestamp: 1435781471.622, Value: "43"},
+					},
+					"disk.0.iops.read": {
+						{Timestamp: 1435781480.622, Value: "100"},
+						{Timestamp: 1435781481.622, Value: "150"},
+					},
+					"disk.0.iops.write": {
+						{Timestamp: 1435781480.622, Value: "50"},
+						{Timestamp: 1435781481.622, Value: "55"},
+					},
+					"network.0.pps.in": {
+						{Timestamp: 1435781490.622, Value: "70"},
+						{Timestamp: 1435781491.622, Value: "75"},
+					},
+					"network.0.pps.out": {
+						{Timestamp: 1435781590.622, Value: "60"},
+						{Timestamp: 1435781591.622, Value: "65"},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			resp := tt.respFn()
+			actual, err := ServerMetricsFromSchema(resp)
+			if err != nil && tt.expectedErr == "" {
+				t.Fatalf("expected no error; got: %v", err)
+			}
+			if err != nil && tt.expectedErr != err.Error() {
+				t.Fatalf("expected error: %s; got: %v", tt.expectedErr, err)
+			}
+			if !cmp.Equal(tt.expected, actual) {
+				t.Errorf("unexpected result:\n%s", cmp.Diff(tt.expected, actual))
+			}
+		})
+	}
+}

@@ -498,3 +498,116 @@ func TestCertificateClient_RetryIssuance(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, &Action{ID: 1, Resources: []*ActionResource{}}, action)
 }
+
+func TestCertificateSchema(t *testing.T) {
+	testCases := []struct {
+		name     string
+		data     string
+		expected *Certificate
+	}{
+		{
+			name: "uploaded certificate",
+			data: `{
+				"id": 897,
+				"name": "my website cert",
+				"labels": {},
+				"type": "uploaded",
+				"certificate": "-----BEGIN CERTIFICATE-----\n...",
+				"created": "2016-01-30T23:50:00+00:00",
+				"not_valid_before": "2016-01-30T23:51:00+00:00",
+				"not_valid_after": "2016-01-30T23:55:00+00:00",
+				"domain_names": [
+					"example.com",
+					"webmail.example.com",
+					"www.example.com"
+				],
+				"fingerprint": "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
+				"used_by": [
+					{"id": 42, "type": "loadbalancer"}
+				]
+			}`,
+			expected: &Certificate{
+				ID:             897,
+				Name:           "my website cert",
+				Labels:         map[string]string{},
+				Type:           "uploaded",
+				Certificate:    "-----BEGIN CERTIFICATE-----\n...",
+				Created:        mustParseTime(t, "2016-01-30T23:50:00+00:00"),
+				NotValidBefore: mustParseTime(t, "2016-01-30T23:51:00+00:00"),
+				NotValidAfter:  mustParseTime(t, "2016-01-30T23:55:00+00:00"),
+				DomainNames:    []string{"example.com", "webmail.example.com", "www.example.com"},
+				Fingerprint:    "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
+				UsedBy: []CertificateUsedByRef{
+					{ID: 42, Type: "loadbalancer"},
+				},
+			},
+		},
+		{
+			name: "managed certificate",
+			data: `{
+				"id": 898,
+				"name": "managed certificate",
+				"labels": {},
+				"type": "managed",
+				"certificate": "-----BEGIN CERTIFICATE-----\n...",
+				"created": "2016-01-30T23:50:00+00:00",
+				"not_valid_before": "2016-01-30T23:51:00+00:00",
+				"not_valid_after": "2016-01-30T23:55:00+00:00",
+				"domain_names": [
+					"example.com",
+					"webmail.example.com",
+					"www.example.com"
+				],
+				"fingerprint": "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
+				"status": {
+					"issuance": "completed",
+					"renewal": "failed",
+					"error": {
+						"code": "dns_zone_not_found",
+						"message": "DNS zone not found"
+					}
+				},
+				"used_by": [
+					{"id": 42, "type": "loadbalancer"}
+				]
+			}`,
+			expected: &Certificate{
+				ID:             898,
+				Name:           "managed certificate",
+				Labels:         map[string]string{},
+				Type:           "managed",
+				Certificate:    "-----BEGIN CERTIFICATE-----\n...",
+				Created:        mustParseTime(t, "2016-01-30T23:50:00+00:00"),
+				NotValidBefore: mustParseTime(t, "2016-01-30T23:51:00+00:00"),
+				NotValidAfter:  mustParseTime(t, "2016-01-30T23:55:00+00:00"),
+				DomainNames:    []string{"example.com", "webmail.example.com", "www.example.com"},
+				Fingerprint:    "03:c7:55:9b:2a:d1:04:17:09:f6:d0:7f:18:34:63:d4:3e:5f",
+				Status: &CertificateStatus{
+					Issuance: CertificateStatusTypeCompleted,
+					Renewal:  CertificateStatusTypeFailed,
+					Error: &Error{
+						Code:    "dns_zone_not_found",
+						Message: "DNS zone not found",
+					},
+				},
+				UsedBy: []CertificateUsedByRef{
+					{ID: 42, Type: "loadbalancer"},
+				},
+			},
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			var s schema.Certificate
+			assert.NoError(t, json.Unmarshal([]byte(testCase.data), &s))
+
+			assert.Equal(t, s, SchemaFromCertificate(CertificateFromSchema(s)))
+
+			ct := CertificateFromSchema(s)
+			assert.Equal(t, ct, CertificateFromSchema(SchemaFromCertificate(ct)))
+
+			assert.Equal(t, testCase.expected, CertificateFromSchema(s))
+			assert.Equal(t, s, SchemaFromCertificate(testCase.expected))
+		})
+	}
+}

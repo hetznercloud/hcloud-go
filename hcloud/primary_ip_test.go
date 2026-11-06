@@ -506,3 +506,117 @@ func TestPrimaryIPClient(t *testing.T) {
 		assert.NotNil(t, action, "no action returned")
 	})
 }
+
+func TestPrimaryIPSchema(t *testing.T) {
+	t.Run("IPv6", func(t *testing.T) {
+		data := []byte(`{
+			"assignee_id": 17,
+			"assignee_type": "server",
+			"auto_delete": true,
+			"blocked": true,
+			"created": "2017-08-16T17:29:14+00:00",
+			"datacenter": {
+				"description": "Falkenstein DC Park 8",
+				"id": 42,
+				"location": {
+					"city": "Falkenstein",
+					"country": "DE",
+					"description": "Falkenstein DC Park 1",
+					"id": 1,
+					"latitude": 50.47612,
+					"longitude": 12.370071,
+					"name": "fsn1",
+					"network_zone": "eu-central"
+				},
+				"name": "fsn1-dc8",
+				"server_types": {
+					"available": [],
+					"available_for_migration": [],
+					"supported": []
+				}
+			},
+			"dns_ptr": [
+				{
+					"dns_ptr": "server.example.com",
+					"ip": "fe80::"
+				}
+			],
+			"id": 4711,
+			"ip": "fe80::/64",
+			"labels": {
+				"key": "value",
+				"key2": "value2"
+			},
+			"name": "Web Frontend",
+			"protection": {
+				"delete": true
+			},
+			"type": "ipv6"
+        }`)
+
+		var s schema.PrimaryIP
+		assert.NoError(t, json.Unmarshal(data, &s))
+
+		assert.Equal(t, s, SchemaFromPrimaryIP(PrimaryIPFromSchema(s)))
+
+		ip := PrimaryIPFromSchema(s)
+		assert.Equal(t, ip, PrimaryIPFromSchema(SchemaFromPrimaryIP(ip)))
+	})
+
+	t.Run("IPv4", func(t *testing.T) {
+		data := []byte(`{
+			"assignee_id": 17,
+			"assignee_type": "server",
+			"auto_delete": true,
+			"blocked": true,
+			"created": "2017-08-16T17:29:14+00:00",
+			"datacenter": {
+				"description": "Falkenstein DC Park 8",
+				"id": 42,
+				"location": {
+					"city": "Falkenstein",
+					"country": "DE",
+					"description": "Falkenstein DC Park 1",
+					"id": 1,
+					"latitude": 50.47612,
+					"longitude": 12.370071,
+					"name": "fsn1",
+					"network_zone": "eu-central"
+				},
+				"name": "fsn1-dc8",
+				"server_types": {
+					"available": [],
+					"available_for_migration": [],
+					"supported": []
+				}
+			},
+			"dns_ptr": [
+				{
+					"dns_ptr": "server.example.com",
+					"ip": "127.0.0.1"
+				}
+			],
+			"id": 4711,
+			"ip": "127.0.0.1",
+			"labels": {
+				"key": "value",
+				"key2": "value2"
+			},
+			"name": "Web Frontend",
+			"protection": {
+				"delete": true
+			},
+			"type": "ipv4"
+		}`)
+
+		var s schema.PrimaryIP
+		if err := json.Unmarshal(data, &s); err != nil {
+			t.Fatal(err)
+		}
+
+		assert.Equal(t, s, SchemaFromPrimaryIP(PrimaryIPFromSchema(s)))
+
+		ip := PrimaryIPFromSchema(s)
+		assert.Equal(t, ip, PrimaryIPFromSchema(SchemaFromPrimaryIP(ip)))
+	})
+}

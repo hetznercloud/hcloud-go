@@ -1,10 +1,13 @@
 package hcloud
 
 import (
+	"encoding/json"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 type TestDeprecatableResource struct {
@@ -70,6 +73,32 @@ func TestDeprecatableResource_UnavailableAfter(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equalf(t, tt.want, tt.resource.UnavailableAfter(), "UnavailableAfter()")
+		})
+	}
+}
+
+func TestDeprecationSchema(t *testing.T) {
+	testCases := map[string]string{
+		"deprecated_resource": `{
+			"deprecation": {
+				"announced": "2023-06-01T00:00:00+00:00",
+				"unavailable_after": "2023-09-01T00:00:00+00:00"
+			}
+		}`,
+		"non_deprecated_resource": `{
+			"deprecation": null
+		}`,
+	}
+
+	for name, data := range testCases {
+		t.Run(name, func(t *testing.T) {
+			var s *schema.DeprecationInfo
+			assert.NoError(t, json.Unmarshal([]byte(data), &s))
+
+			assert.Equal(t, s, SchemaFromDeprecation(DeprecationFromSchema(s)))
+
+			d := DeprecationFromSchema(s)
+			assert.Equal(t, d, DeprecationFromSchema(SchemaFromDeprecation(d)))
 		})
 	}
 }

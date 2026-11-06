@@ -7,6 +7,8 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -554,4 +556,47 @@ func TestImageClientChangeProtection(t *testing.T) {
 			t.Errorf("unexpected action ID: %v", action.ID)
 		}
 	})
+}
+
+func TestImageSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 4711,
+		"type": "system",
+		"status": "available",
+		"name": "ubuntu16.04-standard-x64",
+		"description": "Ubuntu 16.04 Standard 64 bit",
+		"image_size": 2.3,
+		"disk_size": 10,
+		"created": "2016-01-30T23:55:01Z",
+		"created_from": {
+			"id": 1,
+			"name": "my-server1"
+		},
+		"bound_to": 1,
+		"os_flavor": "ubuntu",
+		"os_version": "16.04",
+		"architecture": "arm",
+		"rapid_deploy": false,
+		"protection": {
+			"delete": true
+		},
+		"deprecated": "2018-02-28T00:00:00Z",
+		"deprecation": {
+			"announced": "2018-02-28T00:00:00Z",
+			"unavailable_after": "2018-05-28T00:00:00Z"
+		},
+		"deleted": "2016-01-30T23:55:01+00:00",
+		"labels": {
+			"key": "value",
+			"key2": "value2"
+		}
+	}`)
+
+	var s schema.Image
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromImage(ImageFromSchema(s)))
+
+	img := ImageFromSchema(s)
+	assert.Equal(t, img, ImageFromSchema(SchemaFromImage(img)))
 }

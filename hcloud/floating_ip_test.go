@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -618,5 +620,78 @@ func TestFloatingIPClientChangeProtection(t *testing.T) {
 		if action.ID != 1 {
 			t.Errorf("unexpected action ID: %v", action.ID)
 		}
+	})
+}
+
+func TestFloatingIPSchema(t *testing.T) {
+	t.Run("IPv6", func(t *testing.T) {
+		data := []byte(`{
+			"id": 4711,
+			"name": "Web Frontend",
+			"description": "Web Frontend",
+			"created":"2017-08-16T17:29:14+00:00",
+			"ip": "2001:db8::/64",
+			"type": "ipv6",
+			"server": null,
+			"dns_ptr": [],
+			"blocked": true,
+			"home_location": {
+				"id": 1,
+				"name": "fsn1",
+				"description": "Falkenstein DC Park 1",
+				"country": "DE",
+				"city": "Falkenstein",
+				"latitude": 50.47612,
+				"longitude": 12.370071,
+				"network_zone": "eu-central"
+			},
+			"protection": {
+				"delete": true
+			},
+			"labels": {
+				"key": "value",
+				"key2": "value2"
+			}
+		}`)
+
+		var s schema.FloatingIP
+		assert.NoError(t, json.Unmarshal(data, &s))
+
+		assert.Equal(t, s, SchemaFromFloatingIP(FloatingIPFromSchema(s)))
+
+		ip := FloatingIPFromSchema(s)
+		assert.Equal(t, ip, FloatingIPFromSchema(SchemaFromFloatingIP(ip)))
+	})
+
+	t.Run("IPv4", func(t *testing.T) {
+		data := []byte(`{
+			"id": 4711,
+			"description": "Web Frontend",
+			"ip": "131.232.99.1",
+			"type": "ipv4",
+			"server": 42,
+			"dns_ptr": [{
+				"ip": "131.232.99.1",
+				"dns_ptr": "fip01.example.com"
+			}],
+			"blocked": false,
+			"home_location": {
+				"id": 1,
+				"name": "fsn1",
+				"description": "Falkenstein DC Park 1",
+				"country": "DE",
+				"city": "Falkenstein",
+				"latitude": 50.47612,
+				"longitude": 12.370071
+			}
+		}`)
+
+		var s schema.FloatingIP
+		assert.NoError(t, json.Unmarshal(data, &s))
+
+		assert.Equal(t, s, SchemaFromFloatingIP(FloatingIPFromSchema(s)))
+
+		ip := FloatingIPFromSchema(s)
+		assert.Equal(t, ip, FloatingIPFromSchema(SchemaFromFloatingIP(ip)))
 	})
 }

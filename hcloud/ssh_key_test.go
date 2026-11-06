@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -593,4 +595,26 @@ func TestSSHKeyClientUpdate(t *testing.T) {
 			t.Errorf("unexpected SSH key ID: %v", updatedSSHKey.ID)
 		}
 	})
+}
+
+func TestSSHKeySchema(t *testing.T) {
+	data := []byte(`{
+		"id": 2323,
+		"name": "My key",
+		"fingerprint": "b7:2f:30:a0:2f:6c:58:6c:21:04:58:61:ba:06:3b:2c",
+		"public_key": "ssh-rsa AAAjjk76kgf...Xt",
+		"labels": {
+			"key": "value",
+			"key2": "value2"
+		},
+		"created":"2017-08-16T17:29:14+00:00"
+	}`)
+
+	var s schema.SSHKey
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromSSHKey(SSHKeyFromSchema(s)))
+
+	key := SSHKeyFromSchema(s)
+	assert.Equal(t, key, SSHKeyFromSchema(SchemaFromSSHKey(key)))
 }

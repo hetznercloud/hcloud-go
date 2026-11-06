@@ -321,3 +321,41 @@ func TestLoadBalancerTypeClient(t *testing.T) {
 		}
 	})
 }
+
+func TestLoadBalancerTypeSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 1,
+		"name": "lx11",
+		"description": "LX11",
+		"max_connections": 20000,
+		"max_services": 3,
+		"max_targets": 25,
+		"max_assigned_certificates": 10,
+		"deprecation": {
+			"unavailable_after": "2016-04-30T23:50:00Z",
+			"announced": "2016-01-30T23:50:00Z"
+		},
+		"deprecated": "2016-01-30T23:50:00Z",
+		"prices": [
+			{
+				"location": "fsn1",
+				"price_hourly": {
+					"net": "1",
+					"gross": "1.19"
+				},
+				"price_monthly": {
+					"net": "1",
+					"gross": "1.19"
+				}
+			}
+		]
+	}`)
+
+	var s schema.LoadBalancerType
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromLoadBalancerType(LoadBalancerTypeFromSchema(s)))
+
+	lbt := LoadBalancerTypeFromSchema(s)
+	assert.Equal(t, lbt, LoadBalancerTypeFromSchema(SchemaFromLoadBalancerType(lbt)))
+}
