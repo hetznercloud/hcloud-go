@@ -1,12 +1,14 @@
 package hcloud
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/exp/mockutil"
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 func TestStorageBoxTypeClientGetByID(t *testing.T) {
@@ -219,4 +221,47 @@ func TestStorageBoxTypeClientAll(t *testing.T) {
 	assert.Equal(t, int64(1), storageBoxTypes[0].ID)
 	assert.Equal(t, int64(2), storageBoxTypes[1].ID)
 	assert.Equal(t, int64(3), storageBoxTypes[2].ID)
+}
+
+func TestStorageBoxTypeSchema(t *testing.T) {
+	data := []byte(`
+	{
+		"id": 42,
+		"name": "bx11",
+		"description": "BX11",
+		"snapshot_limit": 10,
+		"automatic_snapshot_limit": 10,
+		"subaccounts_limit": 200,
+		"size": 1073741824,
+		"prices": [
+			{
+				"location": "fsn1",
+				"price_hourly": {
+					"net": "1.0000",
+					"gross": "1.1900"
+				},
+				"price_monthly": {
+					"net": "1.0000",
+			  		"gross": "1.1900"
+				},
+				"setup_fee": {
+					"net": "1.0000",
+					"gross": "1.1900"
+				}
+			}
+		],
+		"deprecation": {
+			"unavailable_after": "2023-09-01T00:00:00+00:00",
+			"announced": "2023-06-01T00:00:00+00:00"
+		}
+	 }
+	`)
+
+	var s schema.StorageBoxType
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromStorageBoxType(StorageBoxTypeFromSchema(s)))
+
+	sb := StorageBoxTypeFromSchema(s)
+	assert.Equal(t, sb, StorageBoxTypeFromSchema(SchemaFromStorageBoxType(sb)))
 }

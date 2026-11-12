@@ -1,6 +1,7 @@
 package hcloud
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -9,6 +10,8 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
 func TestError_Error(t *testing.T) {
@@ -302,6 +305,37 @@ func TestLogValue(t *testing.T) {
 			// Remove leading log level and msg
 			got := strings.TrimSpace(out.String()[20:])
 			assert.Equal(t, testCase.want, got)
+		})
+	}
+}
+
+func TestErrorSchema(t *testing.T) {
+	testCases := map[string]string{
+		"service_error": `{
+			"code": "service_error",
+			"message": "An error occurred"
+		}`,
+		"invalid_input": `{
+			"code": "invalid_input",
+			"message": "invalid input",
+			"details": {"fields":[{"name":"broken_field","messages":["is required"]}]}
+		}`,
+		"deprecated_api_endpoint": `{
+			"code": "deprecated_api_endpoint",
+			"message": "API functionality was removed",
+			"details": {"announcement":"https://docs.hetzner.cloud/changelog"}
+		}`,
+	}
+
+	for name, data := range testCases {
+		t.Run(name, func(t *testing.T) {
+			var s schema.Error
+			assert.NoError(t, json.Unmarshal([]byte(data), &s))
+
+			assert.Equal(t, s, SchemaFromError(ErrorFromSchema(s)))
+
+			e := ErrorFromSchema(s)
+			assert.Equal(t, e, ErrorFromSchema(SchemaFromError(e)))
 		})
 	}
 }

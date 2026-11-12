@@ -543,3 +543,53 @@ func ExampleResourceActionClient_ListFor() {
 		}
 	}
 }
+
+func TestActionSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 1,
+		"command": "create_server",
+		"status": "success",
+		"progress": 100,
+		"started": "2016-01-30T23:55:00Z",
+		"finished": "2016-01-30T23:56:13Z",
+		"resources": [
+			{
+				"id": 42,
+				"type": "server"
+			}
+		],
+		"error": {
+			"code": "action_failed",
+			"message": "Action failed"
+		}
+	}`)
+
+	var s schema.Action
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromAction(ActionFromSchema(s)))
+
+	a := ActionFromSchema(s)
+	assert.Equal(t, a, ActionFromSchema(SchemaFromAction(a)))
+}
+
+func TestActionsSchema(t *testing.T) {
+	data := []byte(`[
+		{
+			"id": 13,
+			"command": "create_server"
+		},
+		{
+			"id": 14,
+			"command": "start_server"
+		}
+	]`)
+
+	var s []schema.Action
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromActions(ActionsFromSchema(s)))
+
+	a := ActionsFromSchema(s)
+	assert.Equal(t, a, ActionsFromSchema(SchemaFromActions(a)))
+}

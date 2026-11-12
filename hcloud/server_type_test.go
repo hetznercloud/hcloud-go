@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
 
@@ -262,4 +264,50 @@ func TestServerTypeClient(t *testing.T) {
 			t.Errorf("unexpected server types")
 		}
 	})
+}
+
+func TestServerTypeSchema(t *testing.T) {
+	data := []byte(`{
+		"id": 1,
+		"name": "cx22",
+		"description": "description",
+		"cores": 4,
+		"memory": 1.0,
+		"disk": 20,
+		"storage_type": "local",
+		"cpu_type": "shared",
+		"architecture": "x86",
+		"deprecation": null,
+		"prices": [
+			{
+				"location": "fsn1",
+				"price_hourly": {
+					"net": "1",
+					"gross": "1.19"
+				},
+				"price_monthly": {
+					"net": "1",
+					"gross": "1.19"
+				}
+			}
+		],
+		"locations": [
+			{
+				"id": 1,
+				"name": "fsn1",
+				"deprecation": {
+					"announced": "2025-01-01T00:00:00Z",
+					"unavailable_after": "2025-04-01T00:00:00Z"
+				}
+			}
+		]
+	}`)
+
+	var s schema.ServerType
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromServerType(ServerTypeFromSchema(s)))
+
+	net := ServerTypeFromSchema(s)
+	assert.Equal(t, net, ServerTypeFromSchema(SchemaFromServerType(net)))
 }

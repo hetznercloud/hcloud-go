@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/stretchr/testify/assert"
 
 	"github.com/hetznercloud/hcloud-go/v2/hcloud/schema"
 )
@@ -342,4 +343,28 @@ func TestPlacementGroupUpdate(t *testing.T) {
 	if updatedPlacementGroup.ID != id {
 		t.Errorf("unexpected placement group ID: %v", updatedPlacementGroup.ID)
 	}
+}
+
+func TestPlacementGroupSchema(t *testing.T) {
+	data := []byte(`{
+		"created": "2019-01-08T12:10:00+00:00",
+		"id": 897,
+		"labels": {
+		  "key": "value"
+		},
+		"name": "my Placement Group",
+		"servers": [
+		  4711,
+		  4712
+		],
+		"type": "spread"
+	}`)
+
+	var s schema.PlacementGroup
+	assert.NoError(t, json.Unmarshal(data, &s))
+
+	assert.Equal(t, s, SchemaFromPlacementGroup(PlacementGroupFromSchema(s)))
+
+	pg := PlacementGroupFromSchema(s)
+	assert.Equal(t, pg, PlacementGroupFromSchema(SchemaFromPlacementGroup(pg)))
 }
