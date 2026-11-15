@@ -21,8 +21,8 @@ var _ ActionWaiter = (*ActionClient)(nil)
 //
 // The handleUpdate callback is called every time an action is updated.
 func (c *ActionClient) WaitForFunc(ctx context.Context, handleUpdate func(update *Action) error, actions ...*Action) error {
-	// Filter out nil actions
-	actions = slices.DeleteFunc(actions, func(a *Action) bool { return a == nil })
+	// Filter out nil actions without modifying the caller's slice.
+	actions = slices.DeleteFunc(slices.Clone(actions), func(a *Action) bool { return a == nil })
 
 	running := make(map[int64]struct{}, len(actions))
 	for _, action := range actions {
