@@ -2,7 +2,7 @@ module tools
 
 go 1.26.10
 
-toolchain go1.27.3
+toolchain go1.27.4
 
 tool (
 	github.com/hexdigest/gowrap/cmd/gowrap
