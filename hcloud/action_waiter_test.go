@@ -210,3 +210,15 @@ func TestWaitForFunc(t *testing.T) {
 		},
 	)
 }
+
+func TestActionWaiterPreservesCallerActions(t *testing.T) {
+	ctx, _, client := makeTestUtils(t)
+
+	finished := &Action{ID: 42, Status: ActionStatusSuccess}
+	actions := []*Action{nil, finished, nil}
+
+	assert.NoError(t, client.Action.WaitFor(ctx, actions...))
+	assert.Nil(t, actions[0])
+	assert.Same(t, finished, actions[1])
+	assert.Nil(t, actions[2])
+}
