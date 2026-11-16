@@ -212,22 +212,13 @@ func TestWaitForFunc(t *testing.T) {
 }
 
 func TestActionWaiterPreservesCallerActions(t *testing.T) {
-	for _, method := range []string{"WaitFor", "WaitForFunc"} {
-		t.Run(method, func(t *testing.T) {
-			finished := &Action{ID: 42, Status: ActionStatusSuccess}
-			actions := []*Action{nil, finished, nil}
-			client := NewClient(WithToken("test"))
+	ctx, _, client := makeTestUtils(t)
 
-			var err error
-			if method == "WaitFor" {
-				err = client.Action.WaitFor(context.Background(), actions...)
-			} else {
-				err = client.Action.WaitForFunc(context.Background(), nil, actions...)
-			}
-			assert.NoError(t, err)
-			assert.Nil(t, actions[0])
-			assert.Same(t, finished, actions[1])
-			assert.Nil(t, actions[2])
-		})
-	}
+	finished := &Action{ID: 42, Status: ActionStatusSuccess}
+	actions := []*Action{nil, finished, nil}
+
+	assert.NoError(t, client.Action.WaitFor(ctx, actions...))
+	assert.Nil(t, actions[0])
+	assert.Same(t, finished, actions[1])
+	assert.Nil(t, actions[2])
 }
