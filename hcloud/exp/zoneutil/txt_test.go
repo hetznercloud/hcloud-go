@@ -69,6 +69,11 @@ var (
 			raw:     "hällo wörld",
 			encoded: `"hällo wörld"`,
 		},
+		{
+			desc:    "multi-byte character at chunk boundary",
+			raw:     almostManyA + "ä" + fewB,
+			encoded: fmt.Sprintf(`"%s" "ä%s"`, almostManyA, fewB),
+		},
 	}
 )
 
