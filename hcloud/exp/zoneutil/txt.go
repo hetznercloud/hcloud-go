@@ -2,8 +2,8 @@ package zoneutil
 
 import (
 	"fmt"
-	"slices"
 	"strings"
+	"unicode/utf8"
 )
 
 // IsTXTRecordQuoted returns wether a the given string starts and ends with quotes.
@@ -14,22 +14,42 @@ func IsTXTRecordQuoted(value string) bool {
 	return strings.HasPrefix(value, `"`) && strings.HasSuffix(value, `"`)
 }
 
-// FormatTXTRecord splits a long string in chunks of 255 characters, and quotes each of
-// the chunks. Existing quotes will be escaped.
+// FormatTXTRecord splits a long string in chunks of at most 255 bytes, and quotes each of
+// the chunks. Existing quotes and backslashes will be escaped.
 //
 // - hello world	=> "hello world"
 // - hello "world"	=> "hello \"world\""
 //
-// This function can be reversed with [ParseTXTValue].
+// This function can be reversed with [ParseTXTRecord].
 func FormatTXTRecord(value string) string {
-	// Escape existing quotes
-	value = strings.ReplaceAll(value, "\"", "\\\"")
-
-	// Split in chunks of 255 characters
 	parts := []string{}
-	for chunk := range slices.Chunk([]byte(value), 255) {
-		parts = append(parts, fmt.Sprintf(`"%s"`, chunk))
+
+	var cur strings.Builder
+	for i := 0; i < len(value); {
+		r, width := utf8.DecodeRuneInString(value[i:])
+		escape := r == '"' || r == '\\'
+
+		size := width
+		if escape {
+			size++
+		}
+
+		// Do not split an escape sequence or a multi-byte character between two chunks
+		if cur.Len()+size > 255 {
+			parts = append(parts, fmt.Sprintf(`"%s"`, cur.String()))
+			cur.Reset()
+		}
+
+		if escape {
+			cur.WriteByte('\\')
+		}
+		cur.WriteString(value[i : i+width])
+		i += width
 	}
+	if cur.Len() > 0 {
+		parts = append(parts, fmt.Sprintf(`"%s"`, cur.String()))
+	}
+
 	return strings.Join(parts, " ")
 }
 
