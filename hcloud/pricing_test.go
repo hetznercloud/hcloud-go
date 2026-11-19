@@ -144,3 +144,44 @@ func TestPricingSchema(t *testing.T) {
 	p := PricingFromSchema(s)
 	assert.Equal(t, p, PricingFromSchema(SchemaFromPricing(p)))
 }
+
+func TestPricingSchemaPrimaryIPs(t *testing.T) {
+	prices := `[{"location": "fsn1", "price_hourly": {"net": "1", "gross": "1.19"}, "price_monthly": {"net": "1", "gross": "1.19"}}]`
+
+	t.Run("more primary IP types than floating IP types", func(t *testing.T) {
+		data := []byte(`{
+			"floating_ips": [{"type": "ipv4", "prices": ` + prices + `}],
+			"primary_ips": [{"type": "ipv4", "prices": ` + prices + `}, {"type": "ipv6", "prices": ` + prices + `}]
+		}`)
+		var s schema.Pricing
+		assert.NoError(t, json.Unmarshal(data, &s))
+
+		p := PricingFromSchema(s)
+		if assert.Len(t, p.PrimaryIPs, 2) {
+			assert.Equal(t, "ipv4", p.PrimaryIPs[0].Type)
+			assert.Equal(t, "ipv6", p.PrimaryIPs[1].Type)
+		}
+	})
+
+	t.Run("no floating IP types", func(t *testing.T) {
+		data := []byte(`{"primary_ips": [{"type": "ipv4", "prices": ` + prices + `}]}`)
+		var s schema.Pricing
+		assert.NoError(t, json.Unmarshal(data, &s))
+
+		p := PricingFromSchema(s)
+		if assert.Len(t, p.PrimaryIPs, 1) {
+			assert.Equal(t, "1", p.PrimaryIPs[0].Pricings[0].Monthly.Net)
+		}
+	})
+
+	t.Run("more floating IP types than primary IP types", func(t *testing.T) {
+		data := []byte(`{
+			"floating_ips": [{"type": "ipv4", "prices": ` + prices + `}, {"type": "ipv6", "prices": ` + prices + `}],
+			"primary_ips": [{"type": "ipv4", "prices": ` + prices + `}]
+		}`)
+		var s schema.Pricing
+		assert.NoError(t, json.Unmarshal(data, &s))
+
+		assert.Len(t, PricingFromSchema(s).PrimaryIPs, 1)
+	})
+}

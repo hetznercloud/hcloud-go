@@ -823,7 +823,7 @@ func floatingIPTypePricingFromSchema(s schema.Pricing) []FloatingIPTypePricing {
 }
 
 func primaryIPPricingFromSchema(s schema.Pricing) []PrimaryIPPricing {
-	p := make([]PrimaryIPPricing, len(s.FloatingIPs))
+	p := make([]PrimaryIPPricing, len(s.PrimaryIPs))
 	for i, primaryIPType := range s.PrimaryIPs {
 		var pricings = make([]PrimaryIPTypePricing, len(primaryIPType.Prices))
 		for i, price := range primaryIPType.Prices {
