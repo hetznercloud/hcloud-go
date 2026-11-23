@@ -1,5 +1,19 @@
 # Changelog
 
+## [v2.54.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.54.0)
+
+[Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.53.0...v2.54.0)
+
+### Features
+
+- **exp**: add generic deprecationutil.Message helper (#965) ([58b701b](https://github.com/hetznercloud/hcloud-go/commit/58b701b9e46d378c9fba492e4128d683f0c4bfe0))
+
+### Bug Fixes
+
+- do not send empty json body in volume detach (#955) ([9adc140](https://github.com/hetznercloud/hcloud-go/commit/9adc140755042b41d7a1d865d8c1afe94535b5d6))
+- preserve caller action slice when waiting (#968) ([5b7086b](https://github.com/hetznercloud/hcloud-go/commit/5b7086b1c3f1582b206bfc7539c23370f7748219))
+- panic in primary IP pricing list (#970) ([6e944f8](https://github.com/hetznercloud/hcloud-go/commit/6e944f88fbd525d57d655434b8ece2f75ec963a0))
+
 ## [v2.53.0](https://github.com/hetznercloud/hcloud-go/releases/tag/v2.53.0)
 
 [Compare to previous version](https://github.com/hetznercloud/hcloud-go/compare/v2.52.0...v2.53.0)
