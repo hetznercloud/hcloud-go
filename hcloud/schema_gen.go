@@ -472,7 +472,7 @@ func networkFromFloatingIPSchema(s schema.FloatingIP) *net.IPNet {
 }
 
 func ipFromPrimaryIPSchema(s schema.PrimaryIP) net.IP {
-	if s.Type == string(FloatingIPTypeIPv4) {
+	if s.Type == string(PrimaryIPTypeIPv4) {
 		return net.ParseIP(s.IP)
 	}
 	ip, _, _ := net.ParseCIDR(s.IP)
@@ -480,7 +480,7 @@ func ipFromPrimaryIPSchema(s schema.PrimaryIP) net.IP {
 }
 
 func networkFromPrimaryIPSchema(s schema.PrimaryIP) *net.IPNet {
-	if s.Type == string(FloatingIPTypeIPv4) {
+	if s.Type == string(PrimaryIPTypeIPv4) {
 		return nil
 	}
 	_, n, _ := net.ParseCIDR(s.IP)
